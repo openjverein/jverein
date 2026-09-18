@@ -16,10 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.JahresabschlussListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -38,11 +39,9 @@ public class JahresabschlussListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.JAHRESABSCHLUSS, false, "question-circle.png");
-    buttons.addButton("Neu",
-        new NewAction(JahresabschlussDetailView.class, Jahresabschluss.class),
-        null, false, "document-new.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.JAHRESABSCHLUSS));
+    buttons.addButton(new NewButton(
+        new NewAction(JahresabschlussDetailView.class, Jahresabschluss.class)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

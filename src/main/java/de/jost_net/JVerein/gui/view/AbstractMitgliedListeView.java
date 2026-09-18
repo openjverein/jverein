@@ -25,6 +25,7 @@ import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.action.MitgliederImportAction;
 import de.jost_net.JVerein.gui.control.MitgliedListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -81,8 +82,7 @@ public abstract class AbstractMitgliedListeView extends AbstractView
       buttons.addButton("Import", new MitgliederImportAction(), null, false,
           "file-import.png");
       buttons.addButton(control.getExportButton());
-      buttons.addButton("Neu", getDetailAction(), null, false,
-          "document-new.png");
+      buttons.addButton(new NewButton(getDetailAction()));
     }
     buttons.paint(this.getParent());
 

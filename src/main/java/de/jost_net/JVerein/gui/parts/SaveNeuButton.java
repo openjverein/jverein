@@ -20,7 +20,6 @@ package de.jost_net.JVerein.gui.parts;
 import java.rmi.RemoteException;
 
 import org.eclipse.swt.widgets.Composite;
-
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -34,7 +33,6 @@ import de.willuhn.util.ApplicationException;
  */
 public class SaveNeuButton extends ButtonRtoL
 {
-
   /**
    * Erstellt den Speichern un NeuButton
    * 
@@ -86,7 +84,7 @@ public class SaveNeuButton extends ButtonRtoL
       {
         GUI.getStatusBar().setErrorText(ae.getMessage());
       }
-    }, null, false, "go-next.png");
+    }, null, false, "go-next.png", "CTRL+SHIFT+S");
   }
 
   @Override

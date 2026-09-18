@@ -52,7 +52,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.io.AssignedColumnsIO;
 import de.jost_net.JVerein.io.CSVConnection;
 import de.jost_net.JVerein.io.CSVFileHelper;
@@ -258,8 +258,7 @@ public class MigrationView extends AbstractView
     list.setLayoutData(availdata);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGRATION, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.MITGRATION));
 
     /* Import Button */
     de.willuhn.jameica.gui.parts.Button importbt = new de.willuhn.jameica.gui.parts.Button(

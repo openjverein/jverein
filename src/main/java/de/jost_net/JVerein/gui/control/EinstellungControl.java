@@ -42,7 +42,7 @@ import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SEPALandInput;
 import de.jost_net.JVerein.gui.input.SEPALandObject;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
-import de.jost_net.JVerein.gui.navigation.MyItem;
+import de.jost_net.JVerein.gui.navigation.JVereinNavigationItem;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
@@ -2623,7 +2623,7 @@ public class EinstellungControl extends AbstractControl
     {
       Method reload = Navigation.class.getMethod("reload",
           NavigationItem.class);
-      MyItem item = new MyItem(null, "", null)
+      JVereinNavigationItem item = new JVereinNavigationItem(null, "", null)
       {
         @Override
         public String getID()

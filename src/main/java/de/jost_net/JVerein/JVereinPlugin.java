@@ -19,7 +19,8 @@ package de.jost_net.JVerein;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.navigation.MyExtension;
+import de.jost_net.JVerein.gui.navigation.JVereinMenue;
+import de.jost_net.JVerein.gui.navigation.JVereinNavigation;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.UmsatzMessageConsumer;
 import de.jost_net.JVerein.rmi.JVereinDBService;
@@ -88,7 +89,8 @@ public class JVereinPlugin extends AbstractPlugin
     });
 
     Application.getCallback().getStartupMonitor().addPercentComplete(5);
-    ExtensionRegistry.register(new MyExtension(), "jverein.main");
+    ExtensionRegistry.register(new JVereinNavigation(), "jverein.main");
+    ExtensionRegistry.register(new JVereinMenue(), "jverein.menue");
     this.umc = new UmsatzMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.umc);
 

@@ -16,11 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungExportAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
@@ -77,13 +78,11 @@ public class SollbuchungListeView extends AbstractView
     control.getTablePart(null, false, true).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
-        "question-circle.png");
+    buttons
+        .addButton(new HelpButton(DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT));
     buttons.addButton(new Button("Export", new SollbuchungExportAction(),
         control, false, "document-save.png"));
-    buttons.addButton("Neu", new SollbuchungNeuAction(null), control, false,
-        "document-new.png");
+    buttons.addButton(new NewButton(new SollbuchungNeuAction(null)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

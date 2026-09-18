@@ -17,13 +17,13 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanExportAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanMenu;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
@@ -84,8 +84,7 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
 
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.WIRTSCHAFTSPLANUNG, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.WIRTSCHAFTSPLANUNG));
 
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());

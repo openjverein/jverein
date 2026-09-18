@@ -16,8 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedSuchProfilControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -39,8 +39,7 @@ public class MitgliedSuchProfilListeView extends AbstractView
     sc.addInput(control.getProfilname());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.SUCHPROFIL, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.SUCHPROFIL));
     buttons.addButton("Speichern", new Action()
     {
 

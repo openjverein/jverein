@@ -20,7 +20,6 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MailEmpfaengerDeleteAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MailDetailView;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
@@ -34,7 +33,6 @@ public class MitgliedMailMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(MailDetailView.class, part), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new MailEmpfaengerDeleteAction(), "user-trash-full.png"));
+    addItem(new DeleteMenueItem(new MailEmpfaengerDeleteAction()));
   }
 }

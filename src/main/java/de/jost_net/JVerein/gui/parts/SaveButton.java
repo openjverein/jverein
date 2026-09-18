@@ -44,7 +44,6 @@ public class SaveButton extends ButtonRtoL
       {
         GUI.getStatusBar().setErrorText(ae.getMessage());
       }
-    }, null, true, "document-save.png");
+    }, null, true, "document-save.png", "CTRL+S");
   }
-
 }

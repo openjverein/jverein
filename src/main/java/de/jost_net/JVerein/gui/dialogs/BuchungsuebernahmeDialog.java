@@ -18,8 +18,8 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsuebernahmeControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -46,8 +46,7 @@ public class BuchungsuebernahmeDialog extends AbstractDialog<Boolean>
     control.getKontenList().paint(parent);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.BUCHUNGSUEBERNAHME, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.BUCHUNGSUEBERNAHME));
     buttons.addButton("Import starten", new Action()
     {
       @Override

@@ -16,8 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -75,8 +75,7 @@ public class EinstellungenMailView extends AbstractView
     einstellung.addLabelPair("Anhang", control.getAnhangSpeichern());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_MAIL, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.EINSTELLUNGEN_MAIL));
     buttons.addButton("Testmail versenden", context -> {
       control.testMail();
     }, null, false, "envelope-open.png");

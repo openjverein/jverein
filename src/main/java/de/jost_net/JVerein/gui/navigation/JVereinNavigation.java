@@ -93,7 +93,7 @@ import de.willuhn.jameica.gui.extension.Extendable;
 import de.willuhn.jameica.gui.extension.Extension;
 import de.willuhn.logging.Logger;
 
-public class MyExtension implements Extension
+public class JVereinNavigation implements Extension
 {
 
   /**
@@ -106,328 +106,354 @@ public class MyExtension implements Extension
     {
       NavigationItem jverein = (NavigationItem) extendable;
 
-      NavigationItem mitglieder = new MyItem(jverein, "Mitglieder", null);
+      NavigationItem mitglieder = new JVereinNavigationItem(jverein,
+          "Mitglieder", null);
 
-      mitglieder.addChild(new MyItem(mitglieder, "Mitglieder",
+      mitglieder.addChild(new JVereinNavigationItem(mitglieder, "Mitglieder",
           new StartViewAction(MitgliedListeView.class), "user-friends.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Nicht-Mitglieder",
-            new StartViewAction(NichtMitgliedListeView.class),
-            "user-friends.png"));
+        mitglieder
+            .addChild(new JVereinNavigationItem(mitglieder, "Nicht-Mitglieder",
+                new StartViewAction(NichtMitgliedListeView.class),
+                "user-friends.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Kursteilnehmer",
-            new StartViewAction(KursteilnehmerListeView.class),
-            "user-friends.png"));
+        mitglieder
+            .addChild(new JVereinNavigationItem(mitglieder, "Kursteilnehmer",
+                new StartViewAction(KursteilnehmerListeView.class),
+                "user-friends.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Familienverband",
-            new StartViewAction(FamilienbeitragView.class), "users.png"));
+        mitglieder
+            .addChild(new JVereinNavigationItem(mitglieder, "Familienverband",
+                new StartViewAction(FamilienbeitragView.class), "users.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Abweichende Zahler",
-            new StartViewAction(AbweichendeZahlerView.class), "users.png"));
+        mitglieder.addChild(
+            new JVereinNavigationItem(mitglieder, "Abweichende Zahler",
+                new StartViewAction(AbweichendeZahlerView.class), "users.png"));
       }
-      mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
+      mitglieder.addChild(new JVereinNavigationItem(mitglieder, "Sollbuchungen",
           new StartViewAction(SollbuchungListeView.class), "calculator.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
+        mitglieder.addChild(new JVereinNavigationItem(mitglieder, "Rechnungen",
             new StartViewAction(RechnungListeView.class), "file-invoice.png"));
       }
       if ((Boolean) Einstellungen
           .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
-            new StartViewAction(SpendenbescheinigungListeView.class),
-            "file-invoice.png"));
+        mitglieder.addChild(
+            new JVereinNavigationItem(mitglieder, "Spendenbescheinigungen",
+                new StartViewAction(SpendenbescheinigungListeView.class),
+                "file-invoice.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Zusatzbeträge",
-            new StartViewAction(ZusatzbetragListeView.class), "euro-sign.png"));
+        mitglieder.addChild(new JVereinNavigationItem(mitglieder,
+            "Zusatzbeträge", new StartViewAction(ZusatzbetragListeView.class),
+            "euro-sign.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Wiedervorlagen",
-            new StartViewAction(WiedervorlageListeView.class),
+        mitglieder.addChild(new JVereinNavigationItem(mitglieder,
+            "Wiedervorlagen", new StartViewAction(WiedervorlageListeView.class),
             "office-calendar.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Lehrgänge",
+        mitglieder.addChild(new JVereinNavigationItem(mitglieder, "Lehrgänge",
             new StartViewAction(LehrgangListeView.class),
             "chalkboard-teacher.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Arbeitseinsätze",
-            new StartViewAction(ArbeitseinsatzListeView.class),
-            "screwdriver.png"));
+        mitglieder
+            .addChild(new JVereinNavigationItem(mitglieder, "Arbeitseinsätze",
+                new StartViewAction(ArbeitseinsatzListeView.class),
+                "screwdriver.png"));
       }
       jverein.addChild(mitglieder);
 
-      NavigationItem buchfuehrung = new MyItem(jverein, "Buchführung", null);
+      NavigationItem buchfuehrung = new JVereinNavigationItem(jverein,
+          "Buchführung", null);
       // Konten
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Konten",
+      buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Konten",
           new StartViewAction(KontoListeView.class),
           "system-file-manager.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestände",
-          new StartViewAction(AnfangsbestandListeView.class),
+      buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung,
+          "Anfangsbestände", new StartViewAction(AnfangsbestandListeView.class),
           "system-file-manager.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
-          new StartViewAction(KontoSaldoView.class),
+      buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung,
+          "Kontensaldo", new StartViewAction(KontoSaldoView.class),
           "system-file-manager.png"));
       // Buchungen
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
+      buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Buchungen",
           new StartViewAction(BuchungListeView.class), "emblem-documents.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
-          new StartViewAction(BuchungsklasseSaldoView.class),
-          "emblem-documents.png"));
+      buchfuehrung.addChild(
+          new JVereinNavigationItem(buchfuehrung, "Buchungsklassensaldo",
+              new StartViewAction(BuchungsklasseSaldoView.class),
+              "emblem-documents.png"));
       // UstVA
       if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
-        buchfuehrung
-            .addChild(new MyItem(buchfuehrung, "Umsatzsteuer Voranmeldung",
+        buchfuehrung.addChild(
+            new JVereinNavigationItem(buchfuehrung, "Umsatzsteuer Voranmeldung",
                 new StartViewAction(UmsatzsteuerSaldoView.class), "coins.png"));
       }
       // Projekte
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
-        buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
-            new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
+        buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung,
+            "Projektsaldo", new StartViewAction(ProjektSaldoView.class),
+            "screwdriver.png"));
       }
       // Anlagen
       if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN))
       {
-        buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenbuchungen",
-            new StartViewAction(AnlagenbuchungListeView.class),
-            "office-chart-area.png"));
-        buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenverzeichnis",
-            new StartViewAction(AnlagenverzeichnisView.class),
-            "office-chart-area.png"));
+        buchfuehrung.addChild(
+            new JVereinNavigationItem(buchfuehrung, "Anlagenbuchungen",
+                new StartViewAction(AnlagenbuchungListeView.class),
+                "office-chart-area.png"));
+        buchfuehrung.addChild(
+            new JVereinNavigationItem(buchfuehrung, "Anlagenverzeichnis",
+                new StartViewAction(AnlagenverzeichnisView.class),
+                "office-chart-area.png"));
       }
       // Mittelverwendung
       if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
       {
-        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
-            new StartViewAction(MittelverwendungReportView.class),
-            "gnome-session-switch.png"));
-        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendungssaldo",
-            new StartViewAction(MittelverwendungSaldoView.class),
-            "gnome-session-switch.png"));
+        buchfuehrung.addChild(
+            new JVereinNavigationItem(buchfuehrung, "Mittelverwendung",
+                new StartViewAction(MittelverwendungReportView.class),
+                "gnome-session-switch.png"));
+        buchfuehrung.addChild(
+            new JVereinNavigationItem(buchfuehrung, "Mittelverwendungssaldo",
+                new StartViewAction(MittelverwendungSaldoView.class),
+                "gnome-session-switch.png"));
       }
       // Jahresabschluss
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
-          new StartViewAction(JahresabschlussListeView.class),
-          "office-calendar.png"));
+      buchfuehrung
+          .addChild(new JVereinNavigationItem(buchfuehrung, "Jahresabschlüsse",
+              new StartViewAction(JahresabschlussListeView.class),
+              "office-calendar.png"));
 
       // Wirtschaftsplan
       if ((Boolean) Einstellungen
           .getEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN))
       {
-        buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung",
-            new StartViewAction(WirtschaftsplanListeView.class),
-            "x-office-spreadsheet.png"));
+        buchfuehrung.addChild(
+            new JVereinNavigationItem(buchfuehrung, "Wirtschaftsplanung",
+                new StartViewAction(WirtschaftsplanListeView.class),
+                "x-office-spreadsheet.png"));
       }
       jverein.addChild(buchfuehrung);
 
-      NavigationItem abrechnung = new MyItem(jverein, "Abrechnung", null);
-      abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsläufe",
-          new StartViewAction(AbrechnungslaufListeView.class),
-          "calculator.png"));
-      abrechnung.addChild(new MyItem(abrechnung, "Lastschriften",
+      NavigationItem abrechnung = new JVereinNavigationItem(jverein,
+          "Abrechnung", null);
+      abrechnung
+          .addChild(new JVereinNavigationItem(abrechnung, "Abrechnungsläufe",
+              new StartViewAction(AbrechnungslaufListeView.class),
+              "calculator.png"));
+      abrechnung.addChild(new JVereinNavigationItem(abrechnung, "Lastschriften",
           new StartViewAction(LastschriftListeView.class), "lastschrift.png"));
       jverein.addChild(abrechnung);
 
-      NavigationItem mail = new MyItem(jverein, "Druck & Mail", null);
+      NavigationItem mail = new JVereinNavigationItem(jverein, "Druck & Mail",
+          null);
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
-        mail.addChild(new MyItem(mail, "Rechnungen",
+        mail.addChild(new JVereinNavigationItem(mail, "Rechnungen",
             new StartViewAction(RechnungMailView.class), "document-print.png"));
-        mail.addChild(new MyItem(mail, "Mahnungen",
+        mail.addChild(new JVereinNavigationItem(mail, "Mahnungen",
             new StartViewAction(MahnungMailView.class), "document-print.png"));
       }
-      mail.addChild(new MyItem(mail, "Kontoauszüge",
+      mail.addChild(new JVereinNavigationItem(mail, "Kontoauszüge",
           new StartViewAction(KontoauszugMailView.class),
           "document-print.png"));
-      mail.addChild(new MyItem(mail, "Freie Formulare",
+      mail.addChild(new JVereinNavigationItem(mail, "Freie Formulare",
           new StartViewAction(FreiesFormularMailView.class),
           "document-print.png"));
-      mail.addChild(new MyItem(mail, "Personalbogen",
+      mail.addChild(new JVereinNavigationItem(mail, "Personalbogen",
           new StartViewAction(PersonalbogenMailView.class),
           "document-print.png"));
-      mail.addChild(new MyItem(mail, "Pre-Notification",
+      mail.addChild(new JVereinNavigationItem(mail, "Pre-Notification",
           new StartViewAction(PreNotificationMailView.class),
           "document-print.png"));
       if ((Boolean) Einstellungen
           .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
-        mail.addChild(new MyItem(mail, "Spendenbescheinigungen",
+        mail.addChild(new JVereinNavigationItem(mail, "Spendenbescheinigungen",
             new StartViewAction(SpendenbescheinigungMailView.class),
             "document-print.png"));
       }
-      mail.addChild(new MyItem(mail, "Mails",
+      mail.addChild(new JVereinNavigationItem(mail, "Mails",
           new StartViewAction(MailListeView.class), "envelope-open.png"));
-      mail.addChild(new MyItem(mail, "Mail-Vorlagen",
+      mail.addChild(new JVereinNavigationItem(mail, "Mail-Vorlagen",
           new StartViewAction(MailVorlageListeView.class),
           "envelope-open.png"));
       jverein.addChild(mail);
 
-      NavigationItem administration = new MyItem(jverein, "Administration",
-          null);
+      NavigationItem administration = new JVereinNavigationItem(jverein,
+          "Administration", null);
 
-      NavigationItem administrationEinstellungen = new MyItem(administration,
-          "Einstellungen", null);
-      administrationEinstellungen.addChild(new MyItem(
+      NavigationItem administrationEinstellungen = new JVereinNavigationItem(
+          administration, "Einstellungen", null);
+      administrationEinstellungen.addChild(new JVereinNavigationItem(
           administrationEinstellungen, "Allgemein",
           new StartViewAction(EinstellungenAllgemeinView.class), "wrench.png"));
-      administrationEinstellungen.addChild(new MyItem(
+      administrationEinstellungen.addChild(new JVereinNavigationItem(
           administrationEinstellungen, "Anzeige",
           new StartViewAction(EinstellungenAnzeigeView.class), "wrench.png"));
+      administrationEinstellungen.addChild(new JVereinNavigationItem(
+          administrationEinstellungen, "Mitglieder Ansicht",
+          new StartViewAction(EinstellungenMitgliedAnsichtView.class),
+          "wrench.png"));
       administrationEinstellungen.addChild(
-          new MyItem(administrationEinstellungen, "Mitglieder Ansicht",
-              new StartViewAction(EinstellungenMitgliedAnsichtView.class),
-              "wrench.png"));
-      administrationEinstellungen
-          .addChild(new MyItem(administrationEinstellungen, "Abrechnung",
+          new JVereinNavigationItem(administrationEinstellungen, "Abrechnung",
               new StartViewAction(EinstellungenAbrechnungView.class),
               "wrench.png"));
-      administrationEinstellungen
-          .addChild(new MyItem(administrationEinstellungen, "Verzeichnisse",
-              new StartViewAction(EinstellungenVerzeichnisView.class),
-              "wrench.png"));
-      administrationEinstellungen
-          .addChild(new MyItem(administrationEinstellungen, "Vorlagen",
+      administrationEinstellungen.addChild(new JVereinNavigationItem(
+          administrationEinstellungen, "Verzeichnisse",
+          new StartViewAction(EinstellungenVerzeichnisView.class),
+          "wrench.png"));
+      administrationEinstellungen.addChild(
+          new JVereinNavigationItem(administrationEinstellungen, "Vorlagen",
               new StartViewAction(EinstellungenVorlageListeView.class),
               "wrench.png"));
       if ((Boolean) Einstellungen
           .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
-        administrationEinstellungen.addChild(
-            new MyItem(administrationEinstellungen, "Spendenbescheinigungen",
-                new StartViewAction(
-                    EinstellungenSpendenbescheinigungenView.class),
-                "wrench.png"));
+        administrationEinstellungen.addChild(new JVereinNavigationItem(
+            administrationEinstellungen, "Spendenbescheinigungen",
+            new StartViewAction(EinstellungenSpendenbescheinigungenView.class),
+            "wrench.png"));
       }
-      administrationEinstellungen
-          .addChild(new MyItem(administrationEinstellungen, "Buchführung",
+      administrationEinstellungen.addChild(
+          new JVereinNavigationItem(administrationEinstellungen, "Buchführung",
               new StartViewAction(EinstellungenBuchfuehrungView.class),
               "wrench.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
-        administrationEinstellungen
-            .addChild(new MyItem(administrationEinstellungen, "Rechnungen",
+        administrationEinstellungen.addChild(
+            new JVereinNavigationItem(administrationEinstellungen, "Rechnungen",
                 new StartViewAction(EinstellungenRechnungenView.class),
                 "wrench.png"));
       }
-      administrationEinstellungen
-          .addChild(new MyItem(administrationEinstellungen, "Mail",
+      administrationEinstellungen.addChild(
+          new JVereinNavigationItem(administrationEinstellungen, "Mail",
               new StartViewAction(EinstellungenMailView.class), "wrench.png"));
-      administrationEinstellungen.addChild(new MyItem(
+      administrationEinstellungen.addChild(new JVereinNavigationItem(
           administrationEinstellungen, "Statistik",
           new StartViewAction(EinstellungenStatistikView.class), "wrench.png"));
-      administrationEinstellungen.addChild(new MyItem(
+      administrationEinstellungen.addChild(new JVereinNavigationItem(
           administrationEinstellungen, "Reports",
           new StartViewAction(EinstellungenReportsView.class), "wrench.png"));
       administration.addChild(administrationEinstellungen);
 
-      NavigationItem einstellungenmitglieder = new MyItem(administration,
-          "Mitglieder", null);
-      einstellungenmitglieder
-          .addChild(new MyItem(einstellungenmitglieder, "Beitragsgruppen",
+      NavigationItem einstellungenmitglieder = new JVereinNavigationItem(
+          administration, "Mitglieder", null);
+      einstellungenmitglieder.addChild(
+          new JVereinNavigationItem(einstellungenmitglieder, "Beitragsgruppen",
               new StartViewAction(BeitragsgruppeListeView.class), "clone.png"));
-      einstellungenmitglieder
-          .addChild(new MyItem(einstellungenmitglieder, "Eigenschaftengruppen",
-              new StartViewAction(EigenschaftGruppeListeView.class),
-              "document-properties.png"));
-      einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder,
-          "Eigenschaften", new StartViewAction(EigenschaftListeView.class),
+      einstellungenmitglieder.addChild(new JVereinNavigationItem(
+          einstellungenmitglieder, "Eigenschaftengruppen",
+          new StartViewAction(EigenschaftGruppeListeView.class),
           "document-properties.png"));
+      einstellungenmitglieder
+          .addChild(new JVereinNavigationItem(einstellungenmitglieder,
+              "Eigenschaften", new StartViewAction(EigenschaftListeView.class),
+              "document-properties.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
       {
-        einstellungenmitglieder
-            .addChild(new MyItem(einstellungenmitglieder, "Zusatzfelder",
+        einstellungenmitglieder.addChild(
+            new JVereinNavigationItem(einstellungenmitglieder, "Zusatzfelder",
                 new StartViewAction(ZusatzfeldListeView.class), "list.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
       {
-        einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder,
-            "Lesefelder", new LesefelddefinitionenAction(null), "list.png"));
+        einstellungenmitglieder.addChild(
+            new JVereinNavigationItem(einstellungenmitglieder, "Lesefelder",
+                new LesefelddefinitionenAction(null), "list.png"));
       }
 
-      einstellungenmitglieder
-          .addChild(new MyItem(einstellungenmitglieder, "Formulare",
+      einstellungenmitglieder.addChild(
+          new JVereinNavigationItem(einstellungenmitglieder, "Formulare",
               new StartViewAction(FormularListeView.class), "columns.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
       {
-        einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder,
-            "Lehrgangsarten", new StartViewAction(LehrgangsartListeView.class),
-            "chalkboard-teacher.png"));
+        einstellungenmitglieder.addChild(
+            new JVereinNavigationItem(einstellungenmitglieder, "Lehrgangsarten",
+                new StartViewAction(LehrgangsartListeView.class),
+                "chalkboard-teacher.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
       {
-        einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder,
-            "Mitgliedstypen", new StartViewAction(MitgliedstypListeView.class),
-            "user-friends.png"));
+        einstellungenmitglieder.addChild(
+            new JVereinNavigationItem(einstellungenmitglieder, "Mitgliedstypen",
+                new StartViewAction(MitgliedstypListeView.class),
+                "user-friends.png"));
       }
       administration.addChild(einstellungenmitglieder);
 
-      NavigationItem einstellungenbuchfuehrung = new MyItem(administration,
-          "Buchführung", null);
-      einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Buchungsklassen", new StartViewAction(BuchungsklasseListeView.class),
+      NavigationItem einstellungenbuchfuehrung = new JVereinNavigationItem(
+          administration, "Buchführung", null);
+      einstellungenbuchfuehrung.addChild(new JVereinNavigationItem(
+          einstellungenbuchfuehrung, "Buchungsklassen",
+          new StartViewAction(BuchungsklasseListeView.class),
           "ellipsis-v.png"));
-      einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Buchungsarten", new StartViewAction(BuchungsartListeView.class),
-          "ellipsis-v.png"));
-      einstellungenbuchfuehrung
-          .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Export",
-              new KontenrahmenExportAction(), "document-save.png"));
-      einstellungenbuchfuehrung
-          .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Import",
-              new KontenrahmenImportAction(), "file-import.png"));
+      einstellungenbuchfuehrung.addChild(new JVereinNavigationItem(
+          einstellungenbuchfuehrung, "Buchungsarten",
+          new StartViewAction(BuchungsartListeView.class), "ellipsis-v.png"));
+      einstellungenbuchfuehrung.addChild(new JVereinNavigationItem(
+          einstellungenbuchfuehrung, "Kontenrahmen-Export",
+          new KontenrahmenExportAction(), "document-save.png"));
+      einstellungenbuchfuehrung.addChild(new JVereinNavigationItem(
+          einstellungenbuchfuehrung, "Kontenrahmen-Import",
+          new KontenrahmenImportAction(), "file-import.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
-        einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-            "Projekte", new StartViewAction(ProjektListeView.class),
-            "screwdriver.png"));
+        einstellungenbuchfuehrung.addChild(new JVereinNavigationItem(
+            einstellungenbuchfuehrung, "Projekte",
+            new StartViewAction(ProjektListeView.class), "screwdriver.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
-        einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-            "Steuer", new StartViewAction(SteuerListeView.class), "coins.png"));
+        einstellungenbuchfuehrung.addChild(
+            new JVereinNavigationItem(einstellungenbuchfuehrung, "Steuer",
+                new StartViewAction(SteuerListeView.class), "coins.png"));
       }
       administration.addChild(einstellungenbuchfuehrung);
 
-      NavigationItem einstellungenerweitert = new MyItem(administration,
-          "Erweitert", null);
-      einstellungenerweitert
-          .addChild(new MyItem(einstellungenerweitert, "Migration",
+      NavigationItem einstellungenerweitert = new JVereinNavigationItem(
+          administration, "Erweitert", null);
+      einstellungenerweitert.addChild(
+          new JVereinNavigationItem(einstellungenerweitert, "Migration",
               new StartViewAction(MigrationView.class), "file-import.png"));
-      einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,
-          "QIF-Datei-Import", new StartViewAction(QIFBuchungsImportView.class),
-          "file-import.png"));
-      einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,
-          "Datenbank-Bereinigung", new StartViewAction(DbBereinigenView.class),
+      einstellungenerweitert.addChild(new JVereinNavigationItem(
+          einstellungenerweitert, "QIF-Datei-Import",
+          new StartViewAction(QIFBuchungsImportView.class), "file-import.png"));
+      einstellungenerweitert.addChild(new JVereinNavigationItem(
+          einstellungenerweitert, "Datenbank-Bereinigung",
+          new StartViewAction(DbBereinigenView.class),
           "placeholder-loading.png"));
-      einstellungenerweitert
-          .addChild(new MyItem(einstellungenerweitert, "Diagnose-Backup-Export",
-              new BackupCreateAction(), "document-save.png"));
-      einstellungenerweitert
-          .addChild(new MyItem(einstellungenerweitert, "Diagnose-Backup-Import",
-              new BackupRestoreAction(), "file-import.png"));
+      einstellungenerweitert.addChild(new JVereinNavigationItem(
+          einstellungenerweitert, "Diagnose-Backup-Export",
+          new BackupCreateAction(), "document-save.png"));
+      einstellungenerweitert.addChild(new JVereinNavigationItem(
+          einstellungenerweitert, "Diagnose-Backup-Import",
+          new BackupRestoreAction(), "file-import.png"));
       administration.addChild(einstellungenerweitert);
       jverein.addChild(administration);
 
-      jverein.addChild(new MyItem(jverein, "Dokumentation",
+      jverein.addChild(new JVereinNavigationItem(jverein, "Dokumentation",
           new DokumentationAction(), "question-circle.png"));
-      jverein.addChild(
-          new MyItem(jverein, "Über", new AboutAction(), "gtk-info.png"));
+      jverein.addChild(new JVereinNavigationItem(jverein, "Über",
+          new AboutAction(), "gtk-info.png"));
     }
     catch (Exception e)
     {
