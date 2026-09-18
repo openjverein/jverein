@@ -333,6 +333,10 @@ public class PreNotificationControl extends DruckMailControl
                 break;
             }
             break;
+          case ABRECHNUNGSLAUF:
+            it.addFilter("abrechnungslauf = ?",
+                ((Abrechnungslauf) value).getID());
+            break;
           default:
             throw new ApplicationException("Filter nicht implementiert: "
                 + entry.getKey().getAnzeigeText());
