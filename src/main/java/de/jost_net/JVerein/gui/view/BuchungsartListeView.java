@@ -53,6 +53,7 @@ public class BuchungsartListeView extends AbstractView
         control.getFilterInput(Filter.STATUS));
 
     ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);

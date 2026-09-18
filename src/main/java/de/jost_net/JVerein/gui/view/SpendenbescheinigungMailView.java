@@ -46,7 +46,7 @@ public class SpendenbescheinigungMailView extends AbstractView
 
     final SpendenbescheinigungControl control = new SpendenbescheinigungControl(
         this);
-    control.init("spenden.", null, null);
+    control.init("spenden.");
 
     if (this.getCurrentObject() == null)
     {
@@ -68,6 +68,7 @@ public class SpendenbescheinigungMailView extends AbstractView
       right.addInput(control.getFilterInput(Filter.DATUM_SPENDE_BIS));
 
       ButtonArea fbuttons = new ButtonArea();
+      fbuttons.addButton(control.getProfileButton(this));
       fbuttons.addButton(control.getResetButton());
       fbuttons.addButton(control.getSpeichernButton());
       group.addButtonArea(fbuttons);

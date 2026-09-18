@@ -41,7 +41,7 @@ public class SollbuchungListeView extends AbstractView
     GUI.getView().setTitle("Sollbuchungen");
 
     final SollbuchungControl control = new SollbuchungControl(this);
-    control.init("sollbuchung.", null, null);
+    control.init("sollbuchung.");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
@@ -68,6 +68,7 @@ public class SollbuchungListeView extends AbstractView
     fbuttons.addButton(zurueck);
     ToolTipButton vor = control.getVorButton(von, bis);
     fbuttons.addButton(vor);
+    fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);

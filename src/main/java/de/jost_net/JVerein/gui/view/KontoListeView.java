@@ -53,6 +53,7 @@ public class KontoListeView extends AbstractView
     right.addInput(control.getFilterInput(Filter.KONTOART));
 
     ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);

@@ -44,7 +44,7 @@ public class KontoauszugMailView extends AbstractView
     GUI.getView().setTitle("Kontoauszüge");
 
     final SollbuchungControl control = new SollbuchungControl(this);
-    control.init("kontoauszug.", null, null);
+    control.init("kontoauszug.");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
 
@@ -92,6 +92,7 @@ public class KontoauszugMailView extends AbstractView
     cont.addLabelPair("Text", control.getTxt());
 
     ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSpeichernButton());
     group.addButtonArea(fbuttons);
