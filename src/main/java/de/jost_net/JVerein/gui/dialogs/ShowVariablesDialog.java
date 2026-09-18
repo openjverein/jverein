@@ -91,7 +91,7 @@ public class ShowVariablesDialog extends AbstractJVereinDialog<Object>
     }
     tab = new JVereinTablePart(list, getCopyAction());
     tab.addColumn("Name", "name");
-    tab.addColumn("Wert", "wert");
+    tab.addColumn("Wert", "wert", v -> v.toString().split("\n")[0]);
     tab.paint(parent);
 
     ButtonArea buttons = new ButtonArea();
