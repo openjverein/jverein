@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.Altermodel;
@@ -327,8 +328,9 @@ public class Einstellungen
     ZAEHLERLAENGE("zaehlerlaenge", Integer.class, "5"),
     QRCODESIZEINMM("qrcodesizemm", Integer.class, "20"),
     QRCODEINFOM("qrcodeinfom", String.class, "Vielen Dank!"),
-    QRCODETEXTVELOCITY("qrcodetextvelocity", String.class,
-        "#if($GRUND.split(\"\\n\").size() == 1)$GRUND#{else}Mitgliedsbeitrag#end"),
+    QRCODETEXTVELOCITY("qrcodetextvelocity", String.class, "#if($"
+        + RechnungVar.ZAHLUNGSGRUND.getName() + ".split(\"\\n\").size() == 1)$"
+        + RechnungVar.ZAHLUNGSGRUND.getName() + "#{else}Mitgliedsbeitrag#end"),
     QRCODEINTRO("qrcodeintro", String.class,
         "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen."),
 
