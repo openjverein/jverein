@@ -125,5 +125,9 @@ public class Update0511 extends AbstractDDLUpdate
         + "' THEN wert ELSE 0 END) AS externeMitgliedsnummer " +
 
         "FROM einstellungneu) q");
+
+    // Bei Neuinstallationen leeren Wert löschen, dann wird der Default genommen
+    execute("DELETE FROM einstellungneu WHERE name = '"
+        + Property.QRCODETEXTVELOCITY.getKey() + "' AND wert = ''");
   }
 }
