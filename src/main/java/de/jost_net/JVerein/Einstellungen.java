@@ -575,6 +575,7 @@ public class Einstellungen
     {
       return "";
     }
+    signatur = signatur.replace("\r\n", "\n");
     // Siehe RFC 3676, 4.3. Usenet Signature Convention
     if (separator && !signatur.startsWith("-- \n"))
     {
