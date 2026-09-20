@@ -49,8 +49,6 @@ public class SplitbuchungsContainer
 
   private static int anzahl = 0;
 
-  private static String text = null;
-
   public static void init(Buchung[] bl)
       throws RemoteException, ApplicationException
   {
@@ -58,14 +56,10 @@ public class SplitbuchungsContainer
     if (anzahl == 1)
     {
       buchungen = null;
-      text = "Es wird eine Splitbuchung erzeugt.";
     }
     else
     {
       buchungen = bl;
-      text = String.format(
-          "Es werden %s Splitbuchungen erzeugt.\nGeänderte Zwecke oder Kommentare in Splitpositionen werden bei allen Buchungen übernommen.",
-          anzahl);
     }
     initiate(bl[0]);
   }
@@ -75,7 +69,6 @@ public class SplitbuchungsContainer
   {
     buchungen = null;
     anzahl = 1;
-    text = "Es wird eine Splitbuchung erzeugt.";
     initiate(b);
   }
 
@@ -325,11 +318,6 @@ public class SplitbuchungsContainer
       buchungen = null;
       splitbuchungen.clear();
     }
-  }
-
-  public static String getText()
-  {
-    return text;
   }
 
   /**
