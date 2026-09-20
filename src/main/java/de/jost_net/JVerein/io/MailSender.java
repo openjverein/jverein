@@ -265,6 +265,9 @@ public class MailSender
       TreeSet<MailAnhang> anhang)
       throws MessagingException, ApplicationException
   {
+    // Zeilenumbruch vereinheitlichen, damit es kein Mischmasch gibt (zB. durch
+    // Signatur)
+    text = text.replace("\r\n", "\n");
     Message msg = new MimeMessage(session);
     try
     {
