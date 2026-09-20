@@ -88,7 +88,10 @@ public abstract class DruckMailControl extends FilterControl
         .getByKey(settings.getInt(settingsprefix + "ausgabeart.key", 1)));
     ausgabeart.setName("Ausgabe");
     ausgabeart.addListener(event -> {
-      versand.setEnabled(ausgabeart.getValue() != Ausgabeart.MAIL);
+      if (versand != null)
+      {
+        versand.setEnabled(ausgabeart.getValue() != Ausgabeart.MAIL);
+      }
     });
     ausgabeart.addListener(event -> saveFilterSettings());
     return ausgabeart;

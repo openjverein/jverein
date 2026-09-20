@@ -32,6 +32,7 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.gui.control.IMailControl;
+import de.jost_net.JVerein.gui.input.BrowserInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.rmi.Lastschrift;
@@ -41,11 +42,13 @@ import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -66,7 +69,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
 
   private TextInput betreff;
 
-  private TextAreaInput text;
+  private Input text;
 
   private String betreffString;
 
@@ -112,54 +115,64 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
 
     betreffString = control.getBetreffString();
     textString = control.getTxtString();
-    objectslist = control.getDruckMailList();
-    List<Mitglied> empfaengerlist = control.getEmpfaengerList();
 
-    if (mitMitglied && empfaengerlist == null && objectslist == null)
-    {
-      mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
-          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
-      mitglied.addListener(new MitgliedListener());
-      if (mitglied instanceof SelectInput)
-      {
-        ((SelectInput) mitglied).setPleaseChoose("Optional auswählen");
-        ((SelectInput) mitglied).setPreselected(null);
-      }
-      container.addLabelPair("Mitglied", mitglied);
-    }
-    else if (mitMitglied)
-    {
-      List<Mitglied> empfaenger = null;
-      if (empfaengerlist != null)
-      {
-        empfaenger = empfaengerlist;
-      }
-      else if (objectslist != null)
-      {
-        empfaenger = new ArrayList<>(objectslist.keySet());
-      }
-      mitglied = new SelectInput(empfaenger, null);
-      listener = new MitgliedListener();
-      mitglied.addListener(listener);
-      // Bei keinem oder nur einem Eintrag kann man nichts auswählen
-      if (empfaenger == null || empfaenger.size() < 2)
-      {
-        mitglied.disable();
-      }
-      container.addLabelPair("Empfänger", mitglied);
-    }
     try
     {
+      objectslist = control.getDruckMailList();
+
+      List<Mitglied> empfaengerlist = control.getEmpfaengerList();
+
+      if (mitMitglied && empfaengerlist == null && objectslist == null)
+      {
+        mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
+            (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
+        mitglied.addListener(new MitgliedListener());
+        if (mitglied instanceof SelectInput)
+        {
+          ((SelectInput) mitglied).setPleaseChoose("Optional auswählen");
+          ((SelectInput) mitglied).setPreselected(null);
+        }
+        container.addLabelPair("Mitglied", mitglied);
+      }
+      else if (mitMitglied)
+      {
+        List<Mitglied> empfaenger = null;
+        if (empfaengerlist != null)
+        {
+          empfaenger = empfaengerlist;
+        }
+        else if (objectslist != null)
+        {
+          empfaenger = new ArrayList<>(objectslist.keySet());
+        }
+        mitglied = new SelectInput(empfaenger, null);
+        listener = new MitgliedListener();
+        mitglied.addListener(listener);
+        // Bei keinem oder nur einem Eintrag kann man nichts auswählen
+        if (empfaenger == null || empfaenger.size() < 2)
+        {
+          mitglied.disable();
+        }
+        container.addLabelPair("Empfänger", mitglied);
+      }
       betreff = new TextInput(VelocityTool.eval(map, betreffString));
       betreff.setEnabled(false);
       container.addLabelPair("Betreff", betreff);
-      text = new TextAreaInput(VelocityTool.eval(map, textString));
+      if (textString.toLowerCase().contains("<html"))
+      {
+        text = new BrowserInput(VelocityTool.eval(map, textString));
+      }
+      else
+      {
+        text = new TextAreaInput(VelocityTool.eval(map, textString));
+      }
       text.setEnabled(false);
       container.addLabelPair("Text", text);
     }
     catch (ApplicationException e)
     {
       GUI.getStatusBar().setErrorText(e.getMessage());
+      throw new OperationCanceledException();
     }
 
     ButtonArea b = new ButtonArea();
