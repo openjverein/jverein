@@ -19,10 +19,15 @@ package de.jost_net.JVerein.gui.parts;
 import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
@@ -116,6 +121,52 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
       return ctx;
     }
     Table table = (Table) ctx.control;
+
+    // Tooltip für unsichtbaren Spalteninhalt
+    GC gc = new GC(table);
+    final TableItem[] lastItem = { null };
+    int lastColumn[] = { -1 };
+    table.addListener(SWT.Dispose, ev -> gc.dispose());
+    table.addListener(SWT.MouseMove, event -> {
+      TableItem item = table.getItem(new Point(event.x, event.y));
+
+      int columnIndex = -1;
+      if (item != null)
+      {
+        for (int i = 0; i < table.getColumnCount(); i++)
+        {
+          if (item.getBounds(i).contains(event.x, event.y))
+          {
+            columnIndex = i;
+            break;
+          }
+        }
+      }
+
+      // Nur neu berechnen, wenn sich die Zelle geändert hat
+      if (item == lastItem[0] && columnIndex == lastColumn[0])
+      {
+        return;
+      }
+
+      lastItem[0] = item;
+      lastColumn[0] = columnIndex;
+      if (item == null || columnIndex == -1)
+      {
+        table.setToolTipText(null);
+        return;
+      }
+
+      String text = item.getText(columnIndex);
+      if (gc.textExtent(text).x > item.getBounds(columnIndex).width - 4)
+      {
+        table.setToolTipText(text);
+      }
+      else
+      {
+        table.setToolTipText(null);
+      }
+    });
 
     // Die letzte Spalte packen wir nach Titelbreite, falls diese kleiner als
     // der gespeicherte Wert ist. So wird ggf. verhindert, dass eine horizontale
