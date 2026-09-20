@@ -29,7 +29,7 @@ import javax.mail.internet.AddressException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedListeControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -1425,7 +1425,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         it.addFilter(Sollbuchung.T_MITGLIED + " = " + this.getID());
         it.addGroupBy(Sollbuchung.T_MITGLIED);
 
-        Map<Filter, Object> filter = MitgliedControl.control.getFilter();
+        Map<Filter, Object> filter = MitgliedListeControl.control.getFilter();
         if (filter.get(Filter.DIFFERENZ) != null
             && filter.get(Filter.DIFFERENZ) != null)
         {

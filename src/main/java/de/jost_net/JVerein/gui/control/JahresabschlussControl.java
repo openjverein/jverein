@@ -26,13 +26,7 @@ import org.apache.commons.lang.time.DateUtils;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
-import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
-import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.util.AfaUtil;
-import de.jost_net.JVerein.gui.view.JahresabschlussDetailView;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
@@ -43,19 +37,15 @@ import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.PanelButton;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -64,8 +54,6 @@ public class JahresabschlussControl extends KontensaldoControl
 {
 
   private Settings settings;
-
-  private JVereinTablePart jahresabschlussList;
 
   private DateInput datum;
 
@@ -369,41 +357,6 @@ public class JahresabschlussControl extends KontensaldoControl
     }
   }
 
-  @Override
-  public JVereinTablePart getTablePart() throws RemoteException
-  {
-    if (jahresabschlussList != null)
-    {
-      return jahresabschlussList;
-    }
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Jahresabschluss> jahresabschluesse = service
-        .createList(Jahresabschluss.class);
-    jahresabschluesse.setOrder("ORDER BY von desc");
-
-    jahresabschlussList = new JVereinTablePart(jahresabschluesse, null);
-    jahresabschlussList.addColumn("Nr", "id-int");
-    jahresabschlussList.addColumn("Von", "von",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    jahresabschlussList.addColumn("Bis", "bis",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    jahresabschlussList.addColumn("Datum", "datum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    jahresabschlussList.addColumn("Name", "name");
-    jahresabschlussList
-        .setContextMenu(new JahresabschlussMenu(jahresabschlussList));
-    jahresabschlussList.setAction(
-        new EditAction(JahresabschlussDetailView.class, jahresabschlussList));
-    VorZurueckControl.setObjektListe(null, null);
-    return jahresabschlussList;
-  }
-
-  public JVereinTablePart getSaldoList() throws RemoteException
-  {
-    // TablePart von Kontosaldo verwenden
-    return super.getTablePart();
-  }
-
   /**
    * Infotext bei Fehlenden Angaben bestimmen.
    * 
@@ -471,59 +424,21 @@ public class JahresabschlussControl extends KontensaldoControl
     return text;
   }
 
-  public PanelButton getSpaltenDetailPanelButton()
-  {
-    return new PanelButton("document-properties.png", context -> {
-      try
-      {
-        new TabelleSpaltenAuswahlDialog(getSaldoList()).open();
-      }
-      catch (OperationCanceledException | ApplicationException e)
-      {
-        throw e;
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
-        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
-      }
-    }, "Spalten auswählen");
-  }
-
-  public PanelButton exportDetailButton(ExportArt art)
-      throws ApplicationException
-  {
-    if (saldoList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          saldoList.export(
-              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_TITEL, this),
-              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_SUBTITEL, this),
-              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_DATEINAME, this),
-              art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
-  }
-
   @Override
   protected String getTableTitle()
   {
-    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL);
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_TITEL, this);
   }
 
   @Override
   protected String getTableSubtitle()
   {
-    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL);
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_SUBTITEL, this);
   }
 
   @Override
   protected String getTableDateiname()
   {
-    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME);
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_DATEINAME, this);
   }
 }

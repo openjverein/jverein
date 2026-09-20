@@ -31,38 +31,32 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
 import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
 import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
-import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
-import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
-import de.jost_net.JVerein.gui.formatter.FormularLinkFormatter;
-import de.jost_net.JVerein.gui.formatter.FormularartFormatter;
 import de.jost_net.JVerein.gui.input.FormularInput;
-import de.jost_net.JVerein.gui.menu.FormularMenu;
+import de.jost_net.JVerein.gui.menu.FormularfeldMenu;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.FormularDetailView;
+import de.jost_net.JVerein.gui.view.FormularfeldDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.server.FormularImpl;
 import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.PanelButton;
-import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FormularControl extends FormularPartControl implements Savable
+public class FormularControl extends VorZurueckControl implements Savable
 {
-  private JVereinTablePart formularList;
 
   private TextInput bezeichnung;
 
@@ -82,9 +76,11 @@ public class FormularControl extends FormularPartControl implements Savable
 
   private ButtonRtoL neuButton;
 
-  public FormularControl(AbstractView view, Formular formular)
+  protected JVereinTablePart formularfelderList;
+
+  public FormularControl(AbstractView view)
   {
-    super(view, formular);
+    super(view);
   }
 
   private Formular getFormular()
@@ -349,109 +345,86 @@ public class FormularControl extends FormularPartControl implements Savable
   @Override
   public JVereinTablePart getTablePart() throws RemoteException
   {
-    if (formularList != null)
+    if (formularfelderList != null)
     {
-      return formularList;
+      return formularfelderList;
     }
     DBService service = Einstellungen.getDBService();
-    DBIterator<Formular> formulare = service.createList(Formular.class);
-    formulare.setOrder("ORDER BY art, bezeichnung");
+    DBIterator<Formularfeld> formularfelder = service
+        .createList(Formularfeld.class);
+    formularfelder.addFilter("formular = ?", new Object[] { formular.getID() });
+    formularfelder.setOrder("ORDER BY seite, x, y");
 
-    formularList = new JVereinTablePart(formulare, null);
-    formularList.addColumn("Bezeichnung", "bezeichnung");
-    formularList.addColumn("Art", "art", new FormularartFormatter(), false,
-        Column.ALIGN_LEFT);
-    formularList.addColumn("Fortlaufende Nr.", "zaehler");
-    formularList.addColumn("Verknüpft mit", "formlink",
-        new FormularLinkFormatter());
-    formularList.setContextMenu(new FormularMenu(this, formularList));
-    formularList.setMulti(true);
-    formularList
-        .setAction(new EditAction(FormularDetailView.class, formularList));
-    VorZurueckControl.setObjektListe(null, null);
-    return formularList;
+    formularfelderList = new JVereinTablePart(formularfelder,
+        new EditAction(FormularfeldDetailView.class));
+    formularfelderList.addColumn("Name", "name", o -> {
+      String s = (String) o;
+      if (s.contains("\n"))
+      {
+        return s.substring(0, s.indexOf("\n"));
+      }
+      else
+      {
+        return s;
+      }
+    });
+    formularfelderList.addColumn("Seite", "seite");
+    formularfelderList.addColumn("Von links", "x");
+    formularfelderList.addColumn("Von unten", "y");
+    formularfelderList.addColumn("Schriftart", "font");
+    formularfelderList.addColumn("Schriftgröße", "fontsize");
+    formularfelderList.addColumn("Ausrichtung", "ausrichtung");
+
+    formularfelderList.setContextMenu(new FormularfeldMenu());
+    formularfelderList.removeFeature(FeatureSummary.class);
+    formularfelderList.setMulti(true);
+    return formularfelderList;
   }
 
-  public void refreshFormularTable() throws RemoteException
+  public void refreshTable() throws RemoteException
   {
-    if (formularList != null)
+    formularfelderList.removeAll();
+    GenericIterator<Formularfeld> formularfelder = formular
+        .getFormularfelder(0);
+    while (formularfelder.hasNext())
     {
-      formularList.removeAll();
-      DBIterator<Formular> formulare = Einstellungen.getDBService()
-          .createList(Formular.class);
-      formulare.setOrder("ORDER BY art, bezeichnung");
-      while (formulare.hasNext())
-      {
-        formularList.addItem(formulare.next());
-      }
-      formularList.sort();
+      formularfelderList.addItem(formularfelder.next());
     }
-  }
-
-  public PanelButton exportDetailButton(ExportArt art)
-      throws ApplicationException
-  {
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          if (formularfelderList == null)
-          {
-            throw new ApplicationException(
-                "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-          }
-          String bezeichnung = "";
-          try
-          {
-            bezeichnung = getBezeichnung(false).getValue().toString();
-          }
-          catch (RemoteException e)
-          {
-            Logger.error("Kann Bezeichnung nicht lesen", e);
-          }
-          formularfelderList.export(
-              VorlageUtil.getName(VorlageTyp.FORMULARFELDER_TITEL, bezeichnung),
-              VorlageUtil.getName(VorlageTyp.FORMULARFELDER_SUBTITEL,
-                  bezeichnung),
-              VorlageUtil.getName(VorlageTyp.FORMULARFELDER_DATEINAME,
-                  bezeichnung),
-              art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
-  }
-
-  public PanelButton getDetailSpaltenPanelButton()
-  {
-    return new PanelButton("document-properties.png", context -> {
-      try
-      {
-        new TabelleSpaltenAuswahlDialog(getFormularfeldList()).open();
-      }
-      catch (OperationCanceledException | ApplicationException e)
-      {
-        throw e;
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
-        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
-      }
-    }, "Spalten auswählen");
+    formularfelderList.sort();
   }
 
   @Override
   protected String getTableTitle()
   {
-    return VorlageUtil.getName(VorlageTyp.FORMULARE_TITEL);
+    return VorlageUtil.getName(VorlageTyp.FORMULARFELDER_TITEL,
+        getBezeichnungString());
   }
 
   @Override
   protected String getTableSubtitle()
   {
-    return VorlageUtil.getName(VorlageTyp.FORMULARE_SUBTITEL);
+    return VorlageUtil.getName(VorlageTyp.FORMULARFELDER_SUBTITEL,
+        getBezeichnungString());
   }
 
   @Override
   protected String getTableDateiname()
   {
-    return VorlageUtil.getName(VorlageTyp.FORMULARE_DATEINAME);
+    return VorlageUtil.getName(VorlageTyp.FORMULARFELDER_DATEINAME,
+        getBezeichnungString());
+  }
+
+  private String getBezeichnungString()
+  {
+    String bezeichnung = "";
+    try
+    {
+      bezeichnung = getBezeichnung(false).getValue().toString();
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Kann Bezeichnung nicht lesen", e);
+    }
+    return bezeichnung;
   }
 }

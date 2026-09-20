@@ -23,5 +23,4 @@ Kontakt
 
 - Web: https://openjverein.github.io
 - eMail:
-    - Heiner Jostkleigrewe heiner(at)jost-net.de
-    - Philipp Schönberger mail(at)phschoen.de
+    - openjverein(at)posteo.de

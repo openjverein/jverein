@@ -21,7 +21,7 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
 import de.jost_net.JVerein.gui.action.FormularDuplizierenAction;
 import de.jost_net.JVerein.gui.action.FormularExportAction;
-import de.jost_net.JVerein.gui.control.FormularControl;
+import de.jost_net.JVerein.gui.control.FormularListeControl;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.FormularDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -37,7 +37,7 @@ public class FormularMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Formulare.
    */
-  public FormularMenu(FormularControl control, JVereinTablePart part)
+  public FormularMenu(FormularListeControl control, JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(FormularDetailView.class, part), "text-x-generic.png"));

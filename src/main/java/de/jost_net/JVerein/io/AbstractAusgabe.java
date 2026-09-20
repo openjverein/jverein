@@ -73,24 +73,12 @@ public abstract class AbstractAusgabe
       boolean versanddatum)
       throws IOException, ApplicationException, DocumentException
   {
-    String extension = "";
-    switch (art)
-    {
-      case PDF:
-      case PDF_EINZELN:
-        extension = "pdf";
-        break;
-      case MAIL:
-        extension = "zip";
-        break;
-    }
     // Wenn nur ein Dokument gedruck wird, immer PDF verwenden, so dass
     // der Dateiname und nicht der Ordner gewählt wird
     if (art == Ausgabeart.PDF_EINZELN && list.size() == 1)
     {
       art = Ausgabeart.PDF;
     }
-
     if (!checkVersendet(list, art))
     {
       return;
@@ -102,13 +90,26 @@ public abstract class AbstractAusgabe
       dateinameContext = list.get(0);
     }
 
-    File file = getDateiAuswahl(extension,
-        getDateiname(dateinameContext) + "." + extension,
-        art == Ausgabeart.PDF_EINZELN);
-    if (file == null)
+    String extension = "";
+    File file = null;
+    switch (art)
     {
-      return;
+      case PDF:
+      case PDF_EINZELN:
+        file = getDateiAuswahl("pdf", getDateiname(dateinameContext) + ".pdf",
+            art == Ausgabeart.PDF_EINZELN);
+        if (file == null)
+        {
+          return;
+        }
+        break;
+      case MAIL:
+        file = File.createTempFile(getDateiname(dateinameContext) + ".zip",
+            ".zip");
+        file.deleteOnExit();
+        break;
     }
+
     FormularAufbereitung formularaufbereitung = null;
     switch (art)
     {
@@ -156,6 +157,7 @@ public abstract class AbstractAusgabe
           {
             String name = getZipDateiname(object);
             File f = File.createTempFile(name, ".pdf");
+            f.deleteOnExit();
 
             formularaufbereitung = new FormularAufbereitung(f, pdfa, encrypt);
             createPDF(getFormular(object), formularaufbereitung, f, object);

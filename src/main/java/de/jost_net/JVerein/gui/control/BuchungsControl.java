@@ -1128,6 +1128,9 @@ public class BuchungsControl extends FilterControl implements Savable
     {
       buchungsList.addColumn("Spendenbescheinigung", "spendenbescheinigung");
     }
+    buchungsList.addColumn(
+        new Column("kommentar", "Kommentar", v -> v.toString().split("\n")[0]),
+        false);
     buchungsList.setMulti(true);
     buchungsList.setContextMenu(new BuchungMenu(this, buchungsList));
     buchungsList.setRememberState(true);
