@@ -53,7 +53,14 @@ public class SplitbuchungsContainer
       throws RemoteException, ApplicationException
   {
     anzahl = bl.length;
-    buchungen = bl;
+    if (anzahl == 1)
+    {
+      buchungen = null;
+    }
+    else
+    {
+      buchungen = bl;
+    }
     initiate(bl[0]);
   }
 
