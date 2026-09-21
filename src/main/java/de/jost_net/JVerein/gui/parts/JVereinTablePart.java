@@ -38,7 +38,6 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.system.OperationCanceledException;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -271,12 +270,6 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   public String getTableName()
   {
     return tableName;
-  }
-
-  @Override
-  public Settings getSettings()
-  {
-    return settings;
   }
 
   @Override
