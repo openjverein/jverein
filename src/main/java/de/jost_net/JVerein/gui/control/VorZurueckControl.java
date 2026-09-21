@@ -110,7 +110,7 @@ public abstract class VorZurueckControl extends AbstractJVereinControl
       {
         //
       }
-    }, null, false, "go-previous.png", "CTRL+ARROW_LEFT")
+    }, null, false, "go-previous.png", "CTRL+SHIFT+ARROW_LEFT")
 
     {
       @Override
@@ -158,7 +158,7 @@ public abstract class VorZurueckControl extends AbstractJVereinControl
       {
         //
       }
-    }, null, false, "go-next.png", "CTRL+ARROW_RIGHT")
+    }, null, false, "go-next.png", "CTRL+SHIFT+ARROW_RIGHT")
 
     {
       @Override
