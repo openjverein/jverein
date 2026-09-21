@@ -13,6 +13,8 @@ import de.willuhn.util.ApplicationException;
 
 public class ShortcutListener implements Listener
 {
+  private static Object SHORTCUT_HANDLED = new Object();
+
   private String shortcut;
 
   private Object context;
@@ -44,17 +46,20 @@ public class ShortcutListener implements Listener
           || (stroke.getNaturalKey() == SWT.ARROW_LEFT && event.button == 4)
           || (stroke.getNaturalKey() == SWT.ARROW_RIGHT && event.button == 5))
       {
-        GUI.getDisplay().syncExec(() -> {
-          try
-          {
-            action.handleAction(context);
-          }
-          catch (ApplicationException e)
-          {
-            GUI.getStatusBar().setErrorText(e.getMessage());
-          }
-        });
-        event.doit = false;
+        // Shortcut dar nur einmal ausgeführt werden
+        if (event.data == SHORTCUT_HANDLED)
+        {
+          return;
+        }
+        event.data = SHORTCUT_HANDLED;
+        try
+        {
+          action.handleAction(context);
+        }
+        catch (ApplicationException e)
+        {
+          GUI.getStatusBar().setErrorText(e.getMessage());
+        }
       }
     }
   }
