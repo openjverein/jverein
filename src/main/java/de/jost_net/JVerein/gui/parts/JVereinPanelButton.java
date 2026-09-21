@@ -3,6 +3,7 @@ package de.jost_net.JVerein.gui.parts;
 import java.rmi.RemoteException;
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.bindings.keys.SWTKeySupport;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
@@ -54,7 +55,8 @@ public class JVereinPanelButton extends PanelButton
       String text = getControl().getToolTipText() == null ? ""
           : getControl().getToolTipText();
       KeyStroke stroke = SWTUtil.getKeyStroke(shortcut);
-      getControl().setToolTipText(text + " (" + stroke.format() + ")");
+      getControl().setToolTipText(text + " ("
+          + SWTKeySupport.getKeyFormatterForPlatform().format(stroke) + ")");
     }
   }
 }

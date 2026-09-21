@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.rmi.Lesefeld;
@@ -54,7 +55,6 @@ import de.jost_net.JVerein.rmi.MitgliedDokument;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.Button;
@@ -359,29 +359,22 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     buttons.addButton("Mail", new MitgliedMailSendenAction(),
         getCurrentObject(), false, "envelope-open.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
+    buttons.addButton(new SaveButton(o -> {
+      try
       {
-        try
-        {
-          control.handleStore();
-          GUI.getStatusBar().setSuccessText("Gespeichert");
-          funktion = 'B';
-          control.getMitgliedsnummer()
-              .setValue(((Mitglied) getCurrentObject()).getID());
-          zeichneUeberschrift();
-          lesefeldControl.updateLesefeldMitgliedList(control.getMitglied(),
-              true);
-        }
-        catch (RemoteException | ApplicationException e)
-        {
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
+        control.handleStore();
+        GUI.getStatusBar().setSuccessText("Gespeichert");
+        funktion = 'B';
+        control.getMitgliedsnummer()
+            .setValue(((Mitglied) getCurrentObject()).getID());
+        zeichneUeberschrift();
+        lesefeldControl.updateLesefeldMitgliedList(control.getMitglied(), true);
       }
-    }, null, true, "document-save.png");
+      catch (RemoteException | ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+    }));
 
     buttons.addButton(new ButtonRtoL("Speichern und neu", context -> {
       try
@@ -402,7 +395,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
-    }, null, false, "go-next.png")
+    }, null, false, "go-next.png", "CTRL+SHIFT+S")
     {
       @Override
       public void paint(Composite parent) throws RemoteException

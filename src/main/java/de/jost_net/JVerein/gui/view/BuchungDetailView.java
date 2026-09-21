@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
@@ -68,7 +69,7 @@ public class BuchungDetailView extends AbstractDetailView
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
 
-    ButtonRtoL saveButton = new ButtonRtoL("Speichern", context -> {
+    ButtonRtoL saveButton = new SaveButton(o -> {
       try
       {
         control.buchungSpeichern();
@@ -83,7 +84,7 @@ public class BuchungDetailView extends AbstractDetailView
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
-    }, null, true, "document-save.png");
+    });
     saveButton.setEnabled(editable);
     buttons.addButton(saveButton);
 
@@ -113,7 +114,7 @@ public class BuchungDetailView extends AbstractDetailView
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
-    }, null, false, "go-next.png");
+    }, null, false, "go-next.png", "CTRL+SHIFT+S");
     saveNextButton.setEnabled(editable);
     if (control.getBuchung().isNewObject())
     {

@@ -18,8 +18,8 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -89,15 +89,7 @@ public class EinstellungenAllgemeinView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons
         .addButton(new HelpButton(DokumentationUtil.EINSTELLUNGEN_ALLGEMEIN));
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStoreAllgemein();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(o -> control.handleStoreAllgemein()));
     buttons.paint(this.getParent());
   }
 }

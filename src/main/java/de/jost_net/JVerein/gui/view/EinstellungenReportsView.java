@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -52,9 +53,7 @@ public class EinstellungenReportsView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(new HelpButton(DokumentationUtil.EINSTELLUNGEN_REPORTS));
-    buttons.addButton("Speichern", c -> {
-      control.handleStoreReports();
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(o -> control.handleStoreReports()));
     buttons.paint(this.getParent());
   }
 }

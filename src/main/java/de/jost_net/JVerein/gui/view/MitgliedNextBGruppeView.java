@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.control.MitgliedNextBGruppeControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -45,8 +46,7 @@ public class MitgliedNextBGruppeView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(new HelpButton(DokumentationUtil.MITGLIED));
-    buttons.addButton("Speichern", control.getSpeichernAction(), null, false,
-        "document-save.png");
+    buttons.addButton(new SaveButton(control.getSpeichernAction()));
     buttons.paint(getParent());
   }
 }

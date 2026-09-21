@@ -23,8 +23,8 @@ import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.InfoPanel;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -90,14 +90,7 @@ public class JahresabschlussDetailView extends AbstractView
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
-    ButtonRtoL save = new ButtonRtoL("Speichern", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    ButtonRtoL save = new SaveButton(o -> control.handleStore());
     save.setEnabled(control.isSaveEnabled());
     buttons.addButton(save);
     buttons.paint(this.getParent());

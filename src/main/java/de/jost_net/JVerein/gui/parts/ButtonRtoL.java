@@ -11,6 +11,7 @@ package de.jost_net.JVerein.gui.parts;
 import java.rmi.RemoteException;
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.bindings.keys.SWTKeySupport;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
@@ -102,7 +103,8 @@ public class ButtonRtoL extends Button implements Part
       if (button.getToolTipText() == null || button.getToolTipText().isBlank())
       {
         KeyStroke stroke = SWTUtil.getKeyStroke(shortcut);
-        button.setToolTipText(title + " (" + stroke.format() + ")");
+        button.setToolTipText(title + " ("
+            + SWTKeySupport.getKeyFormatterForPlatform().format(stroke) + ")");
       }
     }
   }

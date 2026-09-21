@@ -18,8 +18,8 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -79,15 +79,7 @@ public class EinstellungenMailView extends AbstractView
     buttons.addButton("Testmail versenden", context -> {
       control.testMail();
     }, null, false, "envelope-open.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStoreMail();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(o -> control.handleStoreMail()));
     buttons.paint(this.getParent());
   }
 }

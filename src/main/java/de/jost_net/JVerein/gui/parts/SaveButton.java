@@ -18,6 +18,7 @@
 package de.jost_net.JVerein.gui.parts;
 
 import de.jost_net.JVerein.gui.control.Savable;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
@@ -26,15 +27,10 @@ import de.willuhn.util.ApplicationException;
  */
 public class SaveButton extends ButtonRtoL
 {
-  /**
-   * Erstellt den Speichern Button
-   * 
-   * @param control
-   *          Das control
-   */
+
   public SaveButton(Savable control)
   {
-    super("Speichern", context -> {
+    this(context -> {
       try
       {
         control.handleStore();
@@ -44,6 +40,17 @@ public class SaveButton extends ButtonRtoL
       {
         GUI.getStatusBar().setErrorText(ae.getMessage());
       }
-    }, null, true, "document-save.png", "CTRL+S");
+    });
+  }
+
+  /**
+   * Erstellt den Speichern Button
+   * 
+   * @param control
+   *          Das control
+   */
+  public SaveButton(Action action)
+  {
+    super("Speichern", action, null, true, "document-save.png", "CTRL+S");
   }
 }

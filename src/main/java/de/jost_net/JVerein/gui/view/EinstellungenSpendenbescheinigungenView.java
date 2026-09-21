@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -60,9 +61,8 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(
         new HelpButton(DokumentationUtil.EINSTELLUNGEN_SPENDENBESCHEINIGUNGEN));
-    buttons.addButton("Speichern",
-        c -> control.handleStoreSpendenbescheinigungen(), null, true,
-        "document-save.png");
+    buttons.addButton(
+        new SaveButton(o -> control.handleStoreSpendenbescheinigungen()));
     buttons.paint(this.getParent());
   }
 }
