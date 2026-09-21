@@ -353,6 +353,12 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     dropTarget.addDropListener(new DropTargetAdapter()
     {
       @Override
+      public void dragOver(DropTargetEvent event)
+      {
+        event.detail = DND.DROP_MOVE;
+      }
+
+      @Override
       public void drop(DropTargetEvent event)
       {
         int targetIndex;
