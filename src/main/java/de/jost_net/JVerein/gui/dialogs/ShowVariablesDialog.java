@@ -91,7 +91,7 @@ public class ShowVariablesDialog extends AbstractJVereinDialog<Object>
     }
     tab = new JVereinTablePart(list, getCopyAction());
     tab.addColumn("Name", "name");
-    tab.addColumn("Wert", "wert", v -> v.toString().split("\n")[0]);
+    tab.addColumn("Wert", "wert");
     tab.paint(parent);
 
     ButtonArea buttons = new ButtonArea();
@@ -174,7 +174,13 @@ public class ShowVariablesDialog extends AbstractJVereinDialog<Object>
       }
       else if (arg0.equals("wert"))
       {
-        return wert;
+        // Windows unterstützt nich mehrzeilige Spalten
+        if (System.getProperty("os.name").toLowerCase().indexOf("windows") != -1
+            && wert.toString().contains("\n"))
+        {
+          return wert.toString().split("\n")[0] + "...";
+        }
+        return wert.toString();
       }
       return null;
     }
