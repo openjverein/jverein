@@ -62,7 +62,7 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
       tableMap.put(table, null);
     }
     setTitle("Spalten auswählen");
-    setSize(400, SWT.DEFAULT);
+    setSize(400, 500);
   }
 
   @SuppressWarnings("unchecked")
