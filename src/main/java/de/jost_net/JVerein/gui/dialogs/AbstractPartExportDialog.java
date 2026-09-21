@@ -650,7 +650,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   {
     try
     {
-      for (ExportSpalte e : (List<ExportSpalte>) spaltenList.getItems(true))
+      for (ExportSpalte e : (List<ExportSpalte>) spaltenList.getItems(false))
       {
         Item c = getColumn(e.getColumn().getName());
         int breite = 0;
