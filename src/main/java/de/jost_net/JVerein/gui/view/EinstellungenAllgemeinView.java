@@ -44,7 +44,7 @@ public class EinstellungenAllgemeinView extends AbstractView
         false);
     ColumnLayout cols1 = new ColumnLayout(verein.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cols1.getComposite());
-    left.addLabelPair("Name", control.getName(true));
+    left.addLabelPair("Name", control.getName());
     left.addLabelPair("Straße", control.getStrasse());
     left.addLabelPair("PLZ", control.getPlz());
     left.addLabelPair("Ort", control.getOrt());

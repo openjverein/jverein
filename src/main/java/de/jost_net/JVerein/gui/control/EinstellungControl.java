@@ -437,7 +437,7 @@ public class EinstellungControl extends AbstractControl
     settings.setStoreWhenRead(true);
   }
 
-  public Input getName(boolean withFocus) throws RemoteException
+  public Input getName() throws RemoteException
   {
     if (name != null)
     {
@@ -446,10 +446,6 @@ public class EinstellungControl extends AbstractControl
     name = new TextInput((String) Einstellungen.getEinstellung(Property.NAME),
         70);
     name.setMandatory(true);
-    if (withFocus)
-    {
-      name.focus();
-    }
     return name;
   }
 
@@ -2456,7 +2452,7 @@ public class EinstellungControl extends AbstractControl
     {
       DBTransaction.starten();
       Einstellungen.setEinstellung(Property.NAME,
-          (String) getName(false).getValue());
+          (String) getName().getValue());
       Einstellungen.setEinstellung(Property.STRASSE,
           (String) getStrasse().getValue());
       Einstellungen.setEinstellung(Property.PLZ, (String) getPlz().getValue());

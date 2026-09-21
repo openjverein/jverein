@@ -298,7 +298,7 @@ public class BuchungsControl extends FilterControl implements Savable
     return umsatzid;
   }
 
-  public DialogInput getKonto(boolean withFocus) throws RemoteException
+  public DialogInput getKonto() throws RemoteException
   {
     if (konto != null)
     {
@@ -307,10 +307,6 @@ public class BuchungsControl extends FilterControl implements Savable
     String kontoid = getVorauswahlKontoId();
     konto = new KontoauswahlInput(getBuchung().getKonto())
         .getKontoAuswahl(false, kontoid, false, true, kontenfilter);
-    if (withFocus)
-    {
-      konto.focus();
-    }
     konto.setMandatory(true);
     konto.setEnabled(editable);
     return konto;
@@ -931,7 +927,7 @@ public class BuchungsControl extends FilterControl implements Savable
   {
     try
     {
-      Konto konto = (Konto) getKonto(false).getValue();
+      Konto konto = (Konto) getKonto().getValue();
       if (konto == null)
       {
         throw new ApplicationException(
