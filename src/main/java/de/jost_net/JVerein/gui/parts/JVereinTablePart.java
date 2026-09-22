@@ -352,15 +352,26 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     dropTarget.setTransfer(TextTransfer.getInstance());
     dropTarget.addDropListener(new DropTargetAdapter()
     {
+
       @Override
-      public void dragOver(DropTargetEvent event)
+      public void dragEnter(DropTargetEvent event)
       {
         event.detail = DND.DROP_MOVE;
       }
 
       @Override
+      public void dragOver(DropTargetEvent event)
+      {
+        event.detail = DND.DROP_MOVE;
+        event.feedback = DND.FEEDBACK_INSERT_BEFORE;
+      }
+
+      @Override
       public void drop(DropTargetEvent event)
       {
+        TableItem sourceItem = table.getSelection()[0];
+        int sourceIndex = table.indexOf(sourceItem);
+
         int targetIndex;
         if (event.item == null)
         {
@@ -370,10 +381,25 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
         {
           targetIndex = table.indexOf((TableItem) event.item);
         }
+
+        // Wird ein Element nach unten verschoben, verschiebt sich
+        // der Zielindex nach dem Entfernen um eine Position nach links.
+        if (sourceIndex < targetIndex)
+        {
+          targetIndex--;
+        }
+
+        // Nicht auf dieselbe Position verschieben
+        if (sourceIndex == targetIndex)
+        {
+          return;
+        }
+
         try
         {
-          Object o = table.getSelection()[0].getData();
-          boolean checked = table.getSelection()[0].getChecked();
+          Object o = sourceItem.getData();
+          boolean checked = sourceItem.getChecked();
+
           JVereinTablePart.this.removeItem(o);
           JVereinTablePart.this.addItem(o, targetIndex, checked);
         }
