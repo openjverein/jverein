@@ -366,7 +366,7 @@ public class KontoControl extends FilterControl implements Savable
     }
 
     kontenList = new JVereinTablePart(getKonten(), null);
-    kontenList.addColumn(new NaturalOrderColumn("Nummer", "nummer"));
+    kontenList.addColumn(new NaturalOrderColumn("nummer", "Nummer"));
     kontenList.addColumn("Bezeichnung", "bezeichnung");
     kontenList.addColumn("Kontoart", "kontoart", new Formatter()
     {

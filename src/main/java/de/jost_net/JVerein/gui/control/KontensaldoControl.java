@@ -78,7 +78,7 @@ public class KontensaldoControl extends AbstractSaldoControl
         return;
       }
     };
-    saldoList.addColumn(new NaturalOrderColumn("Kontonummer", KONTO_NUMMER,
+    saldoList.addColumn(new NaturalOrderColumn(KONTO_NUMMER, "Kontonummer",
         null, false, Column.ALIGN_RIGHT));
     saldoList.addColumn("Bezeichnung", GRUPPE);
     saldoList.addColumn("Anfangsbestand", ANFANGSBESTAND,
