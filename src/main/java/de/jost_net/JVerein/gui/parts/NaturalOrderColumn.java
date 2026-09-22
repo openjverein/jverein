@@ -38,8 +38,8 @@ public class NaturalOrderColumn extends Column
         int lend = numberEnd(left, l);
         int rend = numberEnd(right, r);
 
-        int result = Integer.compare(Integer.parseInt(left.substring(l, lend)),
-            Integer.parseInt(right.substring(r, rend)));
+        int result = compareNumbers(left.substring(l, lend),
+            right.substring(r, rend));
 
         if (result != 0)
           return result;
@@ -73,5 +73,34 @@ public class NaturalOrderColumn extends Column
       end++;
 
     return end;
+  }
+
+  private static int compareNumbers(String left, String right)
+  {
+    int l = skipLeadingZeros(left);
+    int r = skipLeadingZeros(right);
+
+    int leftLength = left.length() - l;
+    int rightLength = right.length() - r;
+
+    if (leftLength != rightLength)
+      return Integer.compare(leftLength, rightLength);
+
+    int result = left.substring(l).compareTo(right.substring(r));
+
+    if (result != 0)
+      return result;
+
+    return Integer.compare(left.length(), right.length());
+  }
+
+  private static int skipLeadingZeros(String value)
+  {
+    int i = 0;
+
+    while (i < value.length() - 1 && value.charAt(i) == '0')
+      i++;
+
+    return i;
   }
 }
