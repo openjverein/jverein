@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.TabFolder;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.Button;
@@ -126,8 +126,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
   @Override
   protected Button getHilfeButton()
   {
-    return new Button("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIEDSUCHE, false, "question-circle.png");
+    return new HelpButton(DokumentationUtil.MITGLIEDSUCHE);
   }
 
   @Override

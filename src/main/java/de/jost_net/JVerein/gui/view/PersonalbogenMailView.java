@@ -22,12 +22,12 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.PersonalbogenControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
@@ -145,8 +145,7 @@ public class PersonalbogenMailView extends AbstractView
     map = new AllgemeineMap().getMap(map);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.PERSONALBOGEN, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.PERSONALBOGEN));
     buttons.addButton(new Button("Mail-Vorlage",
         new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
     buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),

@@ -20,11 +20,11 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
@@ -71,20 +71,11 @@ public class EinstellungenRechnungenView extends AbstractView
     map = new AllgemeineMap().getMap(map);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_RECHNUNGEN, false,
-        "question-circle.png");
+    buttons
+        .addButton(new HelpButton(DokumentationUtil.EINSTELLUNGEN_RECHNUNGEN));
     buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
         control, false, "bookmark.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStoreRechnungen();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(o -> control.handleStoreRechnungen()));
     buttons.paint(this.getParent());
   }
 }

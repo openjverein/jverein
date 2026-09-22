@@ -42,7 +42,7 @@ import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SEPALandInput;
 import de.jost_net.JVerein.gui.input.SEPALandObject;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
-import de.jost_net.JVerein.gui.navigation.MyItem;
+import de.jost_net.JVerein.gui.navigation.JVereinNavigationItem;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
@@ -437,7 +437,7 @@ public class EinstellungControl extends AbstractControl
     settings.setStoreWhenRead(true);
   }
 
-  public Input getName(boolean withFocus) throws RemoteException
+  public Input getName() throws RemoteException
   {
     if (name != null)
     {
@@ -446,10 +446,6 @@ public class EinstellungControl extends AbstractControl
     name = new TextInput((String) Einstellungen.getEinstellung(Property.NAME),
         70);
     name.setMandatory(true);
-    if (withFocus)
-    {
-      name.focus();
-    }
     return name;
   }
 
@@ -2456,7 +2452,7 @@ public class EinstellungControl extends AbstractControl
     {
       DBTransaction.starten();
       Einstellungen.setEinstellung(Property.NAME,
-          (String) getName(false).getValue());
+          (String) getName().getValue());
       Einstellungen.setEinstellung(Property.STRASSE,
           (String) getStrasse().getValue());
       Einstellungen.setEinstellung(Property.PLZ, (String) getPlz().getValue());
@@ -2623,7 +2619,7 @@ public class EinstellungControl extends AbstractControl
     {
       Method reload = Navigation.class.getMethod("reload",
           NavigationItem.class);
-      MyItem item = new MyItem(null, "", null)
+      JVereinNavigationItem item = new JVereinNavigationItem(null, "", null)
       {
         @Override
         public String getID()

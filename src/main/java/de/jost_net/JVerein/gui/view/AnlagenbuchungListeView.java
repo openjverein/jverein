@@ -25,11 +25,12 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AnlagenbuchungExportAction;
 import de.jost_net.JVerein.gui.action.AnlagenbuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
@@ -117,8 +118,7 @@ public class AnlagenbuchungListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ANLAGENBUCHUNGEN, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.ANLAGENBUCHUNGEN));
     if (!control.getGeldkonto() && !(Boolean) Einstellungen
         .getEinstellung(Property.AFAINJAHRESABSCHLUSS))
       buttons.addButton(control.getAfaButton());
@@ -126,8 +126,7 @@ public class AnlagenbuchungListeView extends AbstractView
         "file-import.png");
     buttons.addButton(new Button("Export", new AnlagenbuchungExportAction(),
         control, false, "document-save.png"));
-    buttons.addButton("Neu", new BuchungNeuAction(control), control, false,
-        "document-new.png");
+    buttons.addButton(new NewButton(new BuchungNeuAction(control)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

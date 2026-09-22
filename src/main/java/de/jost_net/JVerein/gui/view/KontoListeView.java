@@ -16,11 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.HibiscusKontenImportAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.KontoControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.AbstractView;
@@ -61,12 +62,11 @@ public class KontoListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.KONTEN, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.KONTEN));
     buttons.addButton("Hibiscus-Konten-Import",
         new HibiscusKontenImportAction(control), null, false, "walking.png");
-    buttons.addButton("Neu", new NewAction(KontoDetailView.class, Konto.class),
-        null, false, "document-new.png");
+    buttons.addButton(
+        new NewButton(new NewAction(KontoDetailView.class, Konto.class)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

@@ -16,10 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
@@ -59,18 +59,9 @@ public class EinstellungenBuchfuehrungView extends AbstractView
         control.getSplitPositionZweck());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_BUCHFUEHRUNG, false,
-        "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStoreBuchfuehrung();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(
+        new HelpButton(DokumentationUtil.EINSTELLUNGEN_BUCHFUEHRUNG));
+    buttons.addButton(new SaveButton(o -> control.handleStoreBuchfuehrung()));
     buttons.paint(this.getParent());
   }
 }

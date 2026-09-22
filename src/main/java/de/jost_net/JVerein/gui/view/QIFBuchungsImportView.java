@@ -16,11 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.QIFDateiEinlesenAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.QIFBuchungsImportControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -78,8 +78,7 @@ public class QIFBuchungsImportView extends AbstractView
         .paint(poslistGroup.getComposite());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.QIFIMPORT, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.QIFIMPORT));
     buttons.addButton("Import", new QIFDateiEinlesenAction(), null, false,
         "file-import.png");
     buttons.addButton("Import löschen",
