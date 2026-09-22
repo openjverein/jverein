@@ -28,13 +28,13 @@ import org.eclipse.swt.widgets.TabFolder;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.PreNotificationControl;
 import de.jost_net.JVerein.gui.control.PreNotificationControl.TYP;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
@@ -106,8 +106,7 @@ public class PreNotificationMailView extends AbstractView
     map = new AllgemeineMap().getMap(map);
 
     ButtonArea buttons1 = new ButtonArea();
-    buttons1.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");
+    buttons1.addButton(new HelpButton(DokumentationUtil.PRENOTIFICATION));
     buttons1.addButton(new Button("Mail-Vorlage",
         new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
     buttons1.addButton("Variablen anzeigen",
@@ -134,8 +133,7 @@ public class PreNotificationMailView extends AbstractView
     grtab2.addInput(control.getVerwendungszweck());
     grtab2.addLabelPair("Versanddatum setzen", control.getCt1Versand());
     ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");
+    buttons2.addButton(new HelpButton(DokumentationUtil.PRENOTIFICATION));
     buttons2.addButton("Verwendungszweck Variablen anzeigen",
         new InsertVariableDialogAction(ct1map), control, false, "bookmark.png");
     buttons2.addButton(control.getDruckMailMitgliederButton(

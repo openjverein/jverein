@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageErledigungAction;
@@ -27,7 +26,6 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
@@ -51,8 +49,7 @@ public class WiedervorlageMenu extends ContextMenu
         new WiedervorlageErledigungAction(), "check.png"));
     addItem(new WiedervorlageErledigtItem("Erledigung löschen",
         new WiedervorlageErledigungDeleteAction(), "user-trash-full.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
-        "user-trash-full.png"));
+    addItem(new DeleteMenueItem());
     if (table != null)
     {
       addItem(ContextMenuItem.SEPARATOR);

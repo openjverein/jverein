@@ -353,6 +353,11 @@ public class KontoControl extends FilterControl implements Savable
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
+    catch (ApplicationException e)
+    {
+      DBTransaction.rollback();
+      throw e;
+    }
   }
 
   @Override

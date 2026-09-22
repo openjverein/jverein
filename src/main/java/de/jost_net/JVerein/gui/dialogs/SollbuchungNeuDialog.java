@@ -22,10 +22,10 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
 import de.jost_net.JVerein.gui.input.MitgliedSearchInput;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
@@ -146,9 +146,8 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     }
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
-        "question-circle.png");
+    buttons
+        .addButton(new HelpButton(DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT));
 
     // Speichern und zurück zum View
     buttons.addButton("Speichern", new Action()

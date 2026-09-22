@@ -16,9 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.FelddefinitionControl;
@@ -44,8 +44,7 @@ public class ZusatzfeldDetailView extends AbstractDetailView
     group.addLabelPair("Länge", control.getLaenge());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.FELDDEFINITIONEN, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.FELDDEFINITIONEN));
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());

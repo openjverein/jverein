@@ -244,6 +244,12 @@
       <version>${jaxb.api.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+	   <groupId>org.eclipse.platform</groupId>
+    	<artifactId>org.eclipse.jface</artifactId>
+	    <version>3.31.0</version>
+	    <scope>provided</scope>
+	</dependency>
 
     <!-- Compile-Zeit-Abhaengigkeiten, die zur Laufzeit vom Hibiscus-Plugin bereitgestellt werden. -->
     <dependency>

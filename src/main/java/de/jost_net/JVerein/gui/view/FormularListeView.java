@@ -16,11 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularImportAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.FormularListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -39,13 +40,11 @@ public class FormularListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.FORMULARE, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.FORMULARE));
     buttons.addButton("Importieren", new FormularImportAction(), null, false,
         "file-import.png");
-    buttons.addButton("Neu",
-        new NewAction(FormularDetailView.class, Formular.class), null, false,
-        "document-new.png");
+    buttons.addButton(
+        new NewButton(new NewAction(FormularDetailView.class, Formular.class)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

@@ -20,93 +20,43 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.swt.graphics.Image;
-
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Item;
-import de.willuhn.jameica.gui.NavigationItem;
-import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.logging.Logger;
 
 /**
  */
-public class MyItem implements NavigationItem
+public class AbstractItem implements Item
 {
 
-  private NavigationItem parent = null;
+  private Item parent = null;
 
   private Action action;
 
-  private String navitext;
+  private String text;
 
   private ArrayList<Item> children;
 
-  private String icon;
-
   private boolean enabled = true;
 
-  public MyItem(NavigationItem parent, String navitext, Action action)
-  {
-    this(parent, navitext, action, null);
-  }
+  protected String icon;
 
-  public MyItem(NavigationItem parent, String navitext, Action action,
-      String icon)
+  public AbstractItem(Item parent, String text, Action action, String icon)
   {
     this.parent = parent;
     this.action = action;
-    this.navitext = navitext;
+    this.text = text;
     this.icon = icon;
     children = new ArrayList<>();
   }
 
   /**
-   * @see de.willuhn.jameica.gui.NavigationItem#getIconClose()
-   */
-  @Override
-  public Image getIconClose()
-  {
-    if (action == null)
-    {
-      return SWTUtil.getImage(icon != null ? icon : "folder.png");
-    }
-    else
-    {
-      return SWTUtil.getImage(icon != null ? icon : "page.gif");
-    }
-  }
-
-  /**
-   * @see de.willuhn.jameica.gui.NavigationItem#getIconOpen()
-   */
-  @Override
-  public Image getIconOpen()
-  {
-    if (action == null)
-    {
-      return SWTUtil.getImage(icon != null ? icon : "folder-open.png");
-    }
-    else
-    {
-      return SWTUtil.getImage(icon != null ? icon : "page.gif");
-    }
-  }
-
-  /**
-   * @see de.willuhn.jameica.gui.NavigationItem#isExpanded()
-   */
-  @Override
-  public boolean isExpanded()
-  {
-    return false;
-  }
-
-  /**
+   * /**
+   * 
    * @see de.willuhn.jameica.gui.Item#addChild(de.willuhn.jameica.gui.Item)
    */
   @Override
@@ -130,7 +80,7 @@ public class MyItem implements NavigationItem
   @Override
   public String getName()
   {
-    return navitext;
+    return text;
   }
 
   /**
@@ -150,13 +100,12 @@ public class MyItem implements NavigationItem
       throws RemoteException
   {
     this.enabled = enabled;
-    GUI.getNavigation().update(this);
 
     if (recursive)
     {
       for (int i = 0; i < this.children.size(); ++i)
       {
-        NavigationItem child = (NavigationItem) this.children.get(i);
+        Item child = (Item) this.children.get(i);
         child.setEnabled(enabled, recursive);
       }
     }
@@ -167,10 +116,10 @@ public class MyItem implements NavigationItem
    */
   @SuppressWarnings("unchecked")
   @Override
-  public GenericIterator<NavigationItem> getChildren() throws RemoteException
+  public GenericIterator<Item> getChildren() throws RemoteException
   {
     return PseudoIterator
-        .fromArray(children.toArray(new MyItem[children.size()]));
+        .fromArray(children.toArray(new AbstractItem[children.size()]));
   }
 
   /**
@@ -187,9 +136,9 @@ public class MyItem implements NavigationItem
    */
   @SuppressWarnings({ "unchecked" })
   @Override
-  public GenericIterator<NavigationItem> getPath() throws RemoteException
+  public GenericIterator<Item> getPath() throws RemoteException
   {
-    List<NavigationItem> list = new ArrayList<>();
+    List<Item> list = new ArrayList<>();
     if (this.parent != null)
     {
       try
@@ -203,8 +152,8 @@ public class MyItem implements NavigationItem
       }
     }
     list.add(this);
-    return PseudoIterator.fromArray(
-        (NavigationItem[]) list.toArray(new NavigationItem[list.size()]));
+    return PseudoIterator
+        .fromArray((Item[]) list.toArray(new Item[list.size()]));
   }
 
   /**
@@ -231,7 +180,7 @@ public class MyItem implements NavigationItem
   @Override
   public boolean equals(GenericObject arg0) throws RemoteException
   {
-    if (arg0 == null || !(arg0 instanceof MyItem))
+    if (arg0 == null || !(arg0 instanceof AbstractItem))
       return false;
     return this.getID().equals(arg0.getID());
   }
@@ -262,7 +211,7 @@ public class MyItem implements NavigationItem
   public String getID() throws RemoteException
   {
     String id = "";
-    GenericIterator<NavigationItem> p = getPath();
+    GenericIterator<Item> p = getPath();
     while (p.hasNext())
     {
       id += (id.length() > 0 ? "." : "") + p.next().getName();

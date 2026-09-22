@@ -16,12 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeImportAction;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -44,16 +45,14 @@ public class ZusatzbetragListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.ZUSATZBETRAEGE));
     buttons.addButton("Vorlagen",
         new StartViewAction(ZusatzbetragVorlageListeView.class), null, false,
         "euro-sign.png");
     buttons.addButton("Import", new ZusatzbetraegeImportAction(), null, false,
         "file-import.png");
-    buttons.addButton("Neu",
-        new NewAction(ZusatzbetragDetailView.class, Zusatzbetrag.class),
-        control, false, "document-new.png");
+    buttons.addButton(new NewButton(
+        new NewAction(ZusatzbetragDetailView.class, Zusatzbetrag.class)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

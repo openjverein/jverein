@@ -16,10 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -37,11 +38,10 @@ public class WirtschaftsplanListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.WIRTSCHAFTSPLANUNG, false, "question-circle.png");
-    buttons.addButton("Neu",
-        new NewAction(WirtschaftsplanDetailView.class, Wirtschaftsplan.class),
-        control, false, "document-new.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.WIRTSCHAFTSPLANUNG));
+
+    buttons.addButton(new NewButton(
+        new NewAction(WirtschaftsplanDetailView.class, Wirtschaftsplan.class)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

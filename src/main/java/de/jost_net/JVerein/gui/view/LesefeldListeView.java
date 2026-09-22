@@ -16,10 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.LesefeldControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -42,11 +43,9 @@ public class LesefeldListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.LESEFELDER, false, "question-circle.png");
-    buttons.addButton("Neu",
-        new NewAction(LesefeldDetailView.class, Lesefeld.class), null, false,
-        "document-new.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.LESEFELDER));
+    buttons.addButton(
+        new NewButton(new NewAction(LesefeldDetailView.class, Lesefeld.class)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
