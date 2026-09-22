@@ -26,8 +26,8 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.keys.Filter;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -109,8 +109,7 @@ public class NichtMitgliedListeView extends AbstractMitgliedListeView
   @Override
   protected Button getHilfeButton()
   {
-    return new Button("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ADRESSEN, false, "question-circle.png");
+    return new HelpButton(DokumentationUtil.ADRESSEN);
   }
 
   @Override

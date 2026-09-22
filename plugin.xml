@@ -9,15 +9,8 @@
   <license>GPL - https://www.gnu.org/copyleft/gpl.html</license>
   <icon>jverein-icon-64x64.png</icon>
   <menu>
-    <item name="OpenJVerein">
-      <item name="Über"
-            action="de.jost_net.JVerein.gui.action.AboutAction" 
-            icon="gtk-info.png" />
-      <item name="Lizenzinformationen"
-            action="de.jost_net.JVerein.gui.action.LizenzAction"
-            icon="text-x-generic.png" />
+    <item name="OpenJVerein" id="jverein.menue">
     </item>
-    
   </menu>
   <classfinder>
     <include>jverein\.jar</include>

@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanDuplizierenAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanExportAction;
@@ -35,8 +34,7 @@ public class WirtschaftsplanListMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Duplizieren",
         new WirtschaftsplanDuplizierenAction(), "edit-copy.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
-        "user-trash-full.png"));
+    addItem(new DeleteMenueItem());
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Export",
         new WirtschaftsplanExportAction(null), "document-save.png"));

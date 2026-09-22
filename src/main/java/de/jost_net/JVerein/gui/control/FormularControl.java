@@ -35,6 +35,7 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.menu.FormularfeldMenu;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.view.FormularfeldDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -280,8 +281,7 @@ public class FormularControl extends VorZurueckControl implements Savable
     {
       return neuButton;
     }
-    neuButton = new ButtonRtoL("Neu", new FormularfeldNeuAction(), formular,
-        false, "document-new.png");
+    neuButton = new NewButton(new FormularfeldNeuAction(), formular);
     if (getFormular().getArt() == FormularArt.HINTERGRUND)
     {
       neuButton.setEnabled(false);

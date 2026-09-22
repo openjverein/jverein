@@ -19,10 +19,11 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzAbrechnenAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzAuswertungAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzZusatzbetraegeAction;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
@@ -71,8 +72,7 @@ public class ArbeitseinsatzListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.ARBEITSEINSATZ));
     buttons.addButton("Auswertung", new ArbeitseinsatzAuswertungAction(),
         control, false, "screwdriver.png");
     buttons.addButton("Zusatzbeträge generieren",
@@ -80,9 +80,8 @@ public class ArbeitseinsatzListeView extends AbstractView
         "euro-sign.png");
     buttons.addButton("Abrechnung", new ArbeitseinsatzAbrechnenAction(),
         control, false, "lastschrift.png");
-    buttons.addButton("Neu",
-        new NewAction(ArbeitseinsatzDetailView.class, Arbeitseinsatz.class),
-        control, false, "document-new.png");
+    buttons.addButton(new NewButton(
+        new NewAction(ArbeitseinsatzDetailView.class, Arbeitseinsatz.class)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

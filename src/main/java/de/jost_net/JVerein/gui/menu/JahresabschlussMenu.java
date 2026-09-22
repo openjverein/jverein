@@ -22,7 +22,6 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.JahresabschlussDeleteAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.JahresabschlussDetailView;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
@@ -42,7 +41,6 @@ public class JahresabschlussMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
         new EditAction(JahresabschlussDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new JahresabschlussDeleteAction(), "user-trash-full.png"));
+    addItem(new DeleteMenueItem(new JahresabschlussDeleteAction()));
   }
 }

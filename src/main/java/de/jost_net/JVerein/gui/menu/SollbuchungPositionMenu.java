@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.menu;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionDeleteAction;
 import de.jost_net.JVerein.gui.view.SollbuchungPositionDetailView;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
@@ -37,7 +36,6 @@ public class SollbuchungPositionMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(SollbuchungPositionDetailView.class),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new SollbuchungPositionDeleteAction(), "user-trash-full.png"));
+    addItem(new DeleteMenueItem(new SollbuchungPositionDeleteAction()));
   }
 }

@@ -16,10 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.LehrgangsartControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -38,11 +39,9 @@ public class LehrgangsartListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.LEHRGANGARTEN, false, "question-circle.png");
-    buttons.addButton("Neu",
-        new NewAction(LehrgangsartDetailView.class, Lehrgangsart.class), null,
-        false, "document-new.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.LEHRGANGARTEN));
+    buttons.addButton(new NewButton(
+        new NewAction(LehrgangsartDetailView.class, Lehrgangsart.class)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

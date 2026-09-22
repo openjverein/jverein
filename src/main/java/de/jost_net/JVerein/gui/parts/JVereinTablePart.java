@@ -42,6 +42,7 @@ import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
+import de.willuhn.jameica.gui.parts.table.FeatureShortcut;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -94,6 +95,7 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     super(list, action);
     setRememberColWidths(true);
     setRememberOrder(true);
+    addFeature(new FeatureShortcut());
   }
 
   public void setAction(Action action)
