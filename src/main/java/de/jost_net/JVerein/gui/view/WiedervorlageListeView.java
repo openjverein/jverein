@@ -16,10 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.WiedervorlageControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
@@ -82,11 +83,9 @@ public class WiedervorlageListeView extends AbstractView
 
     control.getTablePart().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.WIEDERVORLAGE, false, "question-circle.png");
-    buttons.addButton("Neu",
-        new NewAction(WiedervorlageDetailView.class, Wiedervorlage.class), null,
-        false, "document-new.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.WIEDERVORLAGE));
+    buttons.addButton(new NewButton(
+        new NewAction(WiedervorlageDetailView.class, Wiedervorlage.class)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

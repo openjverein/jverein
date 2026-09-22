@@ -74,7 +74,6 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.keys.Fonts;
@@ -238,103 +237,11 @@ public class FormularAufbereitung
   }
 
   private Image getPaymentQRCode(Map<String, Object> fieldsMap)
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
-    boolean festerText = (Boolean) Einstellungen
-        .getEinstellung(Property.QRCODEFESTERTEXT);
-    boolean rechnungDatum = (Boolean) Einstellungen
-        .getEinstellung(Property.QRCODEDATUM);
-    boolean rechnungNummer = (Boolean) Einstellungen
-        .getEinstellung(Property.QRCODERENU);
-    boolean mitgliedNummer = (Boolean) Einstellungen
-        .getEinstellung(Property.QRCODEMEMBER);
-
-    float sz = mm2point(
-        ((Integer) Einstellungen.getEinstellung(Property.QRCODESIZEINMM))
-            .floatValue());
-
-    StringBuilder sb = new StringBuilder();
-    String verwendungszweck;
-
-    if (festerText)
-    {
-      String[] zahlungsgruende = ((String) fieldsMap
-          .get(RechnungVar.ZAHLUNGSGRUND.getName())).split("\n");
-      if (zahlungsgruende.length == 1
-          && (Boolean) Einstellungen.getEinstellung(Property.QRCODESNGLLINE))
-      {
-        sb.append(zahlungsgruende[0]);
-      }
-      else
-      {
-        sb.append((String) Einstellungen.getEinstellung(Property.QRCODETEXT));
-      }
-      if (rechnungDatum || rechnungNummer || mitgliedNummer)
-      {
-        sb.append(", ");
-      }
-    }
-
-    if (rechnungDatum || rechnungNummer)
-    {
-      if ((Boolean) Einstellungen.getEinstellung(Property.QRCODEKUERZEN))
-      {
-        sb.append("Re. ");
-      }
-      else
-      {
-        sb.append("Rechnung ");
-      }
-      if (rechnungNummer)
-      {
-        sb.append(fieldsMap.get(RechnungVar.NUMMER.getName()));
-        if (rechnungDatum)
-        {
-          sb.append(" ");
-        }
-      }
-      if (rechnungDatum)
-      {
-        if ((Boolean) Einstellungen.getEinstellung(Property.QRCODEKUERZEN))
-        {
-          sb.append("v. ");
-        }
-        else
-        {
-          sb.append("vom ");
-        }
-        sb.append(fieldsMap.get(AllgemeineVar.TAGESDATUM.getName()));
-      }
-      if (mitgliedNummer)
-      {
-        sb.append(", ");
-      }
-    }
-
-    if (mitgliedNummer)
-    {
-      if ((Boolean) Einstellungen.getEinstellung(Property.QRCODEKUERZEN))
-      {
-        sb.append("Mitgl. ");
-      }
-      else
-      {
-        sb.append("Mitglied ");
-      }
-
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
-      {
-        sb.append(getString(
-            fieldsMap.get(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName())));
-      }
-      else
-      {
-        sb.append(getString(fieldsMap.get(MitgliedVar.ID.getName())));
-      }
-    }
-
-    verwendungszweck = sb.toString();
+    String verwendungszweck = (String) Einstellungen
+        .getEinstellung(Property.QRCODETEXTVELOCITY);
+    verwendungszweck = VelocityTool.eval(fieldsMap, verwendungszweck);
 
     String infoToMitglied = (String) Einstellungen
         .getEinstellung(Property.QRCODEINFOM);
@@ -377,6 +284,9 @@ public class FormularAufbereitung
     hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
     try
     {
+      float sz = mm2point(
+          ((Integer) Einstellungen.getEinstellung(Property.QRCODESIZEINMM))
+              .floatValue());
       BitMatrix matrix = new MultiFormatWriter().encode(
           new String(sbEpc.toString().getBytes(charset), charset),
           BarcodeFormat.QR_CODE, (int) sz, (int) sz, hintMap);

@@ -16,14 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungAufloesenAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -44,18 +45,21 @@ public class SplitbuchungDetailView extends AbstractView
 
     final boolean editable = control.isSplitBuchungEditable();
 
-    InfoPanel info = new InfoPanel();
-    info.setText(SplitbuchungsContainer.getText());
-    info.setTitle("Info");
-    info.setIcon("gtk-info.png");
-    info.paint(getParent());
+    int anzahl = SplitbuchungsContainer.getAnzahl();
+    if (anzahl > 1)
+    {
+      InfoPanel info = new InfoPanel();
+      info.setText("Es werden " + anzahl + " Splitbuchungen erzeugt.\n"
+          + "Geänderte Zwecke oder Kommentare in Splitpositionen werden bei allen Buchungen übernommen.");
+      info.setTitle("Info");
+      info.setIcon("gtk-info.png");
+      info.paint(getParent());
+    }
     control.getSplitBuchungsList().paint(getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.SPLITBUCHUNG, false, "question-circle.png");
-    Button neu = new Button("Neu", new SplitbuchungNeuAction(),
-        control.getCurrentObject(), false, "document-new.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.SPLITBUCHUNG));
+    Button neu = new NewButton(new SplitbuchungNeuAction());
     neu.setEnabled(editable);
     buttons.addButton(neu);
     Button aufloesen = new Button("Auflösen",
@@ -66,32 +70,27 @@ public class SplitbuchungDetailView extends AbstractView
     Button sammel = control.getSammelueberweisungButton();
     sammel.setEnabled(editable);
     buttons.addButton(sammel);
-    Button speichern = new Button("Speichern", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
+    Button speichern = new SaveButton(o -> {
+      try
       {
-        try
+        if (SplitbuchungsContainer.get().size() != 0)
         {
-          if (SplitbuchungsContainer.get().size() != 0)
-          {
-            SplitbuchungsContainer.store();
-            GUI.getStatusBar()
-                .setSuccessText(String.format("%s Splitbuchungen gespeichert",
-                    SplitbuchungsContainer.getAnzahl()));
-          }
-          else
-          {
-            GUI.getStatusBar().setErrorText("Hauptbuchung fehlt");
-          }
-          control.refreshSplitbuchungen();
+          SplitbuchungsContainer.store();
+          GUI.getStatusBar()
+              .setSuccessText(String.format("%s Splitbuchungen gespeichert",
+                  SplitbuchungsContainer.getAnzahl()));
         }
-        catch (Exception e)
+        else
         {
-          GUI.getStatusBar().setErrorText(e.getMessage());
+          GUI.getStatusBar().setErrorText("Hauptbuchung fehlt");
         }
+        control.refreshSplitbuchungen();
       }
-    }, null, true, "document-save.png");
+      catch (Exception e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+    });
     buttons.addButton(speichern);
     speichern.setEnabled(editable);
     buttons.paint(getParent());

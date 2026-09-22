@@ -16,10 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.FelddefinitionControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -38,11 +39,9 @@ public class ZusatzfeldListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.FELDDEFINITIONEN, false, "question-circle.png");
-    buttons.addButton("Neu",
-        new NewAction(ZusatzfeldDetailView.class, Felddefinition.class), null,
-        false, "document-new.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.FELDDEFINITIONEN));
+    buttons.addButton(new NewButton(
+        new NewAction(ZusatzfeldDetailView.class, Felddefinition.class)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

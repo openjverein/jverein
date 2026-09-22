@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.Altermodel;
@@ -326,14 +327,10 @@ public class Einstellungen
         "Der Erstattungsbetrag wird auf das angegebene Konto überwiesen."),
     ZAEHLERLAENGE("zaehlerlaenge", Integer.class, "5"),
     QRCODESIZEINMM("qrcodesizemm", Integer.class, "20"),
-    QRCODETEXT("qrcodetext", String.class, "Mitgliedsbeitrag"),
-    QRCODEFESTERTEXT("qrcodeptext", Boolean.class, "1"),
-    QRCODESNGLLINE("qrcodesngl", Boolean.class, "1"),
-    QRCODEDATUM("qrcodepdate", Boolean.class, "0"),
-    QRCODERENU("qrcodeprenum", Boolean.class, "0"),
-    QRCODEMEMBER("qrcodepmnum", Boolean.class, "0"),
     QRCODEINFOM("qrcodeinfom", String.class, "Vielen Dank!"),
-    QRCODEKUERZEN("qrcodekuerzen", Boolean.class, "0"),
+    QRCODETEXTVELOCITY("qrcodetextvelocity", String.class, "#if($"
+        + RechnungVar.ZAHLUNGSGRUND.getName() + ".split(\"\\n\").size() == 1)$"
+        + RechnungVar.ZAHLUNGSGRUND.getName() + "#{else}Mitgliedsbeitrag#end"),
     QRCODEINTRO("qrcodeintro", String.class,
         "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen."),
 
@@ -575,6 +572,7 @@ public class Einstellungen
     {
       return "";
     }
+    signatur = signatur.replace("\r\n", "\n");
     // Siehe RFC 3676, 4.3. Usenet Signature Convention
     if (separator && !signatur.startsWith("-- \n"))
     {

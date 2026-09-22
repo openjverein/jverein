@@ -16,9 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.EigenschaftGruppeControl;
@@ -43,8 +43,7 @@ public class EigenschaftGruppeDetailView extends AbstractDetailView
     group.addLabelPair("Maximal 1 Eigenschaft", control.getMax1());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EIGENSCHAFTGRUPPE, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.EIGENSCHAFTGRUPPE));
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());

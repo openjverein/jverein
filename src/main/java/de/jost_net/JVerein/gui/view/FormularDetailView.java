@@ -21,12 +21,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
 import de.jost_net.JVerein.gui.control.FormularControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.willuhn.jameica.gui.GUI;
@@ -75,8 +75,7 @@ public class FormularDetailView extends AbstractDetailView
     cont.addPart(control.getTablePart());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.FORMULARE, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.FORMULARE));
 
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());

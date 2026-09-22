@@ -26,8 +26,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.input.EncodingInput;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.io.IOFormat;
 import de.jost_net.JVerein.io.IORegistry;
 import de.jost_net.JVerein.io.Importer;
@@ -115,8 +115,7 @@ public class ImportDialog extends AbstractDialog<Object>
       group.addLabelPair("Encoding", encoding);
     }
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(), helplink, false,
-        "question-circle.png");
+    buttons.addButton(new HelpButton(helplink));
 
     Button button = new Button("Import starten", new Action()
     {

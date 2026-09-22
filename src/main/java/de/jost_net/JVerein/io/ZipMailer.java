@@ -251,13 +251,19 @@ public class ZipMailer
                   case "freiesformular":
                     finaldateiname = VorlageUtil.getName(
                         VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
+                        mitgliedMail,
                         dateiname.substring(0, dateiname.lastIndexOf('.')))
                         + ".pdf";
                     break;
                   case "kontoauszug":
                     finaldateiname = VorlageUtil.getName(
-                        VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null)
+                        VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, mitgliedMail)
                         + ".pdf";
+                    break;
+                  case "personalbogen":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.PERSONALBOGEN_MITGLIED_DATEINAME,
+                        mitgliedMail) + ".pdf";
                     break;
                   case "lastschrift":
                     if (ls.getMitglied() != null)

@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
+import de.jost_net.JVerein.gui.parts.JVereinPanelButton;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -47,7 +48,7 @@ public abstract class AbstractJVereinControl extends AbstractControl
 
   public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
-    return new PanelButton(
+    return new JVereinPanelButton(
         art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
           try
           {
@@ -75,7 +76,8 @@ public abstract class AbstractJVereinControl extends AbstractControl
             throw new ApplicationException("Fehler beim Tabellen-Export");
           }
           GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV",
+        art.equals(ExportArt.PDF) ? "CTRL+P" : null);
   }
 
   /**
