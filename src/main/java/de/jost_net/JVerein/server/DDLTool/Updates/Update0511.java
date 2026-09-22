@@ -41,10 +41,10 @@ public class Update0511 extends AbstractDDLUpdate
 
         // QRCODESNGLLINE:
         // Bei genau einer Zeile $ZAHLUNGSGRUND, sonst QRCODETEXT
-        "CASE WHEN q.singleLine = '1' THEN '#if($"
+        "CASE WHEN q.singleLine = '1' THEN CONCAT('#if($"
         + RechnungVar.ZAHLUNGSGRUND.getName()
-        + ".split(\"\\\\n\").size() == 1)$"
-        + RechnungVar.ZAHLUNGSGRUND.getName() + "#{else}' ELSE '' END, " +
+        + ".split(\"',CHAR(92),'n\").size() == 1)$"
+        + RechnungVar.ZAHLUNGSGRUND.getName() + "#{else}') ELSE '' END, " +
 
         // Bestehendes QRCODETEXT
         "q.text, " +
