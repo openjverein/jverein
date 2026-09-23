@@ -271,12 +271,13 @@ public class FormularAufbereitung
     hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
     try
     {
-      float sz = mm2point(
-          ((Integer) Einstellungen.getEinstellung(Property.QRCODESIZEINMM))
-              .floatValue());
+      // Der Writer skaliert die Größe nur in größeren Sprüngen. Dazwischen
+      // vergrößert sich nur das PAdding am Rand.
+      // Mit den Werten 53 wird ein unskaliertes image erzeugt. Das skalieren
+      // wir dann bei der Ausgabe.
       BitMatrix matrix = new MultiFormatWriter().encode(
           new String(sbEpc.toString().getBytes(charset), charset),
-          BarcodeFormat.QR_CODE, (int) sz, (int) sz, hintMap);
+          BarcodeFormat.QR_CODE, 53, 53, hintMap);
       return MatrixToImageWriter.toBufferedImage(matrix);
     }
     catch (UnsupportedEncodingException e1)
