@@ -348,23 +348,11 @@ public class EinstellungControl extends AbstractControl
 
   private IntegerInput qrcodesize;
 
-  private CheckboxInput qrcodeptext;
-
-  private CheckboxInput qrcodepdate;
-
-  private CheckboxInput qrcodeprenum;
-
-  private CheckboxInput qrcodepmnum;
-
   private TextInput qrcodetext;
-
-  private CheckboxInput qrcodesngl;
 
   private TextInput qrcodeinfom;
 
   private TextInput qrcodeintro;
-
-  private CheckboxInput qrcodekuerzen;
 
   private DecimalInput afarestwert;
 
@@ -2024,59 +2012,9 @@ public class EinstellungControl extends AbstractControl
     if (null == qrcodetext)
     {
       qrcodetext = new TextInput(
-          (String) Einstellungen.getEinstellung(Property.QRCODETEXT));
+          (String) Einstellungen.getEinstellung(Property.QRCODETEXTVELOCITY));
     }
     return qrcodetext;
-  }
-
-  public CheckboxInput getQRCodePrintVerwendungszweck() throws RemoteException
-  {
-    if (null == qrcodeptext)
-    {
-      qrcodeptext = new CheckboxInput(
-          (Boolean) Einstellungen.getEinstellung(Property.QRCODEFESTERTEXT));
-    }
-    return qrcodeptext;
-  }
-
-  public CheckboxInput getQRCodeSingle() throws RemoteException
-  {
-    if (null == qrcodesngl)
-    {
-      qrcodesngl = new CheckboxInput(
-          (Boolean) Einstellungen.getEinstellung(Property.QRCODESNGLLINE));
-    }
-    return qrcodesngl;
-  }
-
-  public CheckboxInput getQRCodeReDa() throws RemoteException
-  {
-    if (null == qrcodepdate)
-    {
-      qrcodepdate = new CheckboxInput(
-          (Boolean) Einstellungen.getEinstellung(Property.QRCODEDATUM));
-    }
-    return qrcodepdate;
-  }
-
-  public CheckboxInput getQRCodeReNr() throws RemoteException
-  {
-    if (null == qrcodeprenum)
-    {
-      qrcodeprenum = new CheckboxInput(
-          (Boolean) Einstellungen.getEinstellung(Property.QRCODERENU));
-    }
-    return qrcodeprenum;
-  }
-
-  public CheckboxInput getQRCodeMemberNr() throws RemoteException
-  {
-    if (null == qrcodepmnum)
-    {
-      qrcodepmnum = new CheckboxInput(
-          (Boolean) Einstellungen.getEinstellung(Property.QRCODEMEMBER));
-    }
-    return qrcodepmnum;
   }
 
   public TextInput getQRCodeInfoToMember() throws RemoteException
@@ -2087,16 +2025,6 @@ public class EinstellungControl extends AbstractControl
           (String) Einstellungen.getEinstellung(Property.QRCODEINFOM));
     }
     return qrcodeinfom;
-  }
-
-  public CheckboxInput getQRCodeKuerzen() throws RemoteException
-  {
-    if (null == qrcodekuerzen)
-    {
-      qrcodekuerzen = new CheckboxInput(
-          (Boolean) Einstellungen.getEinstellung(Property.QRCODEKUERZEN));
-    }
-    return qrcodekuerzen;
   }
 
   public TextInput getQRCodeIntro() throws RemoteException
@@ -2921,24 +2849,10 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.ZAEHLERLAENGE, length);
       Einstellungen.setEinstellung(Property.QRCODESIZEINMM,
           (Integer) qrcodesize.getValue());
-      Einstellungen.setEinstellung(Property.QRCODEDATUM,
-          (Boolean) qrcodepdate.getValue());
-      Einstellungen.setEinstellung(Property.QRCODEFESTERTEXT,
-          (Boolean) qrcodeptext.getValue());
-      Einstellungen.setEinstellung(Property.QRCODEINFOM,
-          (String) qrcodeinfom.getValue());
-      Einstellungen.setEinstellung(Property.QRCODEMEMBER,
-          (Boolean) qrcodepmnum.getValue());
-      Einstellungen.setEinstellung(Property.QRCODERENU,
-          (Boolean) qrcodeprenum.getValue());
-      Einstellungen.setEinstellung(Property.QRCODESNGLLINE,
-          (Boolean) qrcodesngl.getValue());
-      Einstellungen.setEinstellung(Property.QRCODETEXT,
+      Einstellungen.setEinstellung(Property.QRCODETEXTVELOCITY,
           (String) qrcodetext.getValue());
       Einstellungen.setEinstellung(Property.QRCODEINTRO,
           (String) qrcodeintro.getValue());
-      Einstellungen.setEinstellung(Property.QRCODEKUERZEN,
-          (Boolean) qrcodekuerzen.getValue());
 
       DBTransaction.commit();
 
