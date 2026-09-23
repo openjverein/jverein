@@ -49,6 +49,7 @@ import de.jost_net.JVerein.io.Bankarbeitstage;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -57,6 +58,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -835,12 +837,33 @@ public abstract class AbstractAbrechnungControl
           result = false;
         }
       case GLEICHERTERMINFUERALLE:
-        Double betrag = m.getBeitragsgruppe().getBetrag();
-        if (betrag == null)
+        if (!m.getBeitragsgruppe().getHasAltersstaffel())
         {
-          bugs.add(new Bug(m, "Betrag in Beitragsgruppe ist nicht gesetzt!",
-              Bug.ERROR));
-          result = false;
+          Double betrag = m.getBeitragsgruppe().getBetrag();
+          if (betrag == null)
+          {
+            bugs.add(new Bug(m, "Betrag in Beitragsgruppe ist nicht gesetzt!",
+                Bug.ERROR));
+            result = false;
+          }
+        }
+        else
+        {
+          DBIterator<Altersstaffel> it = m.getBeitragsgruppe()
+              .getAltersstaffelIterator();
+          while (it.hasNext())
+          {
+            Altersstaffel as = it.next();
+            Double betrag = as.getBetrag();
+            if (betrag == null)
+            {
+              bugs.add(new Bug(m,
+                  "Betrag in Altersstaffel der Beitragsgruppe ist nicht gesetzt!",
+                  Bug.ERROR));
+              result = false;
+              break;
+            }
+          }
         }
         break;
       case FLEXIBEL:
