@@ -272,8 +272,8 @@ public class FormularAufbereitung
     try
     {
       // Der Writer skaliert die Größe nur in ganzahligen Sprüngen. Dazwischen
-      // vergrößert sich nur das PAdding am Rand.
-      // Mit den Werten 53 wird ein unskaliertes image erzeugt. Das skalieren
+      // vergrößert sich nur das Padding am Rand.
+      // Mit den Werten 53 wird ein unskaliertes Image erzeugt. Das skalieren
       // wir dann bei der Ausgabe.
       BitMatrix matrix = new MultiFormatWriter().encode(
           new String(sbEpc.toString().getBytes(charset), charset),
