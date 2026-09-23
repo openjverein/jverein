@@ -24,8 +24,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.FilterControl;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.DeleteButton;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Suchprofil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -38,7 +42,6 @@ import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
@@ -76,26 +79,25 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
     group.addInput(getProfilname());
     group.addInput(getAttributes());
 
-    ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.SUCHPROFIL, false, "question-circle.png");
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    buttons.addButton(new HelpButton(DokumentationUtil.SUCHPROFIL));
 
-    buttons.addButton("Neu", context -> {
+    buttons.addButton(new NewButton(context -> {
       handleNeu();
-    }, null, true, "document-new.png");
+    }));
 
-    buttons.addButton("Speichern", context -> {
+    buttons.addButton(new SaveButton(context -> {
       handleSpeichern(null);
-    }, null, false, "document-save.png");
+    }));
 
-    buttons.addButton("Löschen", context -> {
+    buttons.addButton(new DeleteButton(context -> {
       if (!confirm("Profil löschen",
           "Soll das ausgewählte Profil wirklich gelöscht werden?"))
       {
         return;
       }
       handleLoeschen();
-    }, null, false, "user-trash-full.png");
+    }));
 
     buttons.addButton("Anwenden", context -> {
       handleAnwenden();
