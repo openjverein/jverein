@@ -25,6 +25,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
@@ -33,7 +34,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -84,8 +84,7 @@ public class DokumentDialog extends AbstractDialog<Boolean>
     }
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(new Button("Speichern", c -> speichern(), null, true,
-        "document-save.png"));
+    buttons.addButton(new SaveButton(c -> speichern()));
 
     buttons.addButton("Abbrechen", c -> {
       throw new OperationCanceledException();
