@@ -271,7 +271,7 @@ public class FormularAufbereitung
     hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
     try
     {
-      // Der Writer skaliert die Größe nur in größeren Sprüngen. Dazwischen
+      // Der Writer skaliert die Größe nur in ganzahligen Sprüngen. Dazwischen
       // vergrößert sich nur das PAdding am Rand.
       // Mit den Werten 53 wird ein unskaliertes image erzeugt. Das skalieren
       // wir dann bei der Ausgabe.
