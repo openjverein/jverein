@@ -26,8 +26,10 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -64,7 +66,7 @@ public class AbweichenderZahlerNeuDialog extends AbstractDialog<Boolean>
     zeicheStammdaten(parent);
     zeichneZahlung(parent);
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Speichern", context -> {
+    buttons.addButton(new SaveButton(context -> {
       try
       {
         control.handleStore();
@@ -73,10 +75,12 @@ public class AbweichenderZahlerNeuDialog extends AbstractDialog<Boolean>
       {
         Logger.error("Fehler", e);
         status = e.getMessage();
+        GUI.getStatusBar().setErrorText(status);
+        return;
       }
       abort = false;
       close();
-    }, null, true, "document-save.png");
+    }));
     buttons.addButton("Abbrechen", context -> close(), null, false,
         "process-stop.png");
     buttons.paint(parent);
