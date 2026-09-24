@@ -25,6 +25,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.extension.Extendable;
+import de.willuhn.jameica.gui.extension.Extension;
 import de.willuhn.jameica.gui.extension.ExtensionRegistry;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
@@ -44,7 +45,17 @@ public abstract class AbstractDetailView extends AbstractView
   {
     // Nach dem bind() wird extend() aufgerufen, das nutzen wir, um zu prüfen,
     // ob das bind() auch erfolgreich geklappt hat.
-    ExtensionRegistry.register(e -> bindSucessfull = true, "jverein.view");
+    ExtensionRegistry.register(new Extension()
+    {
+      @Override
+      public void extend(Extendable extendable)
+      {
+        bindSucessfull = true;
+        // jetzt wird die Extension nicht mehr gebraucht, daher entfernen wir
+        // sie wieder
+        ExtensionRegistry.getExtensions("jverein.view").remove(this);
+      }
+    }, "jverein.view");
   }
 
   /**

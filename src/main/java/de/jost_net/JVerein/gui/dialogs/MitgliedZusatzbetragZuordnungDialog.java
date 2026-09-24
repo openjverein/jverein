@@ -26,10 +26,11 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
@@ -86,102 +87,95 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
     map = MitgliedMap.getDummyMap(map);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.ZUSATZBETRAEGE));
     buttons.addButton("Buchungstext Variablen anzeigen",
         new InsertVariableDialogAction(map), null, false, "bookmark.png");
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");
 
-    buttons.addButton("Speichern", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
+    buttons.addButton(new SaveButton(context -> {
+      int count = 0;
+      try
       {
-        int count = 0;
+        for (Mitglied mit : m)
+        {
+          Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
+              .createObject(Zusatzbetrag.class, null);
+          zb.setAusfuehrung((Date) part.getAusfuehrung().getValue());
+          zb.setBetrag((Double) part.getBetrag().getValue());
+          zb.setBuchungstext((String) part.getBuchungstext().getValue());
+          zb.setEndedatum((Date) part.getEndedatum().getValue());
+          zb.setFaelligkeit((Date) part.getFaelligkeit().getValue());
+          IntervallZusatzzahlung iz = (IntervallZusatzzahlung) part
+              .getIntervall().getValue();
+          zb.setIntervall(iz.getKey());
+          zb.setMitglied(Integer.parseInt(mit.getID()));
+          zb.setStartdatum((Date) part.getStartdatum(true).getValue());
+          zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
+          zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
+          if (part.isSteuerActive())
+          {
+            zb.setSteuer((Steuer) part.getSteuer().getValue());
+          }
+          zb.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
+          zb.setMitgliedzahltSelbst(
+              (Boolean) part.getMitgliedzahltSelbst().getValue());
+          zb.store();
+          count++;
+        }
+        if (control.getVorlage().getValue().equals(ZusatzbetragControl.MITDATUM)
+            || control.getVorlage().getValue()
+                .equals(ZusatzbetragControl.OHNEDATUM))
+        {
+          ZusatzbetragVorlage zv = (ZusatzbetragVorlage) Einstellungen
+              .getDBService().createObject(ZusatzbetragVorlage.class, null);
+          IntervallZusatzzahlung iz = (IntervallZusatzzahlung) part
+              .getIntervall().getValue();
+          zv.setIntervall(iz.getKey());
+          zv.setBuchungstext((String) part.getBuchungstext().getValue());
+          zv.setBetrag((Double) part.getBetrag().getValue());
+          if (control.getVorlage().getValue()
+              .equals(ZusatzbetragControl.MITDATUM))
+          {
+            zv.setEndedatum((Date) part.getEndedatum().getValue());
+            zv.setFaelligkeit((Date) part.getFaelligkeit().getValue());
+            zv.setStartdatum((Date) part.getStartdatum(true).getValue());
+          }
+          zv.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
+          zv.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
+          if (part.isSteuerActive())
+          {
+            zv.setSteuer((Steuer) part.getSteuer().getValue());
+          }
+          zv.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
+          zv.setMitgliedzahltSelbst(
+              (Boolean) part.getMitgliedzahltSelbst().getValue());
+          zv.store();
+        }
+        message = String.format("%d Zusatzbeiträge gespeichert.", count);
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+      }
+      catch (ApplicationException e)
+      {
+        SimpleDialog sd = new SimpleDialog(AbstractDialog.POSITION_CENTER);
+        sd.setText(e.getMessage());
+        sd.setTitle("Fehler");
         try
         {
-          for (Mitglied mit : m)
-          {
-            Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
-                .createObject(Zusatzbetrag.class, null);
-            zb.setAusfuehrung((Date) part.getAusfuehrung().getValue());
-            zb.setBetrag((Double) part.getBetrag().getValue());
-            zb.setBuchungstext((String) part.getBuchungstext().getValue());
-            zb.setEndedatum((Date) part.getEndedatum().getValue());
-            zb.setFaelligkeit((Date) part.getFaelligkeit().getValue());
-            IntervallZusatzzahlung iz = (IntervallZusatzzahlung) part
-                .getIntervall().getValue();
-            zb.setIntervall(iz.getKey());
-            zb.setMitglied(Integer.parseInt(mit.getID()));
-            zb.setStartdatum((Date) part.getStartdatum(true).getValue());
-            zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
-            zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
-            if (part.isSteuerActive())
-            {
-              zb.setSteuer((Steuer) part.getSteuer().getValue());
-            }
-            zb.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
-            zb.setMitgliedzahltSelbst(
-                (Boolean) part.getMitgliedzahltSelbst().getValue());
-            zb.store();
-            count++;
-          }
-          if (control.getVorlage().getValue()
-              .equals(ZusatzbetragControl.MITDATUM)
-              || control.getVorlage().getValue()
-                  .equals(ZusatzbetragControl.OHNEDATUM))
-          {
-            ZusatzbetragVorlage zv = (ZusatzbetragVorlage) Einstellungen
-                .getDBService().createObject(ZusatzbetragVorlage.class, null);
-            IntervallZusatzzahlung iz = (IntervallZusatzzahlung) part
-                .getIntervall().getValue();
-            zv.setIntervall(iz.getKey());
-            zv.setBuchungstext((String) part.getBuchungstext().getValue());
-            zv.setBetrag((Double) part.getBetrag().getValue());
-            if (control.getVorlage().getValue()
-                .equals(ZusatzbetragControl.MITDATUM))
-            {
-              zv.setEndedatum((Date) part.getEndedatum().getValue());
-              zv.setFaelligkeit((Date) part.getFaelligkeit().getValue());
-              zv.setStartdatum((Date) part.getStartdatum(true).getValue());
-            }
-            zv.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
-            zv.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
-            if (part.isSteuerActive())
-            {
-              zv.setSteuer((Steuer) part.getSteuer().getValue());
-            }
-            zv.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
-            zv.setMitgliedzahltSelbst(
-                (Boolean) part.getMitgliedzahltSelbst().getValue());
-            zv.store();
-          }
-          message = String.format("%d Zusatzbeiträge gespeichert.", count);
+          sd.open();
         }
-        catch (RemoteException e)
+        catch (Exception e1)
         {
-          Logger.error("Fehler", e);
+          Logger.error("Fehler", e1);
         }
-        catch (ApplicationException e)
-        {
-          SimpleDialog sd = new SimpleDialog(AbstractDialog.POSITION_CENTER);
-          sd.setText(e.getMessage());
-          sd.setTitle("Fehler");
-          try
-          {
-            sd.open();
-          }
-          catch (Exception e1)
-          {
-            Logger.error("Fehler", e1);
-          }
-          return;
-        }
-
-        close();
+        return;
       }
-    }, null, true, "document-save.png");
+
+      close();
+    }));
 
     buttons.addButton("Abbrechen", new Action()
     {

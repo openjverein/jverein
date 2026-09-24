@@ -28,8 +28,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.keys.Differenz;
@@ -194,8 +194,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 
     ButtonArea b = new ButtonArea();
 
-    b.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIEDSKONTO_AUSWAHL, false, "question-circle.png");
+    b.addButton(new HelpButton(DokumentationUtil.MITGLIEDSKONTO_AUSWAHL));
 
     b.addButton("Übernehmen", new Action()
     {

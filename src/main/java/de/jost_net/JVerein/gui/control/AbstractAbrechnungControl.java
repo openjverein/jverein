@@ -35,13 +35,13 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.action.BugObjektEditAction;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.dialogs.JVereinYesNoDialog;
 import de.jost_net.JVerein.gui.input.DisableTextAreaInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.JVereinDateInput;
 import de.jost_net.JVerein.gui.menu.BugListMenu;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
@@ -515,8 +515,7 @@ public abstract class AbstractAbrechnungControl
 
   public Button getHelpButton(String link)
   {
-    Button b = new Button("Hilfe", new DokumentationAction(), link, false,
-        "question-circle.png");
+    Button b = new HelpButton(link);
     return b;
   }
 

@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.view;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
@@ -27,6 +26,8 @@ import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
@@ -63,13 +64,12 @@ public class BuchungDetailView extends AbstractDetailView
     part.paint(this.getParent());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.BUCHUNGEN));
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
 
-    ButtonRtoL saveButton = new ButtonRtoL("Speichern", context -> {
+    ButtonRtoL saveButton = new SaveButton(o -> {
       try
       {
         control.buchungSpeichern();
@@ -84,7 +84,7 @@ public class BuchungDetailView extends AbstractDetailView
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
-    }, null, true, "document-save.png");
+    });
     saveButton.setEnabled(editable);
     buttons.addButton(saveButton);
 
@@ -114,7 +114,7 @@ public class BuchungDetailView extends AbstractDetailView
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
-    }, null, false, "go-next.png");
+    }, null, false, "go-next.png", "CTRL+SHIFT+S");
     saveNextButton.setEnabled(editable);
     if (control.getBuchung().isNewObject())
     {

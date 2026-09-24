@@ -17,11 +17,12 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypDefaultAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.MitgliedstypControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
@@ -41,11 +42,9 @@ public class MitgliedstypListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
-    buttons.addButton("Neu",
-        new NewAction(MitgliedstypDetailView.class, Mitgliedstyp.class), null,
-        false, "document-new.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.ADRESSTYPEN));
+    buttons.addButton(new NewButton(
+        new NewAction(MitgliedstypDetailView.class, Mitgliedstyp.class)));
 
     DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
         .createList(Mitgliedstyp.class);

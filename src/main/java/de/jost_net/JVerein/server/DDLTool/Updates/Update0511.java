@@ -15,9 +15,10 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import java.sql.Connection;
 
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Variable.MitgliedVar;
+import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
-import de.jost_net.JVerein.server.DDLTool.Column;
-import de.jost_net.JVerein.server.DDLTool.Table;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -32,56 +33,102 @@ public class Update0511 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
 
-    Table table = new Table("buchungsdokumentbuchung");
+    execute("INSERT INTO einstellungneu (name, wert) SELECT '"
+        + Property.QRCODETEXTVELOCITY.getKey() + "', CONCAT(" +
 
-    Column id = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
-    table.add(id);
-    table.setPrimaryKey(id);
-    table.add(new Column("dokument", COLTYPE.BIGINT, 4, null, true, false));
-    table.add(new Column("buchung", COLTYPE.BIGINT, 4, null, true, false));
-    execute(createTable(table));
+        // QRCODEFESTERTEXT
+        "CASE WHEN q.festerText = '1' THEN CONCAT(" +
 
-    execute("INSERT INTO buchungsdokumentbuchung (dokument,buchung) "
-        + "SELECT id, referenz FROM buchungdokument WHERE referenz IS NOT NULL");
+        // QRCODESNGLLINE:
+        // Bei genau einer Zeile $ZAHLUNGSGRUND, sonst QRCODETEXT
+        "CASE WHEN q.singleLine = '1' THEN CONCAT('#if($"
+        + RechnungVar.ZAHLUNGSGRUND.getName()
+        + ".split(\"',CHAR(92),'n\").size() == 1)$"
+        + RechnungVar.ZAHLUNGSGRUND.getName() + "#{else}') ELSE '' END, " +
 
-    execute(
-        "CREATE UNIQUE INDEX dokumentbuchung ON buchungsdokumentbuchung (dokument,buchung);");
+        // Bestehendes QRCODETEXT
+        "q.text, " +
 
-    execute(addColumn("buchungdokument",
-        new Column("belegnummer", COLTYPE.VARCHAR, 50, null, false, false)));
+        // Ende des Velocity-if
+        "CASE WHEN q.singleLine = '1' THEN '#end' ELSE '' END, " +
 
-    // Damit per messaging gespeicherte Dokumente weiterhing gefunden werden,
-    // ist die referenz weiter nötig, neuerdings wird dafür die Belegnummer
-    // verwendet.
-    // Nur das erste Dokument pro Buchung wird mit einer Belegnummer versehen,
-    // bei den anderen greift der Falback-Modus in
-    // BuchungDokumentImpl.getNummer().
+        // Komma nach Festtext
+        "CASE WHEN q.datum = '1' OR q.rechnung = '1' "
+        + "OR q.mitglied = '1' THEN ', ' ELSE '' END" +
 
-    // Temp-Tabelle mit jeweils erstem Dokument pro referenz
-    execute("CREATE TEMPORARY TABLE temp_first (id BIGINT PRIMARY KEY);");
-    execute("INSERT INTO temp_first (id) SELECT MIN(id) FROM buchungdokument"
-        + " WHERE referenz IS NOT NULL GROUP BY referenz;");
+        ") ELSE '' END, " +
 
-    // Update nur für diese IDs: setze belegnummer = referenz (als String)
-    execute("UPDATE buchungdokument SET belegnummer = CONCAT('', referenz) "
-        + "WHERE id IN (SELECT id  FROM temp_first)");
+        // Rechnung / Re.
+        "CASE WHEN q.datum = '1' OR q.rechnung = '1' THEN "
+        + "CASE WHEN q.kuerzen = '1' THEN 'Re. ' ELSE 'Rechnung ' END "
+        + "ELSE '' END, " +
 
-    // Temp-Tabelle entfernen
-    execute("DROP TEMPORARY TABLE IF EXISTS temp_first;");
+        // Rechnungsnummer
+        "CASE WHEN q.rechnung = '1' THEN '$" + RechnungVar.NUMMER.getName()
+        + "' ELSE '' END, " +
 
-    execute(
-        "CREATE UNIQUE INDEX belegnummer ON buchungdokument (belegnummer);");
+        // Rechnungsdatum
+        "CASE WHEN q.datum = '1' THEN CONCAT("
+        + "CASE WHEN q.rechnung = '1' THEN ' ' ELSE '' END, "
+        + "CASE WHEN q.kuerzen = '1' THEN 'v. ' ELSE 'vom ' END, '$"
+        + RechnungVar.DATUM.getName() + "') ELSE '' END, " +
 
-    execute(createForeignKey("fkBuchung", "buchungsdokumentbuchung", "buchung",
-        "buchung", "id", "CASCADE", "RESTRICT"));
+        // Komma vor Mitglied
+        "CASE WHEN q.mitglied = '1' AND (q.datum = '1' OR q.rechnung = '1') "
+        + "THEN ', ' ELSE '' END, " +
 
-    execute(createForeignKey("fkDokument", "buchungsdokumentbuchung",
-        "dokument", "buchungdokument", "id", "CASCADE", "RESTRICT"));
+        // Mitglied / Mitgl.
+        "CASE WHEN q.mitglied = '1' THEN "
+        + "CASE WHEN q.kuerzen = '1' THEN 'Mitgl. ' ELSE 'Mitglied ' END "
+        + "ELSE '' END, " +
 
-    // Belegnummer soll erstmal von bisheriger Buchungsnummer wieterzählen,
-    // solange nicht individuell in den Einstellungen angepasst wird
-    execute("INSERT INTO einstellungneu (name, wert) "
-        + "SELECT 'beleg_zaehler', COALESCE(MAX(referenz), 0) + 1 "
-        + "FROM buchungdokument WHERE referenz IS NOT NULL;");
+        // Mitgliedsnummer
+        "CASE WHEN q.mitglied = '1' THEN "
+        + "CASE WHEN q.externeMitgliedsnummer = '1' THEN '$"
+        + MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName() + "' ELSE '$"
+        + MitgliedVar.ID.getName() + "' END ELSE '' END" +
+
+        ") AS wert " +
+
+        "FROM (SELECT " +
+
+        // QRCODEFESTERTEXT
+        "MAX(CASE WHEN name = 'qrcodeptext' THEN CASE WHEN UPPER(CAST(wert AS CHAR)) IN ('1', 'TRUE') "
+        + "THEN '1' ELSE '0' END  ELSE '0' END) AS festerText, " +
+
+        // QRCODESNGLLINE
+        "MAX(CASE WHEN name = 'qrcodesngl' THEN CASE WHEN UPPER(CAST(wert AS CHAR)) IN ('1', 'TRUE') "
+        + "THEN '1' ELSE '0' END  ELSE '0' END) AS singleLine, " +
+
+        // QRCODEDATUM
+        "MAX(CASE WHEN name = 'qrcodepdate' THEN CASE WHEN UPPER(CAST(wert AS CHAR)) IN ('1', 'TRUE') "
+        + "THEN '1' ELSE '0' END  ELSE '0' END) AS datum, " +
+
+        // QRCODERENU
+        "MAX(CASE WHEN name = 'qrcodeprenum' THEN CASE WHEN UPPER(CAST(wert AS CHAR)) IN ('1', 'TRUE') "
+        + "THEN '1' ELSE '0' END  ELSE '0' END) AS rechnung, " +
+
+        // QRCODEMEMBER
+        "MAX(CASE WHEN name = 'qrcodepmnum' THEN CASE WHEN UPPER(CAST(wert AS CHAR)) IN ('1', 'TRUE') "
+        + "THEN '1' ELSE '0' END  ELSE '0' END) AS mitglied, " +
+
+        // QRCODEKUERZEN
+        "MAX(CASE WHEN name = 'qrcodekuerzen' THEN CASE WHEN UPPER(CAST(wert AS CHAR)) IN ('1', 'TRUE') "
+        + "THEN '1' ELSE '0' END  ELSE '0' END) AS kuerzen, " +
+
+        // QRCODETEXT
+        "MAX(CASE WHEN name = 'qrcodetext' THEN wert ELSE '' END) "
+        + "AS text, " +
+
+        // EXTERNEMITGLIEDSNUMMER bleibt als Property erhalten
+        "MAX(CASE WHEN name = '" + Property.EXTERNEMITGLIEDSNUMMER.getKey()
+        + "' THEN CASE WHEN UPPER(CAST(wert AS CHAR)) IN ('1', 'TRUE') "
+        + "THEN '1' ELSE '0' END  ELSE '0' END) AS externeMitgliedsnummer " +
+
+        "FROM einstellungneu) q");
+
+    // Bei Neuinstallationen leeren Wert löschen, dann wird der Default genommen
+    execute("DELETE FROM einstellungneu WHERE name = '"
+        + Property.QRCODETEXTVELOCITY.getKey() + "' AND wert = ''");
   }
 }

@@ -22,21 +22,22 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
 import de.jost_net.JVerein.gui.input.MitgliedSearchInput;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
@@ -145,41 +146,28 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
       right.addLabelPair("Steuer", sollbPosControl.getSteuer());
     }
 
-    ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
-        "question-circle.png");
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    buttons
+        .addButton(new HelpButton(DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT));
 
     // Speichern und zurück zum View
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
+    buttons.addButton(new SaveButton(context -> {
+      if (!handleStore())
       {
-        if (!handleStore())
-        {
-          return;
-        }
-        edit = false;
-        close();
+        return;
       }
-    }, null, false, "document-save.png");
+      edit = false;
+      close();
+    }));
 
     // Speichern und Sollbuchung anzeigen
-    buttons.addButton("Speichern und Anzeigen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
+    buttons.addButton("Speichern und Anzeigen", context -> {
+      if (!handleStore())
       {
-        if (!handleStore())
-        {
-          return;
-        }
-        edit = true;
-        close();
+        return;
       }
+      edit = true;
+      close();
     }, null, false, "document-save.png");
 
     // Speichern und neue Sollbuchung erzeugen
@@ -187,54 +175,41 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     // aufgerufen wurde
     if (sollbControl.getMitglied().getValue() == null)
     {
-      buttons.addButton("Speichern und Neu", new Action()
-      {
-
-        @Override
-        public void handleAction(Object context)
+      buttons.addButton(new ButtonRtoL("Speichern und Neu", context -> {
+        if (!handleStore())
         {
-          if (!handleStore())
+          return;
+        }
+        try
+        {
+          sollbuchung = (Sollbuchung) Einstellungen.getDBService()
+              .createObject(Sollbuchung.class, null);
+          sollbControl.setSollbuchung(sollbuchung);
+          sollbuchungPosition = (SollbuchungPosition) Einstellungen
+              .getDBService().createObject(SollbuchungPosition.class, null);
+          sollbPosControl.setSollbuchungPosition(sollbuchungPosition);
+          Input mitgliedInput = sollbControl.getMitglied();
+          if (mitgliedInput instanceof SelectInput)
           {
-            return;
+            ((SelectInput) mitgliedInput).setPreselected(null);
           }
-          try
+          else if (mitgliedInput instanceof MitgliedSearchInput)
           {
-            sollbuchung = (Sollbuchung) Einstellungen.getDBService()
-                .createObject(Sollbuchung.class, null);
-            sollbControl.setSollbuchung(sollbuchung);
-            sollbuchungPosition = (SollbuchungPosition) Einstellungen
-                .getDBService().createObject(SollbuchungPosition.class, null);
-            sollbPosControl.setSollbuchungPosition(sollbuchungPosition);
-            Input mitgliedInput = sollbControl.getMitglied();
-            if (mitgliedInput instanceof SelectInput)
-            {
-              ((SelectInput) mitgliedInput).setPreselected(null);
-            }
-            else if (mitgliedInput instanceof MitgliedSearchInput)
-            {
-              ((MitgliedSearchInput) mitgliedInput)
-                  .setValue("Zum Suchen tippen");
-            }
-          }
-          catch (Exception e)
-          {
-            String fehler = "Fehler beim erzeugen der Sollbuchung";
-            GUI.getStatusBar().setErrorText(fehler);
+            ((MitgliedSearchInput) mitgliedInput).setValue("Zum Suchen tippen");
           }
         }
-      }, null, false, "go-next.png");
+        catch (Exception e)
+        {
+          String fehler = "Fehler beim erzeugen der Sollbuchung";
+          GUI.getStatusBar().setErrorText(fehler);
+        }
+      }, null, false, "go-next.png", "CTRL+SHIFT+S"));
     }
 
     // Aktion abbrechen
-    buttons.addButton("Abbrechen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        edit = false;
-        close();
-      }
+    buttons.addButton("Abbrechen", context -> {
+      edit = false;
+      close();
     }, null, false, "process-stop.png");
     buttons.paint(parent);
 

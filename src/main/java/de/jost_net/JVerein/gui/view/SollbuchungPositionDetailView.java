@@ -22,14 +22,14 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.datasource.rmi.DBObject;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
@@ -61,27 +61,20 @@ public class SollbuchungPositionDetailView extends AbstractDetailView
     }
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
-        "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
+    buttons
+        .addButton(new HelpButton(DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT));
+    buttons.addButton(new SaveButton(o -> {
+      try
       {
-        try
-        {
-          control.handleStore();
-          GUI.startPreviousView();
-          GUI.getStatusBar().setSuccessText("Sollbuchungsposition gespeichert");
-        }
-        catch (ApplicationException e)
-        {
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
+        control.handleStore();
+        GUI.startPreviousView();
+        GUI.getStatusBar().setSuccessText("Sollbuchungsposition gespeichert");
       }
-    }, null, true, "document-save.png");
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+    }));
 
     buttons.addButton(new ButtonRtoL("Speichern und neu", context -> {
       try
@@ -102,7 +95,7 @@ public class SollbuchungPositionDetailView extends AbstractDetailView
             .setErrorText("Fehler beim Speichern der Sollbuchungsposition: "
                 + e.getMessage());
       }
-    }, null, false, "go-next.png")
+    }, null, false, "go-next.png", "CTRL+SHIFT+S")
     {
       @Override
       public void paint(Composite parent) throws RemoteException

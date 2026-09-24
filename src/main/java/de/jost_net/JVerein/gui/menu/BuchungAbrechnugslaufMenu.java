@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
@@ -35,7 +34,6 @@ public class BuchungAbrechnugslaufMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new BuchungAction(false), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new BuchungDeleteAction(),
-        "user-trash-full.png"));
+    addItem(new DeleteMenueItem(new BuchungDeleteAction()));
   }
 }

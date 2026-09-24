@@ -62,7 +62,7 @@ public class PersonenartDialog extends AbstractDialog<String>
         selected = s.substring(0, 1);
         close();
       }
-    }, null, false, "go-next.png");
+    }, null, true, "go-next.png");
     b.addButton("Abbrechen", new Action()
     {
 

@@ -20,16 +20,16 @@ import java.rmi.RemoteException;
 
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.datasource.rmi.DBObject;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
@@ -56,29 +56,22 @@ public class FormularfeldDetailView extends AbstractDetailView
     group.addLabelPair("Ausrichtung", control.getAusrichtung());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.FORMULARE, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.FORMULARE));
     buttons.addButton("Variablen anzeigen",
         new InsertVariableDialogAction(control.getMap()), control, false,
         "bookmark.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
+    buttons.addButton(new SaveButton(o -> {
+      try
       {
-        try
-        {
-          control.handleStore();
-          GUI.startPreviousView();
-          GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
-        }
-        catch (ApplicationException e)
-        {
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
+        control.handleStore();
+        GUI.startPreviousView();
+        GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
       }
-    }, null, true, "document-save.png");
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+    }));
 
     buttons.addButton(new ButtonRtoL("Speichern und neu", context -> {
       try
@@ -92,7 +85,7 @@ public class FormularfeldDetailView extends AbstractDetailView
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
-    }, null, false, "go-next.png")
+    }, null, false, "go-next.png", "CTRL+SHIFT+S")
     {
       @Override
       public void paint(Composite parent) throws RemoteException

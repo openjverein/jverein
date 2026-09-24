@@ -19,6 +19,8 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.rmi.RemoteException;
 import org.eclipse.swt.widgets.Composite;
 
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Container;
@@ -49,15 +51,15 @@ public class ViewVerlassenDialog extends AbstractDialog<Integer>
         + "soll die Bearbeitung wirklich verlassen werden?", true);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Speichern", context -> {
+    buttons.addButton(new SaveButton(context -> {
       data = SPEICHERN;
       close();
-    }, null, true, "document-save.png");
+    }));
 
-    buttons.addButton("Ohne Speichern verlassen", context -> {
+    buttons.addButton(new ButtonRtoL("Ohne Speichern verlassen", context -> {
       data = VERLASSEN;
       close();
-    }, null, false, "edit-undo.png");
+    }, null, false, "edit-undo.png", "CTRL+SHIFT+W"));
 
     buttons.addButton("Abbrechen", context -> {
       data = ABBRECHEN;

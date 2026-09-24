@@ -35,6 +35,7 @@ import de.jost_net.JVerein.gui.formatter.ZahlungsterminFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.menu.MitgliedMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.NaturalOrderColumn;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
@@ -202,7 +203,8 @@ public class MitgliedListeControl extends FilterControl
       if ((Boolean) Einstellungen
           .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
-        add("Externe Mitgliedsnummer", "externemitgliedsnummer", false, false);
+        add("Externe Mitgliedsnummer", "externemitgliedsnummer", false, null,
+            Column.ALIGN_AUTO, false, true);
       }
     }
     catch (RemoteException re)
@@ -369,18 +371,33 @@ public class MitgliedListeControl extends FilterControl
       boolean defaultvalue, boolean auchNichtMitglied)
   {
     add(spaltenbezeichnung, spaltenname, defaultvalue, null, Column.ALIGN_AUTO,
-        auchNichtMitglied);
+        auchNichtMitglied, false);
   }
 
   private void add(String spaltenbezeichnung, String spaltenname,
       boolean defaultVisible, Formatter formatter, int align,
       boolean auchNichtMitglied)
   {
+    add(spaltenbezeichnung, spaltenname, defaultVisible, formatter, align,
+        auchNichtMitglied, false);
+  }
+
+  private void add(String spaltenbezeichnung, String spaltenname,
+      boolean defaultVisible, Formatter formatter, int align,
+      boolean auchNichtMitglied, boolean naturalOrder)
+  {
     if (isMitglied || auchNichtMitglied)
     {
-      mitgliedList.addColumn(
-          new Column(spaltenname, spaltenbezeichnung, formatter, false, align),
-          defaultVisible);
+      if (naturalOrder)
+      {
+        mitgliedList.addColumn(new NaturalOrderColumn(spaltenname,
+            spaltenbezeichnung, formatter, false, align), defaultVisible);
+      }
+      else
+      {
+        mitgliedList.addColumn(new Column(spaltenname, spaltenbezeichnung,
+            formatter, false, align), defaultVisible);
+      }
     }
   }
 

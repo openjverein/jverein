@@ -17,10 +17,10 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.JVereinPlugin;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -127,17 +127,8 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getBuchungsartAnzeige());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_ANZEIGE, false, "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStoreAnzeige();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.EINSTELLUNGEN_ANZEIGE));
+    buttons.addButton(new SaveButton(o -> control.handleStoreAnzeige()));
     buttons.paint(this.getParent());
   }
 }

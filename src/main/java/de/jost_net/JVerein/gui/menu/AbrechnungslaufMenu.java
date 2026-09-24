@@ -50,8 +50,7 @@ public class AbrechnungslaufMenu extends ContextMenu
     addItem(new ContextMenuItem("Bearbeiten",
         new EditAction(AbrechnungslaufDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedSingleContextMenuItem("Löschen",
-        new AbrechnungslaufDeleteAction(), "user-trash-full.png"));
+    addItem(new DeleteMenueItem(new AbrechnungslaufDeleteAction()));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Gutschrift erstellen",
         new GutschriftAction(), "ueberweisung.png"));

@@ -39,8 +39,7 @@ public class SplitBuchungMenu extends ContextMenu
   {
     addItem(new CheckedSplitBuchungItem("Bearbeiten", new BuchungAction(true),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new SplitBuchungDeleteAction(), "user-trash-full.png"));
+    addItem(new DeleteMenueItem(new SplitBuchungDeleteAction()));
     addItem(new RestoreSplitBuchungItem("Wiederherstellen",
         new SplitBuchungWiederherstellenAction(control), "edit-undo.png"));
   }
