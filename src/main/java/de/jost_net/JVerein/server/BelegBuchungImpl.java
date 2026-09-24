@@ -3,17 +3,17 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.BuchungDokument;
-import de.jost_net.JVerein.rmi.BuchungsdokumentBuchung;
+import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.BelegBuchung;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsdokumentBuchungImpl extends AbstractBelegReferenzImpl
-    implements BuchungsdokumentBuchung
+public class BelegBuchungImpl extends AbstractBelegReferenzImpl
+    implements BelegBuchung
 {
 
   private static final long serialVersionUID = -810016324287845770L;
 
-  public BuchungsdokumentBuchungImpl() throws RemoteException
+  public BelegBuchungImpl() throws RemoteException
   {
     super();
   }
@@ -26,7 +26,7 @@ public class BuchungsdokumentBuchungImpl extends AbstractBelegReferenzImpl
       if (istAbgeschlossen())
       {
         throw new ApplicationException(
-            "Dokument kann nicht entfernt werden, ist einer abgeschlossenen Buchung zugeordnet.");
+            "Beleg kann nicht entfernt werden, ist einer abgeschlossenen Buchung zugeordnet.");
       }
     }
     catch (RemoteException e)
@@ -44,7 +44,7 @@ public class BuchungsdokumentBuchungImpl extends AbstractBelegReferenzImpl
       if (istAbgeschlossen())
       {
         throw new ApplicationException(
-            "Dokument kann nicht geändert werden, ist einer abgeschlossenen Buchung zugeordnet.");
+            "Beleg kann nicht geändert werden, ist einer abgeschlossenen Buchung zugeordnet.");
       }
     }
     catch (RemoteException e)
@@ -62,7 +62,7 @@ public class BuchungsdokumentBuchungImpl extends AbstractBelegReferenzImpl
       if (istAbgeschlossen())
       {
         throw new ApplicationException(
-            "Dokument kann nicht zugeordnet werden, Buchung ist abgeschlossen.");
+            "Beleg kann nicht zugeordnet werden, Buchung ist abgeschlossen.");
       }
     }
     catch (RemoteException e)
@@ -74,17 +74,17 @@ public class BuchungsdokumentBuchungImpl extends AbstractBelegReferenzImpl
 
   private boolean istAbgeschlossen() throws RemoteException
   {
-    return ((Buchung) getBuchung()).getJahresabschluss() != null;
+    return ((Buchung) getReferenz()).getJahresabschluss() != null;
   }
 
   @Override
   protected Class<?> getForeignObject(String field)
   {
-    if ("dokument".equals(field))
+    if ("beleg".equals(field))
     {
-      return BuchungDokument.class;
+      return Beleg.class;
     }
-    else if ("buchung".equals(field))
+    else if ("referenz".equals(field))
     {
       return Buchung.class;
     }
@@ -94,19 +94,19 @@ public class BuchungsdokumentBuchungImpl extends AbstractBelegReferenzImpl
   @Override
   public String getObjektName() throws RemoteException
   {
-    return "Buchungsdokument-Buchung";
+    return "Beleg-Buchung";
   }
 
   @Override
   public String getObjektNameMehrzahl() throws RemoteException
   {
-    return "Buchungsdokument-Buchungen";
+    return "Beleg-Buchungen";
   }
 
   @Override
   protected String getTableName()
   {
-    return "buchungsdokumentbuchung";
+    return "belegbuchung";
   }
 
   @Override

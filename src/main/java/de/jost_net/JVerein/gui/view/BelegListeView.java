@@ -22,7 +22,7 @@ import de.jost_net.JVerein.gui.control.BelegListControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.util.DragnDropUtil;
 import de.jost_net.JVerein.keys.Filter;
-import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -56,7 +56,7 @@ public class BelegListeView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.DOKUMENT, false, "question-circle.png");
     buttons.addButton("Neu",
-        new NewAction(BelegDetailView.class, BuchungDokument.class), null,
+        new NewAction(BelegDetailView.class, Beleg.class), null,
         false, "document-new.png");
     buttons.paint(this.getParent());
 

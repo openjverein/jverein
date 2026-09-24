@@ -3,7 +3,7 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
-import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.datasource.rmi.DBObject;
 
 public abstract class AbstractBelegReferenzImpl extends AbstractJVereinDBObject
@@ -18,26 +18,26 @@ public abstract class AbstractBelegReferenzImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public BuchungDokument getDokument() throws RemoteException
+  public Beleg getBeleg() throws RemoteException
   {
-    return (BuchungDokument) super.getAttribute("dokument");
+    return (Beleg) super.getAttribute("beleg");
   }
 
   @Override
-  public void setDokument(BuchungDokument dokument) throws RemoteException
+  public void setBeleg(Beleg dokument) throws RemoteException
   {
-    setAttribute("dokument", dokument);
+    setAttribute("beleg", dokument);
   }
 
   @Override
-  public DBObject getBuchung() throws RemoteException
+  public DBObject getReferenz() throws RemoteException
   {
-    return (DBObject) super.getAttribute("buchung");
+    return (DBObject) super.getAttribute("referenz");
   }
 
   @Override
-  public void setBuchung(DBObject buchung) throws RemoteException
+  public void setReferenz(DBObject referenz) throws RemoteException
   {
-    setAttribute("buchung", buchung);
+    setAttribute("referenz", referenz);
   }
 }

@@ -20,8 +20,8 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.dialogs.BelegAuswahlDialog;
-import de.jost_net.JVerein.rmi.BuchungDokument;
-import de.jost_net.JVerein.rmi.IBeleg;
+import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -47,15 +47,15 @@ public class BelegZuordnenAction implements Action
     try
     {
       BelegAuswahlDialog d = new BelegAuswahlDialog();
-      BuchungDokument[] belege = d.open();
+      Beleg[] belege = d.open();
       if (belege != null)
       {
         try
         {
           DBTransaction.starten();
-          for (BuchungDokument b : belege)
+          for (Beleg b : belege)
           {
-            ((IBeleg) context).addBeleg(b);
+            ((AbstractBelegDBObject) context).addBeleg(b);
           }
           DBTransaction.commit();
         }
@@ -66,7 +66,7 @@ public class BelegZuordnenAction implements Action
         }
         // Erst jetzt Dokumente anzeigen, falls bei einem Beleg ein Fehler
         // passiert
-        for (BuchungDokument b : belege)
+        for (Beleg b : belege)
         {
           part.addItem(b);
         }

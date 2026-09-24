@@ -52,7 +52,7 @@ import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -388,7 +388,7 @@ public class VorlageUtil
           map = new BuchungMap().getMap((Buchung) obj, map);
           break;
         case BELEG_PFAD:
-          map = new BelegMap().getMap((BuchungDokument) obj, map);
+          map = new BelegMap().getMap((Beleg) obj, map);
           break;
       }
     }

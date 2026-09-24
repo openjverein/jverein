@@ -23,17 +23,17 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.gui.control.BelegListControl;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.Filter;
-import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
-public class BelegAuswahlDialog extends AbstractDialog<BuchungDokument[]>
+public class BelegAuswahlDialog extends AbstractDialog<Beleg[]>
 {
-  private BuchungDokument[] data;
+  private Beleg[] data;
 
-  private BuchungDokument[] auswahl;
+  private Beleg[] auswahl;
 
   public BelegAuswahlDialog()
   {
@@ -62,23 +62,23 @@ public class BelegAuswahlDialog extends AbstractDialog<BuchungDokument[]>
     JVereinTablePart table = control.getTablePart();
     table.paint(parent);
     table.addSelectionListener(e -> {
-      if (e.data instanceof BuchungDokument)
+      if (e.data instanceof Beleg)
       {
-        auswahl = new BuchungDokument[] { (BuchungDokument) e.data };
+        auswahl = new Beleg[] { (Beleg) e.data };
       }
       else
       {
-        auswahl = (BuchungDokument[]) e.data;
+        auswahl = (Beleg[]) e.data;
       }
     });
     table.setAction(context -> {
-      if (context instanceof BuchungDokument)
+      if (context instanceof Beleg)
       {
-        data = new BuchungDokument[] { (BuchungDokument) context };
+        data = new Beleg[] { (Beleg) context };
       }
       else
       {
-        data = (BuchungDokument[]) context;
+        data = (Beleg[]) context;
       }
       close();
     });
@@ -105,7 +105,7 @@ public class BelegAuswahlDialog extends AbstractDialog<BuchungDokument[]>
   }
 
   @Override
-  protected BuchungDokument[] getData() throws Exception
+  protected Beleg[] getData() throws Exception
   {
     return this.data;
   }

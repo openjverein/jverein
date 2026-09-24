@@ -22,11 +22,11 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.rmi.Beleg;
 
 public class BelegMap extends AbstractMap
 {
-  public Map<String, Object> getMap(BuchungDokument beleg,
+  public Map<String, Object> getMap(Beleg beleg,
       Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;

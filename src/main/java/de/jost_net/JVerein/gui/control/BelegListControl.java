@@ -30,7 +30,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.BelegDetailView;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -58,7 +58,7 @@ public class BelegListControl extends FilterControl
       return docsList;
     }
     docsList = new AutoUpdateTablePart(getList(), null);
-    docsList.setTableName("Dokumente");
+    docsList.setTableName("Belege");
     docsList.addColumn("Belegnummer", "belegnummer");
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -87,8 +87,8 @@ public class BelegListControl extends FilterControl
     {
       DBTransaction.starten();
 
-      BuchungDokument document = Einstellungen.getDBService()
-          .createObject(BuchungDokument.class, null);
+      Beleg document = Einstellungen.getDBService().createObject(Beleg.class,
+          null);
       File file = new File(filename);
 
       document.setBemerkung(file.getName());
@@ -114,11 +114,11 @@ public class BelegListControl extends FilterControl
     }
   }
 
-  public DBIterator<BuchungDokument> getList()
+  public DBIterator<Beleg> getList()
       throws RemoteException, ApplicationException
   {
-    DBIterator<BuchungDokument> docs = Einstellungen.getDBService()
-        .createList(BuchungDokument.class);
+    DBIterator<Beleg> docs = Einstellungen.getDBService()
+        .createList(Beleg.class);
     for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
       Object value = entry.getValue();
@@ -135,9 +135,8 @@ public class BelegListControl extends FilterControl
         case NICHT_ZUGEORDNET:
           if ((boolean) value)
           {
-            docs.addFilter("NOT EXISTS "
-                + "(SELECT * FROM buchungsdokumentbuchung "
-                + "WHERE buchungsdokumentbuchung.dokument = buchungdokument.id)");
+            docs.addFilter("NOT EXISTS " + "(SELECT * FROM belegbuchung "
+                + "WHERE belegbuchung.brefernz = beleg.id)");
           }
           break;
         default:
@@ -155,7 +154,7 @@ public class BelegListControl extends FilterControl
     try
     {
       docsList.removeAll();
-      DBIterator<BuchungDokument> it = getList();
+      DBIterator<Beleg> it = getList();
       while (it.hasNext())
       {
         docsList.addItem(it.next());

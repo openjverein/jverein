@@ -2,8 +2,8 @@ package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Messaging.BelegRemoveMessage;
 import de.jost_net.JVerein.gui.dialogs.JVereinYesNoDialog;
-import de.jost_net.JVerein.rmi.BuchungDokument;
-import de.jost_net.JVerein.rmi.IBeleg;
+import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -14,9 +14,9 @@ import de.willuhn.util.ApplicationException;
 public class BelegEntfernenAction implements Action
 {
 
-  private IBeleg belegContext;
+  private AbstractBelegDBObject belegContext;
 
-  public BelegEntfernenAction(IBeleg belegContext)
+  public BelegEntfernenAction(AbstractBelegDBObject belegContext)
   {
     this.belegContext = belegContext;
   }
@@ -28,15 +28,15 @@ public class BelegEntfernenAction implements Action
 
     d.setTitle("Beleg entfernen");
     String text = "";
-    BuchungDokument[] belege;
-    if (context instanceof BuchungDokument[])
+    Beleg[] belege;
+    if (context instanceof Beleg[])
     {
-      belege = (BuchungDokument[]) context;
+      belege = (Beleg[]) context;
       text = "Sollen die Dokumente wirklich entfernt werden?";
     }
-    else if (context instanceof BuchungDokument)
+    else if (context instanceof Beleg)
     {
-      belege = new BuchungDokument[] { (BuchungDokument) context };
+      belege = new Beleg[] { (Beleg) context };
       text = "Soll das Dokument wirklich entfernt werden?";
     }
     else
@@ -48,9 +48,9 @@ public class BelegEntfernenAction implements Action
     {
       if ((boolean) d.open())
       {
-        for (BuchungDokument beleg : belege)
+        for (Beleg beleg : belege)
         {
-          belegContext.removeBeleg((BuchungDokument) beleg);
+          belegContext.removeBeleg((Beleg) beleg);
           Application.getMessagingFactory()
               .sendMessage(new BelegRemoveMessage(beleg));
         }

@@ -801,7 +801,7 @@ public class Einstellungen
     settings.setAttribute("mitgliedDokumentVerzeichnis", value);
   }
 
-  public static String getBuchungDokumentVerzeichnis()
+  public static String getBelegVerzeichnis()
   {
     loadSettings();
     return settings.getString("buchungDokumentVerzeichnis",

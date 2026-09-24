@@ -22,7 +22,7 @@ import de.jost_net.JVerein.gui.action.DokumentShowAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.BelegDetailView;
-import de.jost_net.JVerein.rmi.IBeleg;
+import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -35,7 +35,7 @@ public class BelegMenu extends ContextMenu
     this(part, null);
   }
 
-  public BelegMenu(JVereinTablePart part, IBeleg belegContext)
+  public BelegMenu(JVereinTablePart part, AbstractBelegDBObject belegContext)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(BelegDetailView.class, part), "text-x-generic.png"));

@@ -32,56 +32,57 @@ public class Update0512 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
 
-    Table table = new Table("buchungsdokumentbuchung");
+    execute(renameTable("buchungdokument", "beleg"));
+
+    Table table = new Table("belegbuchung");
 
     Column id = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
     table.add(id);
     table.setPrimaryKey(id);
-    table.add(new Column("dokument", COLTYPE.BIGINT, 4, null, true, false));
-    table.add(new Column("buchung", COLTYPE.BIGINT, 4, null, true, false));
+    table.add(new Column("beleg", COLTYPE.BIGINT, 4, null, true, false));
+    table.add(new Column("referenz", COLTYPE.BIGINT, 4, null, true, false));
     execute(createTable(table));
 
-    execute("INSERT INTO buchungsdokumentbuchung (dokument,buchung) "
-        + "SELECT id, referenz FROM buchungdokument WHERE referenz IS NOT NULL");
+    execute("INSERT INTO belegbuchung (beleg,referenz) "
+        + "SELECT id, referenz FROM beleg WHERE beleg.referenz IS NOT NULL");
 
     execute(
-        "CREATE UNIQUE INDEX dokumentbuchung ON buchungsdokumentbuchung (dokument,buchung);");
+        "CREATE UNIQUE INDEX belegreferenz ON belegbuchung (beleg,referenz);");
 
-    execute(addColumn("buchungdokument",
+    execute(addColumn("beleg",
         new Column("belegnummer", COLTYPE.VARCHAR, 50, null, false, false)));
 
-    // Damit per messaging gespeicherte Dokumente weiterhing gefunden werden,
+    // Damit per messaging gespeicherte Belege weiterhing gefunden werden,
     // ist die referenz weiter nötig, neuerdings wird dafür die Belegnummer
     // verwendet.
-    // Nur das erste Dokument pro Buchung wird mit einer Belegnummer versehen,
+    // Nur der erste Beleg pro Buchung wird mit einer Belegnummer versehen,
     // bei den anderen greift der Falback-Modus in
-    // BuchungDokumentImpl.getNummer().
+    // BelegImpl.getNummer().
 
-    // Temp-Tabelle mit jeweils erstem Dokument pro referenz
+    // Temp-Tabelle mit jeweils erstem Beleg pro referenz
     execute("CREATE TEMPORARY TABLE temp_first (id BIGINT PRIMARY KEY);");
-    execute("INSERT INTO temp_first (id) SELECT MIN(id) FROM buchungdokument"
+    execute("INSERT INTO temp_first (id) SELECT MIN(id) FROM beleg"
         + " WHERE referenz IS NOT NULL GROUP BY referenz;");
 
     // Update nur für diese IDs: setze belegnummer = referenz (als String)
-    execute("UPDATE buchungdokument SET belegnummer = CONCAT('', referenz) "
+    execute("UPDATE beleg SET belegnummer = CONCAT('', referenz) "
         + "WHERE id IN (SELECT id  FROM temp_first)");
 
     // Temp-Tabelle entfernen
-    execute("DROP TEMPORARY TABLE IF EXISTS temp_first;");
+    execute("DROP TABLE IF EXISTS temp_first;");
 
-    execute(
-        "CREATE UNIQUE INDEX belegnummer ON buchungdokument (belegnummer);");
+    execute("CREATE UNIQUE INDEX belegnummer ON beleg (belegnummer);");
 
-    execute(createForeignKey("fkBuchung", "buchungsdokumentbuchung", "buchung",
-        "buchung", "id", "CASCADE", "RESTRICT"));
+    execute(createForeignKey("fkBuchung", "belegbuchung", "referenz", "buchung",
+        "id", "CASCADE", "RESTRICT"));
 
-    execute(createForeignKey("fkDokument", "buchungsdokumentbuchung",
-        "dokument", "buchungdokument", "id", "CASCADE", "RESTRICT"));
+    execute(createForeignKey("fkBeleg", "belegbuchung", "beleg", "beleg", "id",
+        "CASCADE", "RESTRICT"));
 
     // Belegnummer soll erstmal von bisheriger Buchungsnummer wieterzählen,
     // solange nicht individuell in den Einstellungen angepasst wird
     execute("INSERT INTO einstellungneu (name, wert) "
         + "SELECT 'beleg_zaehler', COALESCE(MAX(referenz), 0) + 1 "
-        + "FROM buchungdokument WHERE referenz IS NOT NULL;");
+        + "FROM beleg WHERE referenz IS NOT NULL;");
   }
 }

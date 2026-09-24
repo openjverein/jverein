@@ -33,9 +33,9 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.BelegMenu;
 import de.jost_net.JVerein.gui.util.DragnDropUtil;
 import de.jost_net.JVerein.gui.view.BelegDetailView;
-import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.rmi.IBeleg;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -52,14 +52,14 @@ public class BelegPart implements Part
 {
   private AutoUpdateTablePart docsList;
 
-  private IBeleg currentObject;
+  private AbstractBelegDBObject currentObject;
 
   private BelegMessageConsumer consumer = new BelegMessageConsumer();
 
   @Override
   public void paint(Composite parent) throws RemoteException
   {
-    LabelGroup grDokument = new LabelGroup(parent, "Dokumente", true);
+    LabelGroup grDokument = new LabelGroup(parent, "Belege", true);
 
     grDokument.getComposite().setLayout(new GridLayout(1, false));
 
@@ -84,13 +84,14 @@ public class BelegPart implements Part
     Application.getMessagingFactory().registerMessageConsumer(consumer);
   }
 
-  private IBeleg getCurrentObject()
+  private AbstractBelegDBObject getCurrentObject()
   {
     if (currentObject != null)
     {
       return currentObject;
     }
-    currentObject = (IBeleg) GUI.getCurrentView().getCurrentObject();
+    currentObject = (AbstractBelegDBObject) GUI.getCurrentView()
+        .getCurrentObject();
     return currentObject;
   }
 
@@ -101,13 +102,12 @@ public class BelegPart implements Part
       return docsList;
     }
     docsList = new AutoUpdateTablePart(getCurrentObject().getBelegList(), null);
-    docsList.setTableName("Dokumente");
+    docsList.setTableName("Belege");
     docsList.addColumn("Belegnummer", "belegnummer");
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     docsList.addColumn("Bemerkung", "bemerkung");
     docsList.addColumn("Pfad", "vollpfad");
-    docsList.addColumn("Buchungen", "buchungsdokumentbuchung.size");
     docsList.setContextMenu(new BelegMenu(docsList, getCurrentObject()));
     docsList.setMulti(true);
     docsList.setAction(new EditAction(BelegDetailView.class, docsList));
@@ -128,8 +128,8 @@ public class BelegPart implements Part
       }
 
       DBTransaction.starten();
-      BuchungDokument document = Einstellungen.getDBService()
-          .createObject(BuchungDokument.class, null);
+      Beleg document = Einstellungen.getDBService().createObject(Beleg.class,
+          null);
       File file = new File(filename);
 
       document.setBemerkung(file.getName());

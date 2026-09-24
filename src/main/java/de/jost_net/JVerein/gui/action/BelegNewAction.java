@@ -1,8 +1,8 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.view.BelegDetailView;
-import de.jost_net.JVerein.rmi.BuchungDokument;
-import de.jost_net.JVerein.rmi.IBeleg;
+import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -11,21 +11,21 @@ import de.willuhn.util.ApplicationException;
 public class BelegNewAction extends NewAction
 {
 
-  private IBeleg belegObject;
+  private AbstractBelegDBObject belegObject;
 
   public BelegNewAction()
   {
-    super(BelegDetailView.class, BuchungDokument.class);
+    super(BelegDetailView.class, Beleg.class);
   }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (!(context instanceof IBeleg))
+    if (!(context instanceof AbstractBelegDBObject))
     {
       throw new ApplicationException("Falsches Kontextobjekt");
     }
-    this.belegObject = (IBeleg) context;
+    this.belegObject = (AbstractBelegDBObject) context;
     super.handleAction(context);
   }
 

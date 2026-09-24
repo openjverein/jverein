@@ -1209,7 +1209,7 @@ public class EinstellungControl extends AbstractControl
       return buchungsDokumentVerzeichnis;
     }
     buchungsDokumentVerzeichnis = new DirectoryInput(
-        Einstellungen.getBuchungDokumentVerzeichnis());
+        Einstellungen.getBelegVerzeichnis());
     return buchungsDokumentVerzeichnis;
   }
 
@@ -2676,7 +2676,7 @@ public class EinstellungControl extends AbstractControl
           throw new OperationCanceledException();
         }
       }
-      if (!Einstellungen.getBuchungDokumentVerzeichnis()
+      if (!Einstellungen.getBelegVerzeichnis()
           .equals(buchungsDokumentVerzeichnis.getValue()))
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
@@ -2684,7 +2684,7 @@ public class EinstellungControl extends AbstractControl
         dialog
             .setText("Das Verzeichnis für Buchungs-Dokumente wurde geändert.\n"
                 + "Bitte Verschieben sie ggf. vorhandene Dokument manuell von '"
-                + Einstellungen.getBuchungDokumentVerzeichnis() + "' nach '"
+                + Einstellungen.getBelegVerzeichnis() + "' nach '"
                 + buchungsDokumentVerzeichnis.getValue() + "'\n"
                 + "Fortfahren?");
         if (!(Boolean) dialog.open())

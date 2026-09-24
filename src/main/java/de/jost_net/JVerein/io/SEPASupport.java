@@ -15,7 +15,7 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -66,8 +66,8 @@ public class SEPASupport
         formular.store();
         aufbereitung.closeFormular();
 
-        BuchungDokument doc = Einstellungen.getDBService()
-            .createObject(BuchungDokument.class, null);
+        Beleg doc = Einstellungen.getDBService()
+            .createObject(Beleg.class, null);
         doc.setBemerkung(file.getName());
         doc.setDatum(new Date());
         doc.setFile(file);

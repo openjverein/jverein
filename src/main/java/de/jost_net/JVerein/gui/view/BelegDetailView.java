@@ -12,7 +12,7 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.rmi.IBeleg;
+import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.willuhn.datasource.rmi.Changeable;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -21,13 +21,13 @@ import de.willuhn.jameica.gui.util.TabGroup;
 public class BelegDetailView extends AbstractDetailView
 {
 
-  private IBeleg belegObject;
+  private AbstractBelegDBObject belegObject;
 
   public BelegDetailView()
   {
   }
 
-  public BelegDetailView(IBeleg belegObject)
+  public BelegDetailView(AbstractBelegDBObject belegObject)
   {
     this.belegObject = belegObject;
   }

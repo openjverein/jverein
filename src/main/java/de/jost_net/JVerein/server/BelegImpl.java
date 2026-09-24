@@ -31,24 +31,23 @@ import de.jost_net.JVerein.Variable.BelegVar;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
-import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungDokumentImpl extends AbstractDokumentImpl
-    implements BuchungDokument
+public class BelegImpl extends AbstractDokumentImpl implements Beleg
 {
 
   // Hier müssen alle Implementierungen von AbstractBelegReferenz
   // aufgelistet werden
   private List<Class<? extends AbstractBelegReferenz>> belegReferenzList = Arrays
-      .asList(BuchungsdokumentBuchungImpl.class);
+      .asList(BelegBuchungImpl.class);
 
   private static final long serialVersionUID = 1L;
 
-  public BuchungDokumentImpl() throws RemoteException
+  public BelegImpl() throws RemoteException
   {
     super();
   }
@@ -62,7 +61,7 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
       {
         DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
             .createList(c);
-        it.addFilter("dokument = ?", getID());
+        it.addFilter("beleg = ?", getID());
         while (it.hasNext())
         {
           it.next().checkChangesAllowed();
@@ -108,7 +107,7 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
       {
         DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
             .createList(c);
-        it.addFilter("dokument = ?", getID());
+        it.addFilter("beleg = ?", getID());
         while (it.hasNext())
         {
           it.next().checkChangesAllowed();
@@ -132,7 +131,7 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
       for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
       {
         DBIterator<DBObject> it = Einstellungen.getDBService().createList(c);
-        it.addFilter("dokument = ?", getID());
+        it.addFilter("beleg = ?", getID());
         while (it.hasNext())
         {
           it.next().delete();
@@ -151,19 +150,21 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
   @Override
   protected String getTableName()
   {
-    return "buchungdokument";
+    return "beleg";
   }
 
   @Override
   protected String getVerzeichnis()
   {
+    // Für per Messaging gespeicherte Belege nötig. Damit auch bestehende Belege
+    // gefunden werden, bleibt es hier bei "buchungen"
     return "buchungen";
   }
 
   @Override
   public String getRootDir()
   {
-    return Einstellungen.getBuchungDokumentVerzeichnis() + File.separator;
+    return Einstellungen.getBelegVerzeichnis() + File.separator;
   }
 
   @Override
@@ -235,9 +236,6 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
   @Override
   public String getNummer() throws RemoteException
   {
-    // Prefer explicit belegnummer if present (new behaviour),
-    // otherwise fall back to old referenz for backward compatibility.
-
     // Wird zum Speichern per Messaging benötigt
     String nr = getBelegnummer();
     if (nr != null && !nr.isBlank())
@@ -254,6 +252,6 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
   @Override
   public void setReferenz(Long referenz) throws RemoteException
   {
-    throw new RemoteException("set Referenz bei Belegen nicht möglich!");
+    throw new RemoteException("setReferenz bei Belegen nicht möglich!");
   }
 }

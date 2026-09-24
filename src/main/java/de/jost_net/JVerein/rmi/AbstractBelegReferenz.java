@@ -8,16 +8,16 @@ import de.willuhn.util.ApplicationException;
 
 public interface AbstractBelegReferenz extends JVereinDBObject, Changeable
 {
-  public BuchungDokument getDokument() throws RemoteException;
+  public Beleg getBeleg() throws RemoteException;
 
-  public void setDokument(BuchungDokument dokument) throws RemoteException;
+  public void setBeleg(Beleg beleg) throws RemoteException;
 
-  public DBObject getBuchung() throws RemoteException;
+  public DBObject getReferenz() throws RemoteException;
 
-  public void setBuchung(DBObject buchung) throws RemoteException;
+  public void setReferenz(DBObject referenz) throws RemoteException;
 
   /**
-   * Prüft, ob änderungen am Beleg aus sicht der Referenz erlaubt sind, wenn
+   * Prüft, ob Änderungen am Beleg aus sicht der Referenz erlaubt sind, wenn
    * nicht wird eine Exception geworfen
    * 
    * @throws RemoteException

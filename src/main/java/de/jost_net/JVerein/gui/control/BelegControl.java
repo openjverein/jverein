@@ -36,8 +36,8 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.BuchungDokument;
-import de.jost_net.JVerein.rmi.IBeleg;
+import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -67,32 +67,31 @@ public class BelegControl extends VorZurueckControl implements Savable
 
   private int selectedTab = TAB_BUCHUNGEN;
 
-  private IBeleg belegObject;
+  private AbstractBelegDBObject belegObject;
 
-  private BuchungDokument beleg;
+  private Beleg beleg;
 
-  public BelegControl(AbstractView view, IBeleg belegObject)
+  public BelegControl(AbstractView view, AbstractBelegDBObject belegObject)
   {
     super(view);
     this.belegObject = belegObject;
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
   }
 
-  private BuchungDokument getBeleg() throws RemoteException
+  private Beleg getBeleg() throws RemoteException
   {
     if (beleg != null)
     {
       return beleg;
     }
-    beleg = (BuchungDokument) getCurrentObject();
+    beleg = (Beleg) getCurrentObject();
     return beleg;
   }
 
   @Override
-  public BuchungDokument prepareStore()
-      throws RemoteException, ApplicationException
+  public Beleg prepareStore() throws RemoteException, ApplicationException
   {
-    BuchungDokument beleg = getBeleg();
+    Beleg beleg = getBeleg();
     beleg.setBemerkung((String) getBezeichnung().getValue());
 
     if (datei != null)
@@ -110,7 +109,7 @@ public class BelegControl extends VorZurueckControl implements Savable
     DBTransaction.starten();
     try
     {
-      BuchungDokument beleg = prepareStore();
+      Beleg beleg = prepareStore();
       beleg.store();
       if (belegObject != null)
       {
@@ -182,9 +181,9 @@ public class BelegControl extends VorZurueckControl implements Savable
     }
     DBIterator<Buchung> it = Einstellungen.getDBService()
         .createList(Buchung.class);
-    it.join("buchungsdokumentbuchung");
-    it.addFilter("buchungsdokumentbuchung.buchung = buchung.id");
-    it.addFilter("buchungsdokumentbuchung.dokument = ?", getBeleg().getID());
+    it.join("belegbuchung");
+    it.addFilter("belegbuchung.referenz = buchung.id");
+    it.addFilter("belegbuchung.beleg = ?", getBeleg().getID());
 
     buchungList = new BuchungListTablePart(PseudoIterator.asList(it),
         new BuchungAction(false, null));

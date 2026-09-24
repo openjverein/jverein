@@ -18,7 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-public interface BuchungDokument extends AbstractDokument
+public interface Beleg extends AbstractDokument
 {
   public String getBelegnummer() throws RemoteException;
 
