@@ -136,7 +136,7 @@ public class BelegListControl extends FilterControl
           if ((boolean) value)
           {
             docs.addFilter("NOT EXISTS " + "(SELECT * FROM belegbuchung "
-                + "WHERE belegbuchung.brefernz = beleg.id)");
+                + "WHERE belegbuchung.beleg = beleg.id)");
           }
           break;
         default:
