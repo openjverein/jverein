@@ -54,7 +54,7 @@ public class BelegListeView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.DOKUMENT, false, "question-circle.png");
+        DokumentationUtil.BELEG, false, "question-circle.png");
     buttons.addButton("Neu",
         new NewAction(BelegDetailView.class, Beleg.class), null,
         false, "document-new.png");

@@ -191,11 +191,4 @@ public interface Buchung extends JVereinDBObject
 
   public void setUnterlagenWertermittlung(Boolean unterlagenwertermittlung)
       throws RemoteException;
-
-  public AbstractBelegReferenz addBeleg(Beleg document)
-      throws RemoteException, ApplicationException;
-
-  void removeBeleg(Beleg dokument)
-      throws RemoteException, ApplicationException;
-
 }

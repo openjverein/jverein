@@ -264,7 +264,7 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
   }
 
   @Override
-  public void updateCheck() throws ApplicationException
+  protected void updateCheck() throws ApplicationException
   {
     if (!forcedUpdate)
     {

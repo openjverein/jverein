@@ -96,7 +96,7 @@ public class DokumentationUtil
 
   public static final String BUCHUNGEN = BUCHF + "buchungen";
 
-  public static final String DOKUMENT = BUCHF + "dokument";
+  public static final String BELEG = BUCHF + "beleg";
 
   public static final String ANLAGENBUCHUNGEN = BUCHF + "anlagenbuchungen";
 
