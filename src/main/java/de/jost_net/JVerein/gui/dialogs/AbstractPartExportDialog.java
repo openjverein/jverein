@@ -410,23 +410,26 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   @SuppressWarnings("unchecked")
   protected void saveSettings() throws RemoteException
   {
-    List<ExportSpalte> itemsChecked = spaltenList.getItems();
-    List<String> spaltenNamen = new ArrayList<>();
-    for (ExportSpalte sp : (List<ExportSpalte>) spaltenList.getItems(false))
+    if (spaltenList != null)
     {
-      settings.setAttribute(
-          settingPrefix + "anzeigen." + sp.getColumn().getName(),
-          itemsChecked.contains(sp));
-      if (art.equals(ExportArt.PDF))
+      List<ExportSpalte> itemsChecked = spaltenList.getItems();
+      List<String> spaltenNamen = new ArrayList<>();
+      for (ExportSpalte sp : (List<ExportSpalte>) spaltenList.getItems(false))
       {
         settings.setAttribute(
-            settingPrefix + "breite." + sp.getColumn().getName(),
-            sp.getBreite());
+            settingPrefix + "anzeigen." + sp.getColumn().getName(),
+            itemsChecked.contains(sp));
+        if (art.equals(ExportArt.PDF))
+        {
+          settings.setAttribute(
+              settingPrefix + "breite." + sp.getColumn().getName(),
+              sp.getBreite());
+        }
+        spaltenNamen.add(sp.getColumn().getName());
       }
-      spaltenNamen.add(sp.getColumn().getName());
+      settings.setAttribute(settingPrefix + "order",
+          String.join(",", spaltenNamen));
     }
-    settings.setAttribute(settingPrefix + "order",
-        String.join(",", spaltenNamen));
 
     if (art.equals(ExportArt.PDF))
     {
