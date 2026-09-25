@@ -79,6 +79,9 @@ public class Update0512 extends AbstractDDLUpdate
     execute(createForeignKey("fkBeleg", "belegbuchung", "beleg", "beleg", "id",
         "CASCADE", "RESTRICT"));
 
+    execute(alterColumnDropNotNull("beleg",
+        new Column("referenz", COLTYPE.BIGINT, 11, null, false, false)));
+
     // Belegnummer soll erstmal von bisheriger Buchungsnummer wieterzählen,
     // solange nicht individuell in den Einstellungen angepasst wird
     execute("INSERT INTO einstellungneu (name, wert) "
