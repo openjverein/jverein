@@ -328,6 +328,12 @@ public class MitgliedControl extends VorZurueckControl implements Savable
     mitgliedstyp = new SelectNoScrollInput(
         mtIt != null ? PseudoIterator.asList(mtIt) : null, typ);
     mitgliedstyp.setName("Mitgliedstyp");
+    // Mitgliedstyp setzen weil er später gebracht wird
+    if (typ == null)
+    {
+      Mitgliedstyp mt = mtIt.next();
+      getMitglied().setMitgliedstyp(Long.valueOf(mt.getID()));
+    }
     mitgliedstyp.addListener(event -> {
       try
       {
