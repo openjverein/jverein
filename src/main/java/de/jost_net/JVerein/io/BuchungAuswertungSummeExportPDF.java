@@ -129,6 +129,11 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
       ProgressMonitor monitor) throws RemoteException, ApplicationException,
       FileNotFoundException, DocumentException, IOException
   {
+    summe = 0;
+    summeeinnahmen = 0;
+    summeausgaben = 0;
+    summeumbuchungen = 0;
+
     BuchungsControl control = (BuchungsControl) objects[0];
     BuchungQuery query = control.getQuery();
     ArrayList<Buchungsart> buchungsarten = getBuchungsarten(query);
