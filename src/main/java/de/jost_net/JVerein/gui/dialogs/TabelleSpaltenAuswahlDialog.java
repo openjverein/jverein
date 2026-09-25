@@ -109,7 +109,7 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
 
     ButtonArea buttons = new ButtonArea();
 
-    buttons.addButton(new HelpButton(DokumentationUtil.ALLGEMEIN));
+    buttons.addButton(new HelpButton(DokumentationUtil.ALLGEMEINES));
 
     buttons.addButton("Reset", c -> {
       for (IJVereinPart table : tableMap.keySet())
