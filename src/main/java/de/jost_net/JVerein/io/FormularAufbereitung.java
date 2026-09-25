@@ -77,6 +77,7 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
@@ -600,8 +601,12 @@ public class FormularAufbereitung
     }
 
     String id = re.getMitglied().getID();
-    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+        && re.getMitglied().getMitgliedstyp().getID()
+            .equals(Mitgliedstyp.MITGLIED))
+    {
       id = re.getMitglied().getExterneMitgliedsnummer();
+    }
 
     // Rechnungsempfänger
     invoice.setRecipient(new TradeParty(

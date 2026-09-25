@@ -817,6 +817,12 @@ public class MitgliedControl extends VorZurueckControl implements Savable
     {
       mandatid.disable();
     }
+    if ((Integer) Einstellungen.getEinstellung(
+        Property.SEPAMANDATIDSOURCE) == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER
+        && !isMitglied)
+    {
+      mandatid.enable();
+    }
     return mandatid;
   }
 
@@ -2038,8 +2044,8 @@ public class MitgliedControl extends VorZurueckControl implements Savable
     // ManadatID hier setzen wenn sie editierbar ist
     int sepaMandatIdSource = (Integer) Einstellungen
         .getEinstellung(Property.SEPAMANDATIDSOURCE);
-    if (sepaMandatIdSource != SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER
-        && sepaMandatIdSource != SepaMandatIdSource.DBID)
+    if ((sepaMandatIdSource == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER
+        && !isMitglied) || sepaMandatIdSource == SepaMandatIdSource.INDIVIDUELL)
     {
       m.setMandatID((String) getMandatID().getValue());
     }
