@@ -307,7 +307,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       ButtonArea buttons = new ButtonArea();
       buttons.addButton(new Button("Breiten zurücksetzen", action, null, false,
           "edit-undo.png"));
-      buttons.addButton("Reset", c -> resetInputs(), null, true,
+      buttons.addButton("Reset", c -> resetSpalten(), null, true,
           "edit-undo.png");
       tabSpalten.addButtonArea(buttons);
     }
