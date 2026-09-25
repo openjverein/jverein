@@ -278,12 +278,10 @@ public class FormularAufbereitung
       // Wir berechnen die Anzahl an Spalten + 4 Padding an jeder Seite, so
       // bekommen wir eine unskalierte Matrix die dann bei der Ausgabe skaliert
       // wird
-      QRCode code = Encoder.encode(
-          new String(sbEpc.toString().getBytes(charset), charset),
-          ErrorCorrectionLevel.M, hintMap);
+      String content = new String(sbEpc.toString().getBytes(charset), charset);
+      QRCode code = Encoder.encode(content, ErrorCorrectionLevel.M, hintMap);
       int spalten = (1 + code.getVersion().getVersionNumber()) * 4 + 21;
-      BitMatrix matrix = new MultiFormatWriter().encode(
-          new String(sbEpc.toString().getBytes(charset), charset),
+      BitMatrix matrix = new MultiFormatWriter().encode(content,
           BarcodeFormat.QR_CODE, spalten, spalten, hintMap);
       return MatrixToImageWriter.toBufferedImage(matrix);
     }
