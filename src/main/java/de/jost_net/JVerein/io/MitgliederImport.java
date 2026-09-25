@@ -563,7 +563,10 @@ public class MitgliederImport implements Importer
         }
 
         if ((Integer) Einstellungen.getEinstellung(
-            Property.SEPAMANDATIDSOURCE) == SepaMandatIdSource.INDIVIDUELL)
+            Property.SEPAMANDATIDSOURCE) == SepaMandatIdSource.INDIVIDUELL
+            || ((Integer) Einstellungen.getEinstellung(
+                Property.SEPAMANDATIDSOURCE) == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER)
+                && !m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
         {
           try
           {
