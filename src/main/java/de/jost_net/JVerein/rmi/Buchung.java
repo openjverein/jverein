@@ -21,7 +21,7 @@ import java.util.Date;
 
 import de.willuhn.util.ApplicationException;
 
-public interface Buchung extends JVereinDBObject
+public interface Buchung extends AbstractBelegDBObject
 {
   public static final String TABLE_NAME = "buchung";
 
