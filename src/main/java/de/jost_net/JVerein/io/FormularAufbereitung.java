@@ -50,6 +50,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.google.zxing.qrcode.encoder.Encoder;
+import com.google.zxing.qrcode.encoder.QRCode;
 import com.ibm.icu.util.Calendar;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -273,11 +275,16 @@ public class FormularAufbereitung
     {
       // Der Writer skaliert die Größe nur in ganzahligen Sprüngen. Dazwischen
       // vergrößert sich nur das Padding am Rand.
-      // Mit den Werten 53 wird ein unskaliertes Image erzeugt. Das skalieren
-      // wir dann bei der Ausgabe.
+      // Wir berechnen die Anzahl an Spalten + 4 Padding an jeder Seite, so
+      // bekommen wir eine unskalierte Matrix die dann bei der Ausgabe skaliert
+      // wird
+      QRCode code = Encoder.encode(
+          new String(sbEpc.toString().getBytes(charset), charset),
+          ErrorCorrectionLevel.M, hintMap);
+      int spalten = (1 + code.getVersion().getVersionNumber()) * 4 + 21;
       BitMatrix matrix = new MultiFormatWriter().encode(
           new String(sbEpc.toString().getBytes(charset), charset),
-          BarcodeFormat.QR_CODE, 53, 53, hintMap);
+          BarcodeFormat.QR_CODE, spalten, spalten, hintMap);
       return MatrixToImageWriter.toBufferedImage(matrix);
     }
     catch (UnsupportedEncodingException e1)
