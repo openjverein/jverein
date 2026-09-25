@@ -180,6 +180,25 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
   }
 
   @Override
+  public Object getAttribute(String fieldName) throws RemoteException
+  {
+    if ("belegnummer".equals(fieldName))
+    {
+      String nr = (String) super.getAttribute("belegnummer");
+      if (nr != null && !nr.isBlank())
+      {
+        return nr;
+      }
+
+      // Alte Dokumente haben zT. keine Belegnummer (Wenn es mehrere Dokumente
+      // in einer Buchung gab), dann als Fallback die Referenz verwenden
+      Long ref = getReferenz();
+      return ref == null ? null : ref.toString() + "-" + getID();
+    }
+    return super.getAttribute(fieldName);
+  }
+
+  @Override
   public void setBelegnummer(String belegnummer) throws RemoteException
   {
     setAttribute("belegnummer", belegnummer);
@@ -236,17 +255,7 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
   @Override
   public String getNummer() throws RemoteException
   {
-    // Wird zum Speichern per Messaging benötigt
-    String nr = getBelegnummer();
-    if (nr != null && !nr.isBlank())
-    {
-      return nr;
-    }
-
-    // Alte Dokumente haben zT. keine Belegnummer (Wenn es mehrere Dokumente in
-    // einer Buchung gab), dann als Fallback die Referenz verwenden
-    Long ref = getReferenz();
-    return ref == null ? null : ref.toString();
+    return getBelegnummer();
   }
 
   @Override
