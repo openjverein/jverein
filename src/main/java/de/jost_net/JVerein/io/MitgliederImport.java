@@ -21,6 +21,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
@@ -558,6 +559,34 @@ public class MitgliederImport implements Importer
           if (id == null)
           {
             m.setMandatVersion(0);
+          }
+        }
+
+        if ((Integer) Einstellungen.getEinstellung(
+            Property.SEPAMANDATIDSOURCE) == SepaMandatIdSource.INDIVIDUELL
+            || ((Integer) Einstellungen.getEinstellung(
+                Property.SEPAMANDATIDSOURCE) == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER)
+                && !m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+        {
+          try
+          {
+            String mandatid = results.getString("mandatid");
+            if (mandatid != null && mandatid.length() != 0)
+            {
+              m.setMandatID(mandatid);
+            }
+            else
+            {
+              m.setMandatID("");
+            }
+          }
+          catch (SQLException e)
+          {
+            if (id == null)
+            {
+              // Optionaler Parameter
+              m.setMandatID("");
+            }
           }
         }
 

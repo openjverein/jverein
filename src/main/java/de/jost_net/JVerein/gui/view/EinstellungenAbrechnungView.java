@@ -64,6 +64,9 @@ public class EinstellungenAbrechnungView extends AbstractView
         "ACHTUNG! Nur ändern, wenn noch keine SEPA-Lastschriften durchgeführt wurden!");
     cont.addLabelPair("Quelle für SEPA-Mandatsreferenz (*)",
         control.getSepamandatidsourcemodel());
+    cont.addText(
+        "* Bei Auswahl der externen Mitgliedsnummer wird bei Nicht-Mitglieder die Individuelle ID verwendet!",
+        false);
 
     ButtonArea buttons = new ButtonArea();
     buttons

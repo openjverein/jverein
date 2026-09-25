@@ -50,6 +50,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.google.zxing.qrcode.encoder.Encoder;
+import com.google.zxing.qrcode.encoder.QRCode;
 import com.ibm.icu.util.Calendar;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -75,6 +77,7 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
@@ -271,12 +274,16 @@ public class FormularAufbereitung
     hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
     try
     {
-      float sz = mm2point(
-          ((Integer) Einstellungen.getEinstellung(Property.QRCODESIZEINMM))
-              .floatValue());
-      BitMatrix matrix = new MultiFormatWriter().encode(
-          new String(sbEpc.toString().getBytes(charset), charset),
-          BarcodeFormat.QR_CODE, (int) sz, (int) sz, hintMap);
+      // Der Writer skaliert die Größe nur in ganzahligen Sprüngen. Dazwischen
+      // vergrößert sich nur das Padding am Rand.
+      // Wir berechnen die Anzahl an Spalten + 4 Padding an jeder Seite, so
+      // bekommen wir eine unskalierte Matrix die dann bei der Ausgabe skaliert
+      // wird
+      String content = new String(sbEpc.toString().getBytes(charset), charset);
+      QRCode code = Encoder.encode(content, ErrorCorrectionLevel.M, hintMap);
+      int spalten = (1 + code.getVersion().getVersionNumber()) * 4 + 21;
+      BitMatrix matrix = new MultiFormatWriter().encode(content,
+          BarcodeFormat.QR_CODE, spalten, spalten, hintMap);
       return MatrixToImageWriter.toBufferedImage(matrix);
     }
     catch (UnsupportedEncodingException e1)
@@ -594,8 +601,12 @@ public class FormularAufbereitung
     }
 
     String id = re.getMitglied().getID();
-    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+        && re.getMitglied().getMitgliedstyp().getID()
+            .equals(Mitgliedstyp.MITGLIED))
+    {
       id = re.getMitglied().getExterneMitgliedsnummer();
+    }
 
     // Rechnungsempfänger
     invoice.setRecipient(new TradeParty(
