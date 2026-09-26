@@ -34,6 +34,8 @@ public class VelocityTool
   {
     try
     {
+      Velocity.setProperty("velocimacro.permissions.allow.inline.local.scope",
+          true);
       Velocity.init();
     }
     catch (Exception e)

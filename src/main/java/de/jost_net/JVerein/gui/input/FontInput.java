@@ -15,8 +15,8 @@
 package de.jost_net.JVerein.gui.input;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 
+import de.jost_net.JVerein.keys.Fonts;
 import de.willuhn.jameica.gui.input.SelectInput;
 
 /**
@@ -27,42 +27,14 @@ public class FontInput extends SelectInput
 
   public FontInput(String font) throws RemoteException
   {
-    super(init(), font);
+    super(Fonts.values(), Fonts.getByName(font));
     setName("Font");
+    setAttribute("name");
   }
 
-  /**
-   * @return initialisiert die Liste der Fonts.
-   * @throws RemoteException
-   */
-  private static ArrayList<String> init()
+  @Override
+  public Object getValue()
   {
-    ArrayList<String> fonts = new ArrayList<>();
-    fonts.add("Carlito-Regular");
-    fonts.add("Carlito-Bold");
-    fonts.add("Carlito-Italic");
-    fonts.add("Carlito-BoldItalic");
-    fonts.add("PTSans-Regular");
-    fonts.add("PTSans-Bold");
-    fonts.add("PTSans-Italic");
-    fonts.add("PTSans-BoldItalic");
-    fonts.add("FreeSans");
-    fonts.add("FreeSans-Bold");
-    fonts.add("FreeSans-BoldOblique");
-    fonts.add("FreeSans-Oblique");
-    fonts.add("Courier Prime");
-    fonts.add("Courier Prime Bold");
-    fonts.add("Courier Prime Bold Italic");
-    fonts.add("Courier Prime Italic");
-    fonts.add("LiberationSans-Bold");
-    fonts.add("LiberationSans-BoldItalic");
-    fonts.add("LiberationSans-Italic");
-    fonts.add("LiberationSans-Regular");
-    fonts.add("LiberationSerif-Bold");
-    fonts.add("LiberationSerif-BoldItalic");
-    fonts.add("LiberationSerif-Italic");
-    fonts.add("LiberationSerif-Regular");
-    return fonts;
+    return ((Fonts) super.getValue()).getName();
   }
-
 }
