@@ -521,6 +521,10 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
       if (isAltersstaffel != null && (Boolean) isAltersstaffel.getValue()
           && alterstaffel != null)
       {
+        if (b.isNewObject())
+        {
+          b.store();
+        }
         for (Input i : alterstaffel)
         {
           Altersstaffel a = null;
