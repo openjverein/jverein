@@ -46,7 +46,7 @@ public class RechnungMailView extends AbstractView
     GUI.getView().setTitle("Rechnungen");
 
     final RechnungControl control = new RechnungControl(this);
-    control.init(RechnungControl.TYP.RECHNUNG.name() + ".mail.", null, null);
+    control.init(RechnungControl.TYP.RECHNUNG.name() + ".mail.");
 
     if (this.getCurrentObject() == null)
     {
@@ -69,6 +69,7 @@ public class RechnungMailView extends AbstractView
       right.addInput(control.getFilterInput(Filter.DATUM_BIS));
 
       ButtonArea filterbuttons = new ButtonArea();
+      filterbuttons.addButton(control.getProfileButton(this));
       filterbuttons.addButton(control.getResetButton());
       filterbuttons.addButton(control.getSpeichernButton());
       group.addButtonArea(filterbuttons);

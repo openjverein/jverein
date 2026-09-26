@@ -39,6 +39,7 @@ public class EinstellungenVorlageListeView extends AbstractView
     group.addInput(control.getFilterInput(Filter.VORLAGEART));
 
     ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);

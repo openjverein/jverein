@@ -47,7 +47,7 @@ public class PersonalbogenMailView extends AbstractView
     GUI.getView().setTitle("Personalbogen");
 
     final PersonalbogenControl control = new PersonalbogenControl(this);
-    control.init("personalbogen.", "zusatzfeld.", "zusatzfelder.");
+    control.init("personalbogen.");
 
     if (this.getCurrentObject() == null)
     {
@@ -75,6 +75,7 @@ public class PersonalbogenMailView extends AbstractView
       }
 
       ButtonArea fbuttons = new ButtonArea();
+      fbuttons.addButton(control.getProfileButton(this));
       fbuttons.addButton(control.getResetButton());
       fbuttons.addButton(control.getSpeichernButton());
       group.addButtonArea(fbuttons);

@@ -55,6 +55,7 @@ public class MailListeView extends AbstractView
     right.addInput(control.getFilterInput(Filter.DATUM_VERSAND_BIS));
 
     ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
