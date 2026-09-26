@@ -303,6 +303,8 @@ public class Einstellungen
     AUTOBUCHUNGUEBERNAHME("autobuchunguebernahme", Boolean.class, "1"),
     AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS("autobuchungskorrekturhibiscus",
         Boolean.class, "1"),
+    BELEG_ZAEHLER("beleg_zaehler", Integer.class, "1"),
+    BELEGNUMMER("belegnummer", String.class, "$beleg_zaehler"),
 
     KONTONUMMERINBUCHUNGSLISTE("kontonummer_in_buchungsliste", Boolean.class,
         "0"),
@@ -799,7 +801,7 @@ public class Einstellungen
     settings.setAttribute("mitgliedDokumentVerzeichnis", value);
   }
 
-  public static String getBuchungDokumentVerzeichnis()
+  public static String getBelegVerzeichnis()
   {
     loadSettings();
     return settings.getString("buchungDokumentVerzeichnis",

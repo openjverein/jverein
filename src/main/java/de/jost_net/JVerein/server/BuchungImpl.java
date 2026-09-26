@@ -28,8 +28,10 @@ import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.BelegBuchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
@@ -44,10 +46,9 @@ import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungImpl extends AbstractJVereinDBObject
+public class BuchungImpl extends AbstractBelegDBObjectImpl
     implements Buchung, IBetrag
 {
-
   private static final long serialVersionUID = 1L;
 
   private transient boolean splittbuchung = false;
@@ -802,13 +803,28 @@ public class BuchungImpl extends AbstractJVereinDBObject
 
     if ("document".equals(fieldName))
     {
-      DBIterator<BuchungDokument> list = Einstellungen.getDBService()
-          .createList(BuchungDokument.class);
-      list.addFilter("referenz = ?", Long.valueOf(getID()));
+      DBIterator<Beleg> list = getBelegList();
       if (list.size() > 0)
         return list.size();
       else
         return null;
+    }
+    if ("belegnummern".equals(fieldName))
+    {
+      DBIterator<Beleg> list = getBelegList();
+
+      StringBuilder sb = new StringBuilder();
+      boolean first = true;
+      while (list.hasNext())
+      {
+        if (!first)
+        {
+          sb.append(", ");
+        }
+        first = false;
+        sb.append(list.next().getBelegnummer());
+      }
+      return sb.toString();
     }
 
     return super.getAttribute(fieldName);
@@ -940,19 +956,6 @@ public class BuchungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void delete() throws RemoteException, ApplicationException
-  {
-    DBIterator<BuchungDokument> it = Einstellungen.getDBService()
-        .createList(BuchungDokument.class);
-    it.addFilter("referenz = ?", new Object[] { this.getID() });
-    while (it.hasNext())
-    {
-      it.next().delete();
-    }
-    super.delete();
-  }
-
-  @Override
   public String getBezeichnungSachzuwendung() throws RemoteException
   {
     return (String) getAttribute("bezeichnungsachzuwendung");
@@ -1001,5 +1004,17 @@ public class BuchungImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Buchungen";
+  }
+
+  @Override
+  protected Class<? extends AbstractBelegReferenz> getBelegReferenzClass()
+  {
+    return BelegBuchung.class;
+  }
+
+  @Override
+  protected String getBelegReferenzTableName()
+  {
+    return "belegbuchung";
   }
 }

@@ -804,10 +804,17 @@ public enum VorlageTyp
       Vorlageart.TITEL.getKey()),
   STEUERN_SUBTITEL("steuern-subtitel", "Steuern Subtitel", "",
       Vorlageart.TITEL.getKey()),
-  BUCHUNG_DOKUMENT_PFAD("buchung-dokument-pfad", "Buchung Dokument Pfad",
-      "/$buchung_kontonummer/$buchung_id", Vorlageart.PFAD.getKey()),
+  BELEG_PFAD("Beleg-pfad", "Belegt Pfad", "$beleg_zaehler",
+      Vorlageart.PFAD.getKey()),
   MITGLIED_DOKUMENT_PFAD("mitglied-dokument-pfad", "Mitglied Dokument Pfad",
-      "/$mitglied_id", Vorlageart.PFAD.getKey());
+      "/$mitglied_id", Vorlageart.PFAD.getKey()),
+
+  BELEG_TITEL("beleg-titel", "Beleg Titel", "Belege",
+      Vorlageart.TITEL.getKey()),
+  BELEG_SUBTITEL("beleg-subtitel", "Beleg Subtitel", "",
+      Vorlageart.TITEL.getKey()),
+  BELEG_DATEINAME("beleg-dateiname", "Beleg Dateiname", "Belege",
+      Vorlageart.DATEINAME.getKey());
 
   private final String text;
 
