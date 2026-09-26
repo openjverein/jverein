@@ -809,7 +809,16 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         .getEinstellung(Property.SEPAMANDATIDSOURCE);
     if (sepaMandatIdSource == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER)
     {
-      return getExterneMitgliedsnummer() + "-" + getMandatVersion();
+      if (getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+      {
+        return getExterneMitgliedsnummer() + "-" + getMandatVersion();
+      }
+      else
+      {
+        // Nicht-Mitglieder haben keine externe Mitgliedsnummer.
+        // Dann lassen wir den Wert direkt eingeben.
+        return (String) getAttribute("mandatid");
+      }
     }
     else if (sepaMandatIdSource == SepaMandatIdSource.DBID)
     {
