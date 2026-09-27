@@ -129,6 +129,11 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
       throws RemoteException, ApplicationException, FileNotFoundException,
       DocumentException, IOException
   {
+    summe = 0;
+    summeeinnahmen = 0;
+    summeausgaben = 0;
+    summeumbuchungen = 0;
+
     this.params = params;
     // objects[0] = control, objects[1] ist der Filtertext
     BuchungsControl control = (BuchungsControl) objects[0];

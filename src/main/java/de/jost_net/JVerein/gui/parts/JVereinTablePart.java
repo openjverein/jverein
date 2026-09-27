@@ -17,8 +17,10 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -65,6 +67,8 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   private String tablePartId;
 
   private String tableName = null;
+
+  private Map<String, Boolean> defaults = new HashMap<>();
 
   /**
    * Erzeugt eine neue leere Standard-Tabelle auf dem uebergebenen Composite.
@@ -286,6 +290,7 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     if (!col.getName().isBlank())
     {
       this.allColumns.add(col);
+      this.defaults.put(col.getName(), defaultVisible);
     }
   }
 
@@ -463,4 +468,11 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   {
     return tableName;
   }
+
+  @Override
+  public Map<String, Boolean> getDefaults()
+  {
+    return defaults;
+  }
+
 }

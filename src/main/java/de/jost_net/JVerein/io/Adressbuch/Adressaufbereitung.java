@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 
 public class Adressaufbereitung
 {
@@ -80,7 +81,8 @@ public class Adressaufbereitung
   public static String getIdNameVorname(Mitglied mitglied)
       throws RemoteException
   {
-    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+        && mitglied.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
     {
       return getNameVorname(mitglied) + " ("
           + mitglied.getExterneMitgliedsnummer() + ")";

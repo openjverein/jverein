@@ -21,6 +21,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
@@ -524,8 +525,7 @@ public class MitgliederImport implements Importer
           {
             m.setMandatDatum(Datum.toDate(mandatdatum));
           }
-          else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+          else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
           {
             throw new ApplicationException(
                 "Zeile " + anz + ": Mandatdatum fehlt");
@@ -534,8 +534,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Nur bei Zahlungsweg Lastschrift pflicht
-          if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+          if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
           {
             throw new ApplicationException("Mandatdatum fehlt");
           }
@@ -561,6 +560,36 @@ public class MitgliederImport implements Importer
           }
         }
 
+        if ((Integer) Einstellungen.getEinstellung(
+            Property.SEPAMANDATIDSOURCE) == SepaMandatIdSource.INDIVIDUELL
+            || ((Integer) Einstellungen.getEinstellung(
+                Property.SEPAMANDATIDSOURCE) == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER)
+                && !m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+        {
+          try
+          {
+            String mandatid = results.getString("mandatid");
+            if (mandatid != null && mandatid.length() != 0)
+            {
+              m.setMandatID(mandatid);
+            }
+            else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+            {
+              throw new ApplicationException(
+                  "Zeile " + anz + ": MandatId fehlt");
+            }
+          }
+          catch (SQLException e)
+          {
+            // Nur bei Zahlungsweg Lastschrift pflicht
+            if (id == null
+                && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+            {
+              throw new ApplicationException("MandatId fehlt");
+            }
+          }
+        }
+
         try
         {
           String iban = results.getString("iban");
@@ -580,8 +609,7 @@ public class MitgliederImport implements Importer
                 throw new ApplicationException(e.getMessage());
             }
           }
-          else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+          else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
           {
             throw new ApplicationException("Zeile " + anz + ": IBAN fehlt");
           }
@@ -591,8 +619,7 @@ public class MitgliederImport implements Importer
           if (id == null)
           {
             m.setIban("");
-            if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-                && m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+            if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
             {
               throw new ApplicationException("IBAN fehlt");
             }

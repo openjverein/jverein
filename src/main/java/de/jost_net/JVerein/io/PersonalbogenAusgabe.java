@@ -297,7 +297,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         rpt.addColumn(foto.getFoto(), 100, 100, Element.ALIGN_RIGHT);
       }
     }
-    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+        && m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
     {
       rpt.addColumn("Ext. Mitgliedsnummer", Element.ALIGN_LEFT,
           params.getFontNormal());

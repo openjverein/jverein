@@ -162,7 +162,7 @@ public class VonBisPart implements Part
           control.getSuchDatumvon().setValue(control.getDatumvon().getValue());
           control.getSuchDatumbis().setValue(control.getDatumbis().getValue());
         }
-      }, null, false, "eraser.png");
+      }, null, false, "edit-undo.png");
       buttons.addButton(reset);
 
       Button suchen = new Button("Suchen", new Action()
