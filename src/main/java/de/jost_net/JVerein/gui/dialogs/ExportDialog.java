@@ -176,9 +176,8 @@ public class ExportDialog extends AbstractDialog<Object>
     final boolean open = ((Boolean) getOpenFile().getValue()).booleanValue();
     settings.setAttribute("open", open);
 
-    String[] se = exp.format.getFileExtensions();
-    String ext = se == null ? "" : se[0];
-    ext = ext.replaceAll("\\*.", ""); // "*." entfernen
+    String[] fileExtensions = exp.format.getFileExtensions();
+    boolean pdfFormat = hasFileExtension(fileExtensions, "pdf");
     String prefix = exp.exporter.getName().replaceAll(" ", "-") + ".";
     final Exporter exporter = exp.exporter;
     final IOFormat format = exp.format;
@@ -209,7 +208,7 @@ public class ExportDialog extends AbstractDialog<Object>
 
       ExportLayoutParam params;
 
-      if (ext.equalsIgnoreCase("pdf"))
+      if (pdfFormat)
       {
         // Layout Parameter abfragen
         ExporterExportDialog d = new ExporterExportDialog(
@@ -235,7 +234,10 @@ public class ExportDialog extends AbstractDialog<Object>
           "Bitte geben Sie eine Datei ein, in die die Daten exportiert werden sollen.");
       fd.setOverwrite(true);
       fd.setFileName(exporter.getDateiname(dateinameObject));
-      fd.setFilterExtensions(new String[] { "*" + ext });
+      if (fileExtensions != null && fileExtensions.length > 0)
+      {
+        fd.setFilterExtensions(fileExtensions);
+      }
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
       if (path != null && path.length() > 0)
@@ -319,6 +321,24 @@ public class ExportDialog extends AbstractDialog<Object>
       Logger.error(text, e);
       throw new ApplicationException(text);
     }
+  }
+
+  private static boolean hasFileExtension(String[] fileExtensions,
+      String expectedExtension)
+  {
+    if (fileExtensions == null)
+    {
+      return false;
+    }
+    for (String fileExtension : fileExtensions)
+    {
+      String normalized = fileExtension.replaceFirst("^\\*?\\.", "");
+      if (normalized.equalsIgnoreCase(expectedExtension))
+      {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

@@ -301,6 +301,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
             it.addColumn("sollbuchung.id as sollbuchung_id");
 
             it.addGroupBy("sollbuchung.id");
+            it.addGroupBy("sollbuchung.zweck1");
 
             // Alle nach anderer Art zugeordnete Sollbuchungen überspringen
             String zugeordneteSollbuchungIds = zuordnungMap.values().stream()
