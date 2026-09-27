@@ -221,8 +221,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
     b.addButton(new HelpButton(DokumentationUtil.ALLGEMEINES));
 
-    b.addButton("Reset", c -> resetInputs(), null, true, "edit-undo.png");
-
     b.addButton("Starten", c -> export(), null, true, "walking.png");
 
     b.addButton("Abbrechen", c -> {
@@ -230,17 +228,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     }, null, false, "process-stop.png");
 
     b.paint(parent);
-  }
-
-  private void resetInputs() throws ApplicationException
-  {
-    resetSpalten();
-    if (art.equals(ExportArt.PDF))
-    {
-      resetRaender();
-      resetFormular();
-      resetSchriftart();
-    }
   }
 
   private void resetRaender()
