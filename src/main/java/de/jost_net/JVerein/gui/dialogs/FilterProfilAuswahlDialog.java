@@ -30,7 +30,6 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.DeleteButton;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
-import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Suchprofil;
@@ -89,9 +88,9 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       handleNeu();
     }));
 
-    buttons.addButton(new SaveButton(context -> {
-      handleSpeichern(null);
-    }));
+    buttons.addButton("Speichern", context -> {
+      handleSpeichern(null, false);
+    }, null, false, "document-save.png", "CTRL+S");
 
     buttons.addButton(new DeleteButton(context -> {
       if (!confirm("Profil löschen",
@@ -104,7 +103,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
 
     buttons.addButton("Anwenden", context -> {
       handleAnwenden();
-    }, null, false, "view-refresh.png");
+    }, null, true, "view-refresh.png");
 
     buttons.addButton("Abbrechen", c -> {
       throw new OperationCanceledException();
@@ -203,7 +202,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
             .createObject(Suchprofil.class, null);
         sp.setClazz(view.getClass().getName());
         sp.setBezeichnung(name);
-        handleSpeichern(sp);
+        handleSpeichern(sp, true);
         // Da der Dialog nicht geschlossen wird, muss das neue Profil in die
         // Auswahl aufgenommen werden und angezeigt werden
         DBService service = Einstellungen.getDBService();
@@ -230,7 +229,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
   }
 
   // Speichert das ausgewählte Profil mit aktuellen Settings
-  private void handleSpeichern(Suchprofil item)
+  private void handleSpeichern(Suchprofil item, boolean neu)
   {
     try
     {
@@ -241,6 +240,13 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       if (item == null)
       {
         showDialog();
+        return;
+      }
+
+      if (!neu && !confirm("Profil Speichern",
+          "Soll das ausgewählte Profil \"" + item.getBezeichnung()
+              + "\" mit den akutellen Filtern überschrieben werden?"))
+      {
         return;
       }
 
@@ -424,11 +430,12 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
         p.loadFromXML(bis);
         for (Entry<Object, Object> entry : p.entrySet())
         {
+          String value = (String) entry.getValue();
           Filter f = Filter.getByKey("filter_" + (String) entry.getKey());
-          if (f != null)
+          if (f != null && value != null && !value.isBlank())
           {
             text.append(f.getAnzeigeText() + ": ");
-            text.append((String) entry.getValue() + "\n");
+            text.append(value + "\n");
           }
         }
         return text.toString();
