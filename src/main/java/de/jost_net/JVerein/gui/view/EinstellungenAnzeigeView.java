@@ -67,13 +67,17 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont2.addLabelPair("Rücklagenkonten", control.getRuecklagenkonten());
     cont2.addLabelPair("Forderungen/Verbindlichkeiten Konten",
         control.getVerbindlichkeitenForderungen());
-    cont2.addHeadline("Sonstige Feature Auswahl");
-    cont2.addLabelPair("Dokumentenspeicherung",
-        control.getDokumentenspeicherung());
+    // TODO soll nach der Überarbeitung der Belege wieder eingeblendet werden
+    // cont2.addLabelPair("Dokumentenspeicherung",
+    // control.getDokumentenspeicherung());
     if (JVereinPlugin.isArchiveServiceActive())
     {
-      cont2.addLabelPair("Dokumente per Jameica Messaging speichern",
-          control.getDokumentenspeicherungMessaging());
+      cont2.addHeadline("Sonstige Feature Auswahl");
+
+      cont2.addLabelPair("Dokumentenspeicherung",
+          control.getDokumentenspeicherung());
+      // cont2.addLabelPair("Dokumente per Jameica Messaging speichern",
+      // control.getDokumentenspeicherungMessaging());
     }
 
     SimpleContainer cont3 = new SimpleContainer(cols1.getComposite());

@@ -700,8 +700,7 @@ public abstract class FilterControl extends VorZurueckControl
 
   private enum RANGE
   {
-    MONAT,
-    TAG
+    MONAT, TAG
   }
 
   public ToolTipButton getZurueckButton(Input vonDatum, Input bisDatum)
