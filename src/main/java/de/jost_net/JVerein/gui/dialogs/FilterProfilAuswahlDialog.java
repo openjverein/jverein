@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import org.eclipse.swt.widgets.Composite;
@@ -36,7 +37,6 @@ import de.jost_net.JVerein.keys.KeyEnum;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Suchprofil;
-import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
@@ -123,8 +123,8 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
     }
     filterList = new JVereinTablePart(
         getList((Suchprofil) getProfilname().getValue()), null);
-    filterList.addColumn("Filter", "name");
-    filterList.addColumn("Wert", "wert");
+    filterList.addColumn("Feld", "key");
+    filterList.addColumn("Wert", "value");
     return filterList;
   }
 
@@ -135,10 +135,10 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       if (filterList != null)
       {
         filterList.removeAll();
-        for (FilterAttribute at : getList(
+        for (Entry<String, String> en : getList(
             (Suchprofil) getProfilname().getValue()))
         {
-          filterList.addItem(at);
+          filterList.addItem(en);
         }
         filterList.sort();
       }
@@ -150,13 +150,13 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
   }
 
   // Generiert die Attribute
-  private List<FilterAttribute> getList(Suchprofil item)
+  private List<Entry<String, String>> getList(Suchprofil item)
   {
     try
     {
       if (item != null)
       {
-        List<FilterAttribute> attributes = new ArrayList<>();
+        List<Entry<String, String>> attributes = new ArrayList<>();
         ByteArrayInputStream bis = new ByteArrayInputStream(item.getInhalt());
         Properties p = new Properties();
         p.loadFromXML(bis);
@@ -199,7 +199,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
                     .getAttribute((String) obj.getPrimaryAttribute());
               }
             }
-            attributes.add(new FilterAttribute(f.getAnzeigeText(), value));
+            attributes.add(Map.entry(f.getAnzeigeText(), value));
           }
         }
         return attributes;
@@ -488,17 +488,5 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
   protected Object getData()
   {
     return null;
-  }
-
-  private class FilterAttribute extends PseudoDBObject
-  {
-
-    private static final long serialVersionUID = 1L;
-
-    public FilterAttribute(String name, String wert) throws RemoteException
-    {
-      setAttribute("name", name);
-      setAttribute("wert", wert);
-    }
   }
 }
