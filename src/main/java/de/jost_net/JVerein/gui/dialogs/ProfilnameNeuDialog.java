@@ -27,7 +27,7 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
- * Ein Dialog, zur Auswahl eines Kalenderjahres.
+ * Ein Dialog zur Eingabe eines Profil Namen.
  */
 public class ProfilnameNeuDialog extends AbstractDialog<String>
 {
@@ -64,19 +64,6 @@ public class ProfilnameNeuDialog extends AbstractDialog<String>
         status.setColor(Color.ERROR);
         return;
       }
-      String validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
-      for (int i = 0; i < profilName.length(); i++)
-      {
-        char c = profilName.charAt(i);
-        if (validChars.indexOf(c) == -1)
-        {
-          status.setValue(String.format(
-              "Ungültiges Zeichen (%s) an Position %d, nur A-Z, a-z, 0-9, _ erlaubt!",
-              c, i + 1));
-          status.setColor(Color.ERROR);
-          return;
-        }
-      }
       if (list != null && list.contains(profilName))
       {
         status.setValue("Ein Profil mit dem Namen existiert bereits.");
@@ -99,6 +86,8 @@ public class ProfilnameNeuDialog extends AbstractDialog<String>
       return profilInput;
     }
     profilInput = new TextInput("", 50);
+    profilInput.setValidChars(
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_");
     profilInput.setMandatory(true);
     return profilInput;
   }

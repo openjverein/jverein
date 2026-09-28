@@ -266,6 +266,18 @@ public enum Filter
     return array;
   }
 
+  public static Filter getByKey(String key)
+  {
+    for (Filter f : Filter.values())
+    {
+      if (f.getSetting().equals(key))
+      {
+        return f;
+      }
+    }
+    return null;
+  }
+
   public Class<? extends DBObject> getDbObject()
   {
     return dbObject;

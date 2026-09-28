@@ -839,8 +839,8 @@ public abstract class FilterControl extends VorZurueckControl
   public Button getResetButton()
   {
     return new Button("Filter-Reset", c -> {
-      settings.setAttribute(settingsprefix + "id", "");
-      settings.setAttribute(settingsprefix + "profilname", "");
+      settings.setAttribute(settingsprefix + "profilid", (String) null);
+      settings.setAttribute(settingsprefix + "profilname", (String) null);
       Date startGJ = null;
       Date endGJ = null;
       if (initVonBis)
@@ -925,7 +925,8 @@ public abstract class FilterControl extends VorZurueckControl
     Button b = new Button("Filter-Profile", context -> {
       try
       {
-        saveFilterSettings();
+        refresh();
+
         new FilterProfilAuswahlDialog(settings, this, view).open();
       }
       catch (OperationCanceledException | ApplicationException e)

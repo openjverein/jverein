@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -31,6 +32,7 @@ import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Suchprofil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -39,6 +41,7 @@ import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
@@ -139,7 +142,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
     {
       sp1 = (Suchprofil) Einstellungen.getDBService().createObject(
           Suchprofil.class,
-          settings.getString(control.getSettingsPrefix() + "id", null));
+          settings.getString(control.getSettingsPrefix() + "profilid", null));
     }
     catch (ObjectNotFoundException e)
     {
@@ -195,11 +198,21 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       String name = pnd.open();
       if (name != null)
       {
+        // Profil erzeugen und speichern
         Suchprofil sp = (Suchprofil) Einstellungen.getDBService()
             .createObject(Suchprofil.class, null);
         sp.setClazz(view.getClass().getName());
         sp.setBezeichnung(name);
         handleSpeichern(sp);
+        // Da der Dialog nicht geschlossen wird, muss das neue Profil in die
+        // Auswahl aufgenommen werden und angezeigt werden
+        DBService service = Einstellungen.getDBService();
+        DBIterator<Suchprofil> profile = service.createList(Suchprofil.class);
+        profile.addFilter("clazz = ?", view.getClass().getName());
+        profile.setOrder("ORDER BY bezeichnung");
+        profilname.setList(PseudoIterator.asList(profile));
+        profilname.setPreselected(sp);
+        getAttributes().setValue(getText(sp));
       }
     }
     catch (OperationCanceledException ex)
@@ -209,7 +222,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
     catch (Exception e)
     {
       // Abbruch
-      String text = "Fehler beim Anlegen eines Profil.";
+      String text = "Fehler beim Anlegen eines Profils.";
       Logger.error(text, e);
       GUI.getStatusBar().setErrorText(text);
       return;
@@ -227,17 +240,20 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       }
       if (item == null)
       {
+        showDialog();
         return;
       }
 
-      // Überschreiben eines vorhandenen Suchprofils
+      // Überschreiben eines ausgewählten Suchprofils
       storeSettings(settings, item);
       item.store();
-      settings.setAttribute(control.getSettingsPrefix() + "id", item.getID());
+      settings.setAttribute(control.getSettingsPrefix() + "profilid",
+          item.getID());
       settings.setAttribute(control.getSettingsPrefix() + "profilname",
           item.getBezeichnung());
+      getAttributes()
+          .setValue(getText((Suchprofil) getProfilname().getValue()));
 
-      close();
       GUI.getStatusBar()
           .setSuccessText("Profil " + item.getBezeichnung() + " gespeichert.");
     }
@@ -259,18 +275,37 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       Suchprofil item = (Suchprofil) getProfilname().getValue();
       if (item == null)
       {
+        showDialog();
         return;
       }
 
-      if (settings.getString(control.getSettingsPrefix() + "id", "")
+      if (settings.getString(control.getSettingsPrefix() + "profilid", "")
           .equals(item.getID()))
       {
-        settings.setAttribute(control.getSettingsPrefix() + "id", "");
-        settings.setAttribute(control.getSettingsPrefix() + "profilname", "");
+        settings.setAttribute(control.getSettingsPrefix() + "profilid",
+            (String) null);
+        settings.setAttribute(control.getSettingsPrefix() + "profilname",
+            (String) null);
       }
       item.delete();
 
-      close();
+      // Da der Dialog nicht geschlossen wird, muss ein anderes Profil angezeigt
+      // werden
+      DBService service = Einstellungen.getDBService();
+      DBIterator<Suchprofil> profile = service.createList(Suchprofil.class);
+      profile.addFilter("clazz = ?", view.getClass().getName());
+      profile.setOrder("ORDER BY bezeichnung");
+      profilname.setList(PseudoIterator.asList(profile));
+      if (profile.hasNext())
+      {
+        Suchprofil sp = profile.next();
+        getAttributes().setValue(getText(sp));
+      }
+      else
+      {
+        getAttributes().setValue("");
+      }
+
       GUI.getStatusBar()
           .setSuccessText("Profil " + item.getBezeichnung() + "  gelöscht.");
     }
@@ -292,6 +327,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       Suchprofil item = (Suchprofil) getProfilname().getValue();
       if (item == null)
       {
+        showDialog();
         return;
       }
       String prefix = control.getSettingsPrefix();
@@ -303,7 +339,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
         String key = (String) o;
         settings.setAttribute(prefix + "filter_" + key, p.getProperty(key));
       }
-      settings.setAttribute(prefix + "id", item.getID());
+      settings.setAttribute(prefix + "profilid", item.getID());
       settings.setAttribute(prefix + "profilname", item.getBezeichnung());
 
       close();
@@ -318,6 +354,20 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       Logger.error(text, e);
       GUI.getStatusBar().setErrorText(text);
       return;
+    }
+  }
+
+  private void showDialog()
+  {
+    SimpleDialog sd = new SimpleDialog(AbstractDialog.POSITION_CENTER);
+    sd.setText("Bitte ein Profil auswählen");
+    try
+    {
+      sd.open();
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler", e);
     }
   }
 
@@ -369,11 +419,18 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       if (item != null)
       {
         StringBuilder text = new StringBuilder();
-        text.append("Profil: " + item.getBezeichnung() + "\n");
         ByteArrayInputStream bis = new ByteArrayInputStream(item.getInhalt());
         Properties p = new Properties();
         p.loadFromXML(bis);
-        text.append(p.toString());
+        for (Entry<Object, Object> entry : p.entrySet())
+        {
+          Filter f = Filter.getByKey("filter_" + (String) entry.getKey());
+          if (f != null)
+          {
+            text.append(f.getAnzeigeText() + ": ");
+            text.append((String) entry.getValue() + "\n");
+          }
+        }
         return text.toString();
       }
     }

@@ -47,7 +47,7 @@ public class WiedervorlageListeView extends AbstractView
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getFilterInput(Filter.NAME));
-    left.addLabelPair("Vermerk", control.getFilterInput(Filter.VERMERK));
+    left.addInput(control.getFilterInput(Filter.VERMERK));
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     Input von = control.getFilterInput(Filter.DATUM_VON);
