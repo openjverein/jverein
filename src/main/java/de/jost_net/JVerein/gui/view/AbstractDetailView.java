@@ -53,7 +53,8 @@ public abstract class AbstractDetailView extends AbstractView
         bindSucessfull = true;
         // jetzt wird die Extension nicht mehr gebraucht, daher entfernen wir
         // sie wieder
-        ExtensionRegistry.getExtensions("jverein.view").remove(this);
+        GUI.getDisplay().asyncExec(
+            () -> ExtensionRegistry.getExtensions("jverein.view").remove(this));
       }
     }, "jverein.view");
   }

@@ -33,6 +33,7 @@ import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.AnlagenverzeichnisView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzListeView;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeListeView;
+import de.jost_net.JVerein.gui.view.BelegListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungsartListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
@@ -194,6 +195,8 @@ public class JVereinNavigation implements Extension
       // Buchungen
       buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Buchungen",
           new StartViewAction(BuchungListeView.class), "emblem-documents.png"));
+      buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Belege",
+          new StartViewAction(BelegListeView.class), "emblem-documents.png"));
       buchfuehrung.addChild(
           new JVereinNavigationItem(buchfuehrung, "Buchungsklassensaldo",
               new StartViewAction(BuchungsklasseSaldoView.class),
