@@ -93,7 +93,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   private static final String DEFAULT_FONT_NORMAL = "FreeSans";
 
-  private static final String DEFAULT_FONT_FETT = "FreeSan-Bold";
+  private static final String DEFAULT_FONT_FETT = "FreeSans-Bold";
 
   private static final String DEFAULT_FONT_ITALIC = "FreeSans-Oblique";
 
