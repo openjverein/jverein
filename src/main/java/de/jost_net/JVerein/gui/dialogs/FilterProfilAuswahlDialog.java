@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -29,12 +28,18 @@ import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.DeleteButton;
 import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.KeyEnum;
+import de.jost_net.JVerein.rmi.Projekt;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Suchprofil;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
@@ -43,7 +48,6 @@ import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
@@ -56,11 +60,11 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
 
   private SelectInput profilname;
 
-  private TextAreaInput attributes;
-
   private FilterControl control;
 
   private AbstractView view;
+
+  private JVereinTablePart filterList;
 
   public FilterProfilAuswahlDialog(Settings settings, FilterControl control,
       AbstractView view) throws RemoteException, ApplicationException
@@ -71,7 +75,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
     this.control = control;
     this.view = view;
     setTitle("Filter Profile");
-    setSize(605, SWT.DEFAULT);
+    setSize(600, 400);
   }
 
   @Override
@@ -79,7 +83,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
   {
     LabelGroup group = new LabelGroup(parent, null);
     group.addInput(getProfilname());
-    group.addInput(getAttributes());
+    getTablePart().paint(parent);
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.SUCHPROFIL));
@@ -109,6 +113,104 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       throw new OperationCanceledException();
     }, null, false, "process-stop.png");
     buttons.paint(parent);
+  }
+
+  public JVereinTablePart getTablePart() throws RemoteException
+  {
+    if (filterList != null)
+    {
+      return filterList;
+    }
+    filterList = new JVereinTablePart(
+        getList((Suchprofil) getProfilname().getValue()), null);
+    filterList.addColumn("Filter", "name");
+    filterList.addColumn("Wert", "wert");
+    return filterList;
+  }
+
+  private void refreshList()
+  {
+    try
+    {
+      if (filterList != null)
+      {
+        filterList.removeAll();
+        for (FilterAttribute at : getList(
+            (Suchprofil) getProfilname().getValue()))
+        {
+          filterList.addItem(at);
+        }
+        filterList.sort();
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim Refresh der Tabelle", e);
+    }
+  }
+
+  // Generiert die Attribute
+  private List<FilterAttribute> getList(Suchprofil item)
+  {
+    try
+    {
+      if (item != null)
+      {
+        List<FilterAttribute> attributes = new ArrayList<>();
+        ByteArrayInputStream bis = new ByteArrayInputStream(item.getInhalt());
+        Properties p = new Properties();
+        p.loadFromXML(bis);
+        for (Entry<Object, Object> entry : p.entrySet())
+        {
+          String value = (String) entry.getValue();
+          Filter f = Filter.getByKey("filter_" + (String) entry.getKey());
+          if (f != null && value != null && !value.isBlank())
+          {
+            if (f.getArray() != null)
+            {
+              KeyEnum[] enums = f.getArray();
+              for (KeyEnum en : enums)
+              {
+                if (en.getKey() == Integer.parseInt(value))
+                {
+                  value = en.toString();
+                  break;
+                }
+              }
+            }
+            else if (f.getDbObject() != null)
+            {
+              if (value.equals("0"))
+              {
+                if (f.getDbObject() == Steuer.class)
+                {
+                  value = "Ohne Steuer";
+                }
+                else if (f.getDbObject() == Projekt.class)
+                {
+                  value = "Ohne Projekt";
+                }
+              }
+              else
+              {
+                DBObject obj = Einstellungen.getDBService()
+                    .createObject(f.getDbObject(), value);
+                value = (String) obj
+                    .getAttribute((String) obj.getPrimaryAttribute());
+              }
+            }
+            attributes.add(new FilterAttribute(f.getAnzeigeText(), value));
+          }
+        }
+        return attributes;
+      }
+    }
+    catch (Exception e)
+    {
+      String error = "Fehler beim Lesen der Attribute.";
+      Logger.error(error, e);
+    }
+    return null;
   }
 
   private boolean confirm(String Titel, String Text) throws ApplicationException
@@ -150,35 +252,9 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
     profilname = new SelectInput(PseudoIterator.asList(profile), sp1);
     profilname.setName("Profilname");
     profilname.addListener(event -> {
-      try
-      {
-        getAttributes()
-            .setValue(getText((Suchprofil) getProfilname().getValue()));
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Lesen der Attribute.", e);
-      }
+      refreshList();
     });
     return profilname;
-  }
-
-  public TextAreaInput getAttributes() throws RemoteException
-  {
-    if (attributes != null)
-    {
-      return attributes;
-    }
-    String text = "";
-    if (getProfilname().getValue() != null)
-    {
-      text = getText((Suchprofil) getProfilname().getValue());
-    }
-    attributes = new TextAreaInput(text);
-    attributes.setHeight(200);
-    attributes.setName("Attribute");
-    attributes.disable();
-    return attributes;
   }
 
   // Erzeugt ein neues Profil mit aktuellen Settings und speichert es
@@ -211,7 +287,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
         profile.setOrder("ORDER BY bezeichnung");
         profilname.setList(PseudoIterator.asList(profile));
         profilname.setPreselected(sp);
-        getAttributes().setValue(getText(sp));
+        refreshList();
       }
     }
     catch (OperationCanceledException ex)
@@ -257,8 +333,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
           item.getID());
       settings.setAttribute(control.getSettingsPrefix() + "profilname",
           item.getBezeichnung());
-      getAttributes()
-          .setValue(getText((Suchprofil) getProfilname().getValue()));
+      refreshList();
 
       GUI.getStatusBar()
           .setSuccessText("Profil " + item.getBezeichnung() + " gespeichert.");
@@ -302,15 +377,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       profile.addFilter("clazz = ?", view.getClass().getName());
       profile.setOrder("ORDER BY bezeichnung");
       profilname.setList(PseudoIterator.asList(profile));
-      if (profile.hasNext())
-      {
-        Suchprofil sp = profile.next();
-        getAttributes().setValue(getText(sp));
-      }
-      else
-      {
-        getAttributes().setValue("");
-      }
+      refreshList();
 
       GUI.getStatusBar()
           .setSuccessText("Profil " + item.getBezeichnung() + "  gelöscht.");
@@ -417,42 +484,21 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
     return ret;
   }
 
-  // Generiert den Text für das Attribute TextArea
-  private String getText(Suchprofil item)
-  {
-    try
-    {
-      if (item != null)
-      {
-        StringBuilder text = new StringBuilder();
-        ByteArrayInputStream bis = new ByteArrayInputStream(item.getInhalt());
-        Properties p = new Properties();
-        p.loadFromXML(bis);
-        for (Entry<Object, Object> entry : p.entrySet())
-        {
-          String value = (String) entry.getValue();
-          Filter f = Filter.getByKey("filter_" + (String) entry.getKey());
-          if (f != null && value != null && !value.isBlank())
-          {
-            text.append(f.getAnzeigeText() + ": ");
-            text.append(value + "\n");
-          }
-        }
-        return text.toString();
-      }
-    }
-    catch (Exception e)
-    {
-      String error = "Fehler beim Lesen der Attribute.";
-      Logger.error(error, e);
-      return error;
-    }
-    return "";
-  }
-
   @Override
   protected Object getData()
   {
     return null;
+  }
+
+  private class FilterAttribute extends PseudoDBObject
+  {
+
+    private static final long serialVersionUID = 1L;
+
+    public FilterAttribute(String name, String wert) throws RemoteException
+    {
+      setAttribute("name", name);
+      setAttribute("wert", wert);
+    }
   }
 }
