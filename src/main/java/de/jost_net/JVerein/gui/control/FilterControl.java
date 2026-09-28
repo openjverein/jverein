@@ -66,6 +66,10 @@ public abstract class FilterControl extends VorZurueckControl
 
   public final static String ALLE = "Alle";
 
+  public final static String OHNE_STEUER = "Ohne Steuer";
+
+  public final static String OHNE_PROJEKT = "Ohne Projekt";
+
   final static String ZUSATZFELD_PREFIX = "filter_zusatzfeld.";
 
   final static String ZUSATZFELDER_PREFIX = "filter_zusatzfelder.";
@@ -425,13 +429,13 @@ public abstract class FilterControl extends VorZurueckControl
           {
             def0 = (Projekt) Einstellungen.getDBService()
                 .createObject(Projekt.class, null);
-            ((Projekt) def0).setBezeichnung("Ohne Projekt");
+            ((Projekt) def0).setBezeichnung(OHNE_PROJEKT);
           }
           else if (filter.equals(Filter.STEUER))
           {
             def0 = (Steuer) Einstellungen.getDBService()
                 .createObject(Steuer.class, null);
-            ((Steuer) def0).setName("Ohne Steuer");
+            ((Steuer) def0).setName(OHNE_STEUER);
           }
 
           DBObject def = null;

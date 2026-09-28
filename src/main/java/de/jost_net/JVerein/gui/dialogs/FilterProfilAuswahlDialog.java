@@ -171,10 +171,19 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
               KeyEnum[] enums = f.getArray();
               for (KeyEnum en : enums)
               {
-                if (en.getKey() == Integer.parseInt(value))
+                try
                 {
-                  value = en.toString();
-                  break;
+                  if (en.getKey() == Integer.parseInt(value))
+                  {
+                    value = en.toString();
+                    break;
+                  }
+                }
+                catch (Exception ex)
+                {
+                  String error = "Fehler beim Auswerten des Key: " + value
+                      + " von Filter: " + f.getAnzeigeText();
+                  Logger.error(error, ex);
                 }
               }
             }
@@ -184,19 +193,28 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
               {
                 if (f.getDbObject() == Steuer.class)
                 {
-                  value = "Ohne Steuer";
+                  value = FilterControl.OHNE_STEUER;
                 }
                 else if (f.getDbObject() == Projekt.class)
                 {
-                  value = "Ohne Projekt";
+                  value = FilterControl.OHNE_PROJEKT;
                 }
               }
               else
               {
-                DBObject obj = Einstellungen.getDBService()
-                    .createObject(f.getDbObject(), value);
-                value = (String) obj
-                    .getAttribute((String) obj.getPrimaryAttribute());
+                try
+                {
+                  DBObject obj = Einstellungen.getDBService()
+                      .createObject(f.getDbObject(), value);
+                  value = (String) obj
+                      .getAttribute((String) obj.getPrimaryAttribute());
+                }
+                catch (Exception ex)
+                {
+                  String error = "Fehler beim Erzeugen der Instanz: " + value
+                      + " von Filter: " + f.getAnzeigeText();
+                  Logger.error(error, ex);
+                }
               }
             }
             attributes.add(Map.entry(f.getAnzeigeText(), value));
@@ -433,7 +451,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
   private void showDialog()
   {
     SimpleDialog sd = new SimpleDialog(AbstractDialog.POSITION_CENTER);
-    sd.setText("Bitte ein Profil auswählen");
+    sd.setText("Bitte ein Profil auswählen!");
     try
     {
       sd.open();
