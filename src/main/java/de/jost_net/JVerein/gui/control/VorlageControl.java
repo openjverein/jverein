@@ -206,6 +206,12 @@ public class VorlageControl extends FilterControl implements Savable
     ArrayList<Vorlage> list = new ArrayList<>();
     for (VorlageTyp typ : VorlageTyp.values())
     {
+      // TODO Nach Belegumstellung reaktivieren
+      if (typ.equals(VorlageTyp.BUCHUNG_DOKUMENT_PFAD)
+          || typ.equals(VorlageTyp.MITGLIED_DOKUMENT_PFAD))
+      {
+        continue;
+      }
       VorlageImpl vorlage = (VorlageImpl) vorlagen.get(typ.getKey());
       // Wenn es nicht in der DB steht, neu erstellen
       if (vorlage == null)
