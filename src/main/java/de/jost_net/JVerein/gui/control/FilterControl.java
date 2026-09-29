@@ -324,10 +324,13 @@ public abstract class FilterControl extends VorZurueckControl
         };
 
         d1.addCloseListener(e -> {
-          EigenschaftenAuswahlParameter p = (EigenschaftenAuswahlParameter) e.data;
-          dialogInput.setText(p == null ? "" : p.getString());
-          dialogInput.setValue(p);
-          refresh();
+          if (e.detail != SWT.CANCEL)
+          {
+            EigenschaftenAuswahlParameter p = (EigenschaftenAuswahlParameter) e.data;
+            dialogInput.setText(p == null ? "" : p.getString());
+            dialogInput.setValue(p);
+            refresh();
+          }
         });
         dialogInput.disableClientControl();
 
@@ -707,7 +710,8 @@ public abstract class FilterControl extends VorZurueckControl
 
   private enum RANGE
   {
-    MONAT, TAG
+    MONAT,
+    TAG
   }
 
   public ToolTipButton getZurueckButton(Input vonDatum, Input bisDatum)
