@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.KeyEnum;
+import de.jost_net.JVerein.keys.Filter.FilterArt;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Suchprofil;
@@ -216,6 +217,16 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
                   Logger.error(error, ex);
                 }
               }
+            }
+            else if (f.getArt() == FilterArt.EIGENSCHAFTEN)
+            {
+              String prefix = "Und: ";
+              if (value.startsWith("Oder"))
+              {
+                prefix = "Oder: ";
+              }
+              value = prefix
+                  + new EigenschaftenAuswahlParameter(value).toString();
             }
             attributes.add(Map.entry(f.getAnzeigeText(), value));
           }
