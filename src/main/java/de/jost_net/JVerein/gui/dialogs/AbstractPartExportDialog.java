@@ -221,6 +221,11 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
     b.addButton(new HelpButton(DokumentationUtil.ALLGEMEINES));
 
+    if (art.equals(ExportArt.CSV))
+    {
+      b.addButton("Reset", c -> resetSpalten(), null, true, "edit-undo.png");
+    }
+
     b.addButton("Starten", c -> export(), null, true, "walking.png");
 
     b.addButton("Abbrechen", c -> {
