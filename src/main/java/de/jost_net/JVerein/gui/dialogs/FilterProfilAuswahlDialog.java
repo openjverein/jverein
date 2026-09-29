@@ -228,7 +228,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       String error = "Fehler beim Lesen der Attribute.";
       Logger.error(error, e);
     }
-    return null;
+    return new ArrayList<Entry<String, String>>();
   }
 
   private boolean confirm(String Titel, String Text) throws ApplicationException
@@ -351,7 +351,10 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
           item.getID());
       settings.setAttribute(control.getSettingsPrefix() + "profilname",
           item.getBezeichnung());
-      refreshList();
+      if (!neu)
+      {
+        refreshList();
+      }
 
       GUI.getStatusBar()
           .setSuccessText("Profil " + item.getBezeichnung() + " gespeichert.");
