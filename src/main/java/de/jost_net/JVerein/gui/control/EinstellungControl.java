@@ -2468,8 +2468,11 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.ARBEITSEINSATZ,
           (Boolean) arbeitseinsatz.getValue());
       // TODO nach Belegumstellung reaktivieren
-      // Einstellungen.setEinstellung(Property.DOKUMENTENSPEICHERUNG,
-      // (Boolean) dokumentenspeicherung.getValue());
+      if (dokumentenspeicherung != null)
+      {
+        Einstellungen.setEinstellung(Property.DOKUMENTENSPEICHERUNG,
+            (Boolean) dokumentenspeicherung.getValue());
+      }
       // if (dokumentenspeicherung_messaging != null)
       // {
       // Einstellungen.setEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING,

@@ -222,10 +222,6 @@ public class JVereinPlugin extends AbstractPlugin
 
   public static boolean isArchiveServiceActive() throws RemoteException
   {
-    if (!(Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
-    {
-      return false;
-    }
     if (Application.getPluginLoader()
         .getPlugin("de.willuhn.jameica.messaging.Plugin") != null)
     {
