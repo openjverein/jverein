@@ -50,7 +50,7 @@ public class KontoListeView extends AbstractView
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Nur aktive Konten",
-        control.getFilterInput(Filter.STATUS));
+        control.getFilterInput(Filter.NUR_AKTIVE_KONTEN));
     right.addInput(control.getFilterInput(Filter.KONTOART));
 
     ButtonArea fbuttons = new ButtonArea();

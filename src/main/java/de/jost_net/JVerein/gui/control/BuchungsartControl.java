@@ -473,7 +473,7 @@ public class BuchungsartControl extends FilterControl implements Savable
       Object value = entry.getValue();
       switch (entry.getKey())
       {
-        case STATUS:
+        case OHNE_DEAKTIVIERT:
           if ((Boolean) value)
           {
             buchungsarten.addFilter("status != ?", StatusBuchungsart.INACTIVE);

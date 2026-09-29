@@ -51,7 +51,7 @@ public class BuchungsartListeView extends AbstractView
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getFilterInput(Filter.BUCHUNGSARTART));
     right.addLabelPair("Ohne Deaktiviert",
-        control.getFilterInput(Filter.STATUS));
+        control.getFilterInput(Filter.OHNE_DEAKTIVIERT));
 
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getProfileButton(this));

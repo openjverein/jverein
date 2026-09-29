@@ -434,7 +434,7 @@ public class VorlageUtil
           set.add(Filter.BEZEICHNUNG);
           set.add(Filter.NUMMER);
           set.add(Filter.KONTOART);
-          set.add(Filter.STATUS);
+          set.add(Filter.NUR_AKTIVE_KONTEN);
           map = new FilterMap().getDummyMap(set, map);
           break;
         case KURSTEILNEHMER_DATEINAME:
@@ -793,7 +793,7 @@ public class VorlageUtil
           set.add(Filter.NUMMER);
           set.add(Filter.BUCHUNGSKLASSE);
           set.add(Filter.BUCHUNGSARTART);
-          set.add(Filter.STATUS);
+          set.add(Filter.OHNE_DEAKTIVIERT);
           map = new FilterMap().getDummyMap(set, map);
           break;
         case WIRTSCHAFTSPLAN_DATEINAME:
