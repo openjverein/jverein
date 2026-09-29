@@ -185,6 +185,8 @@ public enum Filter
   // Für Auswertung
   JUBELJAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,
       Jubeljahr.getList()),
+  GESCHAEFTSJAHR("filter_geschaefts_jahr", "Geschäftsjahr", "2024",
+      FilterArt.SELECT_OHNE_NULL, GeschaeftsJahrList.getList()),
   AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste", FilterArt.TEXT);
 
   private String setting;
