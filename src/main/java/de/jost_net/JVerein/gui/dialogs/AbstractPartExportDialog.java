@@ -223,7 +223,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
     if (art.equals(ExportArt.CSV))
     {
-      b.addButton("Reset", c -> resetSpalten(), null, true, "edit-undo.png");
+      b.addButton("Reset", c -> resetSpalten(), null, false, "edit-undo.png");
     }
 
     b.addButton("Starten", c -> export(), null, true, "walking.png");
@@ -299,7 +299,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       ButtonArea buttons = new ButtonArea();
       buttons.addButton(new Button("Breiten zurücksetzen", action, null, false,
           "edit-undo.png"));
-      buttons.addButton("Reset", c -> resetSpalten(), null, true,
+      buttons.addButton("Reset", c -> resetSpalten(), null, false,
           "edit-undo.png");
       tabSpalten.addButtonArea(buttons);
     }
@@ -322,7 +322,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     tabRaender.addLabelPair("Oben", oben);
     tabRaender.addLabelPair("Unten", unten);
     ButtonArea rbuttons = new ButtonArea();
-    rbuttons.addButton("Reset", c -> resetRaender(), null, true,
+    rbuttons.addButton("Reset", c -> resetRaender(), null, false,
         "edit-undo.png");
     tabRaender.addButtonArea(rbuttons);
 
@@ -360,7 +360,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     tabFormular.addLabelPair("Tabellen Zellen transparent", zellenTransparent);
     tabFormular.addLabelPair("Querformat", querformat);
     ButtonArea fbuttons = new ButtonArea();
-    fbuttons.addButton("Reset", c -> resetFormular(), null, true,
+    fbuttons.addButton("Reset", c -> resetFormular(), null, false,
         "edit-undo.png");
     tabFormular.addButtonArea(fbuttons);
 
@@ -419,7 +419,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     tabFont.addSeparator();
     tabFont.addText("* Bei Zeilen mit Hintergrundfarbe", false);
     ButtonArea sbuttons = new ButtonArea();
-    sbuttons.addButton("Reset", c -> resetSchriftart(), null, true,
+    sbuttons.addButton("Reset", c -> resetSchriftart(), null, false,
         "edit-undo.png");
     tabFont.addButtonArea(sbuttons);
   }
