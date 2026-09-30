@@ -45,6 +45,7 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.TabelleExportProfilePart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.ExportLayoutParam;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -204,6 +205,11 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     {
       spaltenList.addColumn("Spalten", "column.name");
       spaltenList.setCheckable(true);
+    }
+
+    if (this instanceof TablePartExportDialog)
+    {
+      new TabelleExportProfilePart(this, settingPrefix).paint(parent);
     }
 
     if (art.equals(ExportArt.PDF))
@@ -428,7 +434,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   {
     try
     {
-      saveSettings();
+      saveSettings(settingPrefix);
 
       String extension = "";
       switch (art)
@@ -541,7 +547,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   }
 
   @SuppressWarnings("unchecked")
-  protected void saveSettings() throws RemoteException
+  public void saveSettings(String prefix) throws RemoteException
   {
     if (spaltenList != null)
     {
@@ -549,83 +555,167 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       List<String> spaltenNamen = new ArrayList<>();
       for (ExportSpalte sp : (List<ExportSpalte>) spaltenList.getItems(false))
       {
-        settings.setAttribute(
-            settingPrefix + "anzeigen." + sp.getColumn().getName(),
+        settings.setAttribute(prefix + "anzeigen." + sp.getColumn().getName(),
             itemsChecked.contains(sp));
         if (art.equals(ExportArt.PDF))
         {
-          settings.setAttribute(
-              settingPrefix + "breite." + sp.getColumn().getName(),
+          settings.setAttribute(prefix + "breite." + sp.getColumn().getName(),
               sp.getBreite());
         }
         spaltenNamen.add(sp.getColumn().getName());
       }
-      settings.setAttribute(settingPrefix + "order",
-          String.join(",", spaltenNamen));
+      settings.setAttribute(prefix + "order", String.join(",", spaltenNamen));
     }
 
     if (art.equals(ExportArt.PDF))
     {
-      settings.setAttribute(settingPrefix + "links",
-          (Integer) links.getValue());
-      settings.setAttribute(settingPrefix + "rechts",
-          (Integer) rechts.getValue());
-      settings.setAttribute(settingPrefix + "oben", (Integer) oben.getValue());
-      settings.setAttribute(settingPrefix + "unten",
-          (Integer) unten.getValue());
+      settings.setAttribute(prefix + "links", (Integer) links.getValue());
+      settings.setAttribute(prefix + "rechts", (Integer) rechts.getValue());
+      settings.setAttribute(prefix + "oben", (Integer) oben.getValue());
+      settings.setAttribute(prefix + "unten", (Integer) unten.getValue());
 
-      settings.setAttribute(settingPrefix + "hintergrund",
+      settings.setAttribute(prefix + "hintergrund",
           hintergrund.getValue() == null ? ""
               : ((Formular) hintergrund.getValue()).getID());
-      settings.setAttribute(settingPrefix + "vordergrund",
+      settings.setAttribute(prefix + "vordergrund",
           vordergrund.getValue() == null ? ""
               : ((Formular) vordergrund.getValue()).getID());
 
-      settings.setAttribute(settingPrefix + "headerTransparent",
+      settings.setAttribute(prefix + "headerTransparent",
           (Boolean) headerTransparent.getValue());
-      settings.setAttribute(settingPrefix + "zellenTransparent",
+      settings.setAttribute(prefix + "zellenTransparent",
           (Boolean) zellenTransparent.getValue());
 
-      settings.setAttribute(settingPrefix + "quer",
-          (Boolean) querformat.getValue());
+      settings.setAttribute(prefix + "quer", (Boolean) querformat.getValue());
 
-      settings.setAttribute(settingPrefix + "font_header",
+      settings.setAttribute(prefix + "font_header",
           (String) fontHeader.getValue());
-      settings.setAttribute(settingPrefix + "font_normal",
+      settings.setAttribute(prefix + "font_normal",
           (String) fontNormal.getValue());
-      settings.setAttribute(settingPrefix + "font_fett",
-          (String) fontFett.getValue());
-      settings.setAttribute(settingPrefix + "font_italic",
+      settings.setAttribute(prefix + "font_fett", (String) fontFett.getValue());
+      settings.setAttribute(prefix + "font_italic",
           (String) fontItalic.getValue());
-      settings.setAttribute(settingPrefix + "fontsize_header",
+      settings.setAttribute(prefix + "fontsize_header",
           (Integer) fontsizeHeader.getValue());
-      settings.setAttribute(settingPrefix + "fontsize",
-          (Integer) fontsize.getValue());
-      settings.setAttribute(settingPrefix + "negativ_rot",
+      settings.setAttribute(prefix + "fontsize", (Integer) fontsize.getValue());
+      settings.setAttribute(prefix + "negativ_rot",
           (Boolean) negativRot.getValue());
       Color col = (Color) colorHeader.getValue();
-      settings.setAttribute(settingPrefix + "header_color_red",
+      settings.setAttribute(prefix + "header_color_red",
           (Integer) col.getRed());
-      settings.setAttribute(settingPrefix + "header_color_green",
+      settings.setAttribute(prefix + "header_color_green",
           (Integer) col.getGreen());
-      settings.setAttribute(settingPrefix + "header_color_blue",
+      settings.setAttribute(prefix + "header_color_blue",
           (Integer) col.getBlue());
       col = (Color) colorTable.getValue();
-      settings.setAttribute(settingPrefix + "color_red",
-          (Integer) col.getRed());
-      settings.setAttribute(settingPrefix + "color_green",
-          (Integer) col.getGreen());
-      settings.setAttribute(settingPrefix + "color_blue",
-          (Integer) col.getBlue());
+      settings.setAttribute(prefix + "color_red", (Integer) col.getRed());
+      settings.setAttribute(prefix + "color_green", (Integer) col.getGreen());
+      settings.setAttribute(prefix + "color_blue", (Integer) col.getBlue());
       if (supportTable2)
       {
         col = (Color) colorTable2.getValue();
-        settings.setAttribute(settingPrefix + "color_red2",
-            (Integer) col.getRed());
-        settings.setAttribute(settingPrefix + "color_green2",
+        settings.setAttribute(prefix + "color_red2", (Integer) col.getRed());
+        settings.setAttribute(prefix + "color_green2",
             (Integer) col.getGreen());
-        settings.setAttribute(settingPrefix + "color_blue2",
-            (Integer) col.getBlue());
+        settings.setAttribute(prefix + "color_blue2", (Integer) col.getBlue());
+      }
+      else
+      {
+        settings.setAttribute(prefix + "color_red2", (String) null);
+        settings.setAttribute(prefix + "color_green2", (String) null);
+        settings.setAttribute(prefix + "color_blue2", (String) null);
+      }
+    }
+  }
+
+  // Die temoprären Settings werden in den Dialog übernommen
+  public void setTmpSettings() throws RemoteException
+  {
+    String prefix = settingPrefix + "tmp.";
+
+    // Spalten
+    if (spaltenList != null)
+    {
+      spaltenList.removeAll();
+      colList = new ArrayList<>();
+      for (Column col : part.getAllColums())
+      {
+        int breite = settings.getInt(prefix + "breite." + col.getName(), 0);
+        colList.add(new ExportSpalte(col, breite));
+      }
+      String[] spaltenNamen = settings.getString(prefix + "order", "")
+          .split(",");
+      colList.sort(Comparator.comparingInt(obj -> Arrays.asList(spaltenNamen)
+          .indexOf(obj.getColumn().getName())));
+      for (ExportSpalte spalte : colList)
+      {
+        ExportSpalte item = new ExportSpalte(spalte.getColumn(),
+            spalte.getBreite());
+        spaltenList.addItem(item);
+        spaltenList.setChecked(item, settings.getBoolean(
+            prefix + "anzeigen." + spalte.getColumn().getName(), true));
+      }
+
+    }
+
+    if (art.equals(ExportArt.PDF))
+    {
+      // Ränder
+      links.setValue(settings.getInt(prefix + "links", DEFAULT_LINKS));
+      rechts.setValue(settings.getInt(prefix + "rechts", DEFAULT_RECHTS));
+      oben.setValue(settings.getInt(prefix + "oben", DEFAULT_OBEN));
+      unten.setValue(settings.getInt(prefix + "unten", DEFAULT_UNTEN));
+
+      // Formular
+      hintergrund.setValue(
+          settings.getString(prefix + "hintergrund", DEFAULT_HINTERGRUND));
+      vordergrund.setValue(
+          settings.getString(prefix + "vordergrund", DEFAULT_VORDERGRUND));
+      headerTransparent.setValue(settings
+          .getBoolean(prefix + "headerTransparent", (Boolean) Einstellungen
+              .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT)));
+      zellenTransparent.setValue(settings
+          .getBoolean(prefix + "zellenTransparent", (Boolean) Einstellungen
+              .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT)));
+      querformat
+          .setValue(settings.getBoolean(prefix + "quer", DEFAULT_QUERFORMAT));
+
+      // Schriftart
+      fontHeader.setValue(
+          settings.getString(prefix + "font_header", DEFAULT_FONT_HEADER));
+      fontNormal.setValue(
+          settings.getString(prefix + "font_normal", DEFAULT_FONT_NORMAL));
+      fontFett.setValue(
+          settings.getString(prefix + "font_fett", DEFAULT_FONT_FETT));
+      fontItalic.setValue(
+          settings.getString(prefix + "font_italic", DEFAULT_FONT_ITALIC));
+      fontsize
+          .setValue(settings.getInt(prefix + "fontsize", DEFAULT_FONT_SIZE));
+      fontsizeHeader.setValue(settings.getInt(prefix + "fontsize_header",
+          DEFAULT_FONT_SIZE_HEADER));
+      negativRot.setValue(
+          settings.getBoolean(prefix + "negativ_rot", DEFAULT_NEGATIV_ROT));
+      Color col = new Color(
+          (int) settings.getInt(prefix + "header_color_red",
+              DEFAULT_HEADER_COLOR_RED),
+          (int) settings.getInt(prefix + "header_color_green",
+              DEFAULT_HEADER_COLOR_GREEN),
+          (int) settings.getInt(prefix + "header_color_blue",
+              DEFAULT_HEADER_COLOR_BLUE));
+      colorHeader.setValue(col);
+      col = new Color(
+          (int) settings.getInt(prefix + "color_red", DEFAULT_COLOR_RED),
+          (int) settings.getInt(prefix + "color_green", DEFAULT_COLOR_GREEN),
+          (int) settings.getInt(prefix + "color_blue", DEFAULT_COLOR_BLUE));
+      colorTable.setValue(col);
+      if (supportTable2)
+      {
+        col = new Color(
+            (int) settings.getInt(prefix + "color_red2", DEFAULT_COLOR_RED2),
+            (int) settings.getInt(prefix + "color_green2",
+                DEFAULT_COLOR_GREEN2),
+            (int) settings.getInt(prefix + "color_blue2", DEFAULT_COLOR_BLUE2));
+        colorTable2.setValue(col);
       }
     }
   }
@@ -868,5 +958,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     {
       return column;
     }
+  }
+
+  public Settings getSettings()
+  {
+    return settings;
   }
 }
