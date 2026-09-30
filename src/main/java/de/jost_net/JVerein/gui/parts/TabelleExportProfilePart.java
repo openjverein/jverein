@@ -187,7 +187,8 @@ public class TabelleExportProfilePart implements Part
       }
 
       if (!neu && !confirm("Profil Speichern", "Soll das ausgewählte Profil \""
-          + item + "\" mit den akutellen Filtern überschrieben werden?"))
+          + item
+          + "\" mit den aktuellen Dialog Einstellungen überschrieben werden?"))
       {
         return;
       }

@@ -350,7 +350,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
 
       if (!neu && !confirm("Profil Speichern",
           "Soll das ausgewählte Profil \"" + item.getBezeichnung()
-              + "\" mit den akutellen Filtern überschrieben werden?"))
+              + "\" mit den aktuellen Filtern überschrieben werden?"))
       {
         return;
       }
