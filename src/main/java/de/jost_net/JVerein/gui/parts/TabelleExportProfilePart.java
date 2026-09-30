@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.dialogs.ProfilnameNeuDialog;
@@ -199,16 +200,8 @@ public class TabelleExportProfilePart implements Part
       {
         list.add(item);
         Collections.sort(list);
-        StringBuilder text = new StringBuilder();
-        for (String string : list)
-        {
-          if (text.length() > 0)
-          {
-            text.append(",");
-          }
-          text.append(string);
-        }
-        settings.setAttribute(settingPrefix + "profile", text.toString());
+        settings.setAttribute(settingPrefix + "profile",
+            StringUtils.join(list, ","));
       }
       settings.setAttribute(settingPrefix + "profilname", item);
       // Dialog Attribute temporär speichern
@@ -245,16 +238,8 @@ public class TabelleExportProfilePart implements Part
       List<String> list = getProfilname().getList();
       list.remove(item);
       getProfilname().setList(list);
-      StringBuilder text = new StringBuilder();
-      for (String string : list)
-      {
-        if (text.length() > 0)
-        {
-          text.append(",");
-        }
-        text.append(string);
-      }
-      settings.setAttribute(settingPrefix + "profile", text.toString());
+      settings.setAttribute(settingPrefix + "profile",
+          StringUtils.join(list, ","));
       settings.setAttribute(settingPrefix + "profilname",
           (String) profilname.getValue());
       settings.setAttribute(settingPrefix + "profil." + item, (String) null);
