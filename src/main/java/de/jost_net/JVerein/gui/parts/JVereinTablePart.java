@@ -33,6 +33,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
@@ -202,9 +203,9 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
 
     table.addListener(SWT.MenuDetect, event -> {
       Point point = table.toControl(event.x, event.y);
-
-      // Nur reagieren, wenn der Klick im Tabellenkopf liegt
-      if (point.y <= 0 && point.y > -table.getHeaderHeight())
+      Rectangle clientArea = table.getClientArea();
+      if (clientArea.y <= point.y
+          && point.y < (clientArea.y + table.getHeaderHeight()))
       {
         Menu headerMenu = new Menu(table.getShell());
 
