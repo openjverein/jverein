@@ -13,15 +13,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.InvalidPropertiesFormatException;
 import java.util.List;
-import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
@@ -48,8 +43,6 @@ public class TabelleExportProfilePart implements Part
 
   private AbstractPartExportDialog dialog;
 
-  private String tmpPrefix;
-
   private String settingPrefix;
 
   private Settings settings;
@@ -60,7 +53,6 @@ public class TabelleExportProfilePart implements Part
     this.dialog = dialog;
     settings = dialog.getSettings();
     this.settingPrefix = settingPrefix;
-    tmpPrefix = settingPrefix + "tmp.";
   }
 
   @Override
@@ -204,10 +196,11 @@ public class TabelleExportProfilePart implements Part
             StringUtils.join(list, ","));
       }
       settings.setAttribute(settingPrefix + "profilname", item);
-      // Dialog Attribute temporär speichern
-      dialog.saveSettings(settingPrefix + "tmp.");
-      // Die temporär gespeicherten Attribute in das Profil einlesen
-      settings.setAttribute(settingPrefix + "profil." + item, getSettings());
+      // Dialog Attribute in die Parameter laden
+      dialog.guiparams.importfromGui(dialog, settings, settingPrefix);
+      // Die Parameter in das Profil speichern
+      dialog.guiparams.exportToProfile(dialog, settings,
+          settingPrefix + "profil." + item, dialog.spaltenList != null);
 
       profilname.setList(list);
       profilname.setPreselected(item);
@@ -266,10 +259,11 @@ public class TabelleExportProfilePart implements Part
         showDialog();
         return;
       }
-      // Die Profil Attribute temporär in den Settings speichern
-      setSettings(settings.getString(settingPrefix + "profil." + item, ""));
-      // Die temporären Settings im Dialog einlesen
-      dialog.setTmpSettings();
+      // Die Profil Attribute aus dem XML in die Parameter lesen
+      dialog.guiparams.importFromProfile(
+          settings.getString(settingPrefix + "profil." + item, ""));
+      // Die Parameter im Dialog setzen
+      dialog.guiparams.exportToGui(dialog, settings, settingPrefix);
       settings.setAttribute(settingPrefix + "profilname", item);
       GUI.getStatusBar().setSuccessText("Profil " + item + " angewendet.");
     }
@@ -280,38 +274,6 @@ public class TabelleExportProfilePart implements Part
       Logger.error(text, e);
       GUI.getStatusBar().setErrorText(text);
       return;
-    }
-  }
-
-  // Wandelt die Settings in einen Property XML String um, damit er gespeichert
-  // werden kann
-  private String getSettings() throws IOException
-  {
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    Properties prop = new Properties();
-    for (String key : settings.getAttributes())
-    {
-      if (key.startsWith(tmpPrefix))
-      {
-        prop.put(key.substring(tmpPrefix.length()),
-            settings.getString(key, ""));
-      }
-    }
-    prop.storeToXML(bos, "sicherung", "UTF8");
-    return bos.toString();
-  }
-
-  // Speichert die temporären Attribute aus data in den Settings
-  private void setSettings(String data)
-      throws InvalidPropertiesFormatException, IOException
-  {
-    ByteArrayInputStream bis = new ByteArrayInputStream(data.getBytes());
-    Properties p = new Properties();
-    p.loadFromXML(bis);
-    for (Object o : p.keySet())
-    {
-      String key = (String) o;
-      settings.setAttribute(tmpPrefix + key, p.getProperty(key));
     }
   }
 }

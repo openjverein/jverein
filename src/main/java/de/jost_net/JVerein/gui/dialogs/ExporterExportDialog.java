@@ -51,7 +51,7 @@ public class ExporterExportDialog extends AbstractPartExportDialog
   {
     try
     {
-      saveSettings(settingPrefix);
+      saveSettings();
       storeExportLayoutParam();
       success = true;
     }
