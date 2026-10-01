@@ -477,7 +477,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   public void saveSettings() throws RemoteException
   {
-    guiparams.importfromGui(this, settings, settingPrefix);
+    guiparams.importFromGui(this, settings, settingPrefix);
     guiparams.exportToSettings(this, settings, settingPrefix,
         spaltenList != null);
   }

@@ -305,7 +305,7 @@ public class TabelleExportParam
 
   // Parameter aus den Settings lesen
   @SuppressWarnings("unchecked")
-  public void importfromGui(AbstractPartExportDialog dialog, Settings settings,
+  public void importFromGui(AbstractPartExportDialog dialog, Settings settings,
       String prefix) throws RemoteException
   {
     anzeigenMap = new HashMap<>();
@@ -371,7 +371,7 @@ public class TabelleExportParam
   }
 
   // Parameter aus dem Profile XML einlesen
-  public void importFromProfile(String data)
+  public void importFromXML(String data)
       throws InvalidPropertiesFormatException, IOException
   {
     anzeigenMap = new HashMap<>();
@@ -645,7 +645,7 @@ public class TabelleExportParam
   }
 
   // Parameter als Profile XML in den Settings speichern
-  public void exportToProfile(AbstractPartExportDialog dialog,
+  public void exportToXML(AbstractPartExportDialog dialog,
       Settings settings, String prefix, boolean mitSpalten) throws IOException
   {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();

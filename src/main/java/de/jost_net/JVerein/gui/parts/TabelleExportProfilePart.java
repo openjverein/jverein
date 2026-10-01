@@ -197,9 +197,9 @@ public class TabelleExportProfilePart implements Part
       }
       settings.setAttribute(settingPrefix + "profilname", item);
       // Dialog Attribute in die Parameter laden
-      dialog.guiparams.importfromGui(dialog, settings, settingPrefix);
+      dialog.guiparams.importFromGui(dialog, settings, settingPrefix);
       // Die Parameter in das Profil speichern
-      dialog.guiparams.exportToProfile(dialog, settings,
+      dialog.guiparams.exportToXML(dialog, settings,
           settingPrefix + "profil." + item, dialog.spaltenList != null);
 
       profilname.setList(list);
@@ -260,7 +260,7 @@ public class TabelleExportProfilePart implements Part
         return;
       }
       // Die Profil Attribute aus dem XML in die Parameter lesen
-      dialog.guiparams.importFromProfile(
+      dialog.guiparams.importFromXML(
           settings.getString(settingPrefix + "profil." + item, ""));
       // Die Parameter im Dialog setzen
       dialog.guiparams.exportToGui(dialog, settings, settingPrefix);
