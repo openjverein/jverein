@@ -14,7 +14,7 @@ public class AnfangsbestandIDEATable extends AbstractIDEATable<Anfangsbestand>
   {
     super("Anfangsbestand", "anfangsbestand.csv");
 
-    primaryKey("id").text().value(ab -> ab.getID());
+    primaryKey("id").text().value(Anfangsbestand::getID);
 
     column("konto").text().value(ab -> ab.getKonto().getID());
     reference("konto", KontoIDEATable.class, "id");
@@ -35,10 +35,12 @@ public class AnfangsbestandIDEATable extends AbstractIDEATable<Anfangsbestand>
     list.addFilter("datum between ? and ?", jahr.getBeginnGeschaeftsjahr(),
         jahr.getEndeGeschaeftsjahr());
 
-    List<Anfangsbestand> result = new ArrayList<Anfangsbestand>();
+    List<Anfangsbestand> result = new ArrayList<>();
 
     while (list.hasNext())
+    {
       result.add(list.next());
+    }
 
     return result;
   }

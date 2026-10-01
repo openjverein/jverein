@@ -15,13 +15,14 @@ public class BuchungsklasseIDEATable extends AbstractIDEATable<Buchungsklasse>
   {
     super("Buchungsklasse", "buchungsklasse.csv");
 
-    primaryKey("id").text().value(k -> k.getID());
+    primaryKey("id").text().value(Buchungsklasse::getID);
 
-    column("bezeichnung").text().value(k -> k.getBezeichnung());
+    column("bezeichnung").text().value(Buchungsklasse::getBezeichnung);
 
-    column("nummer").text().value(k -> k.getNummer());
+    column("nummer").text().value(Buchungsklasse::getNummer);
   }
 
+  @Override
   public List<Buchungsklasse> getLines(Geschaeftsjahr jahr) throws Exception
   {
     DBIterator<Buchungsklasse> list = Einstellungen.getDBService()

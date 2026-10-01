@@ -20,13 +20,13 @@ import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.io.idea.AnfangsbestandIDEATable;
 import de.jost_net.JVerein.io.idea.BuchungIDEATable;
-import de.jost_net.JVerein.io.idea.IDEATable;
-import de.jost_net.JVerein.io.idea.KontoIDEATable;
 import de.jost_net.JVerein.io.idea.BuchungsartIDEATable;
 import de.jost_net.JVerein.io.idea.BuchungsklasseIDEATable;
 import de.jost_net.JVerein.io.idea.IDEAColumn;
 import de.jost_net.JVerein.io.idea.IDEAColumn.IDEAType;
 import de.jost_net.JVerein.io.idea.IDEAReference;
+import de.jost_net.JVerein.io.idea.IDEATable;
+import de.jost_net.JVerein.io.idea.KontoIDEATable;
 import de.jost_net.JVerein.io.idea.SteuerIDEATable;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.GeschaeftsJahrList;
@@ -77,7 +77,7 @@ public class IdeaFormatReport implements Exporter
         os.closeEntry();
       }
 
-      List<IDEATable<?>> tables = new ArrayList<IDEATable<?>>();
+      List<IDEATable<?>> tables = new ArrayList<>();
       tables.add(new SteuerIDEATable());
       tables.add(new KontoIDEATable());
       tables.add(new BuchungsartIDEATable());
@@ -144,7 +144,7 @@ public class IdeaFormatReport implements Exporter
       if (columns.get(i).getType() != IDEAType.NUMERIC)
       {
         // Keine Zahl, also escapen
-        wert = wert.replaceAll("\"", "\"\"");
+        wert = wert.replace("\"", "\"\"");
         wert = "\"" + wert + "\"";
       }
       os.write(wert.getBytes("UTF-8"));
@@ -155,7 +155,7 @@ public class IdeaFormatReport implements Exporter
   private Map<Class<?>, IDEATable<?>> createTableRegistry(
       List<IDEATable<?>> tables)
   {
-    Map<Class<?>, IDEATable<?>> registry = new HashMap<Class<?>, IDEATable<?>>();
+    Map<Class<?>, IDEATable<?>> registry = new HashMap<>();
 
     for (IDEATable<?> table : tables)
     {
@@ -370,7 +370,9 @@ public class IdeaFormatReport implements Exporter
     for (IDEAColumn<?> column : table.getColumns())
     {
       if (name.equals(column.getName()))
+      {
         return column;
+      }
     }
 
     return null;
@@ -379,7 +381,9 @@ public class IdeaFormatReport implements Exporter
   private String xml(String value)
   {
     if (value == null)
+    {
       return "";
+    }
 
     return value.replace("&", "&amp;").replace("\"", "&quot;")
         .replace("<", "&lt;").replace(">", "&gt;");

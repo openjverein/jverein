@@ -14,13 +14,13 @@ public class BuchungIDEATable extends AbstractIDEATable<Buchung>
   {
     super("Buchung", "buchung.csv");
 
-    primaryKey("id").text().value(b -> b.getID());
+    primaryKey("id").text().value(Buchung::getID);
 
     column("konto").text()
         .value(b -> b.getKonto() == null ? "" : b.getKonto().getID());
     reference("konto", KontoIDEATable.class, "id");
 
-    column("name").text().value(b -> b.getName());
+    column("name").text().value(Buchung::getName);
 
     column("buchungsart").text().value(
         b -> b.getBuchungsart() == null ? "" : b.getBuchungsart().getID());
@@ -38,7 +38,7 @@ public class BuchungIDEATable extends AbstractIDEATable<Buchung>
     column("datum").date(dateFormatString)
         .value(b -> dateFormat.format(b.getDatum()));
 
-    column("zweck").text().value(b -> b.getZweck());
+    column("zweck").text().value(Buchung::getZweck);
 
     column("betrag").numeric(2).value(b -> decimalFormat.format(b.getBetrag()));
 
@@ -56,7 +56,7 @@ public class BuchungIDEATable extends AbstractIDEATable<Buchung>
     list.addFilter("datum between ? and ?", jahr.getBeginnGeschaeftsjahr(),
         jahr.getEndeGeschaeftsjahr());
 
-    List<Buchung> result = new ArrayList<Buchung>();
+    List<Buchung> result = new ArrayList<>();
 
     while (list.hasNext())
     {

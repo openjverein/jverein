@@ -16,11 +16,11 @@ public class BuchungsartIDEATable extends AbstractIDEATable<Buchungsart>
   {
     super("Buchungsart", "buchungsart.csv");
 
-    primaryKey("id").text().value(k -> k.getID());
+    primaryKey("id").text().value(Buchungsart::getID);
 
-    column("bezeichnung").text().value(k -> k.getBezeichnung());
+    column("bezeichnung").text().value(Buchungsart::getBezeichnung);
 
-    column("nummer").text().value(k -> k.getNummer());
+    column("nummer").text().value(Buchungsart::getNummer);
 
     column("art").text().value(k -> ArtBuchungsart.get(k.getArt()));
 
@@ -34,6 +34,7 @@ public class BuchungsartIDEATable extends AbstractIDEATable<Buchungsart>
     reference("steuer", SteuerIDEATable.class, "id");
   }
 
+  @Override
   public List<Buchungsart> getLines(Geschaeftsjahr jahr) throws Exception
   {
     DBIterator<Buchungsart> list = Einstellungen.getDBService()

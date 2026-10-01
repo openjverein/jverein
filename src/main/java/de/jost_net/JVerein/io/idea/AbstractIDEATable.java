@@ -21,9 +21,9 @@ public abstract class AbstractIDEATable<T> implements IDEATable<T>
 
   private final String fileName;
 
-  private final List<IDEAColumn<T>> columns = new ArrayList<IDEAColumn<T>>();
+  private final List<IDEAColumn<T>> columns = new ArrayList<>();
 
-  private final List<IDEAReference> references = new ArrayList<IDEAReference>();
+  private final List<IDEAReference> references = new ArrayList<>();
 
   protected AbstractIDEATable(String name, String fileName)
   {
@@ -33,47 +33,46 @@ public abstract class AbstractIDEATable<T> implements IDEATable<T>
 
   protected IDEAColumn<T> primaryKey(String name)
   {
-    IDEAColumn<T> column = new IDEAColumn<T>(name);
+    IDEAColumn<T> column = new IDEAColumn<>(name);
     column.setPrimaryKey(true);
-    this.columns.add(column);
+    columns.add(column);
     return column;
   }
 
   protected IDEAColumn<T> column(String name)
   {
-    IDEAColumn<T> column = new IDEAColumn<T>(name);
-    this.columns.add(column);
+    IDEAColumn<T> column = new IDEAColumn<>(name);
+    columns.add(column);
     return column;
   }
 
   protected void reference(String fromColumn,
       Class<? extends IDEATable<?>> targetTable, String targetColumn)
   {
-    this.references
-        .add(new IDEAReference(fromColumn, targetTable, targetColumn));
+    references.add(new IDEAReference(fromColumn, targetTable, targetColumn));
   }
 
   @Override
   public String getName()
   {
-    return this.name;
+    return name;
   }
 
   @Override
   public String getFileName()
   {
-    return this.fileName;
+    return fileName;
   }
 
   @Override
   public List<IDEAColumn<T>> getColumns()
   {
-    return Collections.unmodifiableList(this.columns);
+    return Collections.unmodifiableList(columns);
   }
 
   @Override
   public List<IDEAReference> getReferences()
   {
-    return Collections.unmodifiableList(this.references);
+    return Collections.unmodifiableList(references);
   }
 }

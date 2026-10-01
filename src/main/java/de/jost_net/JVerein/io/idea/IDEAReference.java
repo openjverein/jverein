@@ -18,16 +18,16 @@ public class IDEAReference
 
   public String getFromColumn()
   {
-    return this.fromColumn;
+    return fromColumn;
   }
 
   public Class<? extends IDEATable<?>> getTargetTable()
   {
-    return this.targetTable;
+    return targetTable;
   }
 
   public String getTargetColumn()
   {
-    return this.targetColumn;
+    return targetColumn;
   }
 }

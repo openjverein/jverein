@@ -14,9 +14,9 @@ public class SteuerIDEATable extends AbstractIDEATable<Steuer>
   {
     super("Steuer", "steuer.csv");
 
-    primaryKey("id").text().value(s -> s.getID());
+    primaryKey("id").text().value(Steuer::getID);
 
-    column("name").text().value(s -> s.getName());
+    column("name").text().value(Steuer::getName);
 
     column("satz").numeric(2).value(s -> decimalFormat.format(s.getSatz()));
 
@@ -36,10 +36,12 @@ public class SteuerIDEATable extends AbstractIDEATable<Steuer>
     DBIterator<Steuer> list = Einstellungen.getDBService()
         .createList(Steuer.class);
 
-    List<Steuer> result = new ArrayList<Steuer>();
+    List<Steuer> result = new ArrayList<>();
 
     while (list.hasNext())
+    {
       result.add(list.next());
+    }
 
     return result;
   }

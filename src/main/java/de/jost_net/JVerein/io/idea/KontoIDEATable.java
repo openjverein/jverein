@@ -17,11 +17,11 @@ public class KontoIDEATable extends AbstractIDEATable<Konto>
   {
     super("Konto", "konto.csv");
 
-    primaryKey("id").text().value(k -> k.getID());
+    primaryKey("id").text().value(Konto::getID);
 
-    column("bezeichnung").text().value(k -> k.getBezeichnung());
+    column("bezeichnung").text().value(Konto::getBezeichnung);
 
-    column("nummer").text().value(k -> k.getNummer());
+    column("nummer").text().value(Konto::getNummer);
 
     column("eroeffnung").date(dateFormatString)
         .value(k -> k.getEroeffnung() == null ? ""
@@ -61,9 +61,7 @@ public class KontoIDEATable extends AbstractIDEATable<Konto>
     column("kontoart").text().value(k -> k.getKontoArt().getText());
   }
 
-  /**
-   * @see de.willuhn.jameica.IDEATable.io.report.idea.Table#getLines(de.willuhn.jameica.fibu.rmi.Geschaeftsjahr)
-   */
+  @Override
   public List<Konto> getLines(Geschaeftsjahr jahr) throws Exception
   {
     DBIterator<Konto> list = Einstellungen.getDBService()

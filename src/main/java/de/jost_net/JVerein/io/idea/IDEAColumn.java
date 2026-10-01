@@ -36,20 +36,20 @@ public class IDEAColumn<T>
 
   public IDEAColumn<T> text()
   {
-    this.type = IDEAType.ALPHANUMERIC;
+    type = IDEAType.ALPHANUMERIC;
     return this;
   }
 
   public IDEAColumn<T> date(String format)
   {
-    this.type = IDEAType.DATE;
+    type = IDEAType.DATE;
     this.format = format;
     return this;
   }
 
   public IDEAColumn<T> numeric(int accuracy)
   {
-    this.type = IDEAType.NUMERIC;
+    type = IDEAType.NUMERIC;
     this.accuracy = accuracy;
     return this;
   }
@@ -73,41 +73,43 @@ public class IDEAColumn<T>
 
   public String getName()
   {
-    return this.name;
+    return name;
   }
 
   public IDEAType getType()
   {
-    return this.type;
+    return type;
   }
 
   public String getFormat()
   {
-    return this.format;
+    return format;
   }
 
   public Integer getLength()
   {
-    return this.length;
+    return length;
   }
 
   public Integer getAccuracy()
   {
-    return this.accuracy;
+    return accuracy;
   }
 
   public boolean isPrimaryKey()
   {
-    return this.primaryKey;
+    return primaryKey;
   }
 
   public String getValue(T object) throws Exception
   {
-    if (this.valueProvider == null)
+    if (valueProvider == null)
+    {
       throw new IllegalStateException(
-          "Kein Wert-Provider fuer IDEA-Spalte '" + this.name + "' definiert");
+          "Kein Wert-Provider fuer IDEA-Spalte '" + name + "' definiert");
+    }
 
-    String value = this.valueProvider.getValue(object);
+    String value = valueProvider.getValue(object);
 
     return value == null ? "" : value;
   }
