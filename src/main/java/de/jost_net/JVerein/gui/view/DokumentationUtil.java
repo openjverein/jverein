@@ -231,4 +231,5 @@ public class DokumentationUtil
   // Changelog bei Update
   public static final String CHANGELOG = FUNKTIONEN + "notes";
 
+  public static final String ALLGEMEINES = FUNKTIONEN + "allgemeines";
 }

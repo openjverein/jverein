@@ -47,7 +47,7 @@ public class MahnungMailView extends AbstractView
     GUI.getView().setTitle("Mahnungen");
 
     final RechnungControl control = new RechnungControl(this);
-    control.init(RechnungControl.TYP.MAHNUNG.name() + ".", null, null);
+    control.init(RechnungControl.TYP.MAHNUNG.name() + ".");
 
     if (this.getCurrentObject() == null)
     {
@@ -70,6 +70,7 @@ public class MahnungMailView extends AbstractView
       right.addInput(control.getFilterInput(Filter.DATUM_BIS));
 
       ButtonArea filterbuttons = new ButtonArea();
+      filterbuttons.addButton(control.getProfileButton(this));
       filterbuttons.addButton(control.getResetButton());
       filterbuttons.addButton(control.getSpeichernButton());
       group.addButtonArea(filterbuttons);

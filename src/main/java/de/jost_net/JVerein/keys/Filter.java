@@ -144,8 +144,11 @@ public enum Filter
       "Beide", FilterArt.SELECT, MitgliedZugeordnetFilter.values()),
   NAME("filter_name", "Name", "Meier", FilterArt.TEXT),
   NUMMER("filter_nummer", "Nummer", "44", FilterArt.TEXT),
-
+  NUR_AKTIVE_KONTEN("filter_nur_aktive_konten", "Nur aktive Konten", "Ja",
+      FilterArt.CHECKBOX),
   OHNE_ABBUCHER("filter_ohne_abbucher", "Ohne Abbucher", "Ja",
+      FilterArt.CHECKBOX),
+  OHNE_DEAKTIVIERT("filter_ohne_deaktiviert", "Ohne Deaktiviert", "Ja",
       FilterArt.CHECKBOX),
   OHNE_ERLEDIGUNG("filter_ohne_erledigung", "Ohne Erledigung", "Ja",
       FilterArt.CHECKBOX),
@@ -155,7 +158,6 @@ public enum Filter
       FilterArt.SELECT, SuchSpendenart.values()),
   SPLITBUCHUNG("filter_splitbuchung", "Splitbuchung", FilterControl.ALLE,
       FilterArt.SELECT, SplitbuchungFilter.values()),
-  STATUS("filter_status", "Status", FilterControl.ALLE, FilterArt.CHECKBOX),
   STERBEDATUM_BIS("filter_sterbedatum_bis_f", "Sterbetag bis", "20241231",
       FilterArt.DATE),
   STERBEDATUM_VON("filter_sterbedatum_von_f", "Sterbetag von", "20240101",
@@ -173,7 +175,10 @@ public enum Filter
   VERWENDUNGSZWECK("filter_verwendungszweck", "Verwendungszweck", "Beitrag",
       FilterArt.TEXT),
   VORLAGEART("filter_vorlagenart", "Vorlagenart", "Titel", FilterArt.SELECT,
-      Vorlageart.values()),
+      // TODO Sollte nach Fertigstellung der Belegumstellung wieder geändert
+      // werden.
+      // Vorlageart.values()
+      new Vorlageart[] { Vorlageart.DATEINAME, Vorlageart.TITEL }),
   ZAHLER("filter_zahler", "Zahler", "Text", FilterArt.TEXT),
   ZEILE2("filter_zeile2", "Zeile 2", "Meier", FilterArt.TEXT),
   ZUSATZFELD("filter_zusatzfelder", "Zusatzfelder", "Zusatzfeld",
@@ -264,6 +269,18 @@ public enum Filter
   public KeyEnum[] getArray()
   {
     return array;
+  }
+
+  public static Filter getByKey(String key)
+  {
+    for (Filter f : Filter.values())
+    {
+      if (f.getSetting().equals(key))
+      {
+        return f;
+      }
+    }
+    return null;
   }
 
   public Class<? extends DBObject> getDbObject()

@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Item;
 
 import com.itextpdf.text.DocumentException;
 
@@ -32,7 +33,8 @@ public class ExporterExportDialog extends AbstractPartExportDialog
       ExportArt art, String title, String subtitle, String filename)
       throws ApplicationException
   {
-    super(settingPrefix, art, title, subtitle, filename, "Report generieren");
+    super(settingPrefix, art, title, subtitle, filename, "Report generieren",
+        null);
     supportTable2 = hasColortable2;
     settings = new Settings(this.getClass());
   }
@@ -85,4 +87,16 @@ public class ExporterExportDialog extends AbstractPartExportDialog
     // Kein Spalten Tab
   }
 
+  @Override
+  void resetSpalten()
+  {
+    // Kein Spalten Tab
+  }
+
+  @Override
+  Item getColumn(String name)
+  {
+    // hier nicht nötig
+    return null;
+  }
 }

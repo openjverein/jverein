@@ -25,6 +25,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.hbci.Settings;
@@ -101,6 +102,7 @@ public class MitgliedLastschriftAction implements Action
         // korrekt einzugeben
         String verwendungszweck = "#ANPASSEN# " + ((Boolean) Einstellungen
             .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+            && m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
                 ? m.getExterneMitgliedsnummer()
                 : m.getID())
             + "/" + Adressaufbereitung.getNameVorname(m);

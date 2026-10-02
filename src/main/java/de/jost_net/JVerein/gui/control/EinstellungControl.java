@@ -2467,13 +2467,17 @@ public class EinstellungControl extends AbstractControl
           (Boolean) auslandsadressen.getValue());
       Einstellungen.setEinstellung(Property.ARBEITSEINSATZ,
           (Boolean) arbeitseinsatz.getValue());
-      Einstellungen.setEinstellung(Property.DOKUMENTENSPEICHERUNG,
-          (Boolean) dokumentenspeicherung.getValue());
-      if (dokumentenspeicherung_messaging != null)
+      // TODO nach Belegumstellung reaktivieren
+      if (dokumentenspeicherung != null)
       {
-        Einstellungen.setEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING,
-            (Boolean) dokumentenspeicherung_messaging.getValue());
+        Einstellungen.setEinstellung(Property.DOKUMENTENSPEICHERUNG,
+            (Boolean) dokumentenspeicherung.getValue());
       }
+      // if (dokumentenspeicherung_messaging != null)
+      // {
+      // Einstellungen.setEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING,
+      // (Boolean) dokumentenspeicherung_messaging.getValue());
+      // }
       Einstellungen.setEinstellung(Property.INDIVIDUELLEBEITRAEGE,
           (Boolean) individuellebeitraege.getValue());
       Einstellungen.setEinstellung(Property.EXTERNEMITGLIEDSNUMMER,

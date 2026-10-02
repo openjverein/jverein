@@ -42,7 +42,7 @@ public class NichtMitgliedListeView extends AbstractMitgliedListeView
 {
   public NichtMitgliedListeView() throws RemoteException
   {
-    control.init("nichtmitglied.", "nichtzusatzfeld.", "nichtzusatzfelder.");
+    control.init("nichtmitglied.");
   }
 
   @Override
@@ -95,6 +95,7 @@ public class NichtMitgliedListeView extends AbstractMitgliedListeView
     right3.addInput(control.getFilterInput(Filter.DATUM_BIS));
 
     ButtonArea buttons = new ButtonArea();
+    buttons.addButton(control.getProfileButton(this));
     buttons.addButton(control.getResetButton());
     buttons.addButton(control.getSuchenButton());
     group.addButtonArea(buttons);

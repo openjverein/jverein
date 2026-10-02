@@ -70,6 +70,7 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -972,8 +973,11 @@ public class AbrechnungSEPA extends SEPASupport
       String verwendungszweck) throws RemoteException
   {
     String id = adr.getID();
-    if (adr instanceof Mitglied && (Boolean) Einstellungen
-        .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+    if (adr instanceof Mitglied
+        && (Boolean) Einstellungen
+            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+        && ((Mitglied) adr).getMitgliedstyp().getID()
+            .equals(Mitgliedstyp.MITGLIED))
     {
       id = ((Mitglied) adr).getExterneMitgliedsnummer();
     }

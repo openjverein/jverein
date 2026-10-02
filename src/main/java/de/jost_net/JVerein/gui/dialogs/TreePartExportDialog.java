@@ -19,13 +19,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -40,14 +39,15 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTreePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.rmi.Formular;
-import de.willuhn.jameica.gui.Action;
+import de.willuhn.datasource.BeanUtil;
+import de.willuhn.datasource.GenericObjectNode;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.system.Settings;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class TreePartExportDialog extends AbstractPartExportDialog
@@ -55,22 +55,20 @@ public class TreePartExportDialog extends AbstractPartExportDialog
 
   private Tree tree;
 
+  private JVereinTreePart treePart;
+
   public TreePartExportDialog(Tree tree, String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename)
+      String title, String subtitle, String filename, JVereinTreePart treePart)
       throws ApplicationException
   {
-    super(settingPrefix, art, title, subtitle, filename, "Baum exportieren");
+    super(settingPrefix, art, title, subtitle, filename, "Baum exportieren",
+        treePart);
 
     if (tree == null || tree.isDisposed() || !(tree instanceof Tree))
     {
       throw new ApplicationException("Tabelle nicht geladen");
     }
     TreeItem[] rootItems = tree.getItems();
-    if (rootItems.length == 0)
-    {
-      throw new ApplicationException("Tabelle enthält keine Daten");
-    }
-    // Wir haben immer den Root Node, darum prüfen wir die Childs
     boolean leer = true;
     for (TreeItem item : rootItems)
     {
@@ -86,152 +84,71 @@ public class TreePartExportDialog extends AbstractPartExportDialog
     }
 
     this.tree = tree;
+    this.treePart = treePart;
     settings = new Settings(this.getClass());
   }
 
-  @Override
-  protected void paint(Composite parent)
-      throws ApplicationException, RemoteException
-  {
-    // Spalten so wie angezeigt sortieren
-    List<TreeColumn> listeSortiert = new ArrayList<>();
-    int[] order = tree.getColumnOrder();
-    for (int i = 0; i < tree.getColumnCount(); i++)
-    {
-      TreeColumn col = tree.getColumn(order[i]);
-      // Leere Dummy-Spalte am Ende überspringen
-      if (col.getText().isBlank())
-      {
-        continue;
-      }
-      col.setData(settings.getInt(settingPrefix + "breite." + col.getText(),
-          col.getWidth()));
-      listeSortiert.add(col);
-    }
-
-    spaltenList = new JVereinTablePart(listeSortiert, null)
-    {
-      // Sortieren verhindern
-      @Override
-      protected void orderBy(int index)
-      {
-        return;
-      }
-    };
-    if (art.equals(ExportArt.PDF))
-    {
-      spaltenList.addChangeListener((object, attribute, newValue) -> {
-        try
-        {
-          ((TreeColumn) object).setData(Integer.parseInt(newValue));
-        }
-        catch (Exception e)
-        {
-          throw new ApplicationException("Ungültiger Wert");
-        }
-      });
-    }
-    createGui(parent, new Action()
-    {
-
-      // Action zum Reset der Spaltenbreiten
-      @SuppressWarnings("unchecked")
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          for (TreeColumn col : (List<TreeColumn>) spaltenList.getItems())
-          {
-            col.setData(col.getWidth());
-          }
-          spaltenList.removeAll();
-          for (TreeColumn col : listeSortiert)
-          {
-            spaltenList.addItem(col);
-            spaltenList.setChecked(col, settings
-                .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
-          }
-        }
-        catch (RemoteException re)
-        {
-          Logger.error("Fehler beim zurücksetzen der Breiten", re);
-          throw new ApplicationException(
-              "Fehler beim zurücksetzen der Breiten");
-        }
-      }
-    });
-  }
-
+  @SuppressWarnings("unchecked")
   @Override
   protected void exportCSV(File file) throws IOException
   {
     try (ICsvMapWriter writer = new CsvMapWriter(new FileWriter(file),
         CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE))
     {
-      @SuppressWarnings("unchecked")
-      List<TreeColumn> listeAuswahl = spaltenList.getItems();
-      List<TreeColumn> listeOrig = Arrays.asList(tree.getColumns());
-      List<MyTreeItem> rows = new ArrayList<>();
+      List<ExportSpalte> spalten = spaltenList.getItems();
+      List<MyItem> rows = new ArrayList<>();
 
-      for (TreeItem item : tree.getItems())
+      for (GenericObjectNode item : (List<GenericObjectNode>) treePart
+          .getItems())
       {
         // Die Root Ebene geben wir nicht aus
         getItemRekursiv(rows, item, 0);
       }
+
       int ebenen = 0;
-      for (MyTreeItem item : rows)
+      for (MyItem item : rows)
       {
         ebenen = Math.max(ebenen, item.getEbene());
       }
-      int size = listeAuswahl.size();
-      if (listeOrig.indexOf(listeAuswahl.get(0)) == 0)
-      {
-        size += ebenen;
-      }
-      else
-      {
-        ebenen = 0;
-      }
+      int size = spalten.size() + ebenen;
 
       CellProcessor[] cellProcessor = new CellProcessor[size];
       String[] header = new String[size];
 
       int n = 0;
-      for (TreeColumn col : listeAuswahl)
+      for (ExportSpalte col : spalten)
       {
-        if (listeOrig.indexOf(col) == 0)
+        if (n == 0)
         {
           for (int i = 0; i <= ebenen; i++)
           {
-            header[n] = col.getText() + " - " + (i + 1);
+            header[n] = col.getColumn().getName() + " - " + (i + 1);
             cellProcessor[n++] = new ConvertNullTo("");
           }
         }
         else
         {
-          header[n] = col.getText();
+          header[n] = col.getColumn().getName();
           cellProcessor[n++] = new ConvertNullTo("");
         }
       }
       writer.writeHeader(header);
 
-      for (MyTreeItem row : rows)
+      for (MyItem row : rows)
       {
         Map<String, Object> csvzeile = new HashMap<>();
         int i = 0;
-        for (TreeColumn col : listeAuswahl)
+        for (ExportSpalte col : spalten)
         {
-          int index = listeOrig.indexOf(col);
-          if (index == 0)
+          Object o = BeanUtil.get(row.getItem(), col.getColumn().getColumnId());
+          String text = col.getColumn().getFormattedValue(o, col);
+          if (i == 0)
           {
-            csvzeile.put(header[row.getEbene() + i++],
-                row.getTreeItem().getText(index));
+            csvzeile.put(header[row.getEbene() + i++], text);
           }
           else
           {
-            csvzeile.put(header[ebenen + i++],
-                row.getTreeItem().getText(index));
+            csvzeile.put(header[ebenen + i++], text);
           }
         }
         writer.write(csvzeile, header, cellProcessor);
@@ -240,8 +157,10 @@ public class TreePartExportDialog extends AbstractPartExportDialog
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  protected void exportPDF(File file) throws IOException, DocumentException
+  protected void exportPDF(File file)
+      throws IOException, DocumentException, ApplicationException
   {
     try (FileOutputStream fos = new FileOutputStream(file);
         Reporter reporter = new Reporter(fos, title, subtitle,
@@ -252,43 +171,67 @@ public class TreePartExportDialog extends AbstractPartExportDialog
             (Boolean) headerTransparent.getValue(),
             (Boolean) zellenTransparent.getValue());)
     {
-      @SuppressWarnings("unchecked")
-      List<TreeColumn> listeAuswahl = spaltenList.getItems();
-      List<TreeColumn> listeOrig = Arrays.asList(tree.getColumns());
-      List<MyTreeItem> rows = new ArrayList<>();
+      List<ExportSpalte> listeAuswahl = spaltenList.getItems();
+      List<MyItem> rows = new ArrayList<>();
 
-      for (TreeItem item : tree.getItems())
+      for (GenericObjectNode item : (List<GenericObjectNode>) treePart
+          .getItems())
       {
         // Die Root Ebene geben wir nicht aus
         getItemRekursiv(rows, item, 0);
       }
 
-      for (TreeColumn col : listeAuswahl)
+      Object testObject = treePart.getItems().get(0);
+      for (ExportSpalte col : listeAuswahl)
       {
-        reporter.addHeaderColumn(col.getText(),
-            col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                : Element.ALIGN_RIGHT,
-            (int) col.getData(), getHintergrundHeader(),
+        if (col.getBreite() <= 0)
+        {
+          throw new ApplicationException(
+              col.getColumn().getName() + ": Breite muss größer 0 sein!");
+        }
+        switch (col.getColumn().getAlign())
+        {
+          case Column.ALIGN_LEFT:
+            col.setAlign(Element.ALIGN_LEFT);
+            break;
+          case Column.ALIGN_RIGHT:
+            col.setAlign(Element.ALIGN_RIGHT);
+            break;
+          case Column.ALIGN_CENTER:
+            col.setAlign(Element.ALIGN_CENTER);
+            break;
+          case Column.ALIGN_AUTO:
+            // Ansonsten Testobjekt laden für automatische Ausrichtung von
+            // Spalten
+            Object value = BeanUtil.get(testObject,
+                col.getColumn().getColumnId());
+            col.setAlign(value instanceof Number ? Element.ALIGN_RIGHT
+                : Element.ALIGN_LEFT);
+            break;
+        }
+        reporter.addHeaderColumn(col.getColumn().getName(), col.getAlign(),
+            col.getBreite(), getHintergrundHeader(),
             getFontHeader(BaseColor.BLACK));
       }
       reporter.createHeader();
 
-      for (MyTreeItem row : rows)
+      for (MyItem row : rows)
       {
-        for (TreeColumn col : listeAuswahl)
+        Item tItem = getItem(tree.getItems(), row.getItem());
+        int n = 0;
+        for (ExportSpalte spalte : listeAuswahl)
         {
-          int index = listeOrig.indexOf(col);
-          String text = row.getTreeItem().getText(index);
+          Object o = BeanUtil.get(row.getItem(),
+              spalte.getColumn().getColumnId());
+          String text = spalte.getColumn().getFormattedValue(o, spalte);
+
           // Die Hintergrundfarbe muss in Data gespeichert sein, sonst hängt sie
           // vom verwendeten Theme ab.
-          Color bg = (Color) row.getTreeItem().getData("background");
-          Font font = getFont(text,
-              row.getTreeItem().getFont(index).getFontData());
+          Color bg = (Color) tItem.getData("background");
+          Font font = getFont(text, ((TreeItem) tItem).getFont().getFontData());
 
-          int alignment = col.getAlignment() == Column.ALIGN_LEFT
-              ? Element.ALIGN_LEFT
-              : Element.ALIGN_RIGHT;
-          if (row.getEbene() == 1 && index == 0)
+          int alignment = spalte.getAlign();
+          if (row.getEbene() == 1 && n++ == 0)
           {
             alignment = Element.ALIGN_RIGHT;
           }
@@ -306,31 +249,57 @@ public class TreePartExportDialog extends AbstractPartExportDialog
     }
   }
 
-  private void getItemRekursiv(List<MyTreeItem> rows, TreeItem item, int ebene)
+  private TreeItem getItem(TreeItem[] treeItems, Object o)
+  {
+    for (TreeItem i : treeItems)
+    {
+      if (i.getData().equals(o))
+      {
+        return i;
+      }
+      TreeItem found = getItem(i.getItems(), o);
+      if (found != null)
+      {
+        return found;
+      }
+    }
+    return null;
+  }
+
+  private void getItemRekursiv(List<MyItem> rows, GenericObjectNode item,
+      int ebene)
   {
     // Unterelemente durchlaufen
-    for (TreeItem child : item.getItems())
+    try
     {
-      rows.add(new MyTreeItem(child, ebene));
-      getItemRekursiv(rows, child, ebene + 1);
+      for (Object o : PseudoIterator.asList(item.getChildren()))
+      {
+        GenericObjectNode child = (GenericObjectNode) o;
+        rows.add(new MyItem(child, ebene));
+        getItemRekursiv(rows, child, ebene + 1);
+      }
+    }
+    catch (RemoteException e)
+    {
+      // kann bei PseudoIterator nicht pssieren
     }
   }
 
-  private class MyTreeItem
+  private class MyItem
   {
-    private TreeItem treeItem;
+    private GenericObjectNode obj;
 
     private int ebene;
 
-    private MyTreeItem(TreeItem treeItem, int ebene)
+    private MyItem(GenericObjectNode obj, int ebene)
     {
-      this.treeItem = treeItem;
+      this.obj = obj;
       this.ebene = ebene;
     }
 
-    public TreeItem getTreeItem()
+    public GenericObjectNode getItem()
     {
-      return treeItem;
+      return obj;
     }
 
     public int getEbene()
@@ -339,31 +308,16 @@ public class TreePartExportDialog extends AbstractPartExportDialog
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  protected void saveSettings() throws RemoteException
+  Item getColumn(String name)
   {
-    List<TreeColumn> itemsChecked = spaltenList.getItems();
-    for (TreeColumn col : (List<TreeColumn>) spaltenList.getItems(false))
+    for (TreeColumn c : tree.getColumns())
     {
-      settings.setAttribute(settingPrefix + "anzeigen." + col.getText(),
-          itemsChecked.contains(col));
-      if (art.equals(ExportArt.PDF))
+      if (c.getText().equals(name))
       {
-        settings.setAttribute(settingPrefix + "breite." + col.getText(),
-            (Integer) col.getData());
+        return c;
       }
     }
-    super.saveSettings();
-  }
-
-  @Override
-  void setChecked()
-  {
-    for (TreeColumn col : tree.getColumns())
-    {
-      spaltenList.setChecked(col, settings
-          .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
-    }
+    return null;
   }
 }

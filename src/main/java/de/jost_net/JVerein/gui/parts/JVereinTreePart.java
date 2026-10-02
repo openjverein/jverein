@@ -14,8 +14,11 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Tree;
@@ -43,6 +46,8 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
   private String tablePartId;
 
   private String tableName = null;
+
+  private Map<String, Boolean> defaults = new HashMap<>();
 
   /**
    * Erzeugt einen neuen Tree basierend auf dem uebergebenen Objekt.
@@ -114,6 +119,7 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
     if (!col.getName().isBlank())
     {
       this.allColumns.add(col);
+      this.defaults.put(col.getName(), defaultVisible);
     }
   }
 
@@ -168,7 +174,7 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
     {
       if (!new TreePartExportDialog((Tree) treeControl,
           getTablePartID(tablePartId, tableName), art, title, subtitle,
-          filename).open())
+          filename, this).open())
       {
         throw new OperationCanceledException();
       }
@@ -193,6 +199,12 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
   public String getTableName()
   {
     return tableName;
+  }
+
+  @Override
+  public Map<String, Boolean> getDefaults()
+  {
+    return defaults;
   }
 
 }

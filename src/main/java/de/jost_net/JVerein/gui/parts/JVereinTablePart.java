@@ -17,12 +17,23 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
@@ -57,6 +68,8 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   private String tablePartId;
 
   private String tableName = null;
+
+  private Map<String, Boolean> defaults = new HashMap<>();
 
   /**
    * Erzeugt eine neue leere Standard-Tabelle auf dem uebergebenen Composite.
@@ -190,9 +203,9 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
 
     table.addListener(SWT.MenuDetect, event -> {
       Point point = table.toControl(event.x, event.y);
-
-      // Nur reagieren, wenn der Klick im Tabellenkopf liegt
-      if (point.y <= 0 && point.y > -table.getHeaderHeight())
+      Rectangle clientArea = table.getClientArea();
+      if (clientArea.y <= point.y
+          && point.y < (clientArea.y + table.getHeaderHeight()))
       {
         Menu headerMenu = new Menu(table.getShell());
 
@@ -278,6 +291,7 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     if (!col.getName().isBlank())
     {
       this.allColumns.add(col);
+      this.defaults.put(col.getName(), defaultVisible);
     }
   }
 
@@ -332,7 +346,7 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     {
       if (!new TablePartExportDialog((Table) tableControl,
           getTablePartID(tablePartId, tableName), art, title, subtitle,
-          filename).open())
+          filename, this).open())
       {
         throw new OperationCanceledException();
       }
@@ -348,6 +362,103 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     }
   }
 
+  /**
+   * Ermöglich drag'n'drop beim TablePart.
+   * 
+   * @throws ApplicationException
+   */
+  public void setDragDrop() throws ApplicationException
+  {
+    Table table = (Table) tableControl;
+    if (table == null)
+    {
+      Logger.error(
+          "setDragDrop nicht möglich, Tabelle wurde noch nicht gezeichnet");
+      throw new ApplicationException(
+          "setDragDrop nicht möglich, Tabelle wurde noch nicht gezeichnet");
+    }
+    DragSource dragSource = new DragSource(table, DND.DROP_MOVE);
+    dragSource.setTransfer(TextTransfer.getInstance());
+    dragSource.addDragListener(new DragSourceAdapter()
+    {
+      @Override
+      public void dragSetData(DragSourceEvent event)
+      {
+        if (table.getSelection().length == 1)
+        {
+          event.data = table.getSelection()[0].getText();
+        }
+      }
+
+      @Override
+      public void dragStart(DragSourceEvent event)
+      {
+        event.doit = table.getSelectionCount() == 1;
+      }
+    });
+    DropTarget dropTarget = new DropTarget(table, DND.DROP_MOVE);
+    dropTarget.setTransfer(TextTransfer.getInstance());
+    dropTarget.addDropListener(new DropTargetAdapter()
+    {
+
+      @Override
+      public void dragEnter(DropTargetEvent event)
+      {
+        event.detail = DND.DROP_MOVE;
+      }
+
+      @Override
+      public void dragOver(DropTargetEvent event)
+      {
+        event.detail = DND.DROP_MOVE;
+        event.feedback = DND.FEEDBACK_INSERT_BEFORE;
+      }
+
+      @Override
+      public void drop(DropTargetEvent event)
+      {
+        TableItem sourceItem = table.getSelection()[0];
+        int sourceIndex = table.indexOf(sourceItem);
+
+        int targetIndex;
+        if (event.item == null)
+        {
+          targetIndex = table.getItemCount();
+        }
+        else
+        {
+          targetIndex = table.indexOf((TableItem) event.item);
+        }
+
+        // Wird ein Element nach unten verschoben, verschiebt sich
+        // der Zielindex nach dem Entfernen um eine Position nach links.
+        if (sourceIndex < targetIndex)
+        {
+          targetIndex--;
+        }
+
+        // Nicht auf dieselbe Position verschieben
+        if (sourceIndex == targetIndex)
+        {
+          return;
+        }
+
+        try
+        {
+          Object o = sourceItem.getData();
+          boolean checked = sourceItem.getChecked();
+
+          JVereinTablePart.this.removeItem(o);
+          JVereinTablePart.this.addItem(o, targetIndex, checked);
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler beim Datenzugriff", e);
+        }
+      }
+    });
+  }
+
   public void setTableName(String name)
   {
     tableName = name;
@@ -358,4 +469,11 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   {
     return tableName;
   }
+
+  @Override
+  public Map<String, Boolean> getDefaults()
+  {
+    return defaults;
+  }
+
 }

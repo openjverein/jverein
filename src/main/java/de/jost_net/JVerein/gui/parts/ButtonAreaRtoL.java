@@ -128,7 +128,30 @@ public class ButtonAreaRtoL implements Part
   public void addButton(String name, final Action action, final Object context,
       boolean isDefault, String icon)
   {
-    this.buttons.add(new ButtonRtoL(name, action, context, isDefault, icon));
+    addButton(name, action, context, isDefault, icon, null);
+  }
+
+  /**
+   * Fuegt der Area einen Button hinzu. Beim Klick wird die Action ausgeloest.
+   * 
+   * @param name
+   *          Bezeichnung des Buttons.
+   * @param action
+   *          auszuloesende Action.
+   * @param context
+   *          Optionaler Context, der der Action mitgegeben wird.
+   * @param isDefault
+   *          markiert den per Default aktiven Button.
+   * @param icon
+   *          Icon, welches links neben dem Button angezeigt werden soll.
+   * @param shortcut
+   *          Shortcut für Tastatur
+   */
+  public void addButton(String name, final Action action, final Object context,
+      boolean isDefault, String icon, String shortcut)
+  {
+    this.buttons
+        .add(new ButtonRtoL(name, action, context, isDefault, icon, shortcut));
   }
 
 }
