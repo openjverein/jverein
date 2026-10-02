@@ -16,7 +16,6 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 import java.sql.Connection;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
-import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -30,8 +29,6 @@ public class Update0512 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-
-    execute(alterColumn("formularfeld",
-        new Column("name", COLTYPE.MEDIUMTEXT, 0, null, false, false)));
+    execute("DELETE FROM suchprofil");
   }
 }
