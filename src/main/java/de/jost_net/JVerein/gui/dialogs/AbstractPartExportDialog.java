@@ -667,10 +667,11 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       unten.setValue(settings.getInt(prefix + "unten", DEFAULT_UNTEN));
 
       // Formular
-      hintergrund.setValue(
-          settings.getString(prefix + "hintergrund", DEFAULT_HINTERGRUND));
-      vordergrund.setValue(
-          settings.getString(prefix + "vordergrund", DEFAULT_VORDERGRUND));
+
+      hintergrund.setPreselected(FormularInput.initdefault(
+          settings.getString(prefix + "hintergrund", DEFAULT_HINTERGRUND)));
+      vordergrund.setPreselected(FormularInput.initdefault(
+          settings.getString(prefix + "vordergrund", DEFAULT_VORDERGRUND)));
       headerTransparent.setValue(settings
           .getBoolean(prefix + "headerTransparent", (Boolean) Einstellungen
               .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT)));
