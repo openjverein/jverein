@@ -69,7 +69,7 @@ public enum Fonts
     }
     // Default Font verwenden
     Logger.warn(
-        "Schrift '" + name + "' nicht gefunden, verwende Standartschrift.");
+        "Schrift '" + name + "' nicht gefunden, verwende Standardschrift.");
     return CarlitoRegular;
   }
 
