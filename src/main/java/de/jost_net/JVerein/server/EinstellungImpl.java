@@ -25,8 +25,7 @@ import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.io.JubilaeenParser;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.util.Datum;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -102,14 +101,7 @@ public class EinstellungImpl extends AbstractJVereinDBObject
       if (hasChanged(Property.IBAN.getKey())
           && getAttribute(Property.IBAN.getKey()) != null)
       {
-        try
-        {
-          new IBAN((String) getAttribute(Property.IBAN.getKey()));
-        }
-        catch (SEPAException e)
-        {
-          throw new ApplicationException(e.getMessage());
-        }
+        IbanUtil.checkIban((String) getAttribute(Property.IBAN.getKey()));
       }
 
       // Jubiläen

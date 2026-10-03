@@ -15,6 +15,8 @@
     <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.parameters>true</maven.compiler.parameters>
     <obantoo.version>2.1.12</obantoo.version>
+    <!-- renovate: depName=de.speedbanking:iban-commons-parent -->
+    <iban.commons.version>1.8.12-RC1</iban.commons.version>
     <!-- renovate: depName=beanshell/beanshell datasource=github-tags -->
     <bsh.version>2.1.1</bsh.version>
     <bsh.sha1>5c01a006b0aba21ef55c01f96ea062c1cb2bf707</bsh.sha1>
@@ -212,6 +214,21 @@
       <groupId>be.cyberelf.nanoxml</groupId>
       <artifactId>nanoxml</artifactId>
       <version>2.2.3</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Ersatz für OBanToo, siehe #159 im Hibiscus-Projekt. scope=provided,
+         weil Hibiscus dieselben Jars schon in seinem lib/-Ordner mitbringt
+         und Jameica alle Plugin-Jars auf einem gemeinsamen Classloader lädt. -->
+    <dependency>
+      <groupId>de.speedbanking</groupId>
+      <artifactId>iban-commons-de-checkdigit</artifactId>
+      <version>${iban.commons.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.speedbanking</groupId>
+      <artifactId>iban-commons-bankdata</artifactId>
+      <version>${iban.commons.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

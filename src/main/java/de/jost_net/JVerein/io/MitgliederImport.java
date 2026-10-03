@@ -39,8 +39,7 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.EmailValidator;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -597,16 +596,12 @@ public class MitgliederImport implements Importer
           {
             try
             {
-              IBAN i = new IBAN(iban.toUpperCase());
-              m.setIban(i.getIBAN());
+              m.setIban(IbanUtil.checkIban(iban.toUpperCase()));
             }
-            catch (SEPAException e)
+            catch (ApplicationException e)
             {
-              if (e.getFehler() == SEPAException.Fehler.UNGUELTIGES_LAND)
-                throw new ApplicationException("Zeile " + anz
-                    + ": IBAN Ungültiges Land: " + e.getMessage());
-              else
-                throw new ApplicationException(e.getMessage());
+              throw new ApplicationException(
+                  "Zeile " + anz + ": " + e.getMessage());
             }
           }
           else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
@@ -638,8 +633,7 @@ public class MitgliederImport implements Importer
             if (m.getBic().isEmpty() && m.getIban() != null
                 && m.getIban().length() > 0)
             {
-              IBAN i = new IBAN(m.getIban());
-              m.setBic(i.getBIC());
+              m.setBic(IbanUtil.getBicFuerIban(m.getIban()));
             }
           }
         }
@@ -652,8 +646,7 @@ public class MitgliederImport implements Importer
             if (m.getBic().isEmpty() && m.getIban() != null
                 && m.getIban().length() != 0)
             {
-              IBAN i = new IBAN(m.getIban());
-              m.setBic(i.getBIC());
+              m.setBic(IbanUtil.getBicFuerIban(m.getIban()));
             }
           }
         }

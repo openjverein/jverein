@@ -56,8 +56,7 @@ import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -717,6 +716,7 @@ public class Migration
           .log(String.format("%s: ungueltige Zahlungsart. Bar wird angenommen.",
               Adressaufbereitung.getNameVorname(m)));
     }
+    String ibanGeprueft = iban;
     if (bic != null && bic.length() != 0)
     {
       m.setBic(bic);
@@ -726,20 +726,19 @@ public class Migration
       if (m.getBic().isEmpty() && m.getIban() != null
           && m.getIban().length() > 0)
       {
-        IBAN i;
         try
         {
-          i = new IBAN(iban);
+          ibanGeprueft = IbanUtil.checkIban(iban);
         }
-        catch (SEPAException e)
+        catch (ApplicationException e)
         {
           throw new ApplicationException(String.format("%s: IBAN ungültig!",
               Adressaufbereitung.getNameVorname(m)));
         }
-        m.setBic(i.getBIC());
+        m.setBic(IbanUtil.getBicFuerIban(ibanGeprueft));
       }
     }
-    m.setIban(iban);
+    m.setIban(ibanGeprueft);
     m.setMandatVersion(1);
     String m_d = getResultFrom(results, InternalColumns.MANDATDATUM);
     if (m_d.length() > 0)
