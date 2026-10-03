@@ -1,16 +1,16 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
  *  the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -19,9 +19,10 @@ package de.jost_net.JVerein.gui.input;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
-import de.jost_net.OBanToo.SEPA.Land.SEPALaender;
-import de.jost_net.OBanToo.SEPA.Land.SEPALand;
+import de.jost_net.JVerein.util.SEPALaender;
+import de.jost_net.JVerein.util.SEPALand;
 import de.willuhn.jameica.gui.input.SelectInput;
 
 /**
@@ -47,7 +48,7 @@ public class SEPALandInput extends SelectInput
    */
   private static ArrayList<SEPALandObject> init() throws RemoteException
   {
-    ArrayList<SEPALand> l = SEPALaender.getLaender();
+    List<SEPALand> l = SEPALaender.getLaender();
     ArrayList<SEPALandObject> lo = new ArrayList<>();
     for (SEPALand land : l)
     {
