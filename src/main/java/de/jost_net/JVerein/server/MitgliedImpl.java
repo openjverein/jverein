@@ -61,10 +61,8 @@ import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.EmailValidator;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
-import de.jost_net.OBanToo.SEPA.BIC;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.parts.TreePart;
@@ -282,9 +280,9 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
       {
         try
         {
-          new IBAN(getIban());
+          IbanUtil.checkIban(getIban());
         }
-        catch (SEPAException e)
+        catch (ApplicationException e)
         {
           throw new ApplicationException("Ungültige IBAN");
         }
@@ -293,9 +291,9 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
       {
         try
         {
-          new BIC(getBic());
+          IbanUtil.checkBic(getBic());
         }
-        catch (SEPAException e)
+        catch (ApplicationException e)
         {
           throw new ApplicationException("Ungültige BIC");
         }

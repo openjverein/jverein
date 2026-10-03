@@ -26,12 +26,10 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.IBANInput;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
-import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
-import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Sucht das Geldinstitut zur eingegebenen IBAN und zeigt es als Kommentar
@@ -81,24 +79,25 @@ public class IBANListener implements Listener
     {
       try
       {
-        IBAN i = new IBAN(ib2);
-        Bank b = Banken.getBankByBLZ(i.getBLZ());
-        if (b != null)
+        String ibanGeprueft = IbanUtil.checkIban(ib2);
+        String bicErmittelt = IbanUtil.getBicFuerIban(ibanGeprueft);
+        String bankname = IbanUtil.getBankname(bicErmittelt);
+        if (bankname != null)
         {
-          iban.setComment(b.getBezeichnung());
-          bic.setValue(b.getBIC());
-          bic.setComment(b.getBezeichnung());
+          iban.setComment(bankname);
+          bic.setValue(bicErmittelt);
+          bic.setComment(bankname);
         }
         return;
       }
-      catch (SEPAException e)
+      catch (ApplicationException e)
       {
         iban.setComment(e.getMessage());
         return;
       }
     }
-    Bank b = Banken.getBankByBIC((String) iban.getValue());
-    iban.setComment(b != null ? b.getBezeichnung() : "");
+    String bankname = IbanUtil.getBankname((String) iban.getValue());
+    iban.setComment(bankname != null ? bankname : "");
   }
 
   private void checkAlteBankverbindung()
@@ -123,16 +122,16 @@ public class IBANListener implements Listener
     String konto = ib.substring(9, ib.length());
     try
     {
-      IBAN ibankonv = new IBAN(konto, blz,
+      IbanUtil.IbanUndBic ibankonv = IbanUtil.vonBlzUndKonto(blz, konto,
           (String) Einstellungen.getEinstellung(Property.DEFAULTLAND));
-      iban.setValue(ibankonv.getIBAN());
-      bic.setValue(ibankonv.getBIC());
+      iban.setValue(ibankonv.getIban());
+      bic.setValue(ibankonv.getBic());
     }
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
     }
-    catch (SEPAException e)
+    catch (ApplicationException e)
     {
       Logger.error("Fehler", e);
     }

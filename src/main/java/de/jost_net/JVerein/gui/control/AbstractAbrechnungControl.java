@@ -56,9 +56,7 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.Bug;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.OBanToo.SEPA.BIC;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.Action;
@@ -732,9 +730,9 @@ public abstract class AbstractAbrechnungControl
     {
       try
       {
-        new IBAN((String) Einstellungen.getEinstellung(Property.IBAN));
+        IbanUtil.checkIban((String) Einstellungen.getEinstellung(Property.IBAN));
       }
-      catch (SEPAException e)
+      catch (ApplicationException e)
       {
         bugs.add(new Bug(null,
             "Ungültige IBAN des Vereins. Unter "
@@ -755,9 +753,9 @@ public abstract class AbstractAbrechnungControl
     {
       try
       {
-        new BIC((String) Einstellungen.getEinstellung(Property.BIC));
+        IbanUtil.checkBic((String) Einstellungen.getEinstellung(Property.BIC));
       }
-      catch (SEPAException e)
+      catch (ApplicationException e)
       {
         bugs.add(new Bug(null,
             "Ungültige BIC des Vereins. Unter "
@@ -917,9 +915,9 @@ public abstract class AbstractAbrechnungControl
     {
       try
       {
-        new IBAN(m.getIban());
+        IbanUtil.checkIban(m.getIban());
       }
-      catch (SEPAException e)
+      catch (ApplicationException e)
       {
         bugs.add(new Bug(m, "Ungültige IBAN " + m.getIban(), Bug.ERROR));
       }
@@ -933,7 +931,7 @@ public abstract class AbstractAbrechnungControl
     {
       try
       {
-        new BIC(m.getBic());
+        IbanUtil.checkBic(m.getBic());
       }
       catch (Exception e)
       {
