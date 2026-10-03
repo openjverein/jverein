@@ -29,9 +29,7 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied.namenformat;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.OBanToo.SEPA.BIC;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -125,20 +123,13 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
 
     try
     {
-      new IBAN(getIban());
+      IbanUtil.checkIban(getIban());
     }
-    catch (SEPAException e1)
+    catch (ApplicationException e1)
     {
       throw new ApplicationException("Ungültige IBAN");
     }
-    try
-    {
-      new BIC(getBic());
-    }
-    catch (SEPAException e1)
-    {
-      throw new ApplicationException(e1.getMessage());
-    }
+    IbanUtil.checkBic(getBic());
     if (getBetrag() <= 0)
     {
       throw new ApplicationException("Bitte Betrag größer als 0 eingeben");

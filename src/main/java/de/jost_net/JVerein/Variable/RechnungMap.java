@@ -35,8 +35,7 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
-import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
-import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.willuhn.util.ApplicationException;
 
 public class RechnungMap extends AbstractMap
@@ -236,14 +235,10 @@ public class RechnungMap extends AbstractMap
           String bic = re.getBIC();
           if (bic != null)
           {
-            Bank bank = Banken.getBankByBIC(bic);
-            if (bank != null)
+            String name = IbanUtil.getBankname(bic);
+            if (name != null)
             {
-              String name = bank.getBezeichnung();
-              if (name != null)
-              {
-                value = name.trim();
-              }
+              value = name.trim();
             }
           }
           break;
