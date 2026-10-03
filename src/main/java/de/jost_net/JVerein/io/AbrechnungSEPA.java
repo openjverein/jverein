@@ -81,8 +81,7 @@ import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.SplitbuchungUtil;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.jost_net.OBanToo.SEPA.BIC;
-import de.jost_net.OBanToo.SEPA.IBAN;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.Basislastschrift;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.Basislastschrift2Pdf;
@@ -541,18 +540,18 @@ public class AbrechnungSEPA extends SEPASupport
       zahler.setBetrag(betr);
       if (mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
       {
-        IBAN i = new IBAN(mZahler.getIban()); // Prüfung der IBAN
+        IbanUtil.checkIban(mZahler.getIban()); // Prüfung der IBAN
         zahler.setIban(mZahler.getIban());
         // Wenn BIC nicht vorhanden versuchen sie automatisch zu ermitteln
         if (mZahler.getBic() == null || mZahler.getBic().length() == 0)
         {
-          zahler.setBic(i.getBIC());
+          zahler.setBic(IbanUtil.getBicFuerIban(mZahler.getIban()));
         }
         else
         {
           zahler.setBic(mZahler.getBic());
         }
-        new BIC(zahler.getBic()); // Prüfung des BIC
+        IbanUtil.checkBic(zahler.getBic()); // Prüfung des BIC
         zahler.setMandatid(mZahler.getMandatID());
         zahler.setMandatdatum(mZahler.getMandatDatum());
         zahler.setMandatsequence(MandatSequence.RCUR);
@@ -663,8 +662,8 @@ public class AbrechnungSEPA extends SEPASupport
           zahler.setBetrag(z.getBetrag());
           if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
           {
-            new BIC(mZahler.getBic());
-            new IBAN(mZahler.getIban());
+            IbanUtil.checkBic(mZahler.getBic());
+            IbanUtil.checkIban(mZahler.getIban());
             zahler.setBic(mZahler.getBic());
             zahler.setIban(mZahler.getIban());
             zahler.setMandatid(mZahler.getMandatID());
