@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,7 +70,25 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.ElementList;
+import com.itextpdf.tool.xml.XMLWorker;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
+import com.itextpdf.tool.xml.css.CssFile;
+import com.itextpdf.tool.xml.css.StyleAttrCSSResolver;
+import com.itextpdf.tool.xml.exceptions.RuntimeWorkerException;
+import com.itextpdf.tool.xml.html.CssAppliers;
+import com.itextpdf.tool.xml.html.CssAppliersImpl;
+import com.itextpdf.tool.xml.html.DummyTagProcessor;
+import com.itextpdf.tool.xml.html.HTML.Tag;
+import com.itextpdf.tool.xml.html.TagProcessorFactory;
+import com.itextpdf.tool.xml.html.Tags;
+import com.itextpdf.tool.xml.parser.XMLParser;
+import com.itextpdf.tool.xml.pipeline.css.CSSResolver;
+import com.itextpdf.tool.xml.pipeline.css.CssResolverPipeline;
+import com.itextpdf.tool.xml.pipeline.end.ElementHandlerPipeline;
+import com.itextpdf.tool.xml.pipeline.html.AbstractImageProvider;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipeline;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -136,7 +155,7 @@ public class FormularAufbereitung
   {
     for (Fonts font : Fonts.values())
     {
-      FontFactory.register("/fonts/" + font.getName() + ".ttf", font.getName());
+      FontFactory.register(font.getResourcePath(), font.getName());
     }
   }
 
@@ -353,16 +372,20 @@ public class FormularAufbereitung
   {
     // Fontname aus Key holen, so wird die Fallback Font verwendet, falls die
     // angegebene nicht existiert
-    String font = Fonts.getByName(feld.getFont()).getName();
-    String filename = String.format("/fonts/%s.ttf", font);
-    BaseFont baseFont = BaseFont.createFont(filename, BaseFont.IDENTITY_H,
-        true);
+    Fonts font = Fonts.getByName(feld.getFont());
+    String fontName = font.getName();
+    BaseFont baseFont = BaseFont.createFont(font.getResourcePath(),
+        BaseFont.IDENTITY_H, true);
 
     float x = mm2point(feld.getX().floatValue());
     float y = mm2point(feld.getY().floatValue());
 
     Object val;
     String inhalt = feld.getName();
+
+    boolean isHtml = inhalt.matches("(?si).*</(p|span|div|h[1-6]|b|i|u|s|table|"
+        + "ol|ul|strong|small|a|em|font|sub|sup|pre|code|blockquote)>.*");
+
     // (Alte) Felder mit nur einer Variable direkt aus der Map holen
     if (inhalt.matches("^\\$?[a-zA-Z0-9_]+$"))
     {
@@ -375,7 +398,7 @@ public class FormularAufbereitung
     else
     {
       // Felder mit Text und Variablen
-      val = VelocityTool.eval(map, inhalt);
+      val = VelocityTool.eval(map, inhalt, false, isHtml);
     }
 
     String stringVal = getString(val).replace("\\n", "\n").replaceAll("\r\n",
@@ -392,8 +415,7 @@ public class FormularAufbereitung
       }
       first = false;
       // HTML Parsen
-      if (stringVal.matches(
-          "(?si).*</(p|span|div|h[1-6]|b|i|u|s|table|ol|ul|strong|small|a)>.*"))
+      if (isHtml)
       {
 
         float width;
@@ -426,28 +448,33 @@ public class FormularAufbereitung
 
         StringBuilder sb = new StringBuilder();
         sb.append("*{font-family:'");
-        sb.append(font);
+        sb.append(fontName);
         sb.append("';text-align:");
         sb.append(align);
-        sb.append(";");
-        if (feld.getFontsize() != null)
-        {
-          sb.append(";font-size:");
-          sb.append(feld.getFontsize());
-          sb.append("pt;");
-        }
+        sb.append(";font-size:");
+        sb.append(feld.getFontsize());
+        sb.append("pt;");
         sb.append("}");
 
-        for (Element e : XMLWorkerHelper.parseToElementList(textSeite,
-            sb.toString()))
+        try
         {
-          ct.addElement(e);
+          for (Element e : parseHtml(textSeite, sb.toString()))
+          {
+            ct.addElement(e);
+          }
+          if (ct.go() != ColumnText.NO_MORE_TEXT)
+          {
+            Logger.warn("Nicht aller Text passt auf die Seite");
+          }
+          contentByte.addTemplate(template, xPos, y - height);
         }
-        if (ct.go() != ColumnText.NO_MORE_TEXT)
+        catch (RuntimeWorkerException e)
         {
-          Logger.warn("Nicht aller Text passt auf die Seite");
+          String fehler = "Fehler beim Parsen des HTML-Feldes '"
+              + feld.getName().split("\n")[0] + "'.";
+          Logger.error(fehler, e);
+          throw new ApplicationException(fehler + " " + e.getMessage());
         }
-        contentByte.addTemplate(template, xPos, y - height);
       }
       else
       {
@@ -535,6 +562,69 @@ public class FormularAufbereitung
         }
       }
     }
+  }
+
+  ElementList parseHtml(String html, String css) throws IOException
+  {
+    // CSS
+    CSSResolver cssResolver = new StyleAttrCSSResolver();
+    if (css != null)
+    {
+      CssFile cssFile = XMLWorkerHelper
+          .getCSS(new ByteArrayInputStream(css.getBytes()));
+      cssResolver.addCss(cssFile);
+    }
+
+    // HTML
+    CssAppliers cssAppliers = new CssAppliersImpl(FontFactory.getFontImp());
+    HtmlPipelineContext htmlContext = new HtmlPipelineContext(cssAppliers);
+    htmlContext.autoBookmark(false);
+
+    // Keine Tags mit externen Resourcen erlauben
+    TagProcessorFactory factory = Tags.getHtmlTagProcessorFactory();
+    factory.addProcessor(new DummyTagProcessor(), Tag.IMG, Tag.LINK, Tag.OBJECT,
+        Tag.META);
+    htmlContext.setTagFactory(factory);
+
+    // Keine Bilder laden
+    htmlContext.setImageProvider(new AbstractImageProvider()
+    {
+      @Override
+      public com.itextpdf.text.Image retrieve(String src)
+      {
+        if (src == null)
+        {
+          return null;
+        }
+
+        if (src.matches("(?i)^[a-z][a-z0-9+.-]*:.*") || src.startsWith("//"))
+        {
+          throw new SecurityException("External resource blocked: " + src);
+        }
+
+        return null;
+      }
+
+      @Override
+      public String getImageRootPath()
+      {
+        return null;
+      }
+    });
+
+    // Pipelines
+    ElementList elements = new ElementList();
+    ElementHandlerPipeline end = new ElementHandlerPipeline(elements, null);
+    HtmlPipeline htmlPipeline = new HtmlPipeline(htmlContext, end);
+    CssResolverPipeline cssPipeline = new CssResolverPipeline(cssResolver,
+        htmlPipeline);
+
+    // XML Worker
+    XMLWorker worker = new XMLWorker(cssPipeline, true);
+    XMLParser p = new XMLParser(worker);
+    p.parse(new ByteArrayInputStream(html.getBytes()));
+
+    return elements;
   }
 
   private float mm2point(float mm)

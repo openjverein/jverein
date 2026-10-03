@@ -73,6 +73,11 @@ public enum Fonts
     return CarlitoRegular;
   }
 
+  public String getResourcePath()
+  {
+    return "/fonts/" + getName() + ".ttf";
+  }
+
   @Override
   public String toString()
   {

@@ -221,6 +221,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+	  <groupId>oro</groupId>
+	  <artifactId>oro</artifactId>
+	  <version>2.0.8</version>
+	  <scope>provided</scope>
+	</dependency>
+    <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>${swt.artifactId}</artifactId>
       <version>${swt.version}</version>

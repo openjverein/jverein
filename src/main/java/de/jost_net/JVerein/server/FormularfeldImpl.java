@@ -25,6 +25,7 @@ import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.keys.Ausrichtung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -82,6 +83,23 @@ public class FormularfeldImpl extends AbstractJVereinDBObject
           throw new ApplicationException(
               SpendenbescheinigungVar.UNTERSCHRIFT.getName()
                   + " Muss alleine in der Zeile Stehen!");
+        }
+      }
+      if (getName().toLowerCase().contains("[[newpage]]"))
+      {
+        @SuppressWarnings("unchecked")
+        DBIterator<Formularfeld> it = getList();
+        it.addFilter("formular = ?", getFormular().getID());
+        it.addFilter("seite = ?", getSeite());
+        it.addFilter("LOWER(name) LIKE '%[[newpage]]%'");
+        if (getID() != null)
+        {
+          it.addFilter("id != ?", getID());
+        }
+        if (it.hasNext())
+        {
+          throw new ApplicationException(
+              "Jedes Formular darf pro Seite nur ein Feld mit '[[newPage]]' enthalten!");
         }
       }
     }

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -22,7 +23,6 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.tool.xml.exceptions.RuntimeWorkerException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -151,14 +151,15 @@ public class FormularAufbereitungTest
 
   @Test
   @DisplayName("Html in Formular testen")
-  void formularHtmlTest()
-      throws ApplicationException, IOException, DocumentException
+  void formularHtmlTest() throws ApplicationException, IOException,
+      DocumentException, URISyntaxException
   {
     Formularfeld feld1 = mock(Formularfeld.class);
     doReturn(
         "<table border='1'><tr><td>Spalte</td><td><b>Fett</b></td><td><i>Kursiv</i></td></tr>"
             + "<tr><td><strong>Strong</strong></td><td><small>Klein</small></td><td><s>Durchgestrichen</s></td></tr></table>"
-            + "<ul style='list-style-type:\"-\"'><li>Aufzählung</li><li>mit mehreren</li><li>Punkten</li></ul>")
+            + "<ul style='list-style-type:\"-\"'><li>Aufzählung</li><li>mit mehreren</li><li>Punkten</li></ul>"
+            + "<p>Text mit Sonderzeichen aus Velocity $test_feld</p>")
                 .when(feld1).getName();
     doReturn(Fonts.FreeSans.getName()).when(feld1).getFont();
     doReturn(30d).when(feld1).getX();
@@ -168,7 +169,7 @@ public class FormularAufbereitungTest
 
     Formularfeld feld2 = mock(Formularfeld.class);
     doReturn(
-        "<p>Feld mit ungültiger Font,<br /> Fallback soll verwenet werden</p>")
+        "<p>Feld mit ungültiger Font,<br /> Fallback soll verwendet werden</p>")
             .when(feld2).getName();
     doReturn("font-gibt-es-nicht").when(feld2).getFont();
     doReturn(170d).when(feld2).getX();
@@ -178,7 +179,7 @@ public class FormularAufbereitungTest
 
     Formularfeld feld3 = mock(Formularfeld.class);
     doReturn("<p>Feld über mehrere Seiten.</p>"
-        + "<div style='width:60px'><p>Das ist ein langer Text, die Breite ist per CSS festgelegt.</p></div>[[newPage]]"
+        + "<div style='width:60px'><p>Das ist ein langer Text, die Breite ist per CSS festgelegt.</p></div>[[nEwPage]]"
         + "<p>Das steht auf der 2. Seite an der gleichen Position wie auf der 1. Seite.</p>")
             .when(feld3).getName();
     doReturn(Fonts.CourierPrime.getName()).when(feld3).getFont();
@@ -207,14 +208,14 @@ public class FormularAufbereitungTest
 
     FormularAufbereitung aufbereitung = new FormularAufbereitung(file, true,
         false);
-    aufbereitung.writeForm(formular, Collections.singletonMap("test", "Test"));
+    aufbereitung.writeForm(formular,
+        Collections.singletonMap("test_feld", "(&,<,>,→,…,~,€)"));
     aufbereitung.closeFormular();
 
     // Erstelltes PDF mit Soll-PDF vergleichen
-    String soll = getClass().getClassLoader()
-        .getResource("formular-test-html.pdf").getFile();
-    assertTrue(
-        new PdfComparator<>(soll, file.getAbsolutePath()).compare().isEqual(),
+    File soll = new File(getClass().getClassLoader()
+        .getResource("formular-test-html.pdf").toURI());
+    assertTrue(new PdfComparator<>(soll, file).compare().isEqual(),
         "Das PDF das aus einem HTML-Formular generiert wurde, sieht nicht wie erwartet aus.");
 
     file.deleteOnExit();
@@ -252,7 +253,7 @@ public class FormularAufbereitungTest
 
     FormularAufbereitung aufbereitung = new FormularAufbereitung(file, false,
         false);
-    assertThrows(RuntimeWorkerException.class, () -> aufbereitung
+    assertThrows(ApplicationException.class, () -> aufbereitung
         .writeForm(formular, Collections.singletonMap("test", "Test")));
 
     aufbereitung.closeFormular();
