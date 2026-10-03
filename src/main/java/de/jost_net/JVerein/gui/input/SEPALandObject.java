@@ -2,7 +2,7 @@ package de.jost_net.JVerein.gui.input;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.OBanToo.SEPA.Land.SEPALand;
+import de.jost_net.JVerein.util.SEPALand;
 import de.willuhn.datasource.GenericObject;
 
 /**
