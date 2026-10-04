@@ -87,7 +87,7 @@ import de.jost_net.OBanToo.SEPA.Basislastschrift.Basislastschrift;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.Basislastschrift2Pdf;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.MandatSequence;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
-import de.jost_net.OBanToo.StringLatin.Zeichen;
+import de.jost_net.JVerein.util.SepaZeichensatz;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
@@ -396,8 +396,8 @@ public class AbrechnungSEPA extends SEPASupport
           (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
       lastschrift.setIBAN((String) Einstellungen.getEinstellung(Property.IBAN));
       lastschrift.setKomprimiert(param.kompakteabbuchung);
-      lastschrift.setName(Zeichen
-          .convert((String) Einstellungen.getEinstellung(Property.NAME)));
+      lastschrift.setName(SepaZeichensatz
+          .konvertieren((String) Einstellungen.getEinstellung(Property.NAME)));
       lastschrift.setMessageID(abrl.getID() + "-RCUR");
 
       count = 0;
