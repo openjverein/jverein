@@ -42,8 +42,7 @@ import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.StringTool;
-import de.jost_net.OBanToo.SEPA.SEPAException;
-import de.jost_net.OBanToo.StringLatin.Zeichen;
+import de.jost_net.JVerein.util.SepaZeichensatz;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
@@ -213,7 +212,7 @@ public class Ueberweisung
         {
           ue.setGegenkontoName(
               StringTool.getStringWithMaxLength(
-                  Zeichen.convert(ls.getMitglied()
+                  SepaZeichensatz.konvertieren(ls.getMitglied()
                       .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)),
                   255));
         }
@@ -221,12 +220,12 @@ public class Ueberweisung
         if (verwendungszweck != null)
         {
           ue.setZweck(StringTool.getStringWithMaxLength(
-              Zeichen.convert(eval(ls, verwendungszweck)), 140));
+              SepaZeichensatz.konvertieren(eval(ls, verwendungszweck)), 140));
         }
         else
         {
           ue.setZweck(StringTool.getStringWithMaxLength(
-              Zeichen.convert(ls.getVerwendungszweck()), 140));
+              SepaZeichensatz.konvertieren(ls.getVerwendungszweck()), 140));
         }
         ue.setKonto(hibk);
         ueberweisungen[i] = ue;
@@ -236,10 +235,6 @@ public class Ueberweisung
       merge.handleAction(ueberweisungen);
     }
     catch (RemoteException e)
-    {
-      throw new ApplicationException(e);
-    }
-    catch (SEPAException e)
     {
       throw new ApplicationException(e);
     }
