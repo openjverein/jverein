@@ -55,7 +55,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.jost_net.OBanToo.SEPA.Basislastschrift.MandatSequence;
+import de.jost_net.JVerein.keys.MandatSequence;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.GUI;
