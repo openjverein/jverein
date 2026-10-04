@@ -58,6 +58,7 @@ import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.MandatSequence;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -82,11 +83,6 @@ import de.jost_net.JVerein.util.SplitbuchungUtil;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.jost_net.JVerein.util.IbanUtil;
-import de.jost_net.OBanToo.SEPA.SEPAException;
-import de.jost_net.OBanToo.SEPA.Basislastschrift.Basislastschrift;
-import de.jost_net.OBanToo.SEPA.Basislastschrift.Basislastschrift2Pdf;
-import de.jost_net.OBanToo.SEPA.Basislastschrift.MandatSequence;
-import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
 import de.jost_net.JVerein.util.SepaZeichensatz;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -272,7 +268,7 @@ public class AbrechnungSEPA extends SEPASupport
           else
             return z1.getPersonId().equals(z1.getMitglied().getID()) ? -1 : 1;
         }
-        catch (SEPAException | RemoteException e)
+        catch (ApplicationException | RemoteException e)
         {
           return 0;
         }
@@ -358,7 +354,7 @@ public class AbrechnungSEPA extends SEPASupport
               {
                 gesamtZahler.add(zahler);
               }
-              catch (SEPAException se)
+              catch (ApplicationException ae)
               {
                 throw new ApplicationException(
                     "Ungültiger Betrag: " + zahler.getBetrag());
@@ -435,12 +431,6 @@ public class AbrechnungSEPA extends SEPASupport
         {
           lastschrift.add(z);
         }
-        // Das für die
-        // PDF-Erzeugung benötigte Datum wird erst in write gesetzt
-        File temp_file = Files.createTempFile("jv", ".xml").toFile();
-        lastschrift.write(temp_file);
-        temp_file.delete();
-
         ausdruckenSEPA(lastschrift, param.pdffileRCUR);
       }
     }
@@ -755,7 +745,7 @@ public class AbrechnungSEPA extends SEPASupport
   }
 
   private void ausdruckenSEPA(final Basislastschrift lastschrift,
-      final String pdf_fn) throws IOException, DocumentException, SEPAException
+      final String pdf_fn) throws IOException, DocumentException, ApplicationException
   {
     new Basislastschrift2Pdf(lastschrift, pdf_fn);
     GUI.getDisplay().asyncExec(() -> {
@@ -875,7 +865,7 @@ public class AbrechnungSEPA extends SEPASupport
       Logger.error("Fehler beim Erstellen der Hibiscus Lastschrift", e);
       throw new ApplicationException(e);
     }
-    catch (SEPAException e)
+    catch (ApplicationException e)
     {
       throw new ApplicationException(e);
     }
@@ -934,7 +924,7 @@ public class AbrechnungSEPA extends SEPASupport
   }
 
   private SollbuchungPosition getSollbuchungPosition(JVereinZahler zahler)
-      throws RemoteException, SEPAException
+      throws RemoteException, ApplicationException
   {
 
     SollbuchungPosition sp = Einstellungen.getDBService()
@@ -952,7 +942,7 @@ public class AbrechnungSEPA extends SEPASupport
   }
 
   private Lastschrift getLastschrift(JVereinZahler zahler, Abrechnungslauf abrl,
-      boolean kompakt) throws RemoteException, SEPAException
+      boolean kompakt) throws RemoteException, ApplicationException
   {
     Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
         .createObject(Lastschrift.class, null);
@@ -1012,8 +1002,7 @@ public class AbrechnungSEPA extends SEPASupport
   private String writeSollbuchung(Long zahlerId, int zahlungsweg,
       IAdresse adress, ArrayList<SollbuchungPosition> spArray, Date datum,
       Abrechnungslauf abrl, Konto konto, AbrechnungSEPAParam param,
-      BigDecimal summe)
-      throws ApplicationException, RemoteException, SEPAException
+      BigDecimal summe) throws ApplicationException, RemoteException
   {
     Sollbuchung sollb = null;
     String zweck = null;
