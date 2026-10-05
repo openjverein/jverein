@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -34,6 +33,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.BuchungsZweckKorrektur;
+import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -273,7 +273,7 @@ public class Buchungsuebernahme
       final List<String> result = new ArrayList<String>();
       for (String s : suchtext.toLowerCase().split("(?<!\\\\),"))
       {
-        s = StringUtils.trimToNull(s);
+        s = StringTool.trimToNull(s);
         if (s == null)
           continue;
 

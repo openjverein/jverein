@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -80,6 +79,7 @@ import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
+import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
@@ -876,23 +876,23 @@ public class AbrechnungSEPA extends SEPASupport
     for (Zahler zahler : zahlerarray)
     {
       ls_properties.setProperty(SepaUtil.insertIndex("dst.bic", counter),
-          StringUtils.trimToEmpty(zahler.getBic()));
+          StringTool.trimToEmpty(zahler.getBic()));
       ls_properties.setProperty(SepaUtil.insertIndex("dst.iban", counter),
-          StringUtils.trimToEmpty(zahler.getIban()));
+          StringTool.trimToEmpty(zahler.getIban()));
       ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),
-          StringUtils.trimToEmpty(zahler.getName()));
+          StringTool.trimToEmpty(zahler.getName()));
       ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),
           zahler.getBetrag().toString());
       ls_properties.setProperty(SepaUtil.insertIndex("btg.curr", counter),
           HBCIProperties.CURRENCY_DEFAULT_DE);
       ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),
-          StringUtils.trimToEmpty(zahler.getVerwendungszweck()));
+          StringTool.trimToEmpty(zahler.getVerwendungszweck()));
       ls_properties.setProperty(SepaUtil.insertIndex("endtoendid", counter),
           "NOTPROVIDED");
       ls_properties.setProperty(SepaUtil.insertIndex("creditorid", counter),
           creditorid);
       ls_properties.setProperty(SepaUtil.insertIndex("mandateid", counter),
-          StringUtils.trimToEmpty(zahler.getMandatid()));
+          StringTool.trimToEmpty(zahler.getMandatid()));
       ls_properties.setProperty(SepaUtil.insertIndex("manddateofsig", counter),
           ISO_DATE.format(zahler.getMandatdatum()));
       ls_properties.setProperty(SepaUtil.insertIndex("purposecode", counter),

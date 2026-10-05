@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -609,7 +609,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
     DBIterator<Spendenbescheinigung> list = Einstellungen.getDBService()
         .createList(Spendenbescheinigung.class);
-    list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
+    list.addFilter("id in (" + ids.stream().map(String::valueOf)
+        .collect(Collectors.joining(",")) + ")");
     list.setOrder(" ORDER BY bescheinigungsdatum desc, spendedatum desc ");
     ArrayList<Spendenbescheinigung> spendenbescheinigungen = list != null
         ? (ArrayList<Spendenbescheinigung>) PseudoIterator.asList(list)

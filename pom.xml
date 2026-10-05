@@ -182,12 +182,6 @@
     </dependency>
     <!-- Compile-Zeit-Abhaengigkeiten, die zur Laufzeit vom Jameica-Host bereitgestellt werden. -->
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>be.cyberelf.nanoxml</groupId>
       <artifactId>nanoxml</artifactId>
       <version>2.2.3</version>
