@@ -153,6 +153,7 @@ public class FormularAufbereitung
     this.f = f;
     this.pdfa = pdfa;
     this.encrypt = encrypt;
+    Fonts.register();
   }
 
   private void init()

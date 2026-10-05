@@ -16,6 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.itextpdf.text.FontFactory;
 
 import de.willuhn.logging.Logger;
@@ -48,12 +51,24 @@ public enum Fonts
   LiberationSerifItalic("LiberationSerif-Italic"),
   LiberationSerifRegular("LiberationSerif-Regular");
 
-  static
+  // Unbekannte Fontnamen, die schon geloggt wurden, damit bei Massenausgaben
+  // (z.B. Rechnungslauf) nicht jedes Feld dieselbe Warnung erzeugt
+  private static final Set<String> UNBEKANNT_GEMELDET = ConcurrentHashMap
+      .newKeySet();
+
+  private static volatile boolean registriert = false;
+
+  public static synchronized void register()
   {
+    if (registriert)
+    {
+      return;
+    }
     for (Fonts font : Fonts.values())
     {
       FontFactory.register(font.getResourcePath(), font.getName());
     }
+    registriert = true;
   }
 
   private final String name;
@@ -78,8 +93,11 @@ public enum Fonts
       }
     }
     // Default Font verwenden
-    Logger.warn(
-        "Schrift '" + name + "' nicht gefunden, verwende Standardschrift.");
+    if (UNBEKANNT_GEMELDET.add(String.valueOf(name)))
+    {
+      Logger.warn(
+          "Schrift '" + name + "' nicht gefunden, verwende Standardschrift.");
+    }
     return CarlitoRegular;
   }
 

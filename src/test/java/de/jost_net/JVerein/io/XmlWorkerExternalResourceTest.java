@@ -131,19 +131,16 @@ class XmlWorkerExternalResourceTest
   {
     html = html.replace("__URL__", "http://127.0.0.1:" + port + "/test");
     html = html.replace("__HOST__", "127.0.0.1:" + port);
-    final String finalHtml = html;
 
     hasRequest = false;
-
     try
     {
-      renderHtml(finalHtml);
+      renderHtml(html);
     }
     catch (SecurityException ignore)
     {
       // Darf geworfen werden, wenn geblockt wird
     }
-
     assertFalse(hasRequest, () -> "Externe Resource geladen!");
   }
 

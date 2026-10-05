@@ -47,6 +47,7 @@ import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.ExportLayoutParam;
+import de.jost_net.JVerein.keys.Fonts;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.Action;
@@ -195,6 +196,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
     setTitle(dialogTitel);
     setSize(400, 700);
+
+    Fonts.register();
   }
 
   protected void createGui(Composite parent, Action action)
