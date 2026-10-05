@@ -236,7 +236,7 @@ public class TabelleExportProfilePart implements Part
       {
         if (key.startsWith(settingPrefix + "profil." + item + "."))
         {
-          // Alle Attribite des Profils löschen
+          // Alle Attribute des Profils löschen
           settings.setAttribute(key, (String) null);
         }
       }
@@ -252,7 +252,7 @@ public class TabelleExportProfilePart implements Part
     }
   }
 
-  // Wendet die gespeicherten Settings des Profils in der Liste an
+  // Wendet die gespeicherten Settings des Profils im Dialog an
   private void handleAnwenden()
   {
     try
