@@ -122,23 +122,14 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>de.jollyday</groupId>
-      <artifactId>jollyday</artifactId>
-      <version>0.5.10</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.glassfish.jaxb</groupId>
-          <artifactId>jaxb-runtime</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.threeten</groupId>
-          <artifactId>threeten-extra</artifactId>
-        </exclusion>
-         <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>de.focus-shift</groupId>
+      <artifactId>jollyday-core</artifactId>
+      <version>2.21.0</version>
+    </dependency>
+    <dependency>
+      <groupId>de.focus-shift</groupId>
+      <artifactId>jollyday-jaxb</artifactId>
+      <version>2.21.0</version>
     </dependency>
     <dependency>
       <groupId>org.mustangproject</groupId>
