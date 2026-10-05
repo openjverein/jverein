@@ -17,11 +17,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -40,6 +42,7 @@ import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.pdf.BaseFont;
 
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.TabelleExportProfilePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.rmi.Formular;
@@ -73,6 +76,14 @@ public class TablePartExportDialog extends AbstractPartExportDialog
     this.table = table;
     this.tablePart = tablePart;
     settings = new Settings(this.getClass());
+  }
+
+  @Override
+  protected void paint(Composite parent)
+      throws ApplicationException, RemoteException
+  {
+    new TabelleExportProfilePart(this, settingPrefix).paint(parent);
+    super.paint(parent);
   }
 
   @Override

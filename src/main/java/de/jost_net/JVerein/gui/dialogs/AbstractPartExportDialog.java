@@ -45,7 +45,6 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.TabelleExportProfilePart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.ExportLayoutParam;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -207,11 +206,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       spaltenList.setCheckable(true);
     }
 
-    if (this instanceof TablePartExportDialog)
-    {
-      new TabelleExportProfilePart(this, settingPrefix).paint(parent);
-    }
-
     if (art.equals(ExportArt.PDF))
     {
       zeichnePDF(parent, action);
@@ -331,19 +325,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     rbuttons.addButton("Reset", c -> resetRaender(), null, false,
         "edit-undo.png");
     tabRaender.addButtonArea(rbuttons);
-
-    // IntegerInput links2 = new IntegerInput(settings.getInt(id + "links2",
-    // 20));
-    // IntegerInput rechts2 = new IntegerInput(
-    // settings.getInt(id + "rechts2", 20));
-    // IntegerInput oben2 = new IntegerInput(settings.getInt(id + "oben2",
-    // 20));
-    // IntegerInput unten2 = new IntegerInput(settings.getInt(id + "unten2",
-    // 20));
-    // tabRaender.addLabelPair("Links ab 2. Seite", links2);
-    // tabRaender.addLabelPair("Rechts ab 2. Seite", rechts2);
-    // tabRaender.addLabelPair("Oben ab 2. Seite", oben2);
-    // tabRaender.addLabelPair("Unten ab 2. Seite", unten2);
 
     // Formular
     hintergrund = new FormularInput(FormularArt.HINTERGRUND,
@@ -628,11 +609,9 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     }
   }
 
-  // Die temoprären Settings werden in den Dialog übernommen
-  public void setTmpSettings() throws RemoteException
+  // Schreibt die Settings in den Dialog
+  public void loadSettings(String prefix) throws RemoteException
   {
-    String prefix = settingPrefix + "tmp.";
-
     // Spalten
     if (spaltenList != null)
     {
