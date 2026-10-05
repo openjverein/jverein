@@ -48,10 +48,11 @@ public class TabelleExportProfilePart implements Part
   private Settings settings;
 
   public TabelleExportProfilePart(AbstractPartExportDialog dialog,
-      String settingPrefix) throws RemoteException, ApplicationException
+      Settings settings, String settingPrefix)
+      throws RemoteException, ApplicationException
   {
     this.dialog = dialog;
-    settings = dialog.getSettings();
+    this.settings = settings;
     this.settingPrefix = settingPrefix;
   }
 

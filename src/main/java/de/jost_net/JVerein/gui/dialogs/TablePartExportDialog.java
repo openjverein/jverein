@@ -82,7 +82,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
   protected void paint(Composite parent)
       throws ApplicationException, RemoteException
   {
-    new TabelleExportProfilePart(this, settingPrefix).paint(parent);
+    new TabelleExportProfilePart(this, settings, settingPrefix).paint(parent);
     super.paint(parent);
   }
 

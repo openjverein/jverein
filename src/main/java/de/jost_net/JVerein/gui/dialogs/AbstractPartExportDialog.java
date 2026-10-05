@@ -939,9 +939,4 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       return column;
     }
   }
-
-  public Settings getSettings()
-  {
-    return settings;
-  }
 }
