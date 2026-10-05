@@ -30,7 +30,6 @@ import de.speedbanking.checkdigit.de.CheckDigitResult;
 import de.speedbanking.checkdigit.de.GermanAccountCheckDigit;
 import de.speedbanking.iban.Iban;
 import de.speedbanking.iban.IbanConfig;
-import de.speedbanking.iban.IbanRegistry;
 import de.speedbanking.iban.IbanValidationError;
 import de.speedbanking.iban.InvalidIbanException;
 import de.speedbanking.util.Country;
@@ -60,39 +59,6 @@ public final class IbanUtil
     // berechnen.
     IbanConfig.configure(IbanConfig.builder().allowSpace(true).validateNcd(true)
         .calculateNcd(true).build());
-  }
-
-  /**
-   * Bündelt IBAN und BIC, das Ergebnis von {@link #vonBlzUndKonto(String, String, String)}.
-   */
-  public static final class IbanUndBic
-  {
-    private final String iban;
-
-    private final String bic;
-
-    private IbanUndBic(String iban, String bic)
-    {
-      this.iban = iban;
-      this.bic = bic;
-    }
-
-    public String getIban()
-    {
-      return iban;
-    }
-
-    // Kann NULL sein, wenn sie nicht ermittelbar war.
-    public String getBic()
-    {
-      return bic;
-    }
-
-    @Override
-    public String toString()
-    {
-      return getClass().getSimpleName() + "[iban=" + iban + ", bic=" + bic + "]";
-    }
   }
 
   private IbanUtil()
@@ -199,46 +165,6 @@ public final class IbanUtil
         : BankDataLookup.byBic(wert);
 
     return bankData.map(BankData::getBankName).orElse(null);
-  }
-
-  /**
-   * Erzeugt die IBAN aus einer deutschen Bankverbindung (BLZ+Kontonummer),
-   * analog zu OBanToos {@code IBAN(kontoNr, blz, landkennzeichen)}. Wird nur
-   * für die Erkennung/Umwandlung alter, in das IBAN-Feld eingegebener
-   * Bankverbindungen benötigt - andere Länder werden deshalb bewusst nicht
-   * unterstützt.
-   *
-   * @param blz die BLZ.
-   * @param konto die Kontonummer.
-   * @param land das Länderkennzeichen; muss "DE" sein.
-   * @return IBAN und, sofern über die Bankstammdaten ermittelbar, die
-   *         zugehörige BIC.
-   * @throws ApplicationException wenn das Land nicht "DE" ist, die
-   *         BLZ/Kontonummer-Kombination strukturell nicht korrekt ist, oder
-   *         die Kontonummer-Prüfziffer nachweislich falsch ist.
-   */
-  public static IbanUndBic vonBlzUndKonto(String blz, String konto, String land)
-      throws ApplicationException
-  {
-    if (!Country.DE.getCode().equals(land))
-    {
-      throw new ApplicationException("Land unbekannt");
-    }
-
-    Iban iban;
-    try
-    {
-      iban = IbanRegistry.DE.builder().bankCode(blz).accountNumber(konto).build();
-    }
-    catch (InvalidIbanException e)
-    {
-      throw new ApplicationException(meldung(blz + konto, e.getReason()));
-    }
-
-    checkDeutschePruefziffer(blz, konto, iban.toString());
-
-    String bic = getBicFuerIban(iban.toString());
-    return new IbanUndBic(iban.toString(), bic);
   }
 
   /**
