@@ -269,25 +269,11 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       }
       if (getIban() != null && getIban().length() != 0)
       {
-        try
-        {
-          IbanUtil.checkIban(getIban());
-        }
-        catch (ApplicationException e)
-        {
-          throw new ApplicationException("Ungültige IBAN");
-        }
+        IbanUtil.checkIban(getIban());
       }
       if (getBic() != null && getBic().length() != 0)
       {
-        try
-        {
-          IbanUtil.checkBic(getBic());
-        }
-        catch (ApplicationException e)
-        {
-          throw new ApplicationException("Ungültige BIC");
-        }
+        IbanUtil.checkBic(getBic());
       }
       if (getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
       {
