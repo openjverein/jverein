@@ -14,7 +14,6 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.parameters>true</maven.compiler.parameters>
-    <!-- renovate: depName=de.speedbanking:iban-commons-parent -->
     <iban.commons.version>1.8.12-RC1</iban.commons.version>
     <!-- renovate: depName=beanshell/beanshell datasource=github-tags -->
     <bsh.version>2.1.1</bsh.version>

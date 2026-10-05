@@ -37,6 +37,10 @@
     <consumer queue="jverein.dbobject.store" class="de.jost_net.JVerein.Messaging.MarkOverdueMessageConsumer" />
   </messaging>
   
+  <!-- TODO (openjverein#1635): Mindestversion auf die erste Hibiscus-Version
+       anheben, die willuhn/hibiscus#159 enthält (iban-commons statt OBanToo) -
+       diese pom.xml deklariert iban-commons als scope=provided, setzt die
+       Jars also zur Laufzeit von Hibiscus voraus. -->
   <requires jameica="2.12+">
     <import plugin="hibiscus" version="2.12+"/>
   </requires>

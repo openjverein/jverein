@@ -121,14 +121,7 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
       throw new ApplicationException("Bitte Betrag eingeben");
     }
 
-    try
-    {
-      IbanUtil.checkIban(getIban());
-    }
-    catch (ApplicationException e1)
-    {
-      throw new ApplicationException("Ungültige IBAN");
-    }
+    IbanUtil.checkIban(getIban());
     IbanUtil.checkBic(getBic());
     if (getBetrag() <= 0)
     {

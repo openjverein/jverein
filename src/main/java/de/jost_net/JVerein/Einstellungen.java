@@ -261,7 +261,6 @@ public class Einstellungen
     ZAHLUNGSRHYTMUS("zahlungsrhytmus", Integer.class, "12"),
     ZAHLUNGSWEG("zahlungsweg", Integer.class, "1"),
     SEPADATUMOFFSET("sepadatumoffset", Integer.class, "0"),
-    DEFAULTLAND("defaultland", String.class, "DE"),
     SEPAVERSION("sepaversion", String.class, "pain.008.001.01.xsd"),
     CT1SEPAVERSION("ct1sepaversion", String.class, "pain.001.001.01.xsd"),
     VERRECHNUNGSKONTOID("verrechnungskonto", Integer.class, ""),

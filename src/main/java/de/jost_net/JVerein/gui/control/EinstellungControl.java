@@ -39,8 +39,6 @@ import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
-import de.jost_net.JVerein.gui.input.SEPALandInput;
-import de.jost_net.JVerein.gui.input.SEPALandObject;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.navigation.JVereinNavigationItem;
 import de.jost_net.JVerein.io.MailSender;
@@ -61,8 +59,6 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.util.SteuerUtil;
-import de.jost_net.JVerein.util.SEPALaender;
-import de.jost_net.JVerein.util.SEPALand;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -253,8 +249,6 @@ public class EinstellungControl extends AbstractControl
   private SelectInput zahlungsweg;
 
   private SelectInput zahlungsrhytmus;
-
-  private SelectInput sepaland;
 
   private SelectInput sepaversion;
 
@@ -1622,18 +1616,6 @@ public class EinstellungControl extends AbstractControl
     return zahlungsrhytmus;
   }
 
-  public SelectInput getDefaultSEPALand() throws RemoteException
-  {
-    if (sepaland != null)
-    {
-      return sepaland;
-    }
-    SEPALand sl = SEPALaender
-        .getLand((String) Einstellungen.getEinstellung(Property.DEFAULTLAND));
-    sepaland = new SEPALandInput(sl);
-    return sepaland;
-  }
-
   public SelectInput getSepaVersion() throws RemoteException
   {
     if (sepaversion != null)
@@ -2595,9 +2577,6 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.ZAHLUNGSRHYTMUS, zr.getKey());
       Zahlungsweg zw = (Zahlungsweg) zahlungsweg.getValue();
       Einstellungen.setEinstellung(Property.ZAHLUNGSWEG, zw.getKey());
-      SEPALandObject slo = (SEPALandObject) getDefaultSEPALand().getValue();
-      Einstellungen.setEinstellung(Property.DEFAULTLAND,
-          slo.getLand().getKennzeichen());
       Einstellungen.setEinstellung(Property.SEPAVERSION,
           ((SepaVersion) sepaversion.getValue()).getFile());
       Einstellungen.setEinstellung(Property.CT1SEPAVERSION,
