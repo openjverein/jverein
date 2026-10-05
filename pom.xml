@@ -65,14 +65,19 @@
       <version>1.0.46</version>
     </dependency>
     <dependency>
-      <groupId>org.dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>2.2.0</version>
-    </dependency>
-    <dependency>
       <groupId>com.googlecode.ez-vcard</groupId>
       <artifactId>ez-vcard</artifactId>
       <version>0.12.2</version>
+    </dependency>
+    <!-- jsoup/freemarker/jackson-core werden von JVerein selbst nicht
+         importiert, sondern von ez-vcard intern fuers HTML-/JSON-vCard-
+         Lesen/Schreiben genutzt. Explizit deklariert, um neuere Versionen
+         zu erzwingen als die, die ez-vcard 0.12.2 selbst transitiv
+         mitbringt (jsoup 1.22.1, freemarker 2.3.34, jackson-core 2.21.0). -->
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.23.2</version>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
@@ -117,11 +122,6 @@
       <version>1.6.2</version>
     </dependency>
     <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.14.4</version>
-    </dependency>
-    <dependency>
       <groupId>de.jollyday</groupId>
       <artifactId>jollyday</artifactId>
       <version>0.5.10</version>
@@ -139,11 +139,6 @@
           <artifactId>jaxb-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jsoup</groupId>
-      <artifactId>jsoup</artifactId>
-      <version>1.23.2</version>
     </dependency>
     <dependency>
       <groupId>org.mustangproject</groupId>
@@ -180,16 +175,9 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>2.7</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.mangstadt</groupId>
-      <artifactId>vinnie</artifactId>
-      <version>2.0.2</version>
-    </dependency>
+    <!-- Wird von keiner anderen Abhaengigkeit deklariert, aber von PDFBox zur
+         Laufzeit reflektiv fuer XMP-Metadaten in der PDF-Erzeugung
+         nachgeladen (sonst NoClassDefFoundError, siehe FormularAufbereitungTest). -->
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>xmpbox</artifactId>
