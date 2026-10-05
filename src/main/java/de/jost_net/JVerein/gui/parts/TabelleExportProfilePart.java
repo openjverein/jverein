@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.dialogs.ProfilnameNeuDialog;
@@ -194,7 +193,7 @@ public class TabelleExportProfilePart implements Part
         list.add(item);
         Collections.sort(list);
         settings.setAttribute(settingPrefix + "profile",
-            StringUtils.join(list, ","));
+            String.join(",", list));
       }
       settings.setAttribute(settingPrefix + "profilname", item);
       // Dialog Attribute als Profil speichern
@@ -230,7 +229,7 @@ public class TabelleExportProfilePart implements Part
       list.remove(item);
       getProfilname().setList(list);
       settings.setAttribute(settingPrefix + "profile",
-          StringUtils.join(list, ","));
+          String.join(",", list));
       settings.setAttribute(settingPrefix + "profilname",
           (String) profilname.getValue());
       String prefix = settingPrefix + "profil." + item + ".";

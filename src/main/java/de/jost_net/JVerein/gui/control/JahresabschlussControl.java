@@ -21,8 +21,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.apache.commons.lang.time.DateUtils;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
@@ -141,7 +139,7 @@ public class JahresabschlussControl extends KontensaldoControl
     if (it.hasNext())
     {
       Jahresabschluss ja = it.next();
-      return DateUtils.addDays(ja.getBis(), 1);
+      return Datum.addTage(ja.getBis(), 1);
     }
 
     // Geschäftsjahres-Beging aus Datum der ersten Buchung bestimmen, wenn noch
