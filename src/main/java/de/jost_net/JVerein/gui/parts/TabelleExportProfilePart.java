@@ -232,9 +232,10 @@ public class TabelleExportProfilePart implements Part
           StringUtils.join(list, ","));
       settings.setAttribute(settingPrefix + "profilname",
           (String) profilname.getValue());
+      String prefix = settingPrefix + "profil." + item + ".";
       for (String key : settings.getAttributes())
       {
-        if (key.startsWith(settingPrefix + "profil." + item + "."))
+        if (key.startsWith(prefix))
         {
           // Alle Attribute des Profils löschen
           settings.setAttribute(key, (String) null);
