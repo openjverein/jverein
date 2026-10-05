@@ -50,9 +50,19 @@
   <dependencies>
     <!-- JVerein paketiert diese Bibliotheken selbst im Release-ZIP unter jverein/lib. -->
     <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>1.1.1</version>
+      <groupId>org.eclipse.angus</groupId>
+      <artifactId>angus-mail</artifactId>
+      <version>2.0.5</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
+      <version>2.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>2.1.4</version>
     </dependency>
     <dependency>
       <groupId>com.google.zxing</groupId>
@@ -101,11 +111,6 @@
       <version>2.22.3</version>
     </dependency>
     <dependency>
-      <groupId>jakarta.activation</groupId>
-      <artifactId>jakarta.activation-api</artifactId>
-      <version>2.1.4</version>
-    </dependency>
-    <dependency>
       <groupId>com.google.zxing</groupId>
       <artifactId>javase</artifactId>
       <version>3.5.4</version>
@@ -115,11 +120,6 @@
           <artifactId>jcommander</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.mail</groupId>
-      <artifactId>javax.mail</artifactId>
-      <version>1.6.2</version>
     </dependency>
     <dependency>
       <groupId>de.jollyday</groupId>

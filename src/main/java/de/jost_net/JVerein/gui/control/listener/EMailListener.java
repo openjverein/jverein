@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control.listener;
 
-import javax.mail.internet.AddressException;
+import jakarta.mail.internet.AddressException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
