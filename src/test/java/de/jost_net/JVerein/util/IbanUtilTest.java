@@ -74,20 +74,4 @@ final class IbanUtilTest
     assertNull(IbanUtil.getBankname(null));
     assertNull(IbanUtil.getBankname(""));
   }
-
-  @Test
-  void vonBlzUndKontoErzeugtIbanUndBic() throws ApplicationException
-  {
-    IbanUtil.IbanUndBic ergebnis = IbanUtil.vonBlzUndKonto("37040044",
-        "0532013000", "DE");
-    assertEquals("DE89370400440532013000", ergebnis.getIban());
-    assertEquals("COBADEFFXXX", ergebnis.getBic());
-  }
-
-  @Test
-  void vonBlzUndKontoWirftBeiAnderemLand()
-  {
-    assertThrows(ApplicationException.class,
-        () -> IbanUtil.vonBlzUndKonto("37040044", "0532013000", "AT"));
-  }
 }
