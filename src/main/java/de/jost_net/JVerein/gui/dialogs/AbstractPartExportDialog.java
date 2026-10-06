@@ -194,7 +194,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     this.part = part;
 
     setTitle(dialogTitel);
-    setSize(400, 700);
+    setSize(400, 750);
   }
 
   protected void createGui(Composite parent, Action action)

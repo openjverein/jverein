@@ -214,7 +214,7 @@ public class TabelleExportProfilePart implements Part
     }
   }
 
-  // Löscht ein Profil aus der Liste und setzt die Werte auf ""
+  // Löscht ein Profil aus der Liste
   private void handleLoeschen()
   {
     try
