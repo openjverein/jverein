@@ -39,7 +39,7 @@ public class SpendenbescheinigungListeView extends AbstractView
     GUI.getView().setTitle("Spendenbescheinigungen");
 
     SpendenbescheinigungControl control = new SpendenbescheinigungControl(this);
-    control.init("spendenliste.", null, null);
+    control.init("spendenliste.");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
@@ -71,6 +71,7 @@ public class SpendenbescheinigungListeView extends AbstractView
     fbuttons.addButton(zurueck2);
     ToolTipButton vor2 = control.getVorButton(spendeVon, spendeBis);
     fbuttons.addButton(vor2);
+    fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);

@@ -465,7 +465,7 @@ public class KontoControl extends FilterControl implements Savable
         case KONTOART:
           konten.addFilter("kontoart = ?", ((Kontoart) value).getKey());
           break;
-        case STATUS:
+        case NUR_AKTIVE_KONTEN:
           if ((boolean) value)
           {
             konten.addFilter("(aufloesung IS NULL OR aufloesung > ?)",

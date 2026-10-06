@@ -16,13 +16,13 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 import java.sql.Connection;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
-
+import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0512 extends AbstractDDLUpdate
+public class Update0513 extends AbstractDDLUpdate
 {
-  public Update0512(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0513(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -30,6 +30,8 @@ public class Update0512 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute("DELETE FROM suchprofil");
+
+    execute(alterColumn("formularfeld",
+        new Column("name", COLTYPE.MEDIUMTEXT, 0, null, false, false)));
   }
 }

@@ -78,10 +78,11 @@ public class DokumentDialog extends AbstractDialog<Boolean>
     LabelGroup group = new LabelGroup(parent, "Infos");
     group.addLabelPair("Datum", getDatum());
     group.addLabelPair("Bemerkung", getBemerkung());
-    if (dok.getPfad() != null)
-    {
-      group.addLabelPair("Pfad", getPfad());
-    }
+    // TODO nach Belegumstellung wieder reaktivieren
+    // if (dok.getPfad() != null)
+    // {
+    // group.addLabelPair("Pfad", getPfad());
+    // }
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(new SaveButton(c -> speichern()));

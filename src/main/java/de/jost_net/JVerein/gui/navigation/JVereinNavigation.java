@@ -320,10 +320,11 @@ public class JVereinNavigation implements Extension
           new JVereinNavigationItem(administrationEinstellungen, "Abrechnung",
               new StartViewAction(EinstellungenAbrechnungView.class),
               "wrench.png"));
-      administrationEinstellungen.addChild(new JVereinNavigationItem(
-          administrationEinstellungen, "Verzeichnisse",
-          new StartViewAction(EinstellungenVerzeichnisView.class),
-          "wrench.png"));
+      // TODO Sollte nach Beleg umstellung reaktiviert werden
+      // administrationEinstellungen.addChild(new JVereinNavigationItem(
+      // administrationEinstellungen, "Verzeichnisse",
+      // new StartViewAction(EinstellungenVerzeichnisView.class),
+      // "wrench.png"));
       administrationEinstellungen.addChild(
           new JVereinNavigationItem(administrationEinstellungen, "Vorlagen",
               new StartViewAction(EinstellungenVorlageListeView.class),
