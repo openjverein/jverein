@@ -18,8 +18,8 @@ package de.jost_net.JVerein.io;
 
 import java.util.Calendar;
 
-import de.jollyday.HolidayManager;
-import de.jollyday.ManagerParameters;
+import de.focus_shift.jollyday.core.HolidayManager;
+import de.focus_shift.jollyday.core.ManagerParameters;
 
 public class Bankarbeitstage
 {

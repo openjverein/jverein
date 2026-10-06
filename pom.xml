@@ -50,9 +50,19 @@
   <dependencies>
     <!-- JVerein paketiert diese Bibliotheken selbst im Release-ZIP unter jverein/lib. -->
     <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>1.1.1</version>
+      <groupId>org.eclipse.angus</groupId>
+      <artifactId>angus-mail</artifactId>
+      <version>2.0.5</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
+      <version>2.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>2.1.4</version>
     </dependency>
     <dependency>
       <groupId>com.google.zxing</groupId>
@@ -65,14 +75,19 @@
       <version>1.0.46</version>
     </dependency>
     <dependency>
-      <groupId>org.dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>2.2.0</version>
-    </dependency>
-    <dependency>
       <groupId>com.googlecode.ez-vcard</groupId>
       <artifactId>ez-vcard</artifactId>
       <version>0.12.2</version>
+    </dependency>
+    <!-- jsoup/freemarker/jackson-core werden von JVerein selbst nicht
+         importiert, sondern von ez-vcard intern fuers HTML-/JSON-vCard-
+         Lesen/Schreiben genutzt. Explizit deklariert, um neuere Versionen
+         zu erzwingen als die, die ez-vcard 0.12.2 selbst transitiv
+         mitbringt (jsoup 1.22.1, freemarker 2.3.34, jackson-core 2.21.0). -->
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.23.2</version>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
@@ -96,11 +111,6 @@
       <version>2.22.3</version>
     </dependency>
     <dependency>
-      <groupId>jakarta.activation</groupId>
-      <artifactId>jakarta.activation-api</artifactId>
-      <version>2.1.4</version>
-    </dependency>
-    <dependency>
       <groupId>com.google.zxing</groupId>
       <artifactId>javase</artifactId>
       <version>3.5.4</version>
@@ -112,38 +122,14 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.sun.mail</groupId>
-      <artifactId>javax.mail</artifactId>
-      <version>1.6.2</version>
+      <groupId>de.focus-shift</groupId>
+      <artifactId>jollyday-core</artifactId>
+      <version>2.21.0</version>
     </dependency>
     <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.14.4</version>
-    </dependency>
-    <dependency>
-      <groupId>de.jollyday</groupId>
-      <artifactId>jollyday</artifactId>
-      <version>0.5.10</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.glassfish.jaxb</groupId>
-          <artifactId>jaxb-runtime</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.threeten</groupId>
-          <artifactId>threeten-extra</artifactId>
-        </exclusion>
-         <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jsoup</groupId>
-      <artifactId>jsoup</artifactId>
-      <version>1.23.2</version>
+      <groupId>de.focus-shift</groupId>
+      <artifactId>jollyday-jaxb</artifactId>
+      <version>2.21.0</version>
     </dependency>
     <dependency>
       <groupId>org.mustangproject</groupId>
@@ -180,16 +166,9 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>2.7</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.mangstadt</groupId>
-      <artifactId>vinnie</artifactId>
-      <version>2.0.2</version>
-    </dependency>
+    <!-- Wird von keiner anderen Abhaengigkeit deklariert, aber von PDFBox zur
+         Laufzeit reflektiv fuer XMP-Metadaten in der PDF-Erzeugung
+         nachgeladen (sonst NoClassDefFoundError, siehe FormularAufbereitungTest). -->
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>xmpbox</artifactId>
@@ -202,12 +181,6 @@
       </exclusions>
     </dependency>
     <!-- Compile-Zeit-Abhaengigkeiten, die zur Laufzeit vom Jameica-Host bereitgestellt werden. -->
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>be.cyberelf.nanoxml</groupId>
       <artifactId>nanoxml</artifactId>
