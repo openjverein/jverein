@@ -22,6 +22,9 @@ import java.util.Map;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.event.EventCartridge;
+import org.apache.velocity.app.event.implement.EscapeHtmlReference;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.UniversalDateFormat;
@@ -34,6 +37,8 @@ public class VelocityTool
   {
     try
     {
+      Velocity.setProperty("velocimacro.permissions.allow.inline.local.scope",
+          true);
       Velocity.init();
     }
     catch (Exception e)
@@ -51,11 +56,25 @@ public class VelocityTool
   public static String eval(Map<String, Object> map, String text,
       boolean kuerzen) throws ApplicationException
   {
+    return eval(map, text, kuerzen, false);
+  }
+
+  public static String eval(Map<String, Object> map, String text,
+      boolean kuerzen, boolean isHtml) throws ApplicationException
+  {
     VelocityContext context = new VelocityContext(
         new HashMap<String, Object>(map));
     context.put("dateformat", new JVDateFormatTTMMJJJJ());
     context.put("decimalformat", Einstellungen.DECIMALFORMAT);
     context.put("udateformat", new UniversalDateFormat());
+
+    if (isHtml)
+    {
+      EventCartridge eventCartridge = new EventCartridge();
+      eventCartridge
+          .addReferenceInsertionEventHandler(new EscapeHtmlReference());
+      eventCartridge.attachToContext(context);
+    }
 
     StringWriter wtext = new StringWriter();
     try

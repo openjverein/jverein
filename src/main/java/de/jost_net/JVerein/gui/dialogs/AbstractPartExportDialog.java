@@ -47,6 +47,7 @@ import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.ExportLayoutParam;
+import de.jost_net.JVerein.keys.Fonts;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.Action;
@@ -195,6 +196,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
     setTitle(dialogTitel);
     setSize(400, 750);
+
+    Fonts.register();
   }
 
   protected void createGui(Composite parent, Action action)
@@ -733,8 +736,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected Font getFontHeader(BaseColor color)
   {
-    return FontFactory.getFont(
-        "/fonts/" + (String) fontHeader.getValue() + ".ttf",
+    return FontFactory.getFont((String) fontHeader.getValue(),
         BaseFont.IDENTITY_H, (Integer) fontsizeHeader.getValue(),
         Font.UNDEFINED, color);
   }
@@ -759,23 +761,21 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected Font getFontNormal(BaseColor color)
   {
-    return FontFactory.getFont(
-        "/fonts/" + (String) fontNormal.getValue() + ".ttf",
+    return FontFactory.getFont((String) fontNormal.getValue(),
         BaseFont.IDENTITY_H, (Integer) fontsize.getValue(), Font.UNDEFINED,
         color);
   }
 
   protected Font getFontFett(BaseColor color)
   {
-    return FontFactory.getFont(
-        "/fonts/" + (String) fontFett.getValue() + ".ttf", BaseFont.IDENTITY_H,
-        (Integer) fontsize.getValue(), Font.UNDEFINED, color);
+    return FontFactory.getFont((String) fontFett.getValue(),
+        BaseFont.IDENTITY_H, (Integer) fontsize.getValue(), Font.UNDEFINED,
+        color);
   }
 
   protected Font getFontKursiv(BaseColor color)
   {
-    return FontFactory.getFont(
-        "/fonts/" + (String) fontItalic.getValue() + ".ttf",
+    return FontFactory.getFont((String) fontItalic.getValue(),
         BaseFont.IDENTITY_H, (Integer) fontsize.getValue(), Font.UNDEFINED,
         color);
   }
