@@ -18,7 +18,6 @@ package de.jost_net.JVerein;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.navigation.JVereinMenue;
 import de.jost_net.JVerein.gui.navigation.JVereinNavigation;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;

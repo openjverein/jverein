@@ -175,10 +175,7 @@ public enum Filter
   VERWENDUNGSZWECK("filter_verwendungszweck", "Verwendungszweck", "Beitrag",
       FilterArt.TEXT),
   VORLAGEART("filter_vorlagenart", "Vorlagenart", "Titel", FilterArt.SELECT,
-      // TODO Sollte nach Fertigstellung der Belegumstellung wieder geändert
-      // werden.
-      // Vorlageart.values()
-      new Vorlageart[] { Vorlageart.DATEINAME, Vorlageart.TITEL }),
+      Vorlageart.values()),
   ZAHLER("filter_zahler", "Zahler", "Text", FilterArt.TEXT),
   ZEILE2("filter_zeile2", "Zeile 2", "Meier", FilterArt.TEXT),
   ZUSATZFELD("filter_zusatzfelder", "Zusatzfelder", "Zusatzfeld",

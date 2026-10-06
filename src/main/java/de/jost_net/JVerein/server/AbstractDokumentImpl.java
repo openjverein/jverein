@@ -247,32 +247,31 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
         {
           throw new ApplicationException("Datei ist leer");
         }
-        // TODO sollte nach Belegumstellung reaktiviert werden
-        // if (!(Boolean) Einstellungen
-        // .getEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING))
-        // {
-        // String pfad = getDateiPfad() + File.separator + file.getName();
-        //
-        // newFile = new File(getRootDir() + pfad);
-        // if (newFile.exists())
-        // {
-        // throw new ApplicationException("Datei existiert bereits!");
-        // }
-        // newFile.getParentFile().mkdirs();
-        //
-        // try (FileOutputStream fos = new FileOutputStream(newFile, true))
-        // {
-        // byte[] buffer = new byte[1024];
-        // int length;
-        // while ((length = fis.read(buffer)) > 0)
-        // {
-        // fos.write(buffer, 0, length);
-        // }
-        // }
-        //
-        // setPfad(pfad);
-        // }
-        // else
+        if (!(Boolean) Einstellungen
+            .getEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING))
+        {
+          String pfad = getDateiPfad() + File.separator + file.getName();
+
+          newFile = new File(getRootDir() + pfad);
+          if (newFile.exists())
+          {
+            throw new ApplicationException("Datei existiert bereits!");
+          }
+          newFile.getParentFile().mkdirs();
+
+          try (FileOutputStream fos = new FileOutputStream(newFile, true))
+          {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fis.read(buffer)) > 0)
+            {
+              fos.write(buffer, 0, length);
+            }
+          }
+
+          setPfad(pfad);
+        }
+        else
         {
           if (!JVereinPlugin.isArchiveServiceActive())
           {
