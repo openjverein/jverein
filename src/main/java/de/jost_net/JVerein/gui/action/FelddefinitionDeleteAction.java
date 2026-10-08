@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
+import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
@@ -47,9 +48,28 @@ public class FelddefinitionDeleteAction extends DeleteAction
     // Check ob eine Felddefinition bei Mitgliedern verwendet wird
     for (JVereinDBObject o : object)
     {
+      Felddefinition fd = (Felddefinition) o;
       DBIterator<Zusatzfelder> it = Einstellungen.getDBService()
           .createList(Zusatzfelder.class);
-      it.addFilter("felddefinition=?", new Object[] { o.getID() });
+      it.addFilter("felddefinition=?", fd.getID());
+      switch (fd.getDatentyp())
+      {
+        case Datentyp.ZEICHENFOLGE:
+          it.addFilter("feld IS NOT NULL AND TRIM(feld) != ''");
+          break;
+        case Datentyp.DATUM:
+          it.addFilter("felddatum IS NOT NULL");
+          break;
+        case Datentyp.GANZZAHL:
+          it.addFilter("feldganzzahl IS NOT NULL");
+          break;
+        case Datentyp.WAEHRUNG:
+          it.addFilter("feldwaehrung IS NOT NULL");
+          break;
+        case Datentyp.JANEIN:
+          it.addFilter("feldjanein IS TRUE");
+          break;
+      }
       it.setLimit(1);
       if (it.size() > 0)
       {
