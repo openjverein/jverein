@@ -84,7 +84,7 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
     }
     catch (RemoteException e)
     {
-      String fehler = "Projekt kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Zusatzfeld kann nicht gelöscht werden. Siehe system log";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
