@@ -187,8 +187,8 @@ public class MitgliedListeControl extends FilterControl
     {
       //
     }
-    add(AbstractJVereinDBObject.GESPERRT,
-        AbstractJVereinDBObject.GESPERRT, true, true);
+    add(AbstractJVereinDBObject.GESPERRT, AbstractJVereinDBObject.GESPERRT,
+        false, true);
     add("Kontostand", "kontostand", false, new Formatter()
     {
       @Override
