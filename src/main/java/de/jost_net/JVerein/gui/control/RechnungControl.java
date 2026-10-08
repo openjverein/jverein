@@ -166,6 +166,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     }
     GenericIterator<Rechnung> rechnungen = getRechnungIterator();
     rechnungList = new BetragSummaryTablePart(rechnungen, null);
+    rechnungList.addColumn(getGesperrtColumn(), false);
     rechnungList.addColumn("Nr", "nummer");
     rechnungList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

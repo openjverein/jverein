@@ -55,6 +55,7 @@ public class JahresabschlussListeControl extends AbstractJVereinControl
 
     jahresabschlussList = new JVereinTablePart(jahresabschluesse, null);
     jahresabschlussList.addColumn("Nr", "id-int");
+    jahresabschlussList.addColumn(getAbgeschlossenColumn(), false);
     jahresabschlussList.addColumn("Von", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     jahresabschlussList.addColumn("Bis", "bis",

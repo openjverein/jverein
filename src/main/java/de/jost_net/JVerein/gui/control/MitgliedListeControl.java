@@ -48,6 +48,7 @@ import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import de.jost_net.JVerein.server.AbstractJVereinDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -186,6 +187,8 @@ public class MitgliedListeControl extends FilterControl
     {
       //
     }
+    add(AbstractJVereinDBObject.GESPERRT,
+        AbstractJVereinDBObject.GESPERRT, true, true);
     add("Kontostand", "kontostand", false, new Formatter()
     {
       @Override

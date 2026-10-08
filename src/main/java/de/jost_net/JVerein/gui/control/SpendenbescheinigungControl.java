@@ -526,6 +526,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     spbList = new BetragSummaryTablePart(getSpendenbescheinigungen(), null);
     spbList.addColumn("Nr", "id-int");
+    spbList.addColumn(getGesperrtColumn(), false);
     spbList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Spender", "mitglied");

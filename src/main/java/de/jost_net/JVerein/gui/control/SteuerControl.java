@@ -96,6 +96,7 @@ public class SteuerControl extends VorZurueckControl implements Savable
         .createList(Steuer.class);
 
     steuerList = new JVereinTablePart(steuern, null);
+    steuerList.addColumn(getGesperrtColumn(), false);
     steuerList.addColumn("Name", "name");
     steuerList.addColumn("Steuersatz", "satz", o -> {
       return Einstellungen.DECIMALFORMAT.format(o) + "%";
