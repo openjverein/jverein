@@ -124,11 +124,11 @@ public class BelegListControl extends FilterControl
       Object value = entry.getValue();
       switch (entry.getKey())
       {
-        case NUMMER:
+        case BELEGNUMMER:
           docs.addFilter("(lower(belegnummer) like ?)",
               "%" + ((String) value).toLowerCase() + "%");
           break;
-        case BEZEICHNUNG:
+        case BEMERKUNG:
           docs.addFilter("(lower(bemerkung) like ?)",
               "%" + ((String) value).toLowerCase() + "%");
           break;

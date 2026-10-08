@@ -18,6 +18,8 @@ package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.Date;
+
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -45,6 +47,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -71,6 +74,10 @@ public class BelegControl extends VorZurueckControl implements Savable
 
   private Beleg beleg;
 
+  private DateInput datum;
+
+  private TextInput belegnummer;
+
   public BelegControl(AbstractView view, AbstractBelegDBObject belegObject)
   {
     super(view);
@@ -93,6 +100,10 @@ public class BelegControl extends VorZurueckControl implements Savable
   {
     Beleg beleg = getBeleg();
     beleg.setBemerkung((String) getBezeichnung().getValue());
+    if (beleg.isNewObject())
+    {
+      beleg.setDatum((Date) getDatum().getValue());
+    }
 
     if (datei != null)
     {
@@ -167,8 +178,36 @@ public class BelegControl extends VorZurueckControl implements Savable
   public Input getPfad() throws RemoteException
   {
     Input pfad = new TextInput(getBeleg().getRootDir() + getBeleg().getPfad());
+    pfad.setName("Pfad");
     pfad.disable();
     return pfad;
+  }
+
+  public Input getDatum() throws RemoteException
+  {
+    if (datum != null)
+    {
+      return datum;
+    }
+    datum = new DateInput(getBeleg().getDatum());
+    datum.setName("Datum");
+    if (!getBeleg().isNewObject())
+    {
+      datum.disable();
+    }
+    return datum;
+  }
+
+  public Input getBelegnummer() throws RemoteException
+  {
+    if (belegnummer != null)
+    {
+      return belegnummer;
+    }
+    belegnummer = new TextInput(getBeleg().getBelegnummer());
+    belegnummer.setName("Belegnummer");
+    belegnummer.disable();
+    return belegnummer;
   }
 
   @SuppressWarnings("unchecked")

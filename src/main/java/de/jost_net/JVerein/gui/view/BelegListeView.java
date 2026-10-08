@@ -16,10 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.BelegListControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.util.DragnDropUtil;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Beleg;
@@ -39,12 +40,13 @@ public class BelegListeView extends AbstractView
     final BelegListControl control = new BelegListControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addInput(control.getFilterInput(Filter.NUMMER));
-    group.addInput(control.getFilterInput(Filter.BEZEICHNUNG));
+    group.addInput(control.getFilterInput(Filter.BELEGNUMMER));
+    group.addInput(control.getFilterInput(Filter.BEMERKUNG));
     group.addLabelPair("Nicht zugeordnet",
         control.getFilterInput(Filter.NICHT_ZUGEORDNET));
 
     ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
@@ -53,11 +55,9 @@ public class BelegListeView extends AbstractView
     DragnDropUtil.setDragDrop(getParent(), f -> control.addFile(f));
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.BELEG, false, "question-circle.png");
-    buttons.addButton("Neu",
-        new NewAction(BelegDetailView.class, Beleg.class), null,
-        false, "document-new.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.BELEG));
+    buttons.addButton(
+        new NewButton(new NewAction(BelegDetailView.class, Beleg.class)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

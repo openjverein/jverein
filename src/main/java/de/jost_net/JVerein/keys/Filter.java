@@ -47,6 +47,7 @@ public enum Filter
       FilterArt.DATE),
   BEITRAGSGRUPPE("filter_beitragsgruppe", "Beitragsgruppe", FilterControl.ALLE,
       FilterArt.SELECT, Beitragsgruppe.class),
+  BELEGNUMMER("filter_belegnummer", "Belegnummer", "0123", FilterArt.TEXT),
   BEMERKUNG("filter_bemerkung", "Bemerkung", "Bemerkung", FilterArt.TEXT),
   BETRAG("filter_betrag", "Betrag", "50", FilterArt.BETRAG),
   BETREFF("filter_betreff", "Betreff", "Betreff", FilterArt.TEXT),
