@@ -5,7 +5,7 @@
 
   <description>OpenSource-Vereinsverwaltung</description>
   <url>https://openjverein.github.io/jameica-repository/${plugin.zip.path}</url>
-  <homepage>https://openjverein.github.io/</homepage>
+  <homepage  validate="true">https://openjverein.github.io/</homepage>
   <license>GPL - https://www.gnu.org/copyleft/gpl.html</license>
   <icon>jverein-icon-64x64.png</icon>
   <menu>
