@@ -131,6 +131,7 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     buchungsklassen.setOrder("ORDER BY nummer");
 
     buchungsklassenList = new JVereinTablePart(buchungsklassen, null);
+    buchungsklassenList.addColumn(getGesperrtColumn(), false);
     buchungsklassenList.addColumn("Nummer", "nummer");
     buchungsklassenList.addColumn("Bezeichnung", "bezeichnung");
     buchungsklassenList

@@ -159,6 +159,7 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
     eigenschaften.setOrder("ORDER BY bezeichnung");
 
     eigenschaftList = new JVereinTablePart(eigenschaften, null);
+    eigenschaftList.addColumn(getGesperrtColumn(), false);
     eigenschaftList.addColumn("Name", "name");
     eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
     eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe");

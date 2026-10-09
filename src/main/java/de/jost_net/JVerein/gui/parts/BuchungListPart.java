@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Steuer;
+import de.jost_net.JVerein.server.AbstractJVereinDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -50,6 +51,8 @@ public class BuchungListPart extends BuchungListTablePart
 
     setTableName("Buchungen");
     addColumn("Nr", "id-int");
+    addColumn(new Column(AbstractJVereinDBObject.ABGESCHLOSSEN,
+        AbstractJVereinDBObject.ABGESCHLOSSEN), false);
     addColumn("Konto", "konto");
     addColumn("Datum", "datum", new DateFormatter(new JVDateFormatTTMMJJJJ()));
     addColumn("Auszug", "auszugsnummer");

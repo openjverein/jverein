@@ -165,6 +165,7 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
     DBService service = Einstellungen.getDBService();
     DBIterator<Felddefinition> fdef = service.createList(Felddefinition.class);
     felddefinitionList = new JVereinTablePart(fdef, null);
+    felddefinitionList.addColumn(getGesperrtColumn(), false);
     felddefinitionList.addColumn("Name", "name");
     felddefinitionList.addColumn("Label", "label");
     felddefinitionList.addColumn("Datentyp", "datentyp",

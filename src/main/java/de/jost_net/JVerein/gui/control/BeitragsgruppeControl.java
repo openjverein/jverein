@@ -571,6 +571,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     DBIterator<Beitragsgruppe> beitragsgruppen = service
         .createList(Beitragsgruppe.class);
     beitragsgruppeList = new JVereinTablePart(beitragsgruppen, null);
+    beitragsgruppeList.addColumn(getGesperrtColumn(), false);
     beitragsgruppeList.addColumn("Bezeichnung", "bezeichnung");
     switch (Beitragsmodel.getByKey(
         (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))

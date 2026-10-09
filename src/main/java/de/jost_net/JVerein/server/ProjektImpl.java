@@ -61,15 +61,16 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
     {
       DBIterator<Buchung> it = Einstellungen.getDBService()
           .createList(Buchung.class);
-      it.addFilter("projekt = ?", new Object[] { getID() });
+      it.addFilter("projekt = ?", getID());
       it.setLimit(1);
       if (it.hasNext())
       {
         throw new ApplicationException(
             "Es existieren Buchungen mit diesem Projekt.");
       }
+
       it = Einstellungen.getDBService().createList(Wirtschaftsplan.class);
-      it.addFilter("projekt = ?", new Object[] { getID() });
+      it.addFilter("projekt = ?", getID());
       it.setLimit(1);
       if (it.hasNext())
       {

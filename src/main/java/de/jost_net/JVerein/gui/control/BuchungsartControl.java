@@ -394,6 +394,7 @@ public class BuchungsartControl extends FilterControl implements Savable
       return buchungsartList;
     }
     buchungsartList = new JVereinTablePart(getBuchungsarten(), null);
+    buchungsartList.addColumn(getGesperrtColumn(), false);
     buchungsartList.addColumn(new NaturalOrderColumn("nummer", "Nummer"));
     buchungsartList.addColumn("Bezeichnung", "bezeichnung");
     buchungsartList.addColumn("Art", "art", new Formatter()

@@ -19,9 +19,15 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.rmi.Steuer;
+import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
+import de.jost_net.JVerein.rmi.Zusatzbetrag;
+import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -54,24 +60,77 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
     try
     {
       // Prüfen ob Buchungsklasse schon verwendet wird
-      DBIterator<Buchungsart> baIt = Einstellungen.getDBService()
+      DBIterator<Buchungsart> it = Einstellungen.getDBService()
           .createList(Buchungsart.class);
-      baIt.addFilter("buchungsklasse = ?", new Object[] { getID() });
-      baIt.setLimit(1);
-      if (baIt.size() > 0)
+      it.addFilter("buchungsklasse = ?", getID());
+      it.setLimit(1);
+      if (it.size() > 0)
       {
         throw new ApplicationException(
             "Die Buchungsklasse wird von Buchungsarten benutzt.");
       }
 
-      DBIterator<Buchung> buIt = Einstellungen.getDBService()
-          .createList(Buchung.class);
-      buIt.addFilter("buchungsklasse = ?", new Object[] { getID() });
-      buIt.setLimit(1);
-      if (buIt.size() > 0)
+      it = Einstellungen.getDBService().createList(Buchung.class);
+      it.addFilter("buchungsklasse = ?", getID());
+      it.setLimit(1);
+      if (it.size() > 0)
       {
         throw new ApplicationException(
             "Die Buchungsklasse wird von Buchungen benutzt.");
+      }
+
+      it = Einstellungen.getDBService().createList(Beitragsgruppe.class);
+      it.addFilter("buchungsklasse = ?", getID());
+      it.setLimit(1);
+      if (it.size() > 0)
+      {
+        throw new ApplicationException(
+            "Es existieren Beitragsgruppen mit dieser Buchungsklasse.");
+      }
+
+      it = Einstellungen.getDBService().createList(SollbuchungPosition.class);
+      it.addFilter("buchungsklasse = ?", getID());
+      it.setLimit(1);
+      if (it.size() > 0)
+      {
+        throw new ApplicationException(
+            "Es existieren Sollbuchungspositionen mit dieser Buchungsklasse.");
+      }
+
+      it = Einstellungen.getDBService().createList(Steuer.class);
+      it.addFilter("buchungsklasse = ?", getID());
+      it.setLimit(1);
+      if (it.size() > 0)
+      {
+        throw new ApplicationException(
+            "Es existieren Steuern mit dieser Buchungsklasse.");
+      }
+
+      it = Einstellungen.getDBService().createList(Zusatzbetrag.class);
+      it.addFilter("buchungsklasse = ?", this.getID());
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Es gibt Zusatzbeträge mit dieser Buchungsklasse.");
+      }
+
+      it = Einstellungen.getDBService().createList(ZusatzbetragVorlage.class);
+      it.addFilter("buchungsklasse = ?", this.getID());
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Es gibt Zusatzbetragvorlagen mit dieser Buchungsklasse.");
+      }
+
+      it = Einstellungen.getDBService().createList(WirtschaftsplanItem.class);
+      it.addFilter("buchungsklasse = ?", this.getID());
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Es gibt Wirtschaftspläne mit dieser Buchungsklasse.");
       }
 
     }

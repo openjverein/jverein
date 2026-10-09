@@ -120,6 +120,7 @@ public class LastschriftControl extends FilterControl implements Savable
     }
     lastschriftList = new BetragSummaryTablePart(getLastschriften(), null);
     lastschriftList.addColumn("Nr", "id-int");
+    lastschriftList.addColumn(getAbgeschlossenColumn(), false);
     lastschriftList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
