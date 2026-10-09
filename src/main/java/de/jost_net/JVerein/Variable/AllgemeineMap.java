@@ -27,8 +27,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.keys.Staat;
-import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
-import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
+import de.jost_net.JVerein.util.IbanUtil;
 
 public class AllgemeineMap extends AbstractMap
 {
@@ -129,10 +128,10 @@ public class AllgemeineMap extends AbstractMap
           value = "";
           if (!bic.isEmpty())
           {
-            Bank b = Banken.getBankByBIC(bic.toUpperCase());
-            if (b != null)
+            String name = IbanUtil.getBankname(bic.toUpperCase());
+            if (name != null)
             {
-              value = b.getBezeichnung();
+              value = name;
             }
           }
           break;

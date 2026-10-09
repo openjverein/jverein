@@ -40,7 +40,6 @@ public class EinstellungenAbrechnungView extends AbstractView
     cont.addInput(control.getZahlungsrhytmus());
     cont.addInput(control.getZahlungsweg());
     cont.addInput(control.getSEPADatumOffset());
-    cont.addInput(control.getDefaultSEPALand());
     cont.addLabelPair("SEPA XML-Version - Überweisung",
         control.getCt1SepaVersion());
     cont.addLabelPair("SEPA XML-Version - Lastschrift",

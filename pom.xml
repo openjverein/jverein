@@ -14,7 +14,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.parameters>true</maven.compiler.parameters>
-    <obantoo.version>2.1.12</obantoo.version>
+    <iban.commons.version>1.8.12-RC1</iban.commons.version>
     <!-- renovate: depName=beanshell/beanshell datasource=github-tags -->
     <bsh.version>2.1.1</bsh.version>
     <bsh.sha1>5c01a006b0aba21ef55c01f96ea062c1cb2bf707</bsh.sha1>
@@ -212,6 +212,21 @@
       <groupId>be.cyberelf.nanoxml</groupId>
       <artifactId>nanoxml</artifactId>
       <version>2.2.3</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Ersatz für OBanToo, siehe #159 im Hibiscus-Projekt. scope=provided,
+         weil Hibiscus dieselben Jars schon in seinem lib/-Ordner mitbringt
+         und Jameica alle Plugin-Jars auf einem gemeinsamen Classloader lädt. -->
+    <dependency>
+      <groupId>de.speedbanking</groupId>
+      <artifactId>iban-commons-de-checkdigit</artifactId>
+      <version>${iban.commons.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.speedbanking</groupId>
+      <artifactId>iban-commons-bankdata</artifactId>
+      <version>${iban.commons.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -574,12 +589,6 @@
           <version>${hibiscus.version}</version>
           <scope>provided</scope>
         </dependency>
-        <dependency>
-          <groupId>de.jost_net</groupId>
-          <artifactId>obantoo-bin</artifactId>
-          <version>${obantoo.version}</version>
-          <scope>provided</scope>
-        </dependency>
         <!-- Wird nur über Github-Release bereitgestellt, da es nicht in einem öffentlichen Maven-Repository verfügbar ist. -->
         <dependency>
           <groupId>org.beanshell</groupId>
@@ -756,21 +765,6 @@
                   <groupId>de.willuhn</groupId>
                   <artifactId>de-willuhn-util</artifactId>
                   <version>${jameica.version}</version>
-                  <packaging>jar</packaging>
-                  <generatePom>true</generatePom>
-                </configuration>
-              </execution>
-              <execution>
-                <id>install-obantoo-bin</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>install-file</goal>
-                </goals>
-                <configuration>
-                  <file>${hibiscus.dir}/lib/obantoo-bin-${obantoo.version}.jar</file>
-                  <groupId>de.jost_net</groupId>
-                  <artifactId>obantoo-bin</artifactId>
-                  <version>${obantoo.version}</version>
                   <packaging>jar</packaging>
                   <generatePom>true</generatePom>
                 </configuration>

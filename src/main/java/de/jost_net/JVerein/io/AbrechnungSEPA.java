@@ -59,6 +59,7 @@ import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.MandatSequence;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -81,14 +82,8 @@ import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.jost_net.OBanToo.SEPA.BIC;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
-import de.jost_net.OBanToo.SEPA.Basislastschrift.Basislastschrift;
-import de.jost_net.OBanToo.SEPA.Basislastschrift.Basislastschrift2Pdf;
-import de.jost_net.OBanToo.SEPA.Basislastschrift.MandatSequence;
-import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
-import de.jost_net.OBanToo.StringLatin.Zeichen;
+import de.jost_net.JVerein.util.IbanUtil;
+import de.jost_net.JVerein.util.SepaZeichensatz;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
@@ -280,7 +275,7 @@ public class AbrechnungSEPA extends SEPASupport
           else
             return z1.getPersonId().equals(z1.getMitglied().getID()) ? -1 : 1;
         }
-        catch (SEPAException | RemoteException e)
+        catch (ApplicationException | RemoteException e)
         {
           return 0;
         }
@@ -366,7 +361,7 @@ public class AbrechnungSEPA extends SEPASupport
               {
                 gesamtZahler.add(zahler);
               }
-              catch (SEPAException se)
+              catch (ApplicationException ae)
               {
                 throw new ApplicationException(
                     "Ungültiger Betrag: " + zahler.getBetrag());
@@ -397,8 +392,8 @@ public class AbrechnungSEPA extends SEPASupport
           (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
       lastschrift.setIBAN((String) Einstellungen.getEinstellung(Property.IBAN));
       lastschrift.setKomprimiert(param.kompakteabbuchung);
-      lastschrift.setName(Zeichen
-          .convert((String) Einstellungen.getEinstellung(Property.NAME)));
+      lastschrift.setName(SepaZeichensatz
+          .konvertieren((String) Einstellungen.getEinstellung(Property.NAME)));
       lastschrift.setMessageID(abrl.getID() + "-RCUR");
 
       count = 0;
@@ -444,12 +439,6 @@ public class AbrechnungSEPA extends SEPASupport
         {
           lastschrift.add(z);
         }
-        // Das für die
-        // PDF-Erzeugung benötigte Datum wird erst in write gesetzt
-        File temp_file = Files.createTempFile("jv", ".xml").toFile();
-        lastschrift.write(temp_file);
-        temp_file.delete();
-
         ausdruckenSEPA(lastschrift, param.pdffileRCUR);
       }
     }
@@ -555,18 +544,18 @@ public class AbrechnungSEPA extends SEPASupport
           BigDecimal.valueOf(betr).setScale(2, RoundingMode.HALF_UP));
       if (mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
       {
-        IBAN i = new IBAN(mZahler.getIban()); // Prüfung der IBAN
+        IbanUtil.checkIban(mZahler.getIban()); // Prüfung der IBAN
         zahler.setIban(mZahler.getIban());
         // Wenn BIC nicht vorhanden versuchen sie automatisch zu ermitteln
         if (mZahler.getBic() == null || mZahler.getBic().length() == 0)
         {
-          zahler.setBic(i.getBIC());
+          zahler.setBic(IbanUtil.getBicFuerIban(mZahler.getIban()));
         }
         else
         {
           zahler.setBic(mZahler.getBic());
         }
-        new BIC(zahler.getBic()); // Prüfung des BIC
+        IbanUtil.checkBic(zahler.getBic()); // Prüfung des BIC
         zahler.setMandatid(mZahler.getMandatID());
         zahler.setMandatdatum(mZahler.getMandatDatum());
         zahler.setMandatsequence(MandatSequence.RCUR);
@@ -678,8 +667,8 @@ public class AbrechnungSEPA extends SEPASupport
               RoundingMode.HALF_UP));
           if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
           {
-            new BIC(mZahler.getBic());
-            new IBAN(mZahler.getIban());
+            IbanUtil.checkBic(mZahler.getBic());
+            IbanUtil.checkIban(mZahler.getIban());
             zahler.setBic(mZahler.getBic());
             zahler.setIban(mZahler.getIban());
             zahler.setMandatid(mZahler.getMandatID());
@@ -795,8 +784,8 @@ public class AbrechnungSEPA extends SEPASupport
         zahler.setPersonTyp(JVereinZahlerTyp.KURSTEILNEHMER);
         zahler.setBetrag(BigDecimal.valueOf(kt.getBetrag()).setScale(2,
             RoundingMode.HALF_UP));
-        new BIC(kt.getBic());
-        new IBAN(kt.getIban());
+        IbanUtil.checkBic(kt.getBic());
+        IbanUtil.checkIban(kt.getIban());
         zahler.setBic(kt.getBic());
         zahler.setIban(kt.getIban());
         zahler.setMandatid(kt.getMandatID());
@@ -835,7 +824,7 @@ public class AbrechnungSEPA extends SEPASupport
   }
 
   private void ausdruckenSEPA(final Basislastschrift lastschrift,
-      final String pdf_fn) throws IOException, DocumentException, SEPAException
+      final String pdf_fn) throws IOException, DocumentException, ApplicationException
   {
     new Basislastschrift2Pdf(lastschrift, pdf_fn);
     GUI.getDisplay().asyncExec(() -> {
@@ -955,7 +944,7 @@ public class AbrechnungSEPA extends SEPASupport
       Logger.error("Fehler beim Erstellen der Hibiscus Lastschrift", e);
       throw new ApplicationException(e);
     }
-    catch (SEPAException e)
+    catch (ApplicationException e)
     {
       throw new ApplicationException(e);
     }
@@ -1015,7 +1004,7 @@ public class AbrechnungSEPA extends SEPASupport
   }
 
   private SollbuchungPosition getSollbuchungPosition(JVereinZahler zahler)
-      throws RemoteException, SEPAException
+      throws RemoteException, ApplicationException
   {
 
     SollbuchungPosition sp = Einstellungen.getDBService()
@@ -1033,7 +1022,7 @@ public class AbrechnungSEPA extends SEPASupport
   }
 
   private Lastschrift getLastschrift(JVereinZahler zahler, Abrechnungslauf abrl,
-      boolean kompakt) throws RemoteException, SEPAException
+      boolean kompakt) throws RemoteException, ApplicationException
   {
     Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
         .createObject(Lastschrift.class, null);
@@ -1121,7 +1110,7 @@ public class AbrechnungSEPA extends SEPASupport
   private String writeSollbuchung(Long zahlerId, int zahlungsweg,
       IAdresse adress, ArrayList<SollbuchungPosition> spArray, Date datum,
       Abrechnungslauf abrl, Konto konto, AbrechnungSEPAParam param,
-      Double summe) throws ApplicationException, RemoteException, SEPAException
+      Double summe) throws ApplicationException, RemoteException
   {
     Sollbuchung sollb = null;
     String zweck = null;
