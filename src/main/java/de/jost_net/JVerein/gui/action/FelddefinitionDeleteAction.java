@@ -48,32 +48,10 @@ public class FelddefinitionDeleteAction extends DeleteAction
     // Check ob eine Felddefinition bei Mitgliedern verwendet wird
     for (JVereinDBObject o : object)
     {
-      Felddefinition fd = (Felddefinition) o;
-      DBIterator<Zusatzfelder> it = Einstellungen.getDBService()
-          .createList(Zusatzfelder.class);
-      it.addFilter("felddefinition=?", fd.getID());
-      switch (fd.getDatentyp())
-      {
-        case Datentyp.ZEICHENFOLGE:
-          it.addFilter("feld IS NOT NULL AND TRIM(feld) != ''");
-          break;
-        case Datentyp.DATUM:
-          it.addFilter("felddatum IS NOT NULL");
-          break;
-        case Datentyp.GANZZAHL:
-          it.addFilter("feldganzzahl IS NOT NULL");
-          break;
-        case Datentyp.WAEHRUNG:
-          it.addFilter("feldwaehrung IS NOT NULL");
-          break;
-        case Datentyp.JANEIN:
-          it.addFilter("feldjanein IS TRUE");
-          break;
-      }
-      it.setLimit(1);
-      if (it.size() > 0)
+      if (isZusatzfeldUsed((Felddefinition) o))
       {
         verwendung = true;
+        break;
       }
     }
 
@@ -106,20 +84,20 @@ public class FelddefinitionDeleteAction extends DeleteAction
       return;
     }
 
-    DBIterator<Zusatzfelder> it = Einstellungen.getDBService()
-        .createList(Zusatzfelder.class);
-    it.addFilter("felddefinition=?", new Object[] { object.getID() });
-    if (it.size() > 0 && selection == YesNoCancelDialog.NO)
+    if (isZusatzfeldUsed((Felddefinition) object)
+        && selection == YesNoCancelDialog.NO)
     {
       throw new ApplicationException(
           "Übersprungen, da es bereits von Mitgliedern verwendet wird.");
     }
+
+    DBIterator<Zusatzfelder> it = Einstellungen.getDBService()
+        .createList(Zusatzfelder.class);
+    it.addFilter("felddefinition=?", object.getID());
     while (it.hasNext())
     {
-      Zusatzfelder zf1 = it.next();
-      Zusatzfelder zf2 = (Zusatzfelder) Einstellungen.getDBService()
-          .createObject(Zusatzfelder.class, zf1.getID());
-      zf2.delete();
+      Zusatzfelder zf = it.next();
+      zf.delete();
     }
     object.delete();
   }
@@ -129,4 +107,34 @@ public class FelddefinitionDeleteAction extends DeleteAction
   {
     return verwendung && object.length > 1;
   }
+
+  // Prüft ob eine Zusatzfeld (Felddefinition) bei einem Mitglied verwendet
+  // wird.
+  private boolean isZusatzfeldUsed(Felddefinition fd) throws RemoteException
+  {
+    DBIterator<Zusatzfelder> it = Einstellungen.getDBService()
+        .createList(Zusatzfelder.class);
+    it.addFilter("felddefinition=?", fd.getID());
+    switch (fd.getDatentyp())
+    {
+      case Datentyp.ZEICHENFOLGE:
+        it.addFilter("feld IS NOT NULL AND TRIM(feld) != ''");
+        break;
+      case Datentyp.DATUM:
+        it.addFilter("felddatum IS NOT NULL");
+        break;
+      case Datentyp.GANZZAHL:
+        it.addFilter("feldganzzahl IS NOT NULL");
+        break;
+      case Datentyp.WAEHRUNG:
+        it.addFilter("feldwaehrung IS NOT NULL");
+        break;
+      case Datentyp.JANEIN:
+        it.addFilter("feldjanein IS TRUE");
+        break;
+    }
+    it.setLimit(1);
+    return it.size() > 0;
+  }
+
 }
