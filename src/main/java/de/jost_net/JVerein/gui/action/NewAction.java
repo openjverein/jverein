@@ -70,8 +70,7 @@ public class NewAction implements Action
   {
     try
     {
-      DBObject object = Einstellungen.getDBService().createObject(objectClass,
-          null);
+      DBObject object = createObject(objectClass);
       if (mitglied != null)
       {
         if (mitglied.getID() == null)
@@ -96,7 +95,7 @@ public class NewAction implements Action
           GUI.getCurrentView().setCurrentObject(object);
         }
       }
-      GUI.startView(viewClass, object);
+      startView(viewClass, object);
     }
     catch (RemoteException e)
     {
@@ -104,5 +103,31 @@ public class NewAction implements Action
           "Fehler bei der Erzeugung eines neuen " + objectClass.getSimpleName(),
           e);
     }
+  }
+
+  /**
+   * Erstellt ein neues Objekt der angegebenen Klasse
+   * 
+   * @param clazz
+   * @return
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
+  protected DBObject createObject(Class<? extends DBObject> clazz)
+      throws RemoteException, ApplicationException
+  {
+    return Einstellungen.getDBService().createObject(clazz, null);
+  }
+
+  /**
+   * Öffnet die View
+   * 
+   * @param viewClass
+   * @param context
+   */
+  protected void startView(Class<? extends AbstractView> viewClass,
+      DBObject context)
+  {
+    GUI.startView(viewClass, context);
   }
 }

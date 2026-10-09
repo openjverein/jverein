@@ -418,6 +418,10 @@ public class EinstellungControl extends AbstractControl
 
   private IntegerInput rechnungZaehler;
 
+  private TextInput belegnummer;
+
+  private IntegerInput belegZaehler;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -1205,7 +1209,7 @@ public class EinstellungControl extends AbstractControl
       return buchungsDokumentVerzeichnis;
     }
     buchungsDokumentVerzeichnis = new DirectoryInput(
-        Einstellungen.getBuchungDokumentVerzeichnis());
+        Einstellungen.getBelegVerzeichnis());
     return buchungsDokumentVerzeichnis;
   }
 
@@ -2182,6 +2186,30 @@ public class EinstellungControl extends AbstractControl
     return afaort;
   }
 
+  public TextInput getBelegNummer() throws RemoteException
+  {
+    if (belegnummer != null)
+    {
+      return belegnummer;
+    }
+    belegnummer = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.BELEGNUMMER), 500);
+    belegnummer.setName("Belegnummer");
+    return belegnummer;
+  }
+
+  public IntegerInput getBelegZaehler() throws RemoteException
+  {
+    if (belegZaehler != null)
+    {
+      return belegZaehler;
+    }
+    belegZaehler = new IntegerInput(
+        (Integer) Einstellungen.getEinstellung(Property.BELEG_ZAEHLER));
+    belegZaehler.setName("Beleg Zaehler");
+    return belegZaehler;
+  }
+
   public CheckboxInput getMitgliedsnummerAnzeigen() throws RemoteException
   {
     if (nummeranzeigen != null)
@@ -2467,17 +2495,13 @@ public class EinstellungControl extends AbstractControl
           (Boolean) auslandsadressen.getValue());
       Einstellungen.setEinstellung(Property.ARBEITSEINSATZ,
           (Boolean) arbeitseinsatz.getValue());
-      // TODO nach Belegumstellung reaktivieren
-      if (dokumentenspeicherung != null)
+      Einstellungen.setEinstellung(Property.DOKUMENTENSPEICHERUNG,
+          (Boolean) dokumentenspeicherung.getValue());
+      if (dokumentenspeicherung_messaging != null)
       {
-        Einstellungen.setEinstellung(Property.DOKUMENTENSPEICHERUNG,
-            (Boolean) dokumentenspeicherung.getValue());
+        Einstellungen.setEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING,
+            (Boolean) dokumentenspeicherung_messaging.getValue());
       }
-      // if (dokumentenspeicherung_messaging != null)
-      // {
-      // Einstellungen.setEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING,
-      // (Boolean) dokumentenspeicherung_messaging.getValue());
-      // }
       Einstellungen.setEinstellung(Property.INDIVIDUELLEBEITRAEGE,
           (Boolean) individuellebeitraege.getValue());
       Einstellungen.setEinstellung(Property.EXTERNEMITGLIEDSNUMMER,
@@ -2652,7 +2676,7 @@ public class EinstellungControl extends AbstractControl
           throw new OperationCanceledException();
         }
       }
-      if (!Einstellungen.getBuchungDokumentVerzeichnis()
+      if (!Einstellungen.getBelegVerzeichnis()
           .equals(buchungsDokumentVerzeichnis.getValue()))
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
@@ -2660,7 +2684,7 @@ public class EinstellungControl extends AbstractControl
         dialog
             .setText("Das Verzeichnis für Buchungs-Dokumente wurde geändert.\n"
                 + "Bitte Verschieben sie ggf. vorhandene Dokument manuell von '"
-                + Einstellungen.getBuchungDokumentVerzeichnis() + "' nach '"
+                + Einstellungen.getBelegVerzeichnis() + "' nach '"
                 + buchungsDokumentVerzeichnis.getValue() + "'\n"
                 + "Fortfahren?");
         if (!(Boolean) dialog.open())
@@ -2818,6 +2842,16 @@ public class EinstellungControl extends AbstractControl
           (Boolean) getSplitPositionZweck().getValue());
       Einstellungen.setEinstellung(Property.GEPRUEFTSYNCHRONISIEREN,
           (Boolean) getGeprueftSynchronisieren().getValue());
+      if (belegnummer != null)
+      {
+        Einstellungen.setEinstellung(Property.BELEGNUMMER,
+            (String) belegnummer.getValue());
+      }
+      if (belegZaehler != null)
+      {
+        Einstellungen.setEinstellung(Property.BELEG_ZAEHLER,
+            (Integer) belegZaehler.getValue());
+      }
       DBTransaction.commit();
 
       reloadNavigation();
