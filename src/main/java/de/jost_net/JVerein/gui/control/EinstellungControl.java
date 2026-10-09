@@ -2551,7 +2551,7 @@ public class EinstellungControl extends AbstractControl
     {
       Method reload = Navigation.class.getMethod("reload",
           NavigationItem.class);
-      JVereinNavigationItem item = new JVereinNavigationItem(null, "", null)
+      JVereinNavigationItem item = new JVereinNavigationItem(null, "OpenJVerein", null)
       {
         @Override
         public String getID()
