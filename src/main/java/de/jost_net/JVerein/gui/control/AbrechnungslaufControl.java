@@ -353,6 +353,7 @@ public class AbrechnungslaufControl extends VorZurueckControl implements Savable
   private void addBuchungColumns(JVereinTablePart part) throws RemoteException
   {
     part.addColumn("Nr", "id-int");
+    part.addColumn(getAbgeschlossenColumn(), false);
     part.addColumn("Geprüft", "geprueft", o -> (Boolean) o ? "\u2705" : "");
     if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
@@ -435,6 +436,7 @@ public class AbrechnungslaufControl extends VorZurueckControl implements Savable
     sollbuchungList.setTableName("Sollbuchungen");
 
     sollbuchungList.addColumn("Nr", "id-int");
+    sollbuchungList.addColumn(getAbgeschlossenColumn(), false);
     sollbuchungList.addColumn("Datum", Sollbuchung.DATUM,
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     sollbuchungList.addColumn("Abrechnungslauf", Sollbuchung.ABRECHNUNGSLAUF);
@@ -472,6 +474,7 @@ public class AbrechnungslaufControl extends VorZurueckControl implements Savable
     lastschriftList.setTableName("Lastschriften");
 
     lastschriftList.addColumn("Nr", "id-int");
+    lastschriftList.addColumn(getAbgeschlossenColumn(), false);
     lastschriftList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
@@ -509,6 +512,7 @@ public class AbrechnungslaufControl extends VorZurueckControl implements Savable
     zusatzbetraegeList.setTableName("Zusatzbeträge");
 
     zusatzbetraegeList.addColumn("Nr", "id-int");
+    zusatzbetraegeList.addColumn(getGesperrtColumn(), false);
     zusatzbetraegeList.addColumn("Name", "mitglied");
     zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

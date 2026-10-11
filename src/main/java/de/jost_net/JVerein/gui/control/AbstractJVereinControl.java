@@ -6,10 +6,12 @@ import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinPanelButton;
+import de.jost_net.JVerein.server.AbstractJVereinDBObject;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
@@ -110,4 +112,16 @@ public abstract class AbstractJVereinControl extends AbstractControl
    * @return
    */
   abstract protected String getTableDateiname();
+
+  public Column getGesperrtColumn()
+  {
+    return new Column(AbstractJVereinDBObject.GESPERRT,
+        AbstractJVereinDBObject.GESPERRT);
+  }
+
+  public Column getAbgeschlossenColumn()
+  {
+    return new Column(AbstractJVereinDBObject.ABGESCHLOSSEN,
+        AbstractJVereinDBObject.ABGESCHLOSSEN);
+  }
 }

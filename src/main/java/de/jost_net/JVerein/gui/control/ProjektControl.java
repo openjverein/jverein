@@ -153,6 +153,7 @@ public class ProjektControl extends FilterControl implements Savable
       return projektList;
     }
     projektList = new JVereinTablePart(getProjekte(), null);
+    projektList.addColumn(getGesperrtColumn(), false);
     projektList.addColumn("Bezeichnung", "bezeichnung");
     projektList.addColumn("Startdatum", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

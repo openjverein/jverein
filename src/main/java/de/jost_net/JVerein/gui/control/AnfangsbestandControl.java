@@ -163,6 +163,7 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     }
     anfangsbestandList = new JVereinTablePart(getAnfangsstaende(), null);
     anfangsbestandList.addColumn("Nr", "id-int");
+    anfangsbestandList.addColumn(getAbgeschlossenColumn(), false);
     anfangsbestandList.addColumn("Nummer", "nummer");
     anfangsbestandList.addColumn("Bezeichnung", "bezeichnung");
     anfangsbestandList.addColumn("Datum", "datum",

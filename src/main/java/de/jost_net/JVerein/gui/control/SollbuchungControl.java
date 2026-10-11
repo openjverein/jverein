@@ -406,6 +406,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
 
     sollbuchungenList = new BetragSummaryTablePart(sollbuchungen, null);
     sollbuchungenList.addColumn("Nr", "id-int");
+    sollbuchungenList.addColumn(getAbgeschlossenColumn(), false);
     sollbuchungenList.addColumn("Datum", Sollbuchung.DATUM,
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     sollbuchungenList.addColumn("Abrechnungslauf", Sollbuchung.ABRECHNUNGSLAUF);

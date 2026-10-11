@@ -19,12 +19,16 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Steuer;
+import de.jost_net.JVerein.rmi.Zusatzbetrag;
+import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -138,54 +142,65 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   {
     try
     {
-      boolean steuerInBuchung = (Boolean) Einstellungen
-          .getEinstellung(Property.STEUERINBUCHUNG);
-
-      // Prüfen ob es abgeschlossene Buchungen mit der Steuer gibt
-      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-          "buchung");
-      it.addColumn("buchung.id");
+      // Prüfen ob es Buchungen mit der Steuer gibt
+      DBIterator<Buchung> it = Einstellungen.getDBService()
+          .createList(Buchung.class);
+      it.addFilter("steuer = ?", this.getID());
       it.setLimit(1);
-
-      it.join("jahresabschluss",
-          "jahresabschluss.von <= buchung.datum and jahresabschluss.bis >= buchung.datum");
-      if (steuerInBuchung)
-      {
-        it.addFilter("buchung.steuer = ?", getID());
-      }
-      else
-      {
-        it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
-        it.addFilter("buchungsart.steuer = ?", getID());
-      }
       if (it.hasNext())
       {
         throw new ApplicationException(
-            "Steuer kann nicht geändert/gelöscht werden, es gibt abgeschlossene Buchungen mit dieser Steuer.");
+            "Steuer kann nicht gelöscht werden, es gibt Buchungen mit dieser Steuer.");
       }
 
-      // Prüfen ob es eine Rechnung mit dieser Steuer gibt
-      it = new ExtendedDBIterator<>(Sollbuchung.TABLE_NAME);
-      it.addColumn(Sollbuchung.TABLE_NAME_ID);
+      // Prüfen ob es Buchungsarten mit der Steuer gibt
+      it = Einstellungen.getDBService().createList(Buchungsart.class);
+      it.addFilter("steuer = ?", this.getID());
       it.setLimit(1);
-
-      it.join("sollbuchungposition",
-          "sollbuchungposition.sollbuchung = " + Sollbuchung.TABLE_NAME_ID);
-      it.addFilter("rechnung is not null");
-      if (steuerInBuchung)
-      {
-        it.addFilter("sollbuchungposition.steuer = ?", getID());
-      }
-      else
-      {
-        it.join("buchungsart",
-            "buchungsart.id = sollbuchungposition.buchungsart");
-        it.addFilter("buchungsart.steuer = ?", getID());
-      }
       if (it.hasNext())
       {
         throw new ApplicationException(
-            "Steuer kann nicht geändert/gelöscht werden, es existieren Rechnungen mit dieser Steuer.");
+            "Steuer kann nicht gelöscht werden, es gibt Buchungsarten mit dieser Steuer.");
+      }
+
+      // Prüfen ob es Beitragsgruppen mit der Steuer gibt
+      it = Einstellungen.getDBService().createList(Beitragsgruppe.class);
+      it.addFilter("steuer = ?", this.getID());
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Steuer kann nicht gelöscht werden, es gibt Beitragsgruppen mit dieser Steuer.");
+      }
+
+      // Prüfen ob es Zusatzbeträge mit der Steuer gibt
+      it = Einstellungen.getDBService().createList(Zusatzbetrag.class);
+      it.addFilter("steuer = ?", this.getID());
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Steuer kann nicht gelöscht werden, es gibt Zusatzbeträge mit dieser Steuer.");
+      }
+
+      // Prüfen ob es Zusatzbetragvorlagen mit der Steuer gibt
+      it = Einstellungen.getDBService().createList(ZusatzbetragVorlage.class);
+      it.addFilter("steuer = ?", this.getID());
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Steuer kann nicht gelöscht werden, es gibt Zusatzbetragvorlagen mit dieser Steuer.");
+      }
+
+      // Prüfen ob es Sollbuchungspositionen mit der Steuer gibt
+      it = Einstellungen.getDBService().createList(SollbuchungPosition.class);
+      it.addFilter("steuer = ?", this.getID());
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Steuer kann nicht gelöscht werden, es gibt Sollbuchungspositionen mit dieser Steuer.");
       }
     }
     catch (RemoteException e)

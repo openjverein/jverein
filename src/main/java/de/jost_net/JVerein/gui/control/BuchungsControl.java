@@ -1024,6 +1024,7 @@ public class BuchungsControl extends FilterControl implements Savable
     buchungsList = new BuchungListTablePart(buchungen,
         new BuchungAction(false, null));
     buchungsList.addColumn("Nr", "id-int");
+    buchungsList.addColumn(getAbgeschlossenColumn(), false);
     buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
     {
       @Override

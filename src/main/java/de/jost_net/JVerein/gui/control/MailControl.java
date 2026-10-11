@@ -137,6 +137,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     }
     empfaengerPart = new AutoUpdateTablePart(getMail().getEmpfaenger(), null);
     empfaengerPart.addColumn("Nr", "id");
+    empfaengerPart.addColumn(getGesperrtColumn(), false);
     empfaengerPart.addColumn("Mail-Adresse", "email");
     empfaengerPart.addColumn("Name", "name");
     empfaengerPart.addColumn("Versand", "versand",
@@ -236,6 +237,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
         .registerMessageConsumer(this.mailDeleteConsumer);
     anhangPart = new JVereinTablePart(getMail().getAnhang(),
         new MailAnhangAnzeigeAction());
+    anhangPart.addColumn(getGesperrtColumn(), false);
     anhangPart.addColumn("Dateiname", "dateiname");
     anhangPart.setContextMenu(new MailAnhangMenu(this));
     anhangPart.setMulti(true);
@@ -803,6 +805,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     }
     mailsList = new JVereinTablePart(getMails(), null);
     mailsList.addColumn("Nr", "id-int");
+    mailsList.addColumn(getGesperrtColumn(), false);
     mailsList.addColumn("Betreff", "betreff");
     mailsList.addColumn("Bearbeitung", "bearbeitung",
         new DateFormatter(new JVDateFormatDATETIME()));

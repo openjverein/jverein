@@ -22,6 +22,8 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Zusatzfelder;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -49,9 +51,43 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      DBIterator<Zusatzfelder> it = Einstellungen.getDBService()
+          .createList(Zusatzfelder.class);
+      it.addFilter("felddefinition = ?", getID());
+      switch (getDatentyp())
+      {
+        case Datentyp.ZEICHENFOLGE:
+          it.addFilter("feld IS NOT NULL AND TRIM(feld) != ''");
+          break;
+        case Datentyp.DATUM:
+          it.addFilter("felddatum IS NOT NULL");
+          break;
+        case Datentyp.GANZZAHL:
+          it.addFilter("feldganzzahl IS NOT NULL");
+          break;
+        case Datentyp.WAEHRUNG:
+          it.addFilter("feldwaehrung IS NOT NULL");
+          break;
+        case Datentyp.JANEIN:
+          it.addFilter("feldjanein IS TRUE");
+          break;
+      }
+      it.setLimit(1);
+      if (it.size() > 0)
+      {
+        throw new ApplicationException("Es ist noch bei Mitgliedern gesetzt.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Zusatzfeld kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override

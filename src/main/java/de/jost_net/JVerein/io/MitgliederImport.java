@@ -152,10 +152,16 @@ public class MitgliederImport implements Importer
       DBTransaction.starten();
       int anz = 0;
       int zeilen = results.getFetchSize();
-      while (results.next())
+      // Zeilen mit externezahlerid werden erst im zweiten Durchlauf
+      // verarbeitet, damit der Vollzahler unabhängig von der Reihenfolge in der
+      // Datei bereits gespeichert ist.
+      ZeilenDurchlauf durchlauf = new ZeilenDurchlauf(results);
+      int verarbeitet = 0;
+      while (durchlauf.next())
       {
-        anz++;
-        monitor.setPercentComplete(anz * 100 / zeilen);
+        anz = results.getRow();
+        verarbeitet++;
+        monitor.setPercentComplete(verarbeitet * 100 / zeilen);
 
         String id = null;
         try
@@ -348,27 +354,68 @@ public class MitgliederImport implements Importer
           }
         }
 
-        try
+        // Vollzahler nur bei Mitgliedern und Beitragsgruppe
+        // Familenangehörigen möglich
+        if (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
+            && m.getBeitragsgruppe()
+                .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
         {
-          // Vollzahler nur bei Mitgliedern und Beitragsgruppe
-          // Familenangehörigen möglich
-          if (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
-              && m.getBeitragsgruppe()
-                  .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+          String externeZahlerId = ZeilenDurchlauf
+              .getExterneZahlerId(results);
+          if (externeZahlerId != null)
           {
-            String zahlerId = results.getString("zahlerid");
+            if (!(Boolean) Einstellungen
+                .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+            {
+              throw new ApplicationException("Zeile " + anz
+                  + ": externezahlerid ist nur mit externer Mitgliedsnummer möglich");
+            }
+            String zahlerId = null;
+            try
+            {
+              zahlerId = results.getString("zahlerid");
+            }
+            catch (SQLException e)
+            {
+              // Optionaler parameter, ignorieren wir
+            }
+            if (zahlerId != null && zahlerId.length() != 0)
+            {
+              throw new ApplicationException("Zeile " + anz
+                  + ": zahlerid und externezahlerid dürfen nicht gleichzeitig angegeben werden");
+            }
             DBIterator<Mitglied> it = Einstellungen.getDBService()
                 .createList(Mitglied.class);
-            it.addFilter("id = ?", zahlerId);
+            it.addFilter("externemitgliedsnummer = ?", externeZahlerId);
             if (!it.hasNext())
-              throw new ApplicationException(
-                  "Zeile " + anz + ": Vollzahler nicht gefunden: " + zahlerId);
-            m.setVollZahlerID(Long.parseLong(zahlerId));
+              throw new ApplicationException("Zeile " + anz
+                  + ": Vollzahler mit externer Mitgliedsnummer nicht gefunden: "
+                  + externeZahlerId);
+            Mitglied vollzahler = it.next();
+            if (it.hasNext())
+              throw new ApplicationException("Zeile " + anz
+                  + ": Externe Mitgliedsnummer des Vollzahlers ist mehrfach vorhanden: "
+                  + externeZahlerId);
+            m.setVollZahlerID(Long.parseLong(vollzahler.getID()));
           }
-        }
-        catch (SQLException e)
-        {
-          // Optionaler parameter, ignorieren wir
+          else
+          {
+            try
+            {
+              String zahlerId = results.getString("zahlerid");
+              DBIterator<Mitglied> it = Einstellungen.getDBService()
+                  .createList(Mitglied.class);
+              it.addFilter("id = ?", zahlerId);
+              if (!it.hasNext())
+                throw new ApplicationException("Zeile " + anz
+                    + ": Vollzahler nicht gefunden: " + zahlerId);
+              m.setVollZahlerID(Long.parseLong(zahlerId));
+            }
+            catch (SQLException e)
+            {
+              // Optionaler parameter, ignorieren wir
+            }
+          }
         }
 
         try
@@ -1243,6 +1290,60 @@ public class MitgliederImport implements Importer
       DBTransaction.rollback();
       monitor.log("Import abgebrochen: " + e.getMessage());
       Logger.error("Fehler", e);
+    }
+  }
+
+  /**
+   * Iteriert in zwei Durchläufen über die Zeilen: zuerst alle Zeilen ohne
+   * externezahlerid, danach die Zeilen mit externezahlerid.
+   */
+  static class ZeilenDurchlauf
+  {
+    private final ResultSet results;
+
+    private boolean zweiterDurchlauf = false;
+
+    ZeilenDurchlauf(ResultSet results)
+    {
+      this.results = results;
+    }
+
+    boolean next() throws SQLException
+    {
+      while (true)
+      {
+        while (results.next())
+        {
+          if ((getExterneZahlerId(results) != null) == zweiterDurchlauf)
+          {
+            return true;
+          }
+        }
+        if (zweiterDurchlauf)
+        {
+          return false;
+        }
+        zweiterDurchlauf = true;
+        results.beforeFirst();
+      }
+    }
+
+    /**
+     * Liefert die externezahlerid der aktuellen Zeile oder null, wenn die
+     * Spalte fehlt oder leer ist.
+     */
+    static String getExterneZahlerId(ResultSet results)
+    {
+      try
+      {
+        String externeZahlerId = results.getString("externezahlerid");
+        return externeZahlerId == null || externeZahlerId.length() == 0 ? null
+            : externeZahlerId;
+      }
+      catch (SQLException e)
+      {
+        return null;
+      }
     }
   }
 

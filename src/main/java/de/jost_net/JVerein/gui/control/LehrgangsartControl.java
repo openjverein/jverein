@@ -171,6 +171,7 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     lehrgangsarten.setOrder("ORDER BY bezeichnung");
 
     lehrgangsartList = new JVereinTablePart(lehrgangsarten, null);
+    lehrgangsartList.addColumn(getGesperrtColumn(), false);
     lehrgangsartList.addColumn("Bezeichnung", "bezeichnung");
     lehrgangsartList.addColumn("Von/am", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

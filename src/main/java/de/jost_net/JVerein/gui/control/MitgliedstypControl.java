@@ -140,6 +140,7 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     mtIt.setOrder("ORDER BY " + Mitgliedstyp.BEZEICHNUNG);
 
     mitgliedstypList = new JVereinTablePart(mtIt, null);
+    mitgliedstypList.addColumn(getGesperrtColumn(), false);
     mitgliedstypList.addColumn("Bezeichnung", Mitgliedstyp.BEZEICHNUNG);
     mitgliedstypList.addColumn("Bezeichnung Plural",
         Mitgliedstyp.BEZEICHNUNG_PLURAL);
