@@ -177,7 +177,16 @@ public class BelegControl extends VorZurueckControl implements Savable
 
   public Input getPfad() throws RemoteException
   {
-    Input pfad = new TextInput(getBeleg().getRootDir() + getBeleg().getPfad());
+    String text;
+    if (getBeleg().getPfad() == null || getBeleg().getPfad().isBlank())
+    {
+      text = "-- Das Dokument ist mit Jameica Messaging gespeichert --";
+    }
+    else
+    {
+      text = getBeleg().getRootDir() + getBeleg().getPfad();
+    }
+    Input pfad = new TextInput(text);
     pfad.setName("Pfad");
     pfad.disable();
     return pfad;
