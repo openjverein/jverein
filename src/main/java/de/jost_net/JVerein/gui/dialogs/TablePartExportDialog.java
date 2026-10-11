@@ -220,6 +220,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
           }
         }
       }
+      reporter.addParams(filterparams, control.getExportLayoutParam());
       FileViewer.show(file);
     }
   }

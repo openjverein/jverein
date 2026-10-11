@@ -62,6 +62,8 @@ public class ExportLayoutParam
 
   private BaseColor colorTable2;
 
+  private Boolean filterParameter;
+
   public Integer getLinks()
   {
     return links;
@@ -270,6 +272,16 @@ public class ExportLayoutParam
   public void setColorTable2(BaseColor colorTable2)
   {
     this.colorTable2 = colorTable2;
+  }
+
+  public Boolean getFilterParameter()
+  {
+    return filterParameter;
+  }
+
+  public void setFilterParameter(Boolean filterParameter)
+  {
+    this.filterParameter = filterParameter;
   }
 
 }

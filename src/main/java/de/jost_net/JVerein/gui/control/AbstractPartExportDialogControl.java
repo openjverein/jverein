@@ -99,6 +99,8 @@ public class AbstractPartExportDialogControl
 
   private static final int DEFAULT_COLOR_GREEN2 = 230;
 
+  private static final boolean DEFAULT_FILTER_PARAMETER = false;
+
   protected IntegerInput links;
 
   protected IntegerInput rechts;
@@ -136,6 +138,8 @@ public class AbstractPartExportDialogControl
   protected ColorInput colorTable;
 
   protected ColorInput colorTable2;
+
+  protected CheckboxInput filterParameter;
 
   protected JVereinTablePart spaltenList;
 
@@ -465,6 +469,17 @@ public class AbstractPartExportDialogControl
     return colorTable2;
   }
 
+  public CheckboxInput getFilterParameter() throws RemoteException
+  {
+    if (filterParameter == null)
+    {
+      filterParameter = new CheckboxInput(settings.getBoolean(
+          settingPrefix + "filter_parameter", DEFAULT_FILTER_PARAMETER));
+      filterParameter.setName("Filterparameter ausgeben");
+    }
+    return filterParameter;
+  }
+
   public void resetRaender()
   {
     links.setValue(DEFAULT_LINKS);
@@ -512,6 +527,11 @@ public class AbstractPartExportDialogControl
           DEFAULT_COLOR_BLUE2);
       colorTable2.setValue(col);
     }
+  }
+
+  public void resetOptionen()
+  {
+    filterParameter.setValue(DEFAULT_FILTER_PARAMETER);
   }
 
   public void setChecked()
@@ -675,6 +695,8 @@ public class AbstractPartExportDialogControl
         settings.setAttribute(prefix + "color_green2", (String) null);
         settings.setAttribute(prefix + "color_blue2", (String) null);
       }
+      settings.setAttribute(prefix + "filter_parameter",
+          (Boolean) filterParameter.getValue());
     }
   }
 
@@ -766,6 +788,8 @@ public class AbstractPartExportDialogControl
             (int) settings.getInt(prefix + "color_blue2", DEFAULT_COLOR_BLUE2));
         colorTable2.setValue(col);
       }
+      filterParameter.setValue(settings.getBoolean(prefix + "filter_parameter",
+          DEFAULT_FILTER_PARAMETER));
     }
   }
 
@@ -873,6 +897,7 @@ public class AbstractPartExportDialogControl
       params.setColorTable2(getHintergrundTabelle2());
     }
     params.setNegativRot((Boolean) negativRot.getValue());
+    params.setFilterParameter((Boolean) filterParameter.getValue());
   }
 
   public ExportLayoutParam getExportLayoutParam()

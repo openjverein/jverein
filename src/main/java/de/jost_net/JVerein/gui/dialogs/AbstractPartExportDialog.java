@@ -201,6 +201,14 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     sbuttons.addButton("Reset", c -> control.resetSchriftart(), null, false,
         "edit-undo.png");
     tabFont.addButtonArea(sbuttons);
+
+    // Optionen
+    TabGroup tabOptionen = new TabGroup(folder, "Optionen", true, 2);
+    tabOptionen.addInput(control.getFilterParameter());
+    ButtonArea obuttons = new ButtonArea();
+    obuttons.addButton("Reset", c -> control.resetOptionen(), null, false,
+        "edit-undo.png");
+    tabOptionen.addButtonArea(obuttons);
   }
 
   protected void export() throws ApplicationException
