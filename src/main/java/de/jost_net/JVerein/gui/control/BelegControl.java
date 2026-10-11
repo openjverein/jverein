@@ -240,6 +240,7 @@ public class BelegControl extends VorZurueckControl implements Savable
         new BuchungAction(false, null));
     buchungList.setTableName("Buchungen");
     buchungList.addColumn("Nr", "id-int");
+    buchungList.addColumn(getAbgeschlossenColumn(), false);
     buchungList.addColumn("Geprüft", "geprueft",
         o -> (Boolean) o ? "\u2705" : "");
     if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
