@@ -51,7 +51,7 @@ public class BelegDetailView extends AbstractDetailView
       group.addInput(control.getBelegnummer());
     }
     group.addInput(control.getDatum());
-    group.addInput(control.getBezeichnung());
+    group.addInput(control.getBemerkung());
     if (((Changeable) getCurrentObject()).isNewObject())
     {
       group.addInput(control.getDatei());

@@ -58,7 +58,7 @@ import de.willuhn.util.ApplicationException;
 
 public class BelegControl extends VorZurueckControl implements Savable
 {
-  private TextInput bezeichnung;
+  private TextInput bemerkung;
 
   private FileInput datei;
 
@@ -99,7 +99,7 @@ public class BelegControl extends VorZurueckControl implements Savable
   public Beleg prepareStore() throws RemoteException, ApplicationException
   {
     Beleg beleg = getBeleg();
-    beleg.setBemerkung((String) getBezeichnung().getValue());
+    beleg.setBemerkung((String) getBemerkung().getValue());
     if (beleg.isNewObject())
     {
       beleg.setDatum((Date) getDatum().getValue());
@@ -145,15 +145,15 @@ public class BelegControl extends VorZurueckControl implements Savable
     }
   }
 
-  public TextInput getBezeichnung() throws RemoteException
+  public TextInput getBemerkung() throws RemoteException
   {
-    if (bezeichnung != null)
+    if (bemerkung != null)
     {
-      return bezeichnung;
+      return bemerkung;
     }
-    bezeichnung = new TextInput(getBeleg().getBemerkung(), 50);
-    bezeichnung.setName("Bezeichnung");
-    return bezeichnung;
+    bemerkung = new TextInput(getBeleg().getBemerkung(), 50);
+    bemerkung.setName("Bemerkung");
+    return bemerkung;
   }
 
   public Input getDatei()
