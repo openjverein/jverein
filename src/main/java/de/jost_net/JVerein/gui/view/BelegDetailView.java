@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.control.BelegControl;
 import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
@@ -96,6 +97,10 @@ public class BelegDetailView extends AbstractDetailView
     buttons.addButton(new SaveButton(control));
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
   }
 
   @Override
