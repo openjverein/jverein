@@ -128,8 +128,8 @@ public class BelegControl extends VorZurueckControl implements Savable
       if (belegObject != null)
       {
         belegObject.addBeleg(beleg);
-        // belegObject wird nur hier für das hinzufügen gebraucht, damit das
-        // nich nochmal passiert, auf null setzen
+        // belegObject wird nur hier für das hinzufügen gebraucht, damit es
+        // nicht nochmal hinzugefügt wird, auf null setzen
         belegObject = null;
       }
       DBTransaction.commit();
