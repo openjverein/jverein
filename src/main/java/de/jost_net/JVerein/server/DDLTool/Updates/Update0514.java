@@ -15,6 +15,7 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import java.sql.Connection;
 
+import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
 import de.jost_net.JVerein.server.DDLTool.Table;
@@ -33,6 +34,9 @@ public class Update0514 extends AbstractDDLUpdate
   {
 
     execute(renameTable("buchungdokument", "beleg"));
+
+    execute(addColumn("beleg", new Column("belegart", COLTYPE.INTEGER, 2,
+        BelegArt.BUCHUNG.getKey() + "", true, false)));
 
     Table table = new Table("belegbuchung");
 

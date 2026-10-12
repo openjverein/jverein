@@ -102,5 +102,5 @@ public abstract class AbstractBelegDBObjectImpl extends AbstractJVereinDBObject
     return it;
   }
 
-  protected abstract String getBelegReferenzTableName();
+  protected abstract String getBelegReferenzTableName() throws RemoteException;
 }

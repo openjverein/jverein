@@ -22,24 +22,39 @@ import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 
-public class EinstellungenVerzeichnisView extends AbstractView
+public class EinstellungenBelegView extends AbstractView
 {
-
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Verzeichnisse");
+    GUI.getView().setTitle("Einstellungen Belege");
 
     final EinstellungControl control = new EinstellungControl(this);
 
-    ScrolledContainer cont = new ScrolledContainer(getParent());
+    ScrolledContainer cont = new ScrolledContainer(getParent(), 1);
 
-    cont.addLabelPair("Verzeichnis für Mitglieds-Dokumente *",
+    LabelGroup groupMitglied = new LabelGroup(cont.getComposite(),
+        "Mitglieds-Belege");
+    groupMitglied.addLabelPair("Verzeichnis für Mitglieds-Dokumente *",
         control.getMitgliedsDokumentVerzeichnis());
-    cont.addLabelPair("Verzeichnis für Buchungs-Dokumente *",
+
+    LabelGroup groupBuchung = new LabelGroup(cont.getComposite(),
+        "Buchungs-Belege");
+    groupBuchung.addLabelPair("Verzeichnis für Buchungs-Belege *",
         control.getBuchungsDokumentVerzeichnis());
+    groupBuchung.addInput(control.getBelegBuchungNummer());
+    groupBuchung.addInput(control.getBelegBuchungZaehler());
+
+    LabelGroup groupAllgemein = new LabelGroup(cont.getComposite(),
+        "Allgemeine Belege");
+    groupAllgemein.addLabelPair("Verzeichnis für Allgemeine Belege *",
+        control.getBelegeAllgemeinVerzeichnis());
+    groupAllgemein.addInput(control.getBelegSonstigesNummer());
+    groupAllgemein.addInput(control.getBelegSonstigesZaehler());
+
     cont.addText(
         "* Die Unterordner unter dem die Dokumente angelegt werden,"
             + " können unter Vorlagen (Vorlageart: Pfad) eingestellt werden.",
@@ -48,7 +63,7 @@ public class EinstellungenVerzeichnisView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(
         new HelpButton(DokumentationUtil.EINSTELLUNGEN_VERZEICHNISSE));
-    buttons.addButton(new SaveButton(o -> control.handleStoreVerzeichnisse()));
+    buttons.addButton(new SaveButton(o -> control.handleStoreBelege()));
     buttons.paint(this.getParent());
   }
 }

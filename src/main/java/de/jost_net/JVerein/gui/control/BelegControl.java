@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.action.DokumentShowAction;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
@@ -34,8 +35,10 @@ import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.menu.BuchungAbrechnugslaufMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -51,6 +54,7 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.PanelButton;
@@ -80,6 +84,8 @@ public class BelegControl extends VorZurueckControl implements Savable
   private DateInput datum;
 
   private TextInput belegnummer;
+
+  private SelectInput belegArt;
 
   public BelegControl(AbstractView view, AbstractBelegDBObject belegObject)
   {
@@ -114,6 +120,9 @@ public class BelegControl extends VorZurueckControl implements Savable
       settings.setAttribute("lastdir", file.getParent());
       beleg.setFile(file);
     }
+
+    beleg.setBelegArt((BelegArt) getBelegArt().getValue());
+
     return beleg;
   }
 
@@ -203,7 +212,11 @@ public class BelegControl extends VorZurueckControl implements Savable
     }
     datum = new DateInput(getBeleg().getDatum());
     datum.setName("Datum");
-    if (!getBeleg().isNewObject())
+    if (getBeleg().isNewObject())
+    {
+      datum.setValue(new Date());
+    }
+    else
     {
       datum.disable();
     }
@@ -220,6 +233,29 @@ public class BelegControl extends VorZurueckControl implements Savable
     belegnummer.setName("Belegnummer");
     belegnummer.disable();
     return belegnummer;
+  }
+
+  public Input getBelegArt() throws RemoteException
+  {
+    if (belegArt != null)
+    {
+      return belegArt;
+    }
+
+    BelegArt def = getBeleg().getBelegArt();
+    if (def == null)
+    {
+      def = belegObject != null ? belegObject.getBelegArt()
+          : BelegArt.SONSTIGES;
+    }
+
+    belegArt = new SelectInput(BelegArt.values(), def);
+    belegArt.setName("Belegart");
+    if (!getBeleg().isNewObject())
+    {
+      belegArt.disable();
+    }
+    return belegArt;
   }
 
   @SuppressWarnings("unchecked")
@@ -368,5 +404,11 @@ public class BelegControl extends VorZurueckControl implements Savable
         throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
       }
     }, "Spalten auswählen");
+  }
+
+  public ButtonRtoL getAnzeigenButton()
+  {
+    return new ButtonRtoL("Anzeigen", new DokumentShowAction(),
+        getCurrentObject(), false, "eye.png");
   }
 }

@@ -115,7 +115,12 @@ public class BelegPart implements Part
     return docsList;
   }
 
-  private void addFile(String filename)
+  /**
+   * Beleg der per Drag'n'Drop hinzugefügt wird
+   * 
+   * @param filename
+   */
+  private void addFile(String[] filenames)
   {
     try
     {
@@ -127,20 +132,24 @@ public class BelegPart implements Part
                 + " bitte erst speichern.");
       }
 
-      DBTransaction.starten();
-      Beleg document = Einstellungen.getDBService().createObject(Beleg.class,
-          null);
-      File file = new File(filename);
+      for (String filename : filenames)
+      {
+        DBTransaction.starten();
+        Beleg document = Einstellungen.getDBService().createObject(Beleg.class,
+            null);
+        File file = new File(filename);
 
-      document.setBemerkung(file.getName());
-      document.setDatum(new Date());
+        document.setBemerkung(file.getName());
+        document.setDatum(new Date());
 
-      document.setFile(file);
-      document.store();
-      getCurrentObject().addBeleg(document);
+        document.setFile(file);
+        document.setBelegArt(getCurrentObject().getBelegArt());
+        document.store();
+        getCurrentObject().addBeleg(document);
 
-      DBTransaction.commit();
-      docsList.addItem(document);
+        DBTransaction.commit();
+        docsList.addItem(document);
+      }
     }
     catch (RemoteException e)
     {

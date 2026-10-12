@@ -14,7 +14,7 @@ public class DragnDropUtil
 {
   public interface SaveAction
   {
-    public void save(String filename);
+    public void save(String[] filenames);
   }
 
   /**
@@ -22,7 +22,7 @@ public class DragnDropUtil
    * 
    * @param composit
    * @param action
-   *          Aktion die für jede Datei ausgeführt werden soll
+   *          Aktion die für alle Dateien ausgeführt werden soll
    */
   public static void setDragDrop(Composite composit, SaveAction action)
   {
@@ -67,10 +67,7 @@ public class DragnDropUtil
           return;
         }
 
-        for (String filename : (String[]) event.data)
-        {
-          action.save(filename);
-        }
+        action.save((String[]) event.data);
       }
 
       @Override

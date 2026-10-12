@@ -250,7 +250,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
         if (!(Boolean) Einstellungen
             .getEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING))
         {
-          String pfad = getDateiPfad() + File.separator + file.getName();
+          String pfad = getDateiPfad(file.getName());
 
           newFile = new File(getRootDir() + pfad);
           if (newFile.exists())
@@ -352,7 +352,8 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     return (byte[]) getAttribute("hash");
   }
 
-  protected abstract String getDateiPfad() throws RemoteException;
+  protected abstract String getDateiPfad(String filename)
+      throws RemoteException;
 
   @Override
   public void delete() throws RemoteException, ApplicationException

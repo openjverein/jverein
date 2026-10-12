@@ -26,8 +26,8 @@ import de.jost_net.JVerein.rmi.Beleg;
 
 public class BelegMap extends AbstractMap
 {
-  public Map<String, Object> getMap(Beleg beleg,
-      Map<String, Object> inma) throws RemoteException
+  public Map<String, Object> getMap(Beleg beleg, Map<String, Object> inma)
+      throws RemoteException
   {
     Map<String, Object> map = null;
     if (inma == null)
@@ -39,14 +39,31 @@ public class BelegMap extends AbstractMap
       map = inma;
     }
 
+    if (beleg == null)
+    {
+      return getDummyMap(map);
+    }
+
     for (BelegVar var : BelegVar.values())
     {
       Object value = null;
       switch (var)
       {
         case BELEG_ZAEHLER:
-          value = Einstellungen.getEinstellung(Property.BELEG_ZAEHLER)
-              .toString();
+          switch (beleg.getBelegArt())
+          {
+            case BUCHUNG:
+              value = Einstellungen
+                  .getEinstellung(Property.BELEG_ZAEHLER_BUCHUNG).toString();
+              break;
+            case SONSTIGES:
+              value = Einstellungen
+                  .getEinstellung(Property.BELEG_ZAEHLER_SONSTIGES).toString();
+              break;
+          }
+          break;
+        case BELEG_NUMMER:
+          value = beleg.getBelegnummer();
           break;
       }
       map.put(var.getName(), value);
@@ -55,31 +72,23 @@ public class BelegMap extends AbstractMap
     return map;
   }
 
-  public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
-      throws RemoteException
+  private Map<String, Object> getDummyMap(Map<String, Object> map)
   {
-    Map<String, Object> map = null;
-    if (inMap == null)
-    {
-      map = new HashMap<>();
-    }
-    else
-    {
-      map = inMap;
-    }
     for (BelegVar var : BelegVar.values())
     {
       Object value = null;
       switch (var)
       {
+        case BELEG_NUMMER:
+          value = "B-1234";
+          break;
         case BELEG_ZAEHLER:
-          value = Einstellungen.getEinstellung(Property.BELEG_ZAEHLER)
-              .toString();
+          value = "1234";
           break;
       }
       map.put(var.getName(), value);
     }
-
     return map;
   }
+
 }

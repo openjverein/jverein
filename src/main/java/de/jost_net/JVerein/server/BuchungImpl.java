@@ -25,6 +25,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
@@ -1016,5 +1017,11 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
   protected String getBelegReferenzTableName()
   {
     return "belegbuchung";
+  }
+
+  @Override
+  public BelegArt getBelegArt()
+  {
+    return BelegArt.BUCHUNG;
   }
 }

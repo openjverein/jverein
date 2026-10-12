@@ -51,7 +51,7 @@ import de.jost_net.JVerein.gui.view.EinstellungenRechnungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenReportsView;
 import de.jost_net.JVerein.gui.view.EinstellungenSpendenbescheinigungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenStatistikView;
-import de.jost_net.JVerein.gui.view.EinstellungenVerzeichnisView;
+import de.jost_net.JVerein.gui.view.EinstellungenBelegView;
 import de.jost_net.JVerein.gui.view.EinstellungenVorlageListeView;
 import de.jost_net.JVerein.gui.view.FamilienbeitragView;
 import de.jost_net.JVerein.gui.view.FormularListeView;
@@ -320,10 +320,9 @@ public class JVereinNavigation implements Extension
           new JVereinNavigationItem(administrationEinstellungen, "Abrechnung",
               new StartViewAction(EinstellungenAbrechnungView.class),
               "wrench.png"));
-      administrationEinstellungen.addChild(new JVereinNavigationItem(
-          administrationEinstellungen, "Verzeichnisse",
-          new StartViewAction(EinstellungenVerzeichnisView.class),
-          "wrench.png"));
+      administrationEinstellungen.addChild(
+          new JVereinNavigationItem(administrationEinstellungen, "Belege",
+              new StartViewAction(EinstellungenBelegView.class), "wrench.png"));
       administrationEinstellungen.addChild(
           new JVereinNavigationItem(administrationEinstellungen, "Vorlagen",
               new StartViewAction(EinstellungenVorlageListeView.class),

@@ -51,6 +51,7 @@ public class BelegDetailView extends AbstractDetailView
     {
       group.addInput(control.getBelegnummer());
     }
+    group.addInput(control.getBelegArt());
     group.addInput(control.getDatum());
     group.addInput(control.getBemerkung());
     if (((Changeable) getCurrentObject()).isNewObject())
@@ -94,6 +95,7 @@ public class BelegDetailView extends AbstractDetailView
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
+    buttons.addButton(control.getAnzeigenButton());
     buttons.addButton(new SaveButton(control));
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());

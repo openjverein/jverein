@@ -2,6 +2,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.keys.BelegArt;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.util.ApplicationException;
 
@@ -39,4 +40,11 @@ public interface AbstractBelegDBObject extends JVereinDBObject
    * @throws RemoteException
    */
   public DBIterator<Beleg> getBelegList() throws RemoteException;
+
+  /**
+   * Liefert die Belegart
+   * 
+   * @return
+   */
+  public BelegArt getBelegArt() throws RemoteException;
 }

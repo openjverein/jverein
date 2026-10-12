@@ -418,9 +418,15 @@ public class EinstellungControl extends AbstractControl
 
   private IntegerInput rechnungZaehler;
 
-  private TextInput belegnummer;
+  private TextInput belegnummerBuchung;
 
-  private IntegerInput belegZaehler;
+  private IntegerInput belegZaehlerBuchung;
+
+  private TextInput belegnummerSonstiges;
+
+  private IntegerInput belegZaehlerSonstiges;
+
+  private DirectoryInput belegAllgemeinVerzeichnis;
 
   public EinstellungControl(AbstractView view)
   {
@@ -1209,8 +1215,19 @@ public class EinstellungControl extends AbstractControl
       return buchungsDokumentVerzeichnis;
     }
     buchungsDokumentVerzeichnis = new DirectoryInput(
-        Einstellungen.getBelegVerzeichnis());
+        Einstellungen.getBelegBuchungVerzeichnis());
     return buchungsDokumentVerzeichnis;
+  }
+
+  public DirectoryInput getBelegeAllgemeinVerzeichnis() throws RemoteException
+  {
+    if (belegAllgemeinVerzeichnis != null)
+    {
+      return belegAllgemeinVerzeichnis;
+    }
+    belegAllgemeinVerzeichnis = new DirectoryInput(
+        Einstellungen.getBelegAllgemeinVerzeichnis());
+    return belegAllgemeinVerzeichnis;
   }
 
   public DecimalInput getSpendenbescheinigungminbetrag() throws RemoteException
@@ -2186,28 +2203,54 @@ public class EinstellungControl extends AbstractControl
     return afaort;
   }
 
-  public TextInput getBelegNummer() throws RemoteException
+  public TextInput getBelegBuchungNummer() throws RemoteException
   {
-    if (belegnummer != null)
+    if (belegnummerBuchung != null)
     {
-      return belegnummer;
+      return belegnummerBuchung;
     }
-    belegnummer = new TextInput(
-        (String) Einstellungen.getEinstellung(Property.BELEGNUMMER), 500);
-    belegnummer.setName("Belegnummer");
-    return belegnummer;
+    belegnummerBuchung = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.BELEGNUMMER_BUCHUNG),
+        500);
+    belegnummerBuchung.setName("Belegnummer Buchung-Belege");
+    return belegnummerBuchung;
   }
 
-  public IntegerInput getBelegZaehler() throws RemoteException
+  public IntegerInput getBelegBuchungZaehler() throws RemoteException
   {
-    if (belegZaehler != null)
+    if (belegZaehlerBuchung != null)
     {
-      return belegZaehler;
+      return belegZaehlerBuchung;
     }
-    belegZaehler = new IntegerInput(
-        (Integer) Einstellungen.getEinstellung(Property.BELEG_ZAEHLER));
-    belegZaehler.setName("Beleg Zaehler");
-    return belegZaehler;
+    belegZaehlerBuchung = new IntegerInput(
+        (Integer) Einstellungen.getEinstellung(Property.BELEG_ZAEHLER_BUCHUNG));
+    belegZaehlerBuchung.setName("Zaehler Buchungs-Beleg");
+    return belegZaehlerBuchung;
+  }
+
+  public TextInput getBelegSonstigesNummer() throws RemoteException
+  {
+    if (belegnummerSonstiges != null)
+    {
+      return belegnummerSonstiges;
+    }
+    belegnummerSonstiges = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.BELEGNUMMER_SONSTIGES),
+        500);
+    belegnummerSonstiges.setName("Belegnummer sontige Belege");
+    return belegnummerSonstiges;
+  }
+
+  public IntegerInput getBelegSonstigesZaehler() throws RemoteException
+  {
+    if (belegZaehlerSonstiges != null)
+    {
+      return belegZaehlerSonstiges;
+    }
+    belegZaehlerSonstiges = new IntegerInput((Integer) Einstellungen
+        .getEinstellung(Property.BELEG_ZAEHLER_SONSTIGES));
+    belegZaehlerSonstiges.setName("Zaehler sonstige Belege");
+    return belegZaehlerSonstiges;
   }
 
   public CheckboxInput getMitgliedsnummerAnzeigen() throws RemoteException
@@ -2575,7 +2618,8 @@ public class EinstellungControl extends AbstractControl
     {
       Method reload = Navigation.class.getMethod("reload",
           NavigationItem.class);
-      JVereinNavigationItem item = new JVereinNavigationItem(null, "OpenJVerein", null)
+      JVereinNavigationItem item = new JVereinNavigationItem(null,
+          "OpenJVerein", null)
       {
         @Override
         public String getID()
@@ -2656,7 +2700,7 @@ public class EinstellungControl extends AbstractControl
     }
   }
 
-  public void handleStoreVerzeichnisse()
+  public void handleStoreBelege()
   {
     try
     {
@@ -2676,7 +2720,7 @@ public class EinstellungControl extends AbstractControl
           throw new OperationCanceledException();
         }
       }
-      if (!Einstellungen.getBelegVerzeichnis()
+      if (!Einstellungen.getBelegBuchungVerzeichnis()
           .equals(buchungsDokumentVerzeichnis.getValue()))
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
@@ -2684,9 +2728,23 @@ public class EinstellungControl extends AbstractControl
         dialog
             .setText("Das Verzeichnis für Buchungs-Dokumente wurde geändert.\n"
                 + "Bitte Verschieben sie ggf. vorhandene Dokument manuell von '"
-                + Einstellungen.getBelegVerzeichnis() + "' nach '"
+                + Einstellungen.getBelegBuchungVerzeichnis() + "' nach '"
                 + buchungsDokumentVerzeichnis.getValue() + "'\n"
                 + "Fortfahren?");
+        if (!(Boolean) dialog.open())
+        {
+          throw new OperationCanceledException();
+        }
+      }
+      if (!Einstellungen.getBelegAllgemeinVerzeichnis()
+          .equals(belegAllgemeinVerzeichnis.getValue()))
+      {
+        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+        dialog.setTitle("Verzeichnis geändert");
+        dialog.setText("Das Verzeichnis für Allgemeine Belege wurde geändert.\n"
+            + "Bitte Verschieben sie ggf. vorhandene Belege manuell von '"
+            + Einstellungen.getBelegBuchungVerzeichnis() + "' nach '"
+            + buchungsDokumentVerzeichnis.getValue() + "'\n" + "Fortfahren?");
         if (!(Boolean) dialog.open())
         {
           throw new OperationCanceledException();
@@ -2695,8 +2753,26 @@ public class EinstellungControl extends AbstractControl
 
       Einstellungen.setMitgliedDokumentVerzeichnis(
           (String) mitgliedsDokumentVerzeichnis.getValue());
-      Einstellungen.setBuchungDokumentVerzeichnis(
+
+      Einstellungen.setBelegBuchungVerzeichnis(
           (String) buchungsDokumentVerzeichnis.getValue());
+
+      Einstellungen.setBelegeAllgemeinVerzeichnis(
+          (String) belegAllgemeinVerzeichnis.getValue());
+
+      DBTransaction.starten();
+
+      Einstellungen.setEinstellung(Property.BELEGNUMMER_BUCHUNG,
+          (String) belegnummerBuchung.getValue());
+      Einstellungen.setEinstellung(Property.BELEG_ZAEHLER_BUCHUNG,
+          (Integer) belegZaehlerBuchung.getValue());
+
+      Einstellungen.setEinstellung(Property.BELEGNUMMER_SONSTIGES,
+          (String) belegnummerSonstiges.getValue());
+      Einstellungen.setEinstellung(Property.BELEG_ZAEHLER_SONSTIGES,
+          (Integer) belegZaehlerSonstiges.getValue());
+
+      DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
     }
@@ -2706,6 +2782,7 @@ public class EinstellungControl extends AbstractControl
     }
     catch (Exception e)
     {
+      DBTransaction.rollback();
       Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
@@ -2842,16 +2919,6 @@ public class EinstellungControl extends AbstractControl
           (Boolean) getSplitPositionZweck().getValue());
       Einstellungen.setEinstellung(Property.GEPRUEFTSYNCHRONISIEREN,
           (Boolean) getGeprueftSynchronisieren().getValue());
-      if (belegnummer != null)
-      {
-        Einstellungen.setEinstellung(Property.BELEGNUMMER,
-            (String) belegnummer.getValue());
-      }
-      if (belegZaehler != null)
-      {
-        Einstellungen.setEinstellung(Property.BELEG_ZAEHLER,
-            (Integer) belegZaehler.getValue());
-      }
       DBTransaction.commit();
 
       reloadNavigation();

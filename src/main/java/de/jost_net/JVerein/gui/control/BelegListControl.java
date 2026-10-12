@@ -18,16 +18,19 @@ package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.dialogs.DropdownDialog;
 import de.jost_net.JVerein.gui.menu.BelegMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.BelegDetailView;
+import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Beleg;
@@ -37,6 +40,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -65,6 +69,8 @@ public class BelegListControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     docsList.addColumn("Bemerkung", "bemerkung");
     docsList.addColumn("Pfad", "vollpfad");
+    docsList.addColumn("Art", "belegart",
+        i -> BelegArt.getByKey((Integer) i).toString());
     docsList.setContextMenu(new BelegMenu(docsList));
     docsList.setMulti(true);
     // Nur in der View, nicht im Dialog
@@ -82,36 +88,50 @@ public class BelegListControl extends FilterControl
    * 
    * @param filename
    */
-  public void addFile(String filename)
+  public void addFile(String[] filenames)
   {
     try
     {
+      DropdownDialog<BelegArt> dialog = new DropdownDialog<>(
+          Arrays.asList(BelegArt.values()));
+      dialog.setTitle("Belegart wählen");
+      dialog.setText("Als welche Belegart sollen die neuen\n"
+          + "Belege gespeichert werden?");
+      BelegArt belegArt = dialog.open();
+      if (belegArt == null)
+      {
+        throw new OperationCanceledException();
+      }
+
       DBTransaction.starten();
 
-      Beleg document = Einstellungen.getDBService().createObject(Beleg.class,
-          null);
-      File file = new File(filename);
+      for (String filename : filenames)
+      {
+        Beleg document = Einstellungen.getDBService().createObject(Beleg.class,
+            null);
+        File file = new File(filename);
 
-      document.setBemerkung(file.getName());
-      document.setDatum(new Date());
+        document.setBemerkung(file.getName());
+        document.setDatum(new Date());
+        document.setBelegArt(belegArt);
 
-      document.setFile(file);
-      document.store();
+        document.setFile(file);
+        document.store();
 
-      getTablePart().addItem(document);
+        getTablePart().addItem(document);
 
-      DBTransaction.commit();
+        DBTransaction.commit();
+      }
     }
-    catch (RemoteException | ApplicationException e)
+    catch (OperationCanceledException e)
     {
-      DBTransaction.rollback();
-      GUI.getStatusBar()
-          .setErrorText("Fehler beim Hinzufügen der Datei:" + e.getMessage());
+      throw e;
     }
     catch (Exception e)
     {
       DBTransaction.rollback();
-      throw e;
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim Hinzufügen der Datei:" + e.getMessage());
     }
   }
 

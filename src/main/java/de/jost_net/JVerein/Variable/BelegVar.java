@@ -18,7 +18,8 @@ package de.jost_net.JVerein.Variable;
 
 public enum BelegVar
 {
-  BELEG_ZAEHLER("beleg_zaehler");
+  BELEG_ZAEHLER("beleg_zaehler"),
+  BELEG_NUMMER("beleg_nummer");
 
   private String name;
 

@@ -18,9 +18,16 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.keys.BelegArt;
+
 public interface Beleg extends AbstractDokument
 {
   public String getBelegnummer() throws RemoteException;
 
   public void setBelegnummer(String belegnummer) throws RemoteException;
+
+  public BelegArt getBelegArt() throws RemoteException;
+
+  public void setBelegArt(BelegArt belegart) throws RemoteException;
+
 }

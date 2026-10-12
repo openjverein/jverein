@@ -29,6 +29,7 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.BelegMap;
 import de.jost_net.JVerein.Variable.BelegVar;
 import de.jost_net.JVerein.io.VelocityTool;
+import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beleg;
@@ -162,15 +163,22 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
   }
 
   @Override
-  public String getRootDir()
+  public String getRootDir() throws RemoteException
   {
-    return Einstellungen.getBelegVerzeichnis() + File.separator;
+    switch (getBelegArt())
+    {
+      case BUCHUNG:
+        return Einstellungen.getBelegBuchungVerzeichnis() + File.separator;
+      case SONSTIGES:
+        return Einstellungen.getBelegAllgemeinVerzeichnis() + File.separator;
+    }
+    return null;
   }
 
   @Override
-  protected String getDateiPfad() throws RemoteException
+  protected String getDateiPfad(String filename) throws RemoteException
   {
-    return VorlageUtil.getName(VorlageTyp.BELEG_PFAD, this);
+    return VorlageUtil.getName(VorlageTyp.BELEG_PFAD, this, filename);
   }
 
   @Override
@@ -205,6 +213,23 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
   }
 
   @Override
+  public BelegArt getBelegArt() throws RemoteException
+  {
+    Integer art = (Integer) getAttribute("belegart");
+    if (art == null)
+    {
+      return BelegArt.SONSTIGES;
+    }
+    return BelegArt.getByKey(art);
+  }
+
+  @Override
+  public void setBelegArt(BelegArt belegart) throws RemoteException
+  {
+    setAttribute("belegart", belegart.getKey());
+  }
+
+  @Override
   public void store() throws RemoteException, ApplicationException
   {
     if (!isNewObject())
@@ -214,13 +239,30 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
     }
     try
     {
+      if (getBelegArt() == null)
+      {
+        throw new ApplicationException("Beleg-Art ist nicht gesetzt");
+      }
+
       transactionBegin();
 
       // Belegnummernummer erstellen
       Map<String, Object> map = new AllgemeineMap().getMap(null);
       map = new BelegMap().getMap(this, map);
-      String nummer = VelocityTool.eval(map,
-          (String) Einstellungen.getEinstellung(Property.BELEGNUMMER));
+
+      String nummer = "";
+      switch (getBelegArt())
+      {
+        case BUCHUNG:
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_BUCHUNG);
+          break;
+        case SONSTIGES:
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_SONSTIGES);
+          break;
+      }
+      nummer = VelocityTool.eval(map, nummer);
 
       if (nummer.length() > 50)
       {
@@ -239,7 +281,17 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
       }
       super.store();
       // Belegnummer hochzählen
-      Einstellungen.setEinstellung(Property.BELEG_ZAEHLER,
+      Property prop = null;
+      switch (getBelegArt())
+      {
+        case BUCHUNG:
+          prop = Property.BELEG_ZAEHLER_BUCHUNG;
+          break;
+        case SONSTIGES:
+          prop = Property.BELEG_ZAEHLER_SONSTIGES;
+          break;
+      }
+      Einstellungen.setEinstellung(prop,
           Integer.parseInt(map.get(BelegVar.BELEG_ZAEHLER.getName()).toString())
               + 1);
 

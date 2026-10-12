@@ -388,6 +388,7 @@ public class VorlageUtil
           map = new BuchungMap().getMap((Buchung) obj, map);
           break;
         case BELEG_PFAD:
+          map.put("file_name", name);
           map = new BelegMap().getMap((Beleg) obj, map);
           break;
       }
@@ -903,6 +904,7 @@ public class VorlageUtil
           map = new BuchungMap().getMap(null, map);
           break;
         case BELEG_PFAD:
+          map.put("file_name", "Filename.pdf");
           map = new BelegMap().getMap(null, map);
           break;
       }

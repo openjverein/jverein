@@ -62,11 +62,9 @@ public class EinstellungenBuchfuehrungView extends AbstractView
         "Bei automatischem Splitten den "
             + "Verwendungszweck aus den Sollbuchungspositionen übernehmen",
         control.getSplitPositionZweck());
-    cont.addInput(control.getBelegNummer());
-    cont.addInput(control.getBelegZaehler());
 
     Map<String, Object> map = new AllgemeineMap().getMap(null);
-    map = BelegMap.getDummyMap(map);
+    map = new BelegMap().getMap(null, map);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(
