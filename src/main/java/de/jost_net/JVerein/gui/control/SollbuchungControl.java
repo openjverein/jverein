@@ -192,6 +192,37 @@ public class SollbuchungControl extends VorZurueckControl implements Savable
     return betrag;
   }
 
+  @Override
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
+  {
+    Sollbuchung sollb = getSollbuchung();
+    sollb.setZahlerId(getSelectedZahlerId());
+    // Betrag hier nicht setzen sonst kann es zu Änderungsmeldungen kommen
+    // wenn Positionen gelöscht werden
+    sollb.setDatum((Date) getDatum().getValue());
+    Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
+    sollb.setZahlungsweg(zw.getKey());
+    sollb.setZweck1((String) getZweck1().getValue());
+    sollb.setMitglied((Mitglied) getMitglied().getValue());
+    return sollb;
+  }
+
+  @Override
+  public void handleStore() throws ApplicationException
+  {
+    try
+    {
+      prepareStore().store();
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler beim speichern der Sollbuchung";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
+    }
+  }
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -274,37 +305,6 @@ public class SollbuchungControl extends VorZurueckControl implements Savable
     neuButton = new NewButton(new SollbuchungPositionNeuAction(),
         getSollbuchung());
     return neuButton;
-  }
-
-  @Override
-  public JVereinDBObject prepareStore()
-      throws RemoteException, ApplicationException
-  {
-    Sollbuchung sollb = getSollbuchung();
-    sollb.setZahlerId(getSelectedZahlerId());
-    // Betrag hier nicht setzen sonst kann es zu Änderungsmeldungen kommen
-    // wenn Positionen gelöscht werden
-    sollb.setDatum((Date) getDatum().getValue());
-    Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
-    sollb.setZahlungsweg(zw.getKey());
-    sollb.setZweck1((String) getZweck1().getValue());
-    sollb.setMitglied((Mitglied) getMitglied().getValue());
-    return sollb;
-  }
-
-  @Override
-  public void handleStore() throws ApplicationException
-  {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler beim speichern der Sollbuchung";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
   }
 
   public JVereinTablePart getSollbuchungPositionList() throws RemoteException
