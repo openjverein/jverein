@@ -18,30 +18,20 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.Map.Entry;
-
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
-import de.jost_net.JVerein.gui.menu.LehrgangMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.LehrgangDetailView;
-import de.jost_net.JVerein.keys.Filter;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -50,10 +40,8 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangControl extends FilterControl implements Savable
+public class LehrgangControl extends VorZurueckControl implements Savable
 {
-
-  private JVereinTablePart lehrgaengeList;
 
   private SelectInput lehrgangsart;
 
@@ -235,103 +223,6 @@ public class LehrgangControl extends FilterControl implements Savable
     }
   }
 
-  @Override
-  protected void TabRefresh() throws ApplicationException
-  {
-    try
-    {
-      if (lehrgaengeList == null)
-      {
-        return;
-      }
-      lehrgaengeList.removeAll();
-      DBIterator<Lehrgang> lehrgaenge = getIterator();
-      while (lehrgaenge.hasNext())
-      {
-        lehrgaengeList.addItem(lehrgaenge.next());
-      }
-      lehrgaengeList.sort();
-    }
-    catch (RemoteException e1)
-    {
-      Logger.error("Fehler", e1);
-    }
-  }
-
-  private DBIterator<Lehrgang> getIterator()
-      throws RemoteException, ApplicationException
-  {
-    DBIterator<Lehrgang> lehrgaenge = Einstellungen.getDBService()
-        .createList(Lehrgang.class);
-    lehrgaenge.join("mitglied");
-    lehrgaenge.addFilter("mitglied.id = lehrgang.mitglied");
-
-    for (Entry<Filter, Object> entry : getFilter().entrySet())
-    {
-      Object value = entry.getValue();
-      switch (entry.getKey())
-      {
-        case NAME:
-          String suchName = "%" + value.toString().toLowerCase() + "%";
-          lehrgaenge.addFilter(
-              "(lower(name) like ? " + "or lower(vorname) like ?)", suchName,
-              suchName);
-          break;
-        case VERANSTALTER:
-          lehrgaenge.addFilter("lower(veranstalter) like ? ",
-              "%" + value.toString().toLowerCase() + "%");
-          break;
-        case BEZEICHNUNG:
-          lehrgaenge.addFilter("lower(bezeichnung) like ? ",
-              "%" + value.toString().toLowerCase() + "%");
-          break;
-        case LEHRGANGSART:
-          lehrgaenge.addFilter("lehrgangsart = ?",
-              ((Lehrgangsart) value).getID());
-          break;
-        case DATUM_VON:
-          lehrgaenge.addFilter("von >= ?", value);
-          break;
-        case DATUM_BIS:
-          lehrgaenge.addFilter("bis <= ?", value);
-          break;
-        default:
-          throw new ApplicationException(
-              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
-      }
-    }
-    return lehrgaenge;
-  }
-
-  @Override
-  public JVereinTablePart getTablePart()
-      throws RemoteException, ApplicationException
-  {
-    if (lehrgaengeList != null)
-    {
-      return lehrgaengeList;
-    }
-    DBIterator<Lehrgang> lehrgaenge = getIterator();
-    lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
-    lehrgaengeList.addColumn("Nr", "id-int");
-    lehrgaengeList.addColumn("Name", "mitglied");
-    lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
-    lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
-    lehrgaengeList.addColumn("Von/am", "von",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    lehrgaengeList.addColumn("Bis", "bis",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    lehrgaengeList.addColumn("Veranstalter", "veranstalter");
-    lehrgaengeList.addColumn("Ergebnis", "ergebnis");
-    lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
-    lehrgaengeList.setMulti(true);
-    lehrgaengeList
-        .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));
-    VorZurueckControl.setObjektListe(null, null);
-
-    return lehrgaengeList;
-  }
-
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -354,21 +245,4 @@ public class LehrgangControl extends FilterControl implements Savable
     return mitglied;
   }
 
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.LEHRGAENGE_TITEL, this);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.LEHRGAENGE_SUBTITEL, this);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.LEHRGAENGE_DATEINAME, this);
-  }
 }

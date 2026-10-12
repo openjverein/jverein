@@ -18,17 +18,8 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.menu.MitgliedstypMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.MitgliedstypDetailView;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
-import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
@@ -38,7 +29,6 @@ import de.willuhn.util.ApplicationException;
 
 public class MitgliedstypControl extends VorZurueckControl implements Savable
 {
-  private JVereinTablePart mitgliedstypList;
 
   private Input bezeichnung;
 
@@ -128,46 +118,4 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     }
   }
 
-  @Override
-  public JVereinTablePart getTablePart() throws RemoteException
-  {
-    if (mitgliedstypList != null)
-    {
-      return mitgliedstypList;
-    }
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Mitgliedstyp> mtIt = service.createList(Mitgliedstyp.class);
-    mtIt.setOrder("ORDER BY " + Mitgliedstyp.BEZEICHNUNG);
-
-    mitgliedstypList = new JVereinTablePart(mtIt, null);
-    mitgliedstypList.addColumn(getGesperrtColumn(), false);
-    mitgliedstypList.addColumn("Bezeichnung", Mitgliedstyp.BEZEICHNUNG);
-    mitgliedstypList.addColumn("Bezeichnung Plural",
-        Mitgliedstyp.BEZEICHNUNG_PLURAL);
-    mitgliedstypList.addColumn("ID", "id");
-    mitgliedstypList.setContextMenu(new MitgliedstypMenu(mitgliedstypList));
-    mitgliedstypList.setMulti(true);
-    mitgliedstypList.setAction(
-        new EditAction(MitgliedstypDetailView.class, mitgliedstypList));
-    VorZurueckControl.setObjektListe(null, null);
-    return mitgliedstypList;
-  }
-
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.MITGLIEDSTYPEN_TITEL);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.MITGLIEDSTYPEN_SUBTITEL);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.MITGLIEDSTYPEN_DATEINAME);
-  }
 }

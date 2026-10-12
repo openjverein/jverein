@@ -42,7 +42,7 @@ public class PersonalbogenControl extends DruckMailControl
 
   public PersonalbogenControl(AbstractView view)
   {
-    super(view);
+    super(view, PersonalbogenControl.class);
   }
 
   public Button getStartPersonalbogenButton(Object currentObject)

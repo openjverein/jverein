@@ -23,33 +23,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.formatter.DatentypFormatter;
-import de.jost_net.JVerein.gui.menu.FelddefinitionMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.ZusatzfeldDetailView;
 import de.jost_net.JVerein.keys.Datentyp;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FelddefinitionControl extends VorZurueckControl implements Savable
 {
-
-  private JVereinTablePart felddefinitionList;
 
   private Input name;
 
@@ -153,31 +142,6 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
       Logger.error(fehler, e);
       throw new ApplicationException(fehler, e);
     }
-  }
-
-  @Override
-  public JVereinTablePart getTablePart() throws RemoteException
-  {
-    if (felddefinitionList != null)
-    {
-      return felddefinitionList;
-    }
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Felddefinition> fdef = service.createList(Felddefinition.class);
-    felddefinitionList = new JVereinTablePart(fdef, null);
-    felddefinitionList.addColumn(getGesperrtColumn(), false);
-    felddefinitionList.addColumn("Name", "name");
-    felddefinitionList.addColumn("Label", "label");
-    felddefinitionList.addColumn("Datentyp", "datentyp",
-        new DatentypFormatter(), false, Column.ALIGN_LEFT);
-    felddefinitionList.addColumn("Länge", "laenge");
-    felddefinitionList
-        .setContextMenu(new FelddefinitionMenu(felddefinitionList));
-    felddefinitionList.setAction(
-        new EditAction(ZusatzfeldDetailView.class, felddefinitionList));
-    felddefinitionList.setMulti(true);
-    VorZurueckControl.setObjektListe(null, null);
-    return felddefinitionList;
   }
 
   private void konvertiereTyp(boolean checkOnly, Felddefinition f, Datentyp d)
@@ -427,23 +391,5 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
         throw new RemoteException(
             "Die Konvertierung der Datentypen ist nicht vorgesehen. Ggfls. zunächst in Zeichenfolge umwandeln.");
     }
-  }
-
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_TITEL);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_SUBTITEL);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_DATEINAME);
   }
 }

@@ -17,65 +17,33 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
-import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
-import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
-import de.jost_net.JVerein.io.SpendenbescheinigungAusgabe;
-import de.jost_net.JVerein.keys.Adressblatt;
-import de.jost_net.JVerein.keys.Ausgabeart;
-import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
-import de.jost_net.JVerein.keys.MailAuswahl;
 import de.jost_net.JVerein.keys.Spendenart;
-import de.jost_net.JVerein.keys.SuchSpendenart;
-import de.jost_net.JVerein.keys.SuchVersand;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.jost_net.JVerein.util.Datum;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.SpbAdressaufbereitung;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.BeanUtil;
-import de.willuhn.datasource.pseudo.PseudoIterator;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
-import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -84,19 +52,12 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.PanelButton;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SpendenbescheinigungControl extends DruckMailControl
+public class SpendenbescheinigungControl extends VorZurueckControl
     implements Savable
 {
-
-  // Spendenbescheinigung View
-  private BetragSummaryTablePart spbList;
 
   private SelectInput spendenart;
 
@@ -135,10 +96,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
   private Spendenbescheinigung spendenbescheinigung;
 
   private DateInput versanddatum;
-
-  private boolean and = false;
-
-  private String sql = "";
 
   final static String ExportPDF = ".pdf";
 
@@ -437,7 +394,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return versanddatum;
   }
 
-  public JVereinTablePart getBuchungListPart() throws RemoteException
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     return new BuchungListPart(getSpendenbescheinigung().getBuchungen(),
         new BuchungAction(false), new BuchungPartAnzeigenMenu());
@@ -516,321 +473,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return b;
   }
 
-  @Override
-  public JVereinTablePart getTablePart()
-      throws RemoteException, ApplicationException
-  {
-    if (spbList != null)
-    {
-      return spbList;
-    }
-    spbList = new BetragSummaryTablePart(getSpendenbescheinigungen(), null);
-    spbList.addColumn("Nr", "id-int");
-    spbList.addColumn(getGesperrtColumn(), false);
-    spbList.addColumn("Versanddatum", "versanddatum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    spbList.addColumn("Spender", "mitglied");
-    spbList.addColumn("Spendenart", "spendenart",
-        o -> new Spendenart((Integer) o).getText(), false, Column.ALIGN_LEFT);
-    spbList.addColumn("Bescheinigungsdatum", "bescheinigungsdatum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    spbList.addColumn("Spendedatum", "spendedatum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    spbList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    spbList.addColumn("Zeile 1", "zeile1");
-    spbList.addColumn("Zeile 2", "zeile2");
-    spbList.addColumn("Zeile 3", "zeile3");
-    spbList.addColumn("Zeile 4", "zeile4");
-    spbList.addColumn("Zeile 5", "zeile5");
-    spbList.addColumn("Zeile 6", "zeile6");
-    spbList.addColumn("Zeile 7", "zeile7");
-
-    spbList.setContextMenu(new SpendenbescheinigungMenu(spbList));
-    spbList.setMulti(true);
-    spbList.setAction(
-        new EditAction(SpendenbescheinigungDetailView.class, spbList));
-    VorZurueckControl.setObjektListe(null, null);
-    return spbList;
-  }
-
-  @Override
-  protected void TabRefresh() throws ApplicationException
-  {
-    if (spbList != null)
-    {
-      try
-      {
-        spbList.removeAll();
-        for (Spendenbescheinigung spb : getSpendenbescheinigungen())
-        {
-          spbList.addItem(spb);
-        }
-        spbList.sort();
-      }
-      catch (RemoteException e1)
-      {
-        Logger.error("Fehler beim Refresh der Tabelle", e1);
-      }
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private ArrayList<Spendenbescheinigung> getSpendenbescheinigungen()
-      throws RemoteException, ApplicationException
-  {
-    SuchSpendenart suchSpendenart = (SuchSpendenart) getFilter()
-        .get(Filter.SPENDENART);
-    ArrayList<Long> ids = new ArrayList<>();
-    ArrayList<Long> queryIds = querySpendenbescheinigungen(suchSpendenart);
-
-    // Bei GELDSPENDE_ECHT liefert das Query auch Splittbuchungen die neben
-    // echten Geldbuchungen auch Geldbuchungen mit Verzicht haben.
-    // Darum lesen wir nochmal mit ERSTATTUNGSVERZICHT. Wenn eine Id da
-    // auch dabei ist dürfen wir die Splittbuchung nicht nehmen
-    if (suchSpendenart == SuchSpendenart.GELDSPENDE_ECHT)
-    {
-      ArrayList<Long> erstattungsIds = querySpendenbescheinigungen(
-          SuchSpendenart.ERSTATTUNGSVERZICHT);
-      for (Long id : queryIds)
-      {
-        if (!erstattungsIds.contains(id))
-        {
-          ids.add(id);
-        }
-      }
-    }
-    else
-    {
-      ids = queryIds;
-    }
-
-    if (ids.size() == 0)
-      return new ArrayList<Spendenbescheinigung>();
-
-    DBIterator<Spendenbescheinigung> list = Einstellungen.getDBService()
-        .createList(Spendenbescheinigung.class);
-    list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
-    list.setOrder(" ORDER BY bescheinigungsdatum desc, spendedatum desc ");
-    ArrayList<Spendenbescheinigung> spendenbescheinigungen = list != null
-        ? (ArrayList<Spendenbescheinigung>) PseudoIterator.asList(list)
-        : null;
-    return spendenbescheinigungen;
-  }
-
-  @SuppressWarnings("unchecked")
-  private ArrayList<Long> querySpendenbescheinigungen(
-      SuchSpendenart suchSpendenart)
-      throws RemoteException, ApplicationException
-  {
-    final DBService service = Einstellungen.getDBService();
-    ArrayList<Object> bedingungen = new ArrayList<>();
-    and = false;
-
-    sql = "select DISTINCT spendenbescheinigung.id, bescheinigungsdatum from spendenbescheinigung ";
-    if (getFilter().get(Filter.MAIL) != null)
-    {
-      sql += "left join mitglied on (spendenbescheinigung.mitglied = mitglied.id) ";
-    }
-    Object spart = getFilter().get(Filter.SPENDENART);
-    if (spart != null && spart != SuchSpendenart.GELDSPENDE
-        && spart != SuchSpendenart.SACHSPENDE)
-    {
-      sql += "left join buchung on (spendenbescheinigung.id = buchung.spendenbescheinigung) ";
-    }
-
-    for (Entry<Filter, Object> entry : getFilter().entrySet())
-    {
-      Object value = entry.getValue();
-      switch (entry.getKey())
-      {
-        case MAIL:
-          switch ((MailAuswahl) value)
-          {
-            case OHNE:
-              addCondition("(email is null or length(email) = 0) ");
-              break;
-            case MIT:
-              addCondition("(email is not null and length(email) > 0) ");
-          }
-          break;
-        case SPENDENART:
-          switch ((SuchSpendenart) value)
-          {
-            case GELDSPENDE:
-              addCondition("spendenart = ?");
-              bedingungen.add(Spendenart.GELDSPENDE);
-              break;
-            case SACHSPENDE:
-              addCondition("spendenart = ?");
-              bedingungen.add(Spendenart.SACHSPENDE);
-              break;
-            case ERSTATTUNGSVERZICHT:
-              addCondition("buchung.verzicht = 1");
-              break;
-            case GELDSPENDE_ECHT:
-              addCondition(
-                  "(buchung.verzicht != 1 or buchung.verzicht is null) AND spendenart = ?");
-              bedingungen.add(Spendenart.GELDSPENDE);
-              break;
-            case SACHSPENDE_ERSTATTUNGSVERZICHT:
-              addCondition("(buchung.verzicht = 1 OR spendenart = ?)");
-              bedingungen.add(Spendenart.SACHSPENDE);
-              break;
-            default:
-              break;
-          }
-          break;
-        case ZEILE2:
-          addCondition("(lower(zeile2) like ?)");
-          bedingungen.add("%" + value.toString().toLowerCase() + "%");
-          break;
-        case DATUM_BESCHEINIGUNG_VON:
-          addCondition("bescheinigungsdatum >= ?");
-          bedingungen.add(value);
-          break;
-        case DATUM_BESCHEINIGUNG_BIS:
-          addCondition("bescheinigungsdatum <= ?");
-          bedingungen.add(value);
-          break;
-        case DATUM_SPENDE_VON:
-          addCondition("spendedatum >= ?");
-          bedingungen.add(value);
-          break;
-        case DATUM_SPENDE_BIS:
-          addCondition("spendedatum <= ?");
-          bedingungen.add(value);
-          break;
-        case VERSAND:
-          switch ((SuchVersand) value)
-          {
-            case VERSAND:
-              addCondition("versanddatum IS NOT NULL");
-              break;
-            case NICHT_VERSAND:
-              addCondition("versanddatum IS NULL");
-              break;
-          }
-          break;
-        default:
-          throw new ApplicationException(
-              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
-      }
-    }
-
-    ResultSetExtractor rs = new ResultSetExtractor()
-    {
-      @Override
-      public Object extract(ResultSet rs) throws RemoteException, SQLException
-      {
-        ArrayList<Long> list = new ArrayList<>();
-        while (rs.next())
-        {
-          list.add(rs.getLong(1));
-        }
-        return list;
-      }
-    };
-
-    return (ArrayList<Long>) service.execute(sql, bedingungen.toArray(), rs);
-  }
-
-  private void addCondition(String condition)
-  {
-    if (and)
-    {
-      sql += " AND ";
-    }
-    else
-    {
-      sql += "where ";
-    }
-    and = true;
-    sql += condition;
-  }
-
-  // Mail/Drucken View
-  @Override
-  public String getInfoText(Object selection) throws RemoteException
-  {
-    Spendenbescheinigung[] spbArr = null;
-    if (selection instanceof Spendenbescheinigung)
-    {
-      spbArr = new Spendenbescheinigung[] { (Spendenbescheinigung) selection };
-    }
-    else if (selection instanceof Spendenbescheinigung[])
-    {
-      spbArr = (Spendenbescheinigung[]) selection;
-    }
-    else
-    {
-      return "";
-    }
-
-    String text = "Es wurden " + spbArr.length
-        + " Spendenbescheinigungen ausgewählt";
-    String fehlen = "";
-    String keinMitglied = "";
-
-    for (Spendenbescheinigung spb : spbArr)
-    {
-      Mitglied m = spb.getMitglied();
-      if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
-      {
-        fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
-      }
-      if (spb.getMitglied() == null)
-      {
-        keinMitglied = keinMitglied + "\n - " + spb.getZeile1() + ", "
-            + spb.getZeile2() + ", " + spb.getZeile3();
-      }
-    }
-    if (fehlen.length() > 0)
-    {
-      text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
-    }
-    if (keinMitglied.length() > 0)
-    {
-      text += "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:"
-          + keinMitglied;
-    }
-
-    return text;
-  }
-
-  public Button getStartButton(final Object currentObject)
-  {
-    return new Button("Starten", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        try
-        {
-          saveFilterSettings();
-          new SpendenbescheinigungAusgabe((String) mailtext.getValue(),
-              (Adressblatt) adressblatt.getValue()).aufbereiten(
-                  getDruckMailSpendenbescheinigungen(currentObject),
-                  (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
-                  getTxtString(), false,
-                  (Boolean) Einstellungen
-                      .getEinstellung(Property.UNTERSCHRIFTDRUCKEN),
-                  (Boolean) versand.getValue());
-        }
-        catch (ApplicationException ae)
-        {
-          GUI.getStatusBar().setErrorText(ae.getMessage());
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler", e);
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
-      }
-    }, null, true, "walking.png");
-  }
-
   private class MitgliedListener implements Listener
   {
     @Override
@@ -863,155 +505,4 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
   }
 
-  private ArrayList<Spendenbescheinigung> getDruckMailSpendenbescheinigungen(
-      Object object) throws RemoteException, ApplicationException
-  {
-    if (object instanceof Spendenbescheinigung)
-    {
-      object = new Spendenbescheinigung[] { (Spendenbescheinigung) object };
-    }
-    if (object instanceof Spendenbescheinigung[])
-    {
-      return new ArrayList<Spendenbescheinigung>(
-          Arrays.asList((Spendenbescheinigung[]) object));
-    }
-
-    ArrayList<Spendenbescheinigung> spblist = getSpendenbescheinigungen();
-
-    if (spblist == null || spblist.size() == 0)
-    {
-      throw new ApplicationException(
-          "Für die gewählten Filterkriterien wurden keine Spendenbescheinigungen gefunden");
-    }
-    return spblist;
-  }
-
-  @Override
-  DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
-      throws RemoteException, ApplicationException
-  {
-    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
-    String text = "";
-    int ohneMail = 0;
-    int ohneMitglied = 0;
-    ArrayList<Spendenbescheinigung> spbs = getDruckMailSpendenbescheinigungen(
-        object);
-    Mitglied m;
-    String dokument = "";
-    for (Spendenbescheinigung spb : spbs)
-    {
-      m = spb.getMitglied();
-      if (m != null)
-      {
-        String mail = m.getEmail();
-        if ((mail == null || mail.isEmpty())
-            && getAusgabeart().getValue() == Ausgabeart.MAIL)
-        {
-          ohneMail++;
-        }
-        dokument = "Spendenbescheinigung von "
-            + Datum.formatDate(spb.getBescheinigungsdatum()) + " über "
-            + Einstellungen.DECIMALFORMAT.format(spb.getBetrag()) + "€";
-        liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
-            m.getVorname(), m.getMitgliedstyp()));
-      }
-      else
-      {
-        ohneMitglied++;
-        dokument = "Spendenbescheinigung von "
-            + Datum.formatDate(spb.getBescheinigungsdatum()) + " über "
-            + Einstellungen.DECIMALFORMAT.format(spb.getBetrag())
-            + "€ und Zeile 2: " + spb.getZeile2();
-        liste.add(new DruckMailEmpfaengerEntry(dokument, null, null, null, ""));
-      }
-    }
-
-    if (ohneMail > 0)
-    {
-      text = ohneMail + " Mitglied" + (ohneMail > 1 ? "er haben" : " hat")
-          + " keine Mail Adresse";
-      if (ohneMitglied == 0)
-      {
-        text += ".";
-      }
-      else
-      {
-        text += " und" + ohneMitglied + " Spendenbescheinigung"
-            + (ohneMitglied > 1 ? "en haben" : " hat")
-            + " kein Mitglied gesetzt.";
-      }
-    }
-    else if (ohneMitglied > 0)
-    {
-      text = ohneMitglied + " Spendenbescheinigung"
-          + (ohneMitglied > 1 ? "en haben" : " hat") + " kein Mitglied gesetzt";
-      if (getAusgabeart().getValue() == Ausgabeart.MAIL)
-      {
-        text += ".";
-      }
-      else
-      {
-        text += ", " + (ohneMitglied > 1 ? "werden" : "wird")
-            + " aber gedruckt.";
-      }
-
-    }
-    return new DruckMailEmpfaenger(liste, text);
-  }
-
-  @Override
-  public Map<Mitglied, Object> getDruckMailList()
-      throws RemoteException, ApplicationException
-  {
-    Map<Mitglied, Object> map = new HashMap<>();
-    ArrayList<Spendenbescheinigung> spbs = getDruckMailSpendenbescheinigungen(
-        this.view.getCurrentObject());
-    for (Spendenbescheinigung spb : spbs)
-    {
-      if (spb.getMitglied() != null)
-      {
-        map.put(spb.getMitglied(), spb);
-      }
-    }
-    return map;
-  }
-
-  public PanelButton getDetailSpaltenPanelButton()
-  {
-    return new PanelButton("document-properties.png", context -> {
-      try
-      {
-        new TabelleSpaltenAuswahlDialog(getBuchungListPart()).open();
-      }
-      catch (OperationCanceledException | ApplicationException e)
-      {
-        throw e;
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
-        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
-      }
-    }, "Spalten auswählen");
-  }
-
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_TITEL, this);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_SUBTITEL,
-        this);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_DATEINAME,
-        this);
-  }
 }

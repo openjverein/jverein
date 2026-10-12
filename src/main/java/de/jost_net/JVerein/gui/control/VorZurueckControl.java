@@ -27,7 +27,7 @@ import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 
-public abstract class VorZurueckControl extends AbstractJVereinControl
+public abstract class VorZurueckControl extends AbstractDetailControl
 {
   static Class<? extends AbstractView> viewClass;
 

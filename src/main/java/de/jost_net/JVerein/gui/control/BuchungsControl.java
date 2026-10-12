@@ -17,11 +17,8 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
@@ -33,9 +30,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.SplitbuchungMessage;
-import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAutomatischAction;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -48,19 +43,14 @@ import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
-import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
-import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SplitbuchungListTablePart;
-import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -74,9 +64,7 @@ import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
@@ -109,7 +97,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsControl extends FilterControl implements Savable
+public class BuchungsControl extends VorZurueckControl implements Savable
 {
 
   public final static String GELDKONTO_PREFIX = "geldkonto.";
@@ -117,8 +105,6 @@ public class BuchungsControl extends FilterControl implements Savable
   public final static String ANLAGENKONTO_PREFIX = "anlagenkonto.";
 
   public final static String KONTO_ID = "kontoid";
-
-  private BuchungListTablePart buchungsList;
 
   /* Split-Buchnungen */
   private JVereinTablePart splitbuchungsList;
@@ -170,13 +156,9 @@ public class BuchungsControl extends FilterControl implements Savable
 
   private Button sammelueberweisungButton;
 
-  private BuchungQuery query;
-
   private TextInput iban = null;
 
   private CheckboxInput geprueft;
-
-  private Vector<Listener> changeKontoListener = new Vector<>();
 
   private boolean geldkonto = true;
 
@@ -185,6 +167,12 @@ public class BuchungsControl extends FilterControl implements Savable
   private SplitbuchungMessageConsumer splitbuchungConsumer = null;
 
   private SollbuchungAuswahlDialog sollbuchungDialog = null;
+
+  private Kontenfilter kontenfilter = Kontenfilter.ALLE;
+
+  private Settings settings = null;
+
+  private String settingsprefix = "";
 
   public BuchungsControl(AbstractView view, Kontenfilter kontenfilter)
   {
@@ -196,6 +184,13 @@ public class BuchungsControl extends FilterControl implements Savable
       geldkonto = false;
       settingsprefix = ANLAGENKONTO_PREFIX;
     }
+    settings = new Settings(this.getClass());
+    settings.setStoreWhenRead(true);
+  }
+
+  public String getSettingsPrefix()
+  {
+    return settingsprefix;
   }
 
   public Buchung getBuchung() throws RemoteException
@@ -835,42 +830,6 @@ public class BuchungsControl extends FilterControl implements Savable
     return steuer;
   }
 
-  public Button getStarteBuchungSollbuchungZuordnungAutomatischButton(
-      DateInput vonDatum, DateInput bisDatum)
-  {
-    Button b = new Button("Zuordnung",
-        new BuchungSollbuchungZuordnungAutomatischAction(vonDatum, bisDatum),
-        null, false, "user-friends.png");
-    return b;
-  }
-
-  public Button getAfaButton()
-  {
-    Button b = new Button("Erzeuge Abschreibungen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          new AfaUtil(new Geschaeftsjahr(new Date()), null);
-          refreshBuchungsList();
-        }
-        catch (RemoteException e)
-        {
-          GUI.getStatusBar()
-              .setErrorText("Fehler bei der Erstellung der Abschreibungen");
-        }
-        catch (ParseException ex)
-        {
-          GUI.getStatusBar().setErrorText(ex.getLocalizedMessage());
-        }
-      }
-    }, null, false, "document-new.png");
-    return b;
-  }
-
   @Override
   public void handleStore() throws ApplicationException
   {
@@ -1006,139 +965,6 @@ public class BuchungsControl extends FilterControl implements Savable
     }
   }
 
-  @Override
-  public BuchungListTablePart getTablePart()
-      throws RemoteException, ApplicationException
-  {
-    if (buchungsList != null)
-    {
-      return buchungsList;
-    }
-
-    saveFilterSettings();
-
-    query = new BuchungQuery(getFilter(), geldkonto);
-
-    List<Buchung> buchungen = query.get();
-
-    buchungsList = new BuchungListTablePart(buchungen,
-        new BuchungAction(false, null));
-    buchungsList.addColumn("Nr", "id-int");
-    buchungsList.addColumn(getAbgeschlossenColumn(), false);
-    buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
-    {
-      @Override
-      public String format(Object o)
-      {
-        return (Boolean) o ? "\u2705" : "";
-      }
-    });
-    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
-    {
-      buchungsList.addColumn("D", "document");
-    }
-    buchungsList.addColumn("S", "splittyp", new Formatter()
-    {
-      @Override
-      public String format(Object o)
-      {
-        Integer typ = (Integer) o;
-        return SplitbuchungTyp.get(typ).substring(0, 1);
-      }
-    });
-
-    buchungsList.addColumn("Konto", "konto");
-    buchungsList.addColumn("Datum", "datum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-
-    if (geldkonto)
-    {
-      buchungsList.addColumn("Auszugsnummer", "auszugsnummer");
-      buchungsList.addColumn("Blatt", "blattnummer");
-    }
-
-    buchungsList.addColumn("Name", "name");
-    if (geldkonto)
-      buchungsList.addColumn("IBAN oder Kontonummer", "iban",
-          new IBANFormatter());
-    buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter()
-    {
-      @Override
-      public String format(Object value)
-      {
-        if (value == null)
-        {
-          return null;
-        }
-        String s = value.toString();
-        s = s.replaceAll("\r\n", " ");
-        s = s.replaceAll("\r", " ");
-        s = s.replaceAll("\n", " ");
-        return s;
-      }
-    });
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
-    {
-      buchungsList.addColumn("Buchungsklasse", "buchungsklasse",
-          new BuchungsklasseFormatter());
-    }
-
-    buchungsList.addColumn("Buchungsart", "buchungsart",
-        new BuchungsartFormatter());
-    buchungsList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT) && geldkonto)
-    {
-      buchungsList.addColumn("Netto", "netto",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
-      {
-        buchungsList.addColumn("Steuer", "steuer", o -> {
-          if (o == null)
-          {
-            return "";
-          }
-          try
-          {
-            return ((Steuer) o).getName();
-          }
-          catch (RemoteException e)
-          {
-            Logger.error("Fehler", e);
-          }
-          return "";
-        }, false, Column.ALIGN_RIGHT);
-      }
-    }
-    if (geldkonto)
-      buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG,
-          "Mitglied - Sollbuchung", new SollbuchungFormatter(), false,
-          Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
-    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
-    {
-      buchungsList.addColumn("Projekt", "projekt");
-    }
-    buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
-    {
-      buchungsList.addColumn("Spendenbescheinigung", "spendenbescheinigung");
-    }
-    buchungsList.addColumn(
-        new Column("kommentar", "Kommentar", v -> v.toString().split("\n")[0]),
-        false);
-    buchungsList.setMulti(true);
-    buchungsList.setContextMenu(new BuchungMenu(this, buchungsList));
-    buchungsList.setRememberState(true);
-    buchungsList.updateSaldo((Konto) getFilterValue(Filter.KONTO));
-    buchungsList.setAction(new BuchungAction(false, buchungsList));
-    VorZurueckControl.setObjektListe(null, null);
-    informKontoChangeListener();
-
-    return buchungsList;
-  }
-
   public Part getSplitBuchungsList() throws RemoteException
   {
     if (splitbuchungsList == null)
@@ -1260,51 +1086,6 @@ public class BuchungsControl extends FilterControl implements Savable
     return settings;
   }
 
-  public void refreshBuchungsList() throws ApplicationException
-  {
-    try
-    {
-      saveFilterSettings();
-
-      query = new BuchungQuery(getFilter(), geldkonto);
-
-      List<Buchung> buchungen = query.get();
-
-      buchungsList.updateSaldo((Konto) getFilterValue(Filter.KONTO));
-      buchungsList.removeAll();
-
-      for (Buchung bu : buchungen)
-      {
-        buchungsList.addItem(bu);
-      }
-      // Summenzeile neu laden
-      buchungsList.featureEvent(
-          de.willuhn.jameica.gui.parts.table.Feature.Event.REFRESH, null);
-      buchungsList.sort();
-      informKontoChangeListener();
-    }
-    catch (RemoteException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
-  }
-
-  private void informKontoChangeListener() throws RemoteException
-  {
-    Konto k = (Konto) getFilterValue(Filter.KONTO);
-    Event event = new Event();
-    event.data = k;
-    for (Listener listener : changeKontoListener)
-    {
-      listener.handleEvent(event);
-    }
-  }
-
-  public void addKontoChangeListener(Listener listener)
-  {
-    this.changeKontoListener.add(listener);
-  }
-
   public boolean isBuchungEditable() throws ApplicationException
   {
     try
@@ -1420,11 +1201,6 @@ public class BuchungsControl extends FilterControl implements Savable
     return geldkonto;
   }
 
-  public BuchungQuery getQuery()
-  {
-    return query;
-  }
-
   /**
    * Wird benachrichtigt um die Anzeige zu aktualisieren.
    */
@@ -1481,68 +1257,6 @@ public class BuchungsControl extends FilterControl implements Savable
   {
     Application.getMessagingFactory()
         .unRegisterMessageConsumer(splitbuchungConsumer);
-  }
-
-  @Override
-  protected String getTableTitle()
-  {
-    if (geldkonto)
-    {
-      return VorlageUtil.getName(VorlageTyp.BUCHUNGEN_TITEL, this);
-    }
-    else
-    {
-      return VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_TITEL, this);
-    }
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    if (geldkonto)
-    {
-      return VorlageUtil.getName(VorlageTyp.BUCHUNGEN_SUBTITEL, this);
-    }
-    else
-    {
-      return VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_SUBTITEL, this);
-    }
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    if (geldkonto)
-    {
-      return VorlageUtil.getName(VorlageTyp.BUCHUNGEN_DATEINAME, this);
-    }
-    else
-    {
-      return VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_DATEINAME, this);
-    }
-  }
-
-  @Override
-  protected void TabRefresh() throws ApplicationException
-  {
-    Date von = (Date) getFilterValue(Filter.DATUM_VON);
-    Date bis = (Date) getFilterValue(Filter.DATUM_BIS);
-    if (von == null)
-    {
-      GUI.getStatusBar().setErrorText("Bitte Von Datum eingeben!");
-      return;
-    }
-    if (bis == null)
-    {
-      GUI.getStatusBar().setErrorText("Bitte Bis Datum eingeben!");
-      return;
-    }
-    if (von.after(bis))
-    {
-      GUI.getStatusBar().setErrorText("Von Datum ist nach Bis Datum!");
-      return;
-    }
-    refreshBuchungsList();
   }
 
 }

@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.AnfangsbestandNeuAction;
-import de.jost_net.JVerein.gui.control.AnfangsbestandControl;
+import de.jost_net.JVerein.gui.control.AnfangsbestandListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -39,7 +39,7 @@ public class AnfangsbestandListeView extends AbstractView
   {
     GUI.getView().setTitle("Anfangsbestände");
 
-    AnfangsbestandControl control = new AnfangsbestandControl(this);
+    AnfangsbestandListeControl control = new AnfangsbestandListeControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);

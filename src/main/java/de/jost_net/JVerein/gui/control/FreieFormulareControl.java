@@ -23,7 +23,7 @@ public class FreieFormulareControl extends DruckMailControl
 
   public FreieFormulareControl(AbstractView view)
   {
-    super(view);
+    super(view, FreieFormulareControl.class);
   }
 
   public Button getStartFreieFormulareButton(Object currentObject)

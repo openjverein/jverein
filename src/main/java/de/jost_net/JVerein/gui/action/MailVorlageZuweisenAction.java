@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.control.MailVorlageControl;
+import de.jost_net.JVerein.gui.control.MailVorlageListeControl;
 import de.jost_net.JVerein.gui.control.DruckMailControl;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailVorlagenAuswahlDialog;
@@ -39,7 +39,7 @@ public class MailVorlageZuweisenAction implements Action
           || context instanceof MailControl))
       {
         MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
-            new MailVorlageControl(null),
+            new MailVorlageListeControl(null),
             MailVorlagenAuswahlDialog.POSITION_CENTER, false);
 
         MailVorlage mv = mvad.open();

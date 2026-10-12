@@ -24,24 +24,14 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
-import de.jost_net.JVerein.gui.menu.SteuerMenue;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.SteuerDetailView;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -49,14 +39,11 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SteuerControl extends VorZurueckControl implements Savable
 {
-
-  private JVereinTablePart steuerList;
 
   private TextInput name;
 
@@ -83,38 +70,6 @@ public class SteuerControl extends VorZurueckControl implements Savable
     }
     steuer = (Steuer) getCurrentObject();
     return steuer;
-  }
-
-  @Override
-  public JVereinTablePart getTablePart() throws RemoteException
-  {
-    if (steuerList != null)
-    {
-      return steuerList;
-    }
-    DBIterator<Steuer> steuern = Einstellungen.getDBService()
-        .createList(Steuer.class);
-
-    steuerList = new JVereinTablePart(steuern, null);
-    steuerList.addColumn(getGesperrtColumn(), false);
-    steuerList.addColumn("Name", "name");
-    steuerList.addColumn("Steuersatz", "satz", o -> {
-      return Einstellungen.DECIMALFORMAT.format(o) + "%";
-    }, false, Column.ALIGN_RIGHT);
-    steuerList.addColumn("Buchungsart", "buchungsart",
-        new BuchungsartFormatter());
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
-    {
-      steuerList.addColumn("Buchungsklasse", "buchungsklasse",
-          new BuchungsklasseFormatter());
-    }
-    steuerList.addColumn("Aktiv", "aktiv", new JaNeinFormatter());
-    steuerList.setContextMenu(new SteuerMenue(steuerList));
-    steuerList.setMulti(true);
-    steuerList.setCheckable(false);
-    steuerList.setAction(new EditAction(SteuerDetailView.class, steuerList));
-    return steuerList;
   }
 
   public TextInput getName() throws RemoteException
@@ -259,21 +214,4 @@ public class SteuerControl extends VorZurueckControl implements Savable
     }
   }
 
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.STEUERN_TITEL);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.STEUERN_SUBTITEL);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.STEUERN_DATEINAME);
-  }
 }

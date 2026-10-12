@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.ProjektControl;
+import de.jost_net.JVerein.gui.control.ProjektListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -40,7 +40,7 @@ public class ProjektListeView extends AbstractView
   {
     GUI.getView().setTitle("Projekte");
 
-    ProjektControl control = new ProjektControl(this);
+    ProjektListeControl control = new ProjektListeControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);

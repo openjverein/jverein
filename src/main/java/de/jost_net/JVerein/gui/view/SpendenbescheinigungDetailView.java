@@ -82,7 +82,7 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
 
     LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
         "Buchungen");
-    grBuchungen.addPart(control.getBuchungListPart());
+    grBuchungen.addPart(control.getTablePart());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.SPENDENBESCHEINIGUNG));
@@ -93,7 +93,7 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
 
   }
 

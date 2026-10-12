@@ -18,18 +18,8 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
-import de.jost_net.JVerein.gui.menu.EigenschaftGruppeMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.EigenschaftGruppeDetailView;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -40,7 +30,6 @@ import de.willuhn.util.ApplicationException;
 public class EigenschaftGruppeControl extends VorZurueckControl
     implements Savable
 {
-  private JVereinTablePart eigenschaftgruppeList;
 
   private Input bezeichnung;
 
@@ -140,51 +129,4 @@ public class EigenschaftGruppeControl extends VorZurueckControl
     }
   }
 
-  @Override
-  public JVereinTablePart getTablePart() throws RemoteException
-  {
-    if (eigenschaftgruppeList != null)
-    {
-      return eigenschaftgruppeList;
-    }
-
-    DBService service = Einstellungen.getDBService();
-    DBIterator<EigenschaftGruppe> eigenschaftgruppe = service
-        .createList(EigenschaftGruppe.class);
-    eigenschaftgruppe.setOrder("ORDER BY bezeichnung");
-
-    eigenschaftgruppeList = new JVereinTablePart(eigenschaftgruppe, null);
-    eigenschaftgruppeList.addColumn(getGesperrtColumn(), false);
-    eigenschaftgruppeList.addColumn("Name", "name");
-    eigenschaftgruppeList.addColumn("Bezeichnung", "bezeichnung");
-    eigenschaftgruppeList.addColumn("Pflicht", "pflicht",
-        new JaNeinFormatter());
-    eigenschaftgruppeList.addColumn("Max. 1 Eigenschaft", "max1",
-        new JaNeinFormatter());
-    eigenschaftgruppeList
-        .setContextMenu(new EigenschaftGruppeMenu(eigenschaftgruppeList));
-    eigenschaftgruppeList.setMulti(true);
-    eigenschaftgruppeList.setAction(new EditAction(
-        EigenschaftGruppeDetailView.class, eigenschaftgruppeList));
-    VorZurueckControl.setObjektListe(null, null);
-    return eigenschaftgruppeList;
-  }
-
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTENGRUPPEN_TITEL);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTENGRUPPEN_SUBTITEL);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTENGRUPPEN_DATEINAME);
-  }
 }

@@ -44,7 +44,7 @@ public class AbrechnungslaufListeControl extends FilterControl
 
   public AbrechnungslaufListeControl(AbstractView view)
   {
-    super(view);
+    super(view, AbrechnungslaufControl.class);
   }
 
   @Override

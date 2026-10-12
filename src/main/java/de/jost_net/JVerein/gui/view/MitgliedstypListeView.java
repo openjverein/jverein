@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliedstypDefaultAction;
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.MitgliedstypControl;
+import de.jost_net.JVerein.gui.control.MitgliedstypListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -37,7 +37,7 @@ public class MitgliedstypListeView extends AbstractView
   {
     GUI.getView().setTitle("Mitgliedstypen");
 
-    MitgliedstypControl control = new MitgliedstypControl(this);
+    MitgliedstypListeControl control = new MitgliedstypListeControl(this);
 
     control.getTablePart().paint(this.getParent());
 

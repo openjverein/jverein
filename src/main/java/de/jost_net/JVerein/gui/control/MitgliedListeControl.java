@@ -81,7 +81,7 @@ public class MitgliedListeControl extends FilterControl
 
   public MitgliedListeControl(AbstractView view)
   {
-    super(view);
+    super(view, MitgliedControl.class);
     control = this;
     if (view instanceof MitgliedListeView)
     {

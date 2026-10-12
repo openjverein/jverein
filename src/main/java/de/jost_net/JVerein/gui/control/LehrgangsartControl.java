@@ -20,19 +20,10 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.menu.LehrgangsartMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.LehrgangsartDetailView;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
@@ -40,7 +31,6 @@ import de.willuhn.util.ApplicationException;
 
 public class LehrgangsartControl extends VorZurueckControl implements Savable
 {
-  private JVereinTablePart lehrgangsartList;
 
   private TextInput bezeichnung;
 
@@ -158,49 +148,4 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     }
   }
 
-  @Override
-  public JVereinTablePart getTablePart() throws RemoteException
-  {
-    if (lehrgangsartList != null)
-    {
-      return lehrgangsartList;
-    }
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Lehrgangsart> lehrgangsarten = service
-        .createList(Lehrgangsart.class);
-    lehrgangsarten.setOrder("ORDER BY bezeichnung");
-
-    lehrgangsartList = new JVereinTablePart(lehrgangsarten, null);
-    lehrgangsartList.addColumn(getGesperrtColumn(), false);
-    lehrgangsartList.addColumn("Bezeichnung", "bezeichnung");
-    lehrgangsartList.addColumn("Von/am", "von",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    lehrgangsartList.addColumn("Bis", "bis",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    lehrgangsartList.addColumn("Veranstalter", "veranstalter");
-    lehrgangsartList.setContextMenu(new LehrgangsartMenu(lehrgangsartList));
-    lehrgangsartList.setMulti(true);
-    lehrgangsartList.setAction(
-        new EditAction(LehrgangsartDetailView.class, lehrgangsartList));
-    VorZurueckControl.setObjektListe(null, null);
-    return lehrgangsartList;
-  }
-
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.LEHRGANGSARTEN_TITEL);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.LEHRGANGSARTEN_SUBTITEL);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.LEHRGANGSARTEN_DATEINAME);
-  }
 }

@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.BuchungsklasseControl;
+import de.jost_net.JVerein.gui.control.BuchungsklasseListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -34,7 +34,7 @@ public class BuchungsklasseListeView extends AbstractView
   {
     GUI.getView().setTitle("Buchungsklassen");
 
-    BuchungsklasseControl control = new BuchungsklasseControl(this);
+    BuchungsklasseListeControl control = new BuchungsklasseListeControl(this);
 
     control.getTablePart().paint(this.getParent());
 

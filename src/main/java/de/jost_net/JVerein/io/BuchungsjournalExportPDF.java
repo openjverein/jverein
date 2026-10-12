@@ -30,7 +30,7 @@ import com.itextpdf.text.Element;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.BuchungQuery;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungListeControl;
 import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
@@ -129,7 +129,7 @@ public class BuchungsjournalExportPDF implements Exporter
   {
     this.params = params;
     // objects[0] = control, objects[1] ist der Filtertext
-    BuchungsControl control = (BuchungsControl) objects[0];
+    BuchungListeControl control = (BuchungListeControl) objects[0];
     @SuppressWarnings("unchecked")
     Map<Filter, String> filterparams = (Map<Filter, String>) objects[1];
     BuchungQuery query = control.getQuery();

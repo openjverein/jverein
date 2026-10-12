@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.LesefeldControl;
+import de.jost_net.JVerein.gui.control.LesefeldListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -35,7 +35,7 @@ public class LesefeldListeView extends AbstractView
   {
     GUI.getView().setTitle("Lesefelder");
 
-    final LesefeldControl control = new LesefeldControl(this);
+    final LesefeldListeControl control = new LesefeldListeControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Parameter");
     group.addLabelPair("Mitglied", control.getSuchMitglied());

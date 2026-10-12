@@ -23,17 +23,11 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
-import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
-import de.jost_net.JVerein.gui.parts.WiedervorlageList;
-import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -43,7 +37,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class WiedervorlageControl extends FilterControl implements Savable
+public class WiedervorlageControl extends VorZurueckControl implements Savable
 {
 
   private DateInput datum = null;
@@ -55,8 +49,6 @@ public class WiedervorlageControl extends FilterControl implements Savable
   private AbstractInput mitglied;
 
   private Wiedervorlage wvl = null;
-
-  private WiedervorlageList wiedervorlageList = null;
 
   public WiedervorlageControl(AbstractView view)
   {
@@ -205,44 +197,4 @@ public class WiedervorlageControl extends FilterControl implements Savable
     }
   }
 
-  @Override
-  public AutoUpdateTablePart getTablePart()
-      throws RemoteException, ApplicationException
-  {
-    if (wiedervorlageList != null)
-    {
-      return wiedervorlageList.getWiedervorlageList();
-    }
-    wiedervorlageList = new WiedervorlageList(
-        new StartViewAction(WiedervorlageListeView.class), this);
-    return wiedervorlageList.getWiedervorlageList();
-  }
-
-  @Override
-  protected void TabRefresh() throws ApplicationException
-  {
-    if (wiedervorlageList == null)
-    {
-      return;
-    }
-    wiedervorlageList.refresh();
-  }
-
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_TITEL, this);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_SUBTITEL, this);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_DATEINAME, this);
-  }
 }

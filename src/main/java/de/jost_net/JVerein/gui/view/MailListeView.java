@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.MailNeuAction;
-import de.jost_net.JVerein.gui.control.MailControl;
+import de.jost_net.JVerein.gui.control.MailListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -37,7 +37,7 @@ public class MailListeView extends AbstractView
   {
     GUI.getView().setTitle("Mails");
 
-    MailControl control = new MailControl(this);
+    MailListeControl control = new MailListeControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);

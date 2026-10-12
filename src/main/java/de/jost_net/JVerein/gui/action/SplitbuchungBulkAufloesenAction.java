@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungListeControl;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
@@ -38,9 +38,9 @@ import de.willuhn.util.ApplicationException;
 
 public class SplitbuchungBulkAufloesenAction implements Action
 {
-  private BuchungsControl control;
+  private BuchungListeControl control;
 
-  public SplitbuchungBulkAufloesenAction(BuchungsControl control)
+  public SplitbuchungBulkAufloesenAction(BuchungListeControl control)
   {
     this.control = control;
   }

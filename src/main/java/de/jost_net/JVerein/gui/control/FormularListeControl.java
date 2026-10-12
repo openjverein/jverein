@@ -32,7 +32,7 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.parts.Column;
 
-public class FormularListeControl extends AbstractJVereinControl
+public class FormularListeControl extends AbstractListeControl
 {
   private JVereinTablePart formularList;
 

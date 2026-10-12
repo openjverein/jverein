@@ -44,7 +44,7 @@ public class FamilienbeitragControl extends FilterControl
 
   public FamilienbeitragControl(AbstractView view)
   {
-    super(view);
+    super(view, FamilienbeitragControl.class);
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
@@ -165,8 +165,9 @@ public class FamilienbeitragControl extends FilterControl
                   FamilienbeitragMessageConsumer.this);
               return;
             }
-            familienbeitragtree.setRootObject(new FamilienbeitragNode(
-                (MitgliedStatus) getFilter().get(Filter.MITGLIEDSCHAFT_STATUS)));
+            familienbeitragtree.setRootObject(
+                new FamilienbeitragNode((MitgliedStatus) getFilter()
+                    .get(Filter.MITGLIEDSCHAFT_STATUS)));
           }
           catch (Exception e)
           {

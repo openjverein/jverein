@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.WiedervorlageControl;
+import de.jost_net.JVerein.gui.control.WiedervorlageListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -40,7 +40,8 @@ public class WiedervorlageListeView extends AbstractView
   {
     GUI.getView().setTitle("Wiedervorlagen");
 
-    final WiedervorlageControl control = new WiedervorlageControl(this);
+    final WiedervorlageListeControl control = new WiedervorlageListeControl(
+        this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);

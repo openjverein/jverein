@@ -18,17 +18,8 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.menu.MailVorlageMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.MailVorlageDetailView;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.MailVorlage;
-import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -38,8 +29,6 @@ import de.willuhn.util.ApplicationException;
 public class MailVorlageControl extends VorZurueckControl
     implements Savable, IMailControl
 {
-
-  private JVereinTablePart mailvorlageList;
 
   private TextInput betreff;
 
@@ -127,41 +116,4 @@ public class MailVorlageControl extends VorZurueckControl
     }
   }
 
-  @Override
-  public JVereinTablePart getTablePart() throws RemoteException
-  {
-    if (mailvorlageList != null)
-    {
-      return mailvorlageList;
-    }
-    DBService service = Einstellungen.getDBService();
-    DBIterator<MailVorlage> fdef = service.createList(MailVorlage.class);
-    mailvorlageList = new JVereinTablePart(fdef, null);
-    mailvorlageList.addColumn("Betreff", "betreff");
-    mailvorlageList.setContextMenu(new MailVorlageMenu(mailvorlageList));
-    mailvorlageList.setMulti(true);
-    mailvorlageList.setAction(
-        new EditAction(MailVorlageDetailView.class, mailvorlageList));
-
-    VorZurueckControl.setObjektListe(null, null);
-    return mailvorlageList;
-  }
-
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_TITEL);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_SUBTITEL);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_DATEINAME);
-  }
 }

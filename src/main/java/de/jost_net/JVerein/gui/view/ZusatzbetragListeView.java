@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeImportAction;
-import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
+import de.jost_net.JVerein.gui.control.ZusatzbetragListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -37,7 +37,7 @@ public class ZusatzbetragListeView extends AbstractView
   {
     GUI.getView().setTitle("Zusatzbeträge");
 
-    final ZusatzbetragControl control = new ZusatzbetragControl(this);
+    final ZusatzbetragListeControl control = new ZusatzbetragListeControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Ausführungstag");
     group.addLabelPair("Ausführungstag", control.getAusfuehrungSuch());

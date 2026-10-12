@@ -42,7 +42,7 @@ import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.JahresabschlussControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
-import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
+import de.jost_net.JVerein.gui.control.ZusatzbetragListeControl;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Zeichen;
@@ -299,7 +299,7 @@ public class VorlageUtil
         case ZUSATZBETRAEGE_TITEL:
         case ZUSATZBETRAEGE_SUBTITEL:
           map = new ZusatzbetragListeFilterMap()
-              .getMap((ZusatzbetragControl) obj, map);
+              .getMap((ZusatzbetragListeControl) obj, map);
           break;
         case JAHRESABSCHLUSS_DATEINAME:
         case JAHRESABSCHLUSS_TITEL:

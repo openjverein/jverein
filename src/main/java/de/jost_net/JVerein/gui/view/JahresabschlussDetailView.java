@@ -87,9 +87,6 @@ public class JahresabschlussDetailView extends AbstractView
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.JAHRESABSCHLUSS));
-    buttons.addButton(control.getZurueckButton());
-    buttons.addButton(control.getInfoButton());
-    buttons.addButton(control.getVorButton());
     ButtonRtoL save = new SaveButton(o -> control.handleStore());
     save.setEnabled(control.isSaveEnabled());
     buttons.addButton(save);

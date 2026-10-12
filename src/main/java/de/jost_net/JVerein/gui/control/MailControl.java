@@ -22,11 +22,9 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import org.eclipse.swt.SWT;
@@ -45,27 +43,22 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.MailDeleteMessage;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MailAnhangAnzeigeAction;
 import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
-import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.VelocityTool;
-import de.jost_net.JVerein.keys.Filter;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
@@ -86,7 +79,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class MailControl extends FilterControl implements IMailControl, Savable
+public class MailControl extends VorZurueckControl
+    implements IMailControl, Savable
 {
 
   private AutoUpdateTablePart empfaengerPart;
@@ -100,8 +94,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   private JVereinTablePart mitgliedmitmail;
 
   private Mail mail;
-
-  private JVereinTablePart mailsList;
 
   private MailDeleteMessageConsumer mailDeleteConsumer = null;
 
@@ -795,107 +787,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
 
   }
 
-  @Override
-  public JVereinTablePart getTablePart()
-      throws RemoteException, ApplicationException
-  {
-    if (mailsList != null)
-    {
-      return mailsList;
-    }
-    mailsList = new JVereinTablePart(getMails(), null);
-    mailsList.addColumn("Nr", "id-int");
-    mailsList.addColumn(getGesperrtColumn(), false);
-    mailsList.addColumn("Betreff", "betreff");
-    mailsList.addColumn("Bearbeitung", "bearbeitung",
-        new DateFormatter(new JVDateFormatDATETIME()));
-    mailsList.addColumn("Versand", "versand",
-        new DateFormatter(new JVDateFormatDATETIME()));
-    mailsList.addColumn("Anhänge", "anhaenge");
-    mailsList.setContextMenu(new MailMenu(mailsList));
-    mailsList.setMulti(true);
-    mailsList.setAction(new EditAction(MailDetailView.class, mailsList));
-    VorZurueckControl.setObjektListe(null, null);
-    return mailsList;
-  }
-
-  @Override
-  protected void TabRefresh() throws ApplicationException
-  {
-    try
-    {
-      if (mailsList == null)
-      {
-        return;
-      }
-      mailsList.removeAll();
-      DBIterator<Mail> mails = getMails();
-      while (mails.hasNext())
-      {
-        mailsList.addItem(mails.next());
-      }
-      mailsList.sort();
-    }
-    catch (RemoteException e1)
-    {
-      Logger.error("Fehler", e1);
-    }
-  }
-
-  private DBIterator<Mail> getMails()
-      throws RemoteException, ApplicationException
-  {
-    DBIterator<Mail> mails = Einstellungen.getDBService()
-        .createList(Mail.class);
-
-    for (Entry<Filter, Object> entry : getFilter().entrySet())
-    {
-      Object value = entry.getValue();
-      switch (entry.getKey())
-      {
-        case MAIL_EMPFAENGER:
-          mails.join("mailempfaenger");
-          mails.addFilter("mailempfaenger.mail = mail.id");
-          mails.join("mitglied");
-          mails.addFilter("mitglied.id = mailempfaenger.mitglied");
-          mails.addFilter("(lower(name) like ? or lower(vorname) like ?) ",
-              "%" + value.toString().toLowerCase() + "%",
-              "%" + value.toString().toLowerCase() + "%");
-
-          break;
-        case BETREFF:
-          mails.addFilter("(lower(betreff) like ?)",
-              "%" + value.toString().toLowerCase() + "%");
-          break;
-        case DATUM_BEARBEITUNG_VON:
-          mails.addFilter("bearbeitung >= ?", value);
-          break;
-        case DATUM_BEARBEITUNG_BIS:
-          Calendar cal = Calendar.getInstance();
-          cal.setTime((Date) value);
-          cal.add(Calendar.DAY_OF_MONTH, 1);
-          mails.addFilter("bearbeitung <= ?",
-              new java.sql.Date(cal.getTimeInMillis()));
-          break;
-        case DATUM_VERSAND_VON:
-          mails.addFilter("mail.versand >= ?", value);
-          break;
-        case DATUM_VERSAND_BIS:
-          Calendar calendar = Calendar.getInstance();
-          calendar.setTime((Date) value);
-          calendar.add(Calendar.DAY_OF_MONTH, 1);
-          mails.addFilter("mail.versand <= ?", calendar.getTime());
-          break;
-        default:
-          throw new ApplicationException(
-              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
-      }
-    }
-    mails.setOrder("ORDER BY betreff");
-
-    return mails;
-  }
-
   private void updateInputs() throws RemoteException
   {
     boolean unversand = getMail().getVersand() == null;
@@ -1071,21 +962,4 @@ public class MailControl extends FilterControl implements IMailControl, Savable
         .unRegisterMessageConsumer(mailDeleteConsumer);
   }
 
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.MAILS_TITEL, this);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.MAILS_SUBTITEL, this);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.MAILS_DATEINAME, this);
-  }
 }

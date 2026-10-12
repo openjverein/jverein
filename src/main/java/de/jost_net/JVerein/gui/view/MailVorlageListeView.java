@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.MailVorlageControl;
+import de.jost_net.JVerein.gui.control.MailVorlageListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -34,7 +34,7 @@ public class MailVorlageListeView extends AbstractView
   {
     GUI.getView().setTitle("Mail-Vorlagen");
 
-    MailVorlageControl control = new MailVorlageControl(this);
+    MailVorlageListeControl control = new MailVorlageListeControl(this);
 
     control.getTablePart().paint(this.getParent());
 

@@ -24,19 +24,11 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
-import de.jost_net.JVerein.gui.menu.ZusatzbetragVorlageMenu;
-import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
-import de.jost_net.JVerein.gui.view.ZusatzbetragVorlageDetailView;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -44,18 +36,13 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
-import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -80,8 +67,6 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
   private AbstractInput buchungsart;
 
   private SelectInput buchungsklasse;
-
-  private BetragSummaryTablePart zusatzbetragVorlageList;
 
   public ZusatzbetragVorlage auswahl;
 
@@ -364,70 +349,6 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     }
   }
 
-  @Override
-  public BetragSummaryTablePart getTablePart() throws RemoteException
-  {
-    if (zusatzbetragVorlageList != null)
-    {
-      return zusatzbetragVorlageList;
-    }
-    DBIterator<ZusatzbetragVorlage> zusatzbetragsvorlagen = Einstellungen
-        .getDBService().createList(ZusatzbetragVorlage.class);
-    zusatzbetragsvorlagen.setOrder("ORDER BY buchungstext");
-
-    zusatzbetragVorlageList = new BetragSummaryTablePart(zusatzbetragsvorlagen,
-        null);
-    zusatzbetragVorlageList.addColumn("Nr", "id-int");
-    zusatzbetragVorlageList.addColumn("Erste Fälligkeit", "startdatum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetragVorlageList.addColumn("Nächste Fälligkeit", "faelligkeit",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetragVorlageList.addColumn("Intervall", "intervalltext");
-    zusatzbetragVorlageList.addColumn("Nicht mehr ausführen ab", "endedatum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetragVorlageList.addColumn("Buchungstext", "buchungstext");
-    zusatzbetragVorlageList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    zusatzbetragVorlageList.addColumn("Zahlungsweg", "zahlungsweg",
-        o -> new Zahlungsweg((Integer) o).getText());
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
-    {
-      zusatzbetragVorlageList.addColumn("Buchungsklasse", "buchungsklasse",
-          new BuchungsklasseFormatter());
-    }
-    zusatzbetragVorlageList.addColumn("Buchungsart", "buchungsart",
-        new BuchungsartFormatter());
-    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
-    {
-      zusatzbetragVorlageList.addColumn("Steuer", "steuer", o -> {
-        if (o == null)
-        {
-          return "";
-        }
-        try
-        {
-          return ((Steuer) o).getName();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-        return "";
-      }, false, Column.ALIGN_RIGHT);
-    }
-    zusatzbetragVorlageList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
-        new JaNeinFormatter(), false, Column.ALIGN_LEFT);
-    zusatzbetragVorlageList
-        .setContextMenu(new ZusatzbetragVorlageMenu(zusatzbetragVorlageList));
-    zusatzbetragVorlageList.setMulti(true);
-    zusatzbetragVorlageList.setAction(new EditAction(
-        ZusatzbetragVorlageDetailView.class, zusatzbetragVorlageList));
-    VorZurueckControl.setObjektListe(null, null);
-
-    return zusatzbetragVorlageList;
-  }
-
   public CheckboxInput getMitgliedzahltSelbst() throws RemoteException
   {
     if (mitgliedZahltSelbst != null)
@@ -441,21 +362,4 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     return mitgliedZahltSelbst;
   }
 
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_TITEL);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_SUBTITEL);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_DATEINAME);
-  }
 }

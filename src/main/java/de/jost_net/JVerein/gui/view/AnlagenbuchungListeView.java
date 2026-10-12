@@ -25,7 +25,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AnlagenbuchungExportAction;
 import de.jost_net.JVerein.gui.action.AnlagenbuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungListeControl;
 import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
@@ -52,7 +52,7 @@ public class AnlagenbuchungListeView extends AbstractView
   {
     GUI.getView().setTitle("Anlagenbuchungen");
 
-    final BuchungsControl control = new BuchungsControl(this,
+    final BuchungListeControl control = new BuchungListeControl(this,
         Kontenfilter.ANLAGEKONTO);
 
     TabFolder folder = new TabFolder(getParent(), SWT.V_SCROLL | SWT.BORDER);
@@ -126,7 +126,7 @@ public class AnlagenbuchungListeView extends AbstractView
         "file-import.png");
     buttons.addButton(new Button("Export", new AnlagenbuchungExportAction(),
         control, false, "document-save.png"));
-    buttons.addButton(new NewButton(new BuchungNeuAction(control)));
+    buttons.addButton(new NewButton(new BuchungNeuAction(control, null)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

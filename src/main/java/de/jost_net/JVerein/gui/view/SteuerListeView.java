@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.SteuerControl;
+import de.jost_net.JVerein.gui.control.SteuerListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -34,7 +34,7 @@ public class SteuerListeView extends AbstractView
   {
     GUI.getView().setTitle("Steuer");
 
-    final SteuerControl control = new SteuerControl(this);
+    final SteuerListeControl control = new SteuerListeControl(this);
 
     control.getTablePart().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();

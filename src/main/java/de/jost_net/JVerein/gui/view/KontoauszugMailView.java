@@ -24,7 +24,7 @@ import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
-import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.KontoauszugMailControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
@@ -43,7 +43,7 @@ public class KontoauszugMailView extends AbstractView
   {
     GUI.getView().setTitle("Kontoauszüge");
 
-    final SollbuchungControl control = new SollbuchungControl(this);
+    final KontoauszugMailControl control = new KontoauszugMailControl(this);
     control.init("kontoauszug.");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");

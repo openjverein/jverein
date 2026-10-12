@@ -41,7 +41,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public abstract class AbstractSaldoControl extends VorZurueckControl
+public abstract class AbstractSaldoControl extends AbstractListeControl
 {
   /**
    * Die Art des Eintrags: Header, Detail, Footer (siehe Konstanten)

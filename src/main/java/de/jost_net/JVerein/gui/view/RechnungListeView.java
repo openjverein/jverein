@@ -16,8 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
+import de.jost_net.JVerein.gui.control.RechnungListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
@@ -38,7 +38,7 @@ public class RechnungListeView extends AbstractView
   {
     GUI.getView().setTitle("Rechnungen");
 
-    RechnungControl control = new RechnungControl(this);
+    RechnungListeControl control = new RechnungListeControl(this);
     control.init(TYP.RECHNUNG.name() + ".");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");

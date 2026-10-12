@@ -106,7 +106,7 @@ public class BuchungDetailView extends AbstractDetailView
         }
         else
         {
-          new BuchungNeuAction(control).handleAction(null);
+          new BuchungNeuAction(null, control).handleAction(null);
         }
         GUI.getStatusBar().setSuccessText("Buchung übernommen");
       }

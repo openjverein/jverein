@@ -33,7 +33,7 @@ public class AuswertungControl extends FilterControl
 
   public AuswertungControl(AbstractView view)
   {
-    super(view);
+    super(view, AuswertungControl.class);
   }
 
   public void generateFilter() throws RemoteException

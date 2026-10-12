@@ -44,7 +44,7 @@ public class AbweichenderZahlerControl extends FilterControl
 
   public AbweichenderZahlerControl(AbstractView view)
   {
-    super(view);
+    super(view, AbweichenderZahlerControl.class);
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
@@ -168,8 +168,9 @@ public class AbweichenderZahlerControl extends FilterControl
                   AbweichenderZahlerMessageConsumer.this);
               return;
             }
-            abweichenderzahlertree.setRootObject(new AbweichenderZahlerNode(
-                (MitgliedStatus) getFilter().get(Filter.MITGLIEDSCHAFT_STATUS)));
+            abweichenderzahlertree.setRootObject(
+                new AbweichenderZahlerNode((MitgliedStatus) getFilter()
+                    .get(Filter.MITGLIEDSCHAFT_STATUS)));
           }
           catch (Exception e)
           {

@@ -25,9 +25,10 @@ import de.willuhn.util.ApplicationException;
 public abstract class DruckMailControl extends FilterControl
     implements IMailControl
 {
-  public DruckMailControl(AbstractView view)
+  public DruckMailControl(AbstractView view,
+      Class<? extends AbstractJVereinControl> clazz)
   {
-    super(view);
+    super(view, clazz);
   }
 
   protected TextAreaInput info = null;

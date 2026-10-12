@@ -18,17 +18,8 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.menu.BuchungsklasseMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.BuchungsklasseDetailView;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -37,7 +28,6 @@ import de.willuhn.util.ApplicationException;
 
 public class BuchungsklasseControl extends VorZurueckControl implements Savable
 {
-  private JVereinTablePart buchungsklassenList;
 
   private TextInput nummer;
 
@@ -118,46 +108,4 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     }
   }
 
-  @Override
-  public JVereinTablePart getTablePart() throws RemoteException
-  {
-    if (buchungsklassenList != null)
-    {
-      return buchungsklassenList;
-    }
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Buchungsklasse> buchungsklassen = service
-        .createList(Buchungsklasse.class);
-    buchungsklassen.setOrder("ORDER BY nummer");
-
-    buchungsklassenList = new JVereinTablePart(buchungsklassen, null);
-    buchungsklassenList.addColumn(getGesperrtColumn(), false);
-    buchungsklassenList.addColumn("Nummer", "nummer");
-    buchungsklassenList.addColumn("Bezeichnung", "bezeichnung");
-    buchungsklassenList
-        .setContextMenu(new BuchungsklasseMenu(buchungsklassenList));
-    buchungsklassenList.setMulti(true);
-    buchungsklassenList.setAction(
-        new EditAction(BuchungsklasseDetailView.class, buchungsklassenList));
-    VorZurueckControl.setObjektListe(null, null);
-    return buchungsklassenList;
-  }
-
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_TITEL);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_SUBTITEL);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_DATEINAME);
-  }
 }

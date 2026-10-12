@@ -38,7 +38,7 @@ import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
 import de.jost_net.JVerein.gui.action.SyntaxExportAction;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungListeControl;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
@@ -63,7 +63,7 @@ public class BuchungMenu extends ContextMenu
    * @throws RemoteException
    */
 
-  public BuchungMenu(BuchungsControl control, JVereinTablePart part)
+  public BuchungMenu(BuchungListeControl control, JVereinTablePart part)
       throws RemoteException
   {
     boolean geldkonto = control.getGeldkonto();

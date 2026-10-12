@@ -76,7 +76,7 @@ public class RechnungDetailView extends AbstractDetailView
     right.addInput(control.getErstattungsbetrag());
 
     LabelGroup cont = new LabelGroup(getParent(), "Rechnungspositionen", true);
-    cont.addPart(control.getSollbuchungPositionListPart());
+    cont.addPart(control.getTablePart());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.RECHNUNG));
@@ -88,7 +88,7 @@ public class RechnungDetailView extends AbstractDetailView
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
   @Override

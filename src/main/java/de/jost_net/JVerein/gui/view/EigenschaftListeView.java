@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.EigenschaftControl;
+import de.jost_net.JVerein.gui.control.EigenschaftListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -34,7 +34,7 @@ public class EigenschaftListeView extends AbstractView
   {
     GUI.getView().setTitle("Eigenschaften");
 
-    EigenschaftControl control = new EigenschaftControl(this);
+    EigenschaftListeControl control = new EigenschaftListeControl(this);
 
     control.getTablePart().paint(this.getParent());
 

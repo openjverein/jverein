@@ -35,7 +35,7 @@ import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.Variable.BuchungMap;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungListeControl;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -112,7 +112,7 @@ public class BuchungAuswertungExportCSV implements Exporter
       throws RemoteException, ApplicationException, FileNotFoundException,
       DocumentException, IOException
   {
-    BuchungsControl control = (BuchungsControl) objects[0];
+    BuchungListeControl control = (BuchungListeControl) objects[0];
     BuchungQuery query = control.getQuery();
     final List<Buchung> buchungen = query.get();
 

@@ -60,7 +60,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public abstract class FilterControl extends VorZurueckControl
+public abstract class FilterControl extends AbstractListeControl
 {
   private Calendar calendar = Calendar.getInstance();
 
@@ -96,10 +96,11 @@ public abstract class FilterControl extends VorZurueckControl
    */
   private Map<Filter, Input> filterMap = new HashMap<>();
 
-  public FilterControl(AbstractView view)
+  public FilterControl(AbstractView view,
+      Class<? extends AbstractJVereinControl> clazz)
   {
     super(view);
-    settings = new Settings(this.getClass());
+    settings = new Settings(clazz);
     settings.setStoreWhenRead(true);
   }
 

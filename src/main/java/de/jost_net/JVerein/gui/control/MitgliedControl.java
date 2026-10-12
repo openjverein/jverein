@@ -134,7 +134,8 @@ import de.willuhn.util.ApplicationException;
 
 public class MitgliedControl extends VorZurueckControl implements Savable
 {
-  final LesefeldControl lesefeldControl = new LesefeldControl(null);
+  final LesefeldMitgliedControl lesefeldControl = new LesefeldMitgliedControl(
+      null);
 
   private DokumentControl dcontrol;
 
@@ -2339,7 +2340,7 @@ public class MitgliedControl extends VorZurueckControl implements Savable
     return false;
   }
 
-  public LesefeldControl getLesefeldControl()
+  public LesefeldMitgliedControl getLesefeldControl()
   {
     return lesefeldControl;
   }

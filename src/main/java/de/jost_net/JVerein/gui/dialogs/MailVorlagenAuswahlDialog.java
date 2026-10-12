@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.gui.control.MailVorlageControl;
+import de.jost_net.JVerein.gui.control.MailVorlageListeControl;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.jameica.gui.Action;
@@ -35,7 +35,7 @@ import de.willuhn.util.ApplicationException;
 public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
 {
 
-  private MailVorlageControl control;
+  private MailVorlageListeControl control;
 
   private MailVorlage retval;
 
@@ -43,8 +43,8 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
 
   private boolean mailsenden = true;
 
-  public MailVorlagenAuswahlDialog(MailVorlageControl control, int position,
-      boolean mailsenden)
+  public MailVorlagenAuswahlDialog(MailVorlageListeControl control,
+      int position, boolean mailsenden)
   {
     super(position);
     this.control = control;

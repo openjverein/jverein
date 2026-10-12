@@ -19,19 +19,12 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.menu.EigenschaftMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.EigenschaftDetailView;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -41,7 +34,6 @@ import de.willuhn.util.ApplicationException;
 
 public class EigenschaftControl extends VorZurueckControl implements Savable
 {
-  private JVereinTablePart eigenschaftList;
 
   private Input bezeichnung;
 
@@ -146,47 +138,4 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
     }
   }
 
-  @Override
-  public JVereinTablePart getTablePart() throws RemoteException
-  {
-    if (eigenschaftList != null)
-    {
-      return eigenschaftList;
-    }
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Eigenschaft> eigenschaften = service
-        .createList(Eigenschaft.class);
-    eigenschaften.setOrder("ORDER BY bezeichnung");
-
-    eigenschaftList = new JVereinTablePart(eigenschaften, null);
-    eigenschaftList.addColumn(getGesperrtColumn(), false);
-    eigenschaftList.addColumn("Name", "name");
-    eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
-    eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe");
-    eigenschaftList.setContextMenu(new EigenschaftMenu(eigenschaftList));
-    eigenschaftList.setRememberState(true);
-    eigenschaftList.setMulti(true);
-    eigenschaftList.setAction(
-        new EditAction(EigenschaftDetailView.class, eigenschaftList));
-    VorZurueckControl.setObjektListe(null, null);
-    return eigenschaftList;
-  }
-
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTEN_TITEL);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTEN_SUBTITEL);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTEN_DATEINAME);
-  }
 }

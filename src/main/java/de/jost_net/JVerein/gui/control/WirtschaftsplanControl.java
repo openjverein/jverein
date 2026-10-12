@@ -32,23 +32,16 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode.Type;
-import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
-import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.keys.BuchungsartSort;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -57,7 +50,6 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
-import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
@@ -68,8 +60,6 @@ import de.willuhn.util.ApplicationException;
 public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 {
   public final static String AUSWERTUNG_CSV = ".csv";
-
-  private JVereinTablePart wirtschaftsplaene;
 
   private EditTreePart einnahmen;
 
@@ -95,51 +85,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   public WirtschaftsplanControl(AbstractView view) throws RemoteException
   {
     super(view);
-  }
-
-  /**
-   * Liefert die Liste der Wirtschaftsplaene.
-   *
-   * @return die Liste der Wirtschaftsplaene.
-   * @throws RemoteException
-   *           wenn ein Fehler beim Zugriff auf die Datenbank auftritt.
-   */
-  @Override
-  public JVereinTablePart getTablePart() throws RemoteException
-  {
-    if (wirtschaftsplaene != null)
-    {
-      return wirtschaftsplaene;
-    }
-
-    DBService service = Einstellungen.getDBService();
-
-    wirtschaftsplaene = new JVereinTablePart(
-        service.createList(Wirtschaftsplan.class), null);
-
-    CurrencyFormatter formatter = new CurrencyFormatter("",
-        Einstellungen.DECIMALFORMAT);
-    DateFormatter dateFormatter = new DateFormatter(new JVDateFormatTTMMJJJJ());
-
-    wirtschaftsplaene.addColumn("ID", "id");
-    wirtschaftsplaene.addColumn("Bezeichnung", "bezeichnung");
-    wirtschaftsplaene.addColumn("Von", "datum_von", dateFormatter);
-    wirtschaftsplaene.addColumn("Bis", "datum_bis", dateFormatter);
-    wirtschaftsplaene.addColumn("Einnahmen Soll", "planEinnahme", formatter);
-    wirtschaftsplaene.addColumn("Ausgaben Soll", "planAusgabe", formatter);
-    wirtschaftsplaene.addColumn("Saldo Soll", "planSaldo", formatter);
-    wirtschaftsplaene.addColumn("Einnahmen Ist", "istPlus", formatter);
-    wirtschaftsplaene.addColumn("Ausgaben Ist", "istMinus", formatter);
-    wirtschaftsplaene.addColumn("Saldo Ist", "istSaldo", formatter);
-    wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
-
-    wirtschaftsplaene
-        .setContextMenu(new WirtschaftsplanListMenu(wirtschaftsplaene));
-    wirtschaftsplaene.setAction(
-        new EditAction(WirtschaftsplanDetailView.class, wirtschaftsplaene));
-    VorZurueckControl.setObjektListe(null, null);
-    wirtschaftsplaene.setMulti(true);
-    return wirtschaftsplaene;
   }
 
   /**
@@ -688,21 +633,4 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     tableChanged = true;
   }
 
-  @Override
-  protected String getTableTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_TITEL);
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_SUBTITEL);
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_DATEINAME);
-  }
 }

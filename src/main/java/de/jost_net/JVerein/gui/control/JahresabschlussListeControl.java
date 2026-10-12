@@ -30,15 +30,16 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.util.ApplicationException;
 
-public class JahresabschlussListeControl extends AbstractJVereinControl
+public class JahresabschlussListeControl extends FilterControl
 {
 
   private JVereinTablePart jahresabschlussList;
 
   public JahresabschlussListeControl(AbstractView view) throws RemoteException
   {
-    super(view);
+    super(view, JahresabschlussControl.class);
   }
 
   @Override
@@ -72,6 +73,12 @@ public class JahresabschlussListeControl extends AbstractJVereinControl
   }
 
   @Override
+  protected void TabRefresh() throws ApplicationException
+  {
+    // Es gibt keinen Refresh
+  }
+
+  @Override
   protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL);
@@ -88,4 +95,5 @@ public class JahresabschlussListeControl extends AbstractJVereinControl
   {
     return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME);
   }
+
 }
