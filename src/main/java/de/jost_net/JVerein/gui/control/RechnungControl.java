@@ -424,6 +424,7 @@ public class RechnungControl extends VorZurueckControl implements Savable
     return versanddatum;
   }
 
+  @Override
   public JVereinTablePart getTablePart() throws RemoteException
   {
     if (buchungList != null)

@@ -394,6 +394,7 @@ public class SpendenbescheinigungControl extends VorZurueckControl
     return versanddatum;
   }
 
+  @Override
   public JVereinTablePart getTablePart() throws RemoteException
   {
     return new BuchungListPart(getSpendenbescheinigung().getBuchungen(),
