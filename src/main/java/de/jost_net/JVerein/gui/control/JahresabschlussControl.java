@@ -46,14 +46,11 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class JahresabschlussControl extends KontensaldoControl
 {
-
-  private Settings settings;
 
   private DateInput datum;
 
@@ -76,8 +73,6 @@ public class JahresabschlussControl extends KontensaldoControl
   public JahresabschlussControl(AbstractView view) throws RemoteException
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
     summensaldo = false;
   }
 
