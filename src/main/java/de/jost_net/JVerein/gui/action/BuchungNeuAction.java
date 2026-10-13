@@ -63,7 +63,7 @@ public class BuchungNeuAction implements Action
       // Wegen Umbenennung der Controls in #1699
       // Wenn noch nichts im Control gespeichert ist schauen wir noch in
       // BuchungsControl nach.
-      if (kontoid == null)
+      if (kontoid == null || kontoid.isEmpty())
       {
         Settings tempSettings = new Settings(BuchungsControl.class);
         kontoid = tempSettings.getString(
