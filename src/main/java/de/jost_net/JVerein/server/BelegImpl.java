@@ -138,6 +138,7 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
           it.next().delete();
         }
       }
+      super.delete();
       DBTransaction.commit();
     }
     catch (ApplicationException | RemoteException e)
@@ -145,7 +146,6 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
       DBTransaction.rollback();
       throw e;
     }
-    super.delete();
   }
 
   @Override
@@ -218,7 +218,7 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
     Integer art = (Integer) getAttribute("belegart");
     if (art == null)
     {
-      return BelegArt.SONSTIGES;
+      return null;
     }
     return BelegArt.getByKey(art);
   }
