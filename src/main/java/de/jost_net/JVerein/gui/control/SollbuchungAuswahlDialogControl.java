@@ -59,7 +59,7 @@ public class SollbuchungAuswahlDialogControl extends FilterControl
 
   public SollbuchungAuswahlDialogControl(AbstractView view)
   {
-    super(view, SollbuchungControl.class);
+    super(view, SollbuchungAuswahlDialogControl.class);
   }
 
   public CheckboxInput getSpezialSuche()
