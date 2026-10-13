@@ -24,6 +24,7 @@ import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.jameica.gui.AbstractItemXml;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Item;
 import de.willuhn.logging.Logger;
@@ -141,14 +142,15 @@ public class AbstractItem implements Item
     List<Item> list = new ArrayList<>();
     if (this.parent != null)
     {
-      try
+      // AbstractItemXml ist das Root Element, das hat keine getParent()
+      // funktion, daher direkt Parent hinzufügen
+      if (this.parent instanceof AbstractItemXml)
+      {
+        list.add(this.parent);
+      }
+      else
       {
         list = PseudoIterator.asList(this.parent.getPath());
-      }
-      catch (UnsupportedOperationException ignore)
-      {
-        // getPath() ist bei AbstractItemXml nich implementiert, das brauchen wr
-        // für die ID aber auch nicht.
       }
     }
     list.add(this);

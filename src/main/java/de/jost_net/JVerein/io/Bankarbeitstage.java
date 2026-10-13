@@ -16,21 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 
-import de.jollyday.HolidayManager;
-import de.jollyday.ManagerParameters;
+import de.jost_net.JVerein.util.Holidays;
 
 public class Bankarbeitstage
 {
-  private HolidayManager m;
-
-  public Bankarbeitstage()
-  {
-    m = HolidayManager
-        .getInstance(ManagerParameters.create("Bankfeiertage", null));
-  }
-
   public Calendar getCalendar(Calendar from, int anzahl)
   {
     for (int i = 0; i < anzahl; i++)
@@ -38,11 +30,17 @@ public class Bankarbeitstage
       from.add(Calendar.DAY_OF_YEAR, 1);
       while (from.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY
           || from.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
-          || m.isHoliday(from, ""))
+          || Holidays.isHoliday(toLocalDate(from)))
       {
         from.add(Calendar.DAY_OF_YEAR, 1);
       }
     }
     return from;
+  }
+
+  private static LocalDate toLocalDate(Calendar cal)
+  {
+    return LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1,
+        cal.get(Calendar.DAY_OF_MONTH));
   }
 }

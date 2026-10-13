@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;

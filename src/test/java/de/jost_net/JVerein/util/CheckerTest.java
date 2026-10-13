@@ -18,7 +18,7 @@ package de.jost_net.JVerein.util;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import javax.mail.internet.AddressException;
+import jakarta.mail.internet.AddressException;
 
 import org.junit.jupiter.api.Test;
 

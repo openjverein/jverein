@@ -21,8 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
@@ -157,7 +157,9 @@ public class SpendenbescheinigungControl extends FilterControl
 
     DBIterator<Spendenbescheinigung> list = Einstellungen.getDBService()
         .createList(Spendenbescheinigung.class);
-    list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
+    list.addFilter("id in ("
+        + ids.stream().map(String::valueOf).collect(Collectors.joining(","))
+        + ")");
     list.setOrder(" ORDER BY bescheinigungsdatum desc, spendedatum desc ");
     ArrayList<Spendenbescheinigung> spendenbescheinigungen = list != null
         ? (ArrayList<Spendenbescheinigung>) PseudoIterator.asList(list)
