@@ -160,8 +160,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private CheckboxInput geprueft;
 
-  private boolean geldkonto = true;
-
   private boolean editable = false;
 
   private SplitbuchungMessageConsumer splitbuchungConsumer = null;
@@ -181,7 +179,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     settingsprefix = GELDKONTO_PREFIX;
     if (kontenfilter == Kontenfilter.ANLAGEKONTO)
     {
-      geldkonto = false;
       settingsprefix = ANLAGENKONTO_PREFIX;
     }
     settings = new Settings(this.getClass());
@@ -1194,11 +1191,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         new TextInput(""));
     iban.setEnabled(editable);
     return iban;
-  }
-
-  public boolean getGeldkonto()
-  {
-    return geldkonto;
   }
 
   /**

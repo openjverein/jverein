@@ -31,14 +31,15 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.util.ApplicationException;
 
-public class FormularListeControl extends AbstractListeControl
+public class FormularListeControl extends FilterControl
 {
   private JVereinTablePart formularList;
 
   public FormularListeControl(AbstractView view)
   {
-    super(view);
+    super(view, FormularControl.class);
   }
 
   @Override
@@ -82,6 +83,12 @@ public class FormularListeControl extends AbstractListeControl
       }
       formularList.sort();
     }
+  }
+
+  @Override
+  protected void TabRefresh() throws ApplicationException
+  {
+    // Es gibt keinen Refresh
   }
 
   @Override
