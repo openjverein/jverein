@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.willuhn.jameica.gui.Action;
@@ -26,9 +26,9 @@ import de.willuhn.util.ApplicationException;
 
 public class WirtschaftsplanAddPostenAction implements Action
 {
-  private final WirtschaftsplanControl control;
+  private final WirtschaftsplanDetailControl control;
 
-  public WirtschaftsplanAddPostenAction(WirtschaftsplanControl control)
+  public WirtschaftsplanAddPostenAction(WirtschaftsplanDetailControl control)
   {
     this.control = control;
   }

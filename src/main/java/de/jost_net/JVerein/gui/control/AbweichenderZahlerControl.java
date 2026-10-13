@@ -43,7 +43,7 @@ public class AbweichenderZahlerControl extends FilterControl
 
   public AbweichenderZahlerControl(AbstractView view)
   {
-    super(view, AbweichenderZahlerControl.class);
+    super(view);
   }
 
   @Override

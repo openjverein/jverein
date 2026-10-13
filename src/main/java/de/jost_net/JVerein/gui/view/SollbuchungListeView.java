@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.SollbuchungExportAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
-import de.jost_net.JVerein.gui.control.SollbuchungListeControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -41,7 +41,7 @@ public class SollbuchungListeView extends AbstractView
   {
     GUI.getView().setTitle("Sollbuchungen");
 
-    final SollbuchungListeControl control = new SollbuchungListeControl(this);
+    final SollbuchungControl control = new SollbuchungControl(this);
     control.init("sollbuchung.");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");

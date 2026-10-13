@@ -26,7 +26,7 @@ import de.jost_net.JVerein.gui.action.BuchungExportAction;
 import de.jost_net.JVerein.gui.action.BuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
-import de.jost_net.JVerein.gui.control.BuchungListeControl;
+import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
@@ -54,7 +54,7 @@ public class BuchungListeView extends AbstractView
   {
     GUI.getView().setTitle("Buchungen");
 
-    final BuchungListeControl control = new BuchungListeControl(this,
+    final BuchungsControl control = new BuchungsControl(this,
         Kontenfilter.GELDKONTO);
 
     TabFolder folder = new TabFolder(getParent(), SWT.V_SCROLL | SWT.BORDER);

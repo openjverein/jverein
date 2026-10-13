@@ -21,12 +21,12 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.gui.control.ZusatzbetragListeControl;
+import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 
 public class ZusatzbetragListeFilterMap extends AbstractMap
 {
 
-  public Map<String, Object> getMap(ZusatzbetragListeControl control,
+  public Map<String, Object> getMap(ZusatzbetragControl control,
       Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;

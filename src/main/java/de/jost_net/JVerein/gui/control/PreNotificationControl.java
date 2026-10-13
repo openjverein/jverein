@@ -78,7 +78,7 @@ public class PreNotificationControl extends DruckMailControl
 
   public PreNotificationControl(AbstractView view)
   {
-    super(view, PreNotificationControl.class);
+    super(view);
   }
 
   public TabFolder getFolder(Composite parent)

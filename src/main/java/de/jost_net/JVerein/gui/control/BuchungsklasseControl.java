@@ -18,94 +18,75 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.menu.BuchungsklasseMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.BuchungsklasseDetailView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsklasseControl extends VorZurueckControl implements Savable
+public class BuchungsklasseControl extends FilterControl
 {
-
-  private TextInput nummer;
-
-  private Input bezeichnung;
-
-  private Buchungsklasse buchungsklasse;
+  private JVereinTablePart buchungsklassenList;
 
   public BuchungsklasseControl(AbstractView view)
   {
     super(view);
   }
 
-  private Buchungsklasse getBuchungsklasse()
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
-    if (buchungsklasse != null)
+    if (buchungsklassenList != null)
     {
-      return buchungsklasse;
+      return buchungsklassenList;
     }
-    buchungsklasse = (Buchungsklasse) getCurrentObject();
-    return buchungsklasse;
-  }
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Buchungsklasse> buchungsklassen = service
+        .createList(Buchungsklasse.class);
+    buchungsklassen.setOrder("ORDER BY nummer");
 
-  public TextInput getNummer(boolean withFocus) throws RemoteException
-  {
-    if (nummer != null)
-    {
-      return nummer;
-    }
-    nummer = new TextInput(getBuchungsklasse().getNummer(), 50);
-    if (withFocus)
-    {
-      nummer.focus();
-    }
-    nummer.setMandatory(true);
-    return nummer;
-  }
-
-  public Input getBezeichnung() throws RemoteException
-  {
-    if (bezeichnung != null)
-    {
-      return bezeichnung;
-    }
-    bezeichnung = new TextInput(getBuchungsklasse().getBezeichnung(), 255);
-    bezeichnung.setMandatory(true);
-    return bezeichnung;
+    buchungsklassenList = new JVereinTablePart(buchungsklassen, null);
+    buchungsklassenList.addColumn(getGesperrtColumn(), false);
+    buchungsklassenList.addColumn("Nummer", "nummer");
+    buchungsklassenList.addColumn("Bezeichnung", "bezeichnung");
+    buchungsklassenList
+        .setContextMenu(new BuchungsklasseMenu(buchungsklassenList));
+    buchungsklassenList.setMulti(true);
+    buchungsklassenList.setAction(
+        new EditAction(BuchungsklasseDetailView.class, buchungsklassenList));
+    VorZurueckControl.setObjektListe(null, null);
+    return buchungsklassenList;
   }
 
   @Override
-  public JVereinDBObject prepareStore() throws RemoteException
+  protected void TabRefresh() throws ApplicationException
   {
-    Buchungsklasse b = getBuchungsklasse();
-    if (getNummer(false).getValue() != null)
-    {
-      b.setNummer((String) getNummer(false).getValue());
-    }
-    b.setBezeichnung((String) getBezeichnung().getValue());
-    return b;
+    // Es gibt keinen Refresh
   }
 
-  /**
-   * This method stores the project using the current values.
-   * 
-   * @throws ApplicationException
-   */
   @Override
-  public void handleStore() throws ApplicationException
+  protected String getTableTitle()
   {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern der Buchungsklasse";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
+    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_TITEL);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_SUBTITEL);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_DATEINAME);
   }
 
 }

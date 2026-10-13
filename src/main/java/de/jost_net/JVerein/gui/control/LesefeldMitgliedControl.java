@@ -44,7 +44,7 @@ public class LesefeldMitgliedControl extends AbstractControl
   public LesefeldMitgliedControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(LesefeldControl.class);
+    settings = new Settings(LesefeldDetailControl.class);
     settings.setStoreWhenRead(true);
   }
 

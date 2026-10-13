@@ -52,7 +52,7 @@ public class BuchungsHeaderControl extends AbstractControl
 
   private TextInput lastJahrSaldoInput;
 
-  public BuchungsHeaderControl(AbstractView view, BuchungListeControl control)
+  public BuchungsHeaderControl(AbstractView view, BuchungsControl control)
   {
     super(view);
     control.addKontoChangeListener(event -> {

@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanExportAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanMenu;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
@@ -36,7 +36,7 @@ import de.willuhn.util.ApplicationException;
 
 public class WirtschaftsplanDetailView extends AbstractDetailView
 {
-  private WirtschaftsplanControl control;
+  private WirtschaftsplanDetailControl control;
 
   @Override
   public void bind() throws Exception
@@ -49,7 +49,7 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
 
     GUI.getView().setTitle("Wirtschaftsplanung");
 
-    control = new WirtschaftsplanControl(this);
+    control = new WirtschaftsplanDetailControl(this);
 
     WirtschaftsplanUebersichtPart uebersicht = new WirtschaftsplanUebersichtPart(
         control);

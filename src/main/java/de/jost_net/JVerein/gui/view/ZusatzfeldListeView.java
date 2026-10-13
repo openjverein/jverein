@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.FelddefinitionListeControl;
+import de.jost_net.JVerein.gui.control.FelddefinitionControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -34,7 +34,7 @@ public class ZusatzfeldListeView extends AbstractView
   {
     GUI.getView().setTitle("Zusatzfelder");
 
-    FelddefinitionListeControl control = new FelddefinitionListeControl(this);
+    FelddefinitionControl control = new FelddefinitionControl(this);
 
     control.getTablePart().paint(this.getParent());
 

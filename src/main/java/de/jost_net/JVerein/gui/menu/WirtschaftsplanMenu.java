@@ -22,7 +22,7 @@ import de.jost_net.JVerein.gui.action.WirtschaftsplanAddBuchungsartAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanAddPostenAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanDeleteBuchungsartAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanDeletePostenAction;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -31,7 +31,7 @@ import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 public class WirtschaftsplanMenu extends ContextMenu
 {
-  public WirtschaftsplanMenu(int art, WirtschaftsplanControl control)
+  public WirtschaftsplanMenu(int art, WirtschaftsplanDetailControl control)
   {
     addItem(new BuchungsklasseItem("Buchungsart hinzufügen",
         new WirtschaftsplanAddBuchungsartAction(control, art), "list-add.png"));

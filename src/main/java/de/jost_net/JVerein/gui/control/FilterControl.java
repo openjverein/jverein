@@ -96,11 +96,10 @@ public abstract class FilterControl extends AbstractListeControl
    */
   private Map<Filter, Input> filterMap = new HashMap<>();
 
-  public FilterControl(AbstractView view,
-      Class<? extends AbstractJVereinControl> clazz)
+  public FilterControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(clazz);
+    settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 

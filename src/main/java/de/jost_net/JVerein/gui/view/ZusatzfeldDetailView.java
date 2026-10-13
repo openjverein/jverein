@@ -21,21 +21,21 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.gui.control.FelddefinitionControl;
+import de.jost_net.JVerein.gui.control.FelddefinitionDetailControl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class ZusatzfeldDetailView extends AbstractDetailView
 {
 
-  private FelddefinitionControl control;
+  private FelddefinitionDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Zusatzfeld");
 
-    control = new FelddefinitionControl(this);
+    control = new FelddefinitionDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Zusatzfeld");
     group.addLabelPair("Name", control.getName(true));

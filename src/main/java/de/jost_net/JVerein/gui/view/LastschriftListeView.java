@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.control.LastschriftListeControl;
+import de.jost_net.JVerein.gui.control.LastschriftControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
@@ -37,7 +37,7 @@ public class LastschriftListeView extends AbstractView
   {
     GUI.getView().setTitle("Lastschriften");
 
-    LastschriftListeControl control = new LastschriftListeControl(this);
+    LastschriftControl control = new LastschriftControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);

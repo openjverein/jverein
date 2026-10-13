@@ -19,123 +19,75 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.menu.EigenschaftMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.EigenschaftDetailView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Eigenschaft;
-import de.jost_net.JVerein.rmi.EigenschaftGruppe;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftControl extends VorZurueckControl implements Savable
+public class EigenschaftControl extends FilterControl
 {
-
-  private Input bezeichnung;
-
-  private SelectInput eigenschaftgruppe;
-
-  private Eigenschaft eigenschaft;
-
-  private TextInput name;
+  private JVereinTablePart eigenschaftList;
 
   public EigenschaftControl(AbstractView view)
   {
     super(view);
   }
 
-  private Eigenschaft getEigenschaft() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
-    if (eigenschaft != null)
+    if (eigenschaftList != null)
     {
-      return eigenschaft;
+      return eigenschaftList;
     }
-    eigenschaft = (Eigenschaft) getCurrentObject();
-    if (eigenschaft == null)
-    {
-      eigenschaft = (Eigenschaft) Einstellungen.getDBService()
-          .createObject(Eigenschaft.class, null);
-    }
-    return eigenschaft;
-  }
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Eigenschaft> eigenschaften = service
+        .createList(Eigenschaft.class);
+    eigenschaften.setOrder("ORDER BY bezeichnung");
 
-  public Input getName() throws RemoteException
-  {
-    if (name != null)
-    {
-      return name;
-    }
-    name = new TextInput(getEigenschaft().getName(), 30);
-    name.setMandatory(true);
-    return name;
-  }
-
-  public Input getBezeichnung() throws RemoteException
-  {
-    if (bezeichnung != null)
-    {
-      return bezeichnung;
-    }
-    bezeichnung = new TextInput(getEigenschaft().getBezeichnung(), 30);
-    bezeichnung.setMandatory(true);
-    return bezeichnung;
-  }
-
-  public Input getEigenschaftGruppe() throws RemoteException
-  {
-    if (eigenschaftgruppe != null)
-    {
-      return eigenschaftgruppe;
-    }
-    DBIterator<EigenschaftGruppe> list = Einstellungen.getDBService()
-        .createList(EigenschaftGruppe.class);
-    list.setOrder("ORDER BY bezeichnung");
-    eigenschaftgruppe = new SelectInput(
-        list != null ? PseudoIterator.asList(list) : null,
-        getEigenschaft().getEigenschaftGruppe());
-    eigenschaftgruppe.setValue(getEigenschaft().getEigenschaftGruppe());
-    eigenschaftgruppe.setAttribute("bezeichnung");
-    eigenschaftgruppe.setPleaseChoose("Bitte auswählen");
-    eigenschaftgruppe.setMandatory(true);
-    return eigenschaftgruppe;
+    eigenschaftList = new JVereinTablePart(eigenschaften, null);
+    eigenschaftList.addColumn(getGesperrtColumn(), false);
+    eigenschaftList.addColumn("Name", "name");
+    eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
+    eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe");
+    eigenschaftList.setContextMenu(new EigenschaftMenu(eigenschaftList));
+    eigenschaftList.setRememberState(true);
+    eigenschaftList.setMulti(true);
+    eigenschaftList.setAction(
+        new EditAction(EigenschaftDetailView.class, eigenschaftList));
+    VorZurueckControl.setObjektListe(null, null);
+    return eigenschaftList;
   }
 
   @Override
-  public JVereinDBObject prepareStore() throws RemoteException
+  protected void TabRefresh() throws ApplicationException
   {
-    Eigenschaft ei = getEigenschaft();
-
-    GenericObject o = (GenericObject) getEigenschaftGruppe().getValue();
-    if (o != null)
-    {
-      ei.setEigenschaftGruppe(Long.valueOf(o.getID()));
-    }
-    else
-    {
-      ei.setEigenschaftGruppe(null);
-    }
-    ei.setBezeichnung((String) getBezeichnung().getValue());
-    ei.setName((String) getName().getValue());
-    return ei;
+    // Es gibt keinen Refresh
   }
 
   @Override
-  public void handleStore() throws ApplicationException
+  protected String getTableTitle()
   {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern der Eigenschaft";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
+    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTEN_TITEL);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTEN_SUBTITEL);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTEN_DATEINAME);
   }
 
 }

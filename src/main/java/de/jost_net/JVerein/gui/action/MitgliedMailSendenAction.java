@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.util.ArrayList;
 import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MailVorlageListeControl;
+import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.jost_net.JVerein.gui.dialogs.MailVorlagenAuswahlDialog;
 import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -93,7 +93,7 @@ public class MitgliedMailSendenAction implements Action
           }
         }
         MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
-            new MailVorlageListeControl(null),
+            new MailVorlageControl(null),
             MailVorlagenAuswahlDialog.POSITION_CENTER, true);
         Mail mail = (Mail) Einstellungen.getDBService().createObject(Mail.class,
             null);

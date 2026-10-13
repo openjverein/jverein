@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungDetailControl;
 import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.rmi.BuchungDokument;
 import de.willuhn.jameica.gui.GUI;
@@ -38,13 +38,13 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class BuchungPart implements Part
 {
-  private BuchungsControl control;
+  private BuchungDetailControl control;
 
   private DokumentControl dcontrol;
 
   private boolean buchungabgeschlossen;
 
-  public BuchungPart(BuchungsControl control, boolean buchungabgeschlossen)
+  public BuchungPart(BuchungDetailControl control, boolean buchungabgeschlossen)
   {
     this.control = control;
     this.buchungabgeschlossen = buchungabgeschlossen;

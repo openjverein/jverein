@@ -23,7 +23,7 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.gui.control.BeitragsgruppeControl;
+import de.jost_net.JVerein.gui.control.BeitragsgruppeDetailControl;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.willuhn.jameica.gui.GUI;
@@ -34,14 +34,14 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 public class BeitragsgruppeDetailView extends AbstractDetailView
 {
 
-  private BeitragsgruppeControl control;
+  private BeitragsgruppeDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Beitragsgruppe");
 
-    control = new BeitragsgruppeControl(this);
+    control = new BeitragsgruppeDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Beitrag");
     group.addLabelPair("Bezeichnung", control.getBezeichnung(true));

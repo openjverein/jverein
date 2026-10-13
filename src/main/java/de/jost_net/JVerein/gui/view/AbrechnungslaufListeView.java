@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.AbrechnungAction;
-import de.jost_net.JVerein.gui.control.AbrechnungslaufListeControl;
+import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -39,7 +39,7 @@ public class AbrechnungslaufListeView extends AbstractView
   {
     GUI.getView().setTitle("Abrechnungsläufe");
 
-    AbrechnungslaufListeControl control = new AbrechnungslaufListeControl(this);
+    AbrechnungslaufControl control = new AbrechnungslaufControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);

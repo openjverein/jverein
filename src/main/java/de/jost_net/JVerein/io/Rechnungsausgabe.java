@@ -26,8 +26,8 @@ import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
-import de.jost_net.JVerein.gui.control.RechnungControl;
-import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
+import de.jost_net.JVerein.gui.control.RechnungDetailControl;
+import de.jost_net.JVerein.gui.control.RechnungDetailControl.TYP;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
@@ -44,11 +44,11 @@ import de.willuhn.util.ApplicationException;
 
 public class Rechnungsausgabe extends AbstractAusgabe
 {
-  RechnungControl.TYP typ;
+  RechnungDetailControl.TYP typ;
 
   private Formular formular;
 
-  public Rechnungsausgabe(RechnungControl.TYP typ, Formular formular)
+  public Rechnungsausgabe(RechnungDetailControl.TYP typ, Formular formular)
   {
     this.typ = typ;
     this.formular = formular;

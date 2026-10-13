@@ -18,115 +18,81 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
+import de.jost_net.JVerein.gui.menu.EigenschaftGruppeMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.EigenschaftGruppeDetailView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftGruppeControl extends VorZurueckControl
-    implements Savable
+public class EigenschaftGruppeControl extends FilterControl
 {
-
-  private Input bezeichnung;
-
-  private CheckboxInput pflicht;
-
-  private CheckboxInput max1;
-
-  private EigenschaftGruppe eigenschaftgruppe;
-
-  private TextInput name;
+  private JVereinTablePart eigenschaftgruppeList;
 
   public EigenschaftGruppeControl(AbstractView view)
   {
     super(view);
   }
 
-  private EigenschaftGruppe getEigenschaftGruppe()
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
-    if (eigenschaftgruppe != null)
+    if (eigenschaftgruppeList != null)
     {
-      return eigenschaftgruppe;
+      return eigenschaftgruppeList;
     }
-    eigenschaftgruppe = (EigenschaftGruppe) getCurrentObject();
-    return eigenschaftgruppe;
-  }
 
-  public Input getBezeichnung() throws RemoteException
-  {
-    if (bezeichnung != null)
-    {
-      return bezeichnung;
-    }
-    bezeichnung = new TextInput(getEigenschaftGruppe().getBezeichnung(), 30);
-    bezeichnung.setMandatory(true);
-    return bezeichnung;
-  }
+    DBService service = Einstellungen.getDBService();
+    DBIterator<EigenschaftGruppe> eigenschaftgruppe = service
+        .createList(EigenschaftGruppe.class);
+    eigenschaftgruppe.setOrder("ORDER BY bezeichnung");
 
-  public Input getName() throws RemoteException
-  {
-    if (name != null)
-    {
-      return name;
-    }
-    name = new TextInput(getEigenschaftGruppe().getName(), 30);
-    name.setMandatory(true);
-    return name;
-  }
-
-  public CheckboxInput getPflicht() throws RemoteException
-  {
-    if (pflicht != null)
-    {
-      return pflicht;
-    }
-    pflicht = new CheckboxInput(getEigenschaftGruppe().getPflicht());
-    return pflicht;
-  }
-
-  public CheckboxInput getMax1() throws RemoteException
-  {
-    if (max1 != null)
-    {
-      return max1;
-    }
-    max1 = new CheckboxInput(getEigenschaftGruppe().getMax1());
-    return max1;
+    eigenschaftgruppeList = new JVereinTablePart(eigenschaftgruppe, null);
+    eigenschaftgruppeList.addColumn(getGesperrtColumn(), false);
+    eigenschaftgruppeList.addColumn("Name", "name");
+    eigenschaftgruppeList.addColumn("Bezeichnung", "bezeichnung");
+    eigenschaftgruppeList.addColumn("Pflicht", "pflicht",
+        new JaNeinFormatter());
+    eigenschaftgruppeList.addColumn("Max. 1 Eigenschaft", "max1",
+        new JaNeinFormatter());
+    eigenschaftgruppeList
+        .setContextMenu(new EigenschaftGruppeMenu(eigenschaftgruppeList));
+    eigenschaftgruppeList.setMulti(true);
+    eigenschaftgruppeList.setAction(new EditAction(
+        EigenschaftGruppeDetailView.class, eigenschaftgruppeList));
+    VorZurueckControl.setObjektListe(null, null);
+    return eigenschaftgruppeList;
   }
 
   @Override
-  public JVereinDBObject prepareStore() throws RemoteException
+  protected void TabRefresh() throws ApplicationException
   {
-    EigenschaftGruppe eg = getEigenschaftGruppe();
-    eg.setName((String) getName().getValue());
-    eg.setBezeichnung((String) getBezeichnung().getValue());
-    eg.setPflicht((Boolean) getPflicht().getValue());
-    eg.setMax1((Boolean) getMax1().getValue());
-    return eg;
+    // Es gibt keinen Refresh
   }
 
-  /**
-   * This method stores the project using the current values.
-   * 
-   * @throws ApplicationException
-   */
   @Override
-  public void handleStore() throws ApplicationException
+  protected String getTableTitle()
   {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern der Eigenschaft Gruppe";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
+    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTENGRUPPEN_TITEL);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTENGRUPPEN_SUBTITEL);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTENGRUPPEN_DATEINAME);
   }
 
 }

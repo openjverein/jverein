@@ -17,423 +17,83 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-
-import org.apache.commons.lang.time.DateUtils;
-
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.gui.util.AfaUtil;
-import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.JahresabschlussDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.Anfangsbestand;
-import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
-import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.server.ExtendedDBIterator;
-import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.util.Datum;
-import de.jost_net.JVerein.util.Geschaeftsjahr;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.logging.Logger;
+import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.util.ApplicationException;
 
-public class JahresabschlussControl extends KontensaldoControl
+public class JahresabschlussControl extends FilterControl
 {
 
-  private DateInput datum;
-
-  private TextInput name;
-
-  private Jahresabschluss jahresabschluss;
-
-  private CheckboxInput anfangsbestaende;
-
-  private CheckboxInput afaberechnung;
-
-  private DecimalInput verwendungsrueckstand;
-
-  private DecimalInput zwanghafteweitergabe;
-
-  private DateLabel datumvon;
-
-  private DateLabel datumbis;
+  private JVereinTablePart jahresabschlussList;
 
   public JahresabschlussControl(AbstractView view) throws RemoteException
   {
     super(view);
-    summensaldo = false;
-  }
-
-  private Jahresabschluss getJahresabschluss()
-      throws RemoteException, ParseException
-  {
-    if (jahresabschluss != null)
-    {
-      return jahresabschluss;
-    }
-    jahresabschluss = (Jahresabschluss) getCurrentObject();
-    if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG)
-        && jahresabschluss.isNewObject())
-    {
-      MittelverwendungControl mvcontrol = new MittelverwendungControl(null);
-      mvcontrol.getMittelverwendungFlowList(getDatumvon().getDate(),
-          getDatumbis().getDate());
-      jahresabschluss
-          .setVerwendungsrueckstand(mvcontrol.getRueckstandVorjahrNeu());
-      jahresabschluss
-          .setZwanghafteWeitergabe(mvcontrol.getZwanghafteWeitergabeNeu());
-    }
-    return jahresabschluss;
   }
 
   @Override
-  public DateLabel getDatumvon()
+  public JVereinTablePart getTablePart() throws RemoteException
   {
-    if (datumvon != null)
+    if (jahresabschlussList != null)
     {
-      return datumvon;
+      return jahresabschlussList;
     }
-    Date d = new Date();
-    try
-    {
-      if (getJahresabschluss().isNewObject())
-      {
-        d = computeVonDatum();
-      }
-      else
-      {
-        d = getJahresabschluss().getVon();
-      }
-    }
-    catch (ParseException | RemoteException e)
-    {
-      Logger.error("Fehler beim setzen des Startdatums", e);
-    }
-    datumvon = new DateLabel(d);
-    datumvon.disable();
-    return datumvon;
-  }
-
-  private Date computeVonDatum() throws RemoteException, ParseException
-  {
-    // Datum des Letzten Jahresabschlusses + 1
-    DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Jahresabschluss> jahresabschluesse = service
         .createList(Jahresabschluss.class);
-    it.setOrder("ORDER BY bis DESC");
-    it.setLimit(1);
-    if (it.hasNext())
-    {
-      Jahresabschluss ja = it.next();
-      return DateUtils.addDays(ja.getBis(), 1);
-    }
+    jahresabschluesse.setOrder("ORDER BY von desc");
 
-    // Geschäftsjahres-Beging aus Datum der ersten Buchung bestimmen, wenn noch
-    // kein Jahresabschluss existiert.
-    DBIterator<Buchung> itbu = Einstellungen.getDBService()
-        .createList(Buchung.class);
-    itbu.setOrder("ORDER BY datum");
-    itbu.setLimit(1);
-    if (itbu.hasNext())
-    {
-      Buchung b = itbu.next();
-      Geschaeftsjahr gj = new Geschaeftsjahr(b.getDatum());
-      return gj.getBeginnGeschaeftsjahr();
-    }
-
-    // Wenn es noch keine Buchungen gibt, nehmen wir den Beginn des aktuellen
-    // Geschäftsjahres.
-    Geschaeftsjahr gj = new Geschaeftsjahr(new Date());
-    return gj.getBeginnGeschaeftsjahr();
+    jahresabschlussList = new JVereinTablePart(jahresabschluesse, null);
+    jahresabschlussList.addColumn("Nr", "id-int");
+    jahresabschlussList.addColumn(getAbgeschlossenColumn(), false);
+    jahresabschlussList.addColumn("Von", "von",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    jahresabschlussList.addColumn("Bis", "bis",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    jahresabschlussList.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    jahresabschlussList.addColumn("Name", "name");
+    jahresabschlussList
+        .setContextMenu(new JahresabschlussMenu(jahresabschlussList));
+    jahresabschlussList.setAction(
+        new EditAction(JahresabschlussDetailView.class, jahresabschlussList));
+    VorZurueckControl.setObjektListe(null, null);
+    return jahresabschlussList;
   }
 
   @Override
-  public DateLabel getDatumbis()
+  protected void TabRefresh() throws ApplicationException
   {
-    if (datumbis != null)
-    {
-      return datumbis;
-    }
-    Date d = new Date();
-    try
-    {
-      Geschaeftsjahr gj = new Geschaeftsjahr(getDatumvon().getDate());
-      d = gj.getEndeGeschaeftsjahr();
-    }
-    catch (ParseException | RemoteException e)
-    {
-      Logger.error("Fehler beim setzen des Enddatums", e);
-    }
-    datumbis = new DateLabel(d);
-    datumbis.disable();
-    return datumbis;
-  }
-
-  public DateInput getDatum() throws RemoteException, ParseException
-  {
-    if (datum != null)
-    {
-      return datum;
-    }
-    Date date = new Date();
-    if (!getJahresabschluss().isNewObject())
-    {
-      date = getJahresabschluss().getDatum();
-    }
-    datum = new DateInput(date);
-    datum.setEnabled(false);
-    return datum;
-  }
-
-  public TextInput getName() throws RemoteException, ParseException
-  {
-    if (name != null)
-    {
-      return name;
-    }
-    name = new TextInput(getJahresabschluss().getName(), 50);
-    name.setEnabled(getJahresabschluss().isNewObject());
-    return name;
-  }
-
-  public CheckboxInput getAnfangsbestaende()
-      throws RemoteException, ParseException
-  {
-    if (anfangsbestaende != null)
-    {
-      return anfangsbestaende;
-    }
-    anfangsbestaende = new CheckboxInput(getJahresabschluss().isNewObject());
-    anfangsbestaende.setName("Anfangsbestände Folgejahr");
-    anfangsbestaende.setEnabled(getJahresabschluss().isNewObject());
-    return anfangsbestaende;
-  }
-
-  public CheckboxInput getAfaberechnung() throws RemoteException, ParseException
-  {
-    if (afaberechnung != null)
-    {
-      return afaberechnung;
-    }
-    afaberechnung = new CheckboxInput(getJahresabschluss().isNewObject());
-    afaberechnung.setName("Erzeuge Abschreibungen");
-    afaberechnung.setEnabled(getJahresabschluss().isNewObject());
-    return afaberechnung;
-  }
-
-  public DecimalInput getVerwendungsrueckstand()
-      throws RemoteException, ParseException
-  {
-    if (verwendungsrueckstand != null)
-    {
-      return verwendungsrueckstand;
-    }
-
-    if (getJahresabschluss().getVerwendungsrueckstand() == null)
-    {
-      verwendungsrueckstand = new DecimalInput(Einstellungen.DECIMALFORMAT);
-    }
-    else
-    {
-      verwendungsrueckstand = new DecimalInput(
-          getJahresabschluss().getVerwendungsrueckstand(),
-          Einstellungen.DECIMALFORMAT);
-    }
-    verwendungsrueckstand.setEnabled(false);
-    return verwendungsrueckstand;
-  }
-
-  public DecimalInput getZwanghafteWeitergabe()
-      throws RemoteException, ParseException
-  {
-    if (zwanghafteweitergabe != null)
-    {
-      return zwanghafteweitergabe;
-    }
-
-    if (getJahresabschluss().getZwanghafteWeitergabe() == null)
-    {
-      zwanghafteweitergabe = new DecimalInput(Einstellungen.DECIMALFORMAT);
-    }
-    else
-    {
-      zwanghafteweitergabe = new DecimalInput(
-          getJahresabschluss().getZwanghafteWeitergabe(),
-          Einstellungen.DECIMALFORMAT);
-    }
-    zwanghafteweitergabe.setEnabled(false);
-    return zwanghafteweitergabe;
-  }
-
-  public boolean isSaveEnabled() throws RemoteException, ParseException
-  {
-    return getJahresabschluss().isNewObject();
-  }
-
-  /**
-   * This method stores the project using the current values.
-   */
-  public void handleStore()
-  {
-    try
-    {
-      DBTransaction.starten();
-      Jahresabschluss ja = getJahresabschluss();
-      ja.setVon(getDatumvon().getDate());
-      ja.setBis(getDatumbis().getDate());
-      ja.setDatum((Date) getDatum().getValue());
-      ja.setName((String) getName().getValue());
-      ja.store();
-      if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
-      {
-        new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
-        reloadList();
-      }
-      if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
-      {
-        MittelverwendungControl mvcontrol = new MittelverwendungControl(null);
-        mvcontrol.getMittelverwendungFlowList(ja.getVon(), ja.getBis());
-        ja.setVerwendungsrueckstand(mvcontrol.getRueckstandVorjahrNeu());
-        ja.setZwanghafteWeitergabe(mvcontrol.getZwanghafteWeitergabeNeu());
-        ja.store();
-      }
-      if ((Boolean) getAnfangsbestaende().getValue())
-      {
-        ArrayList<PseudoDBObject> zeilen = getList();
-        for (PseudoDBObject z : zeilen)
-        {
-          String ktonr = (String) z.getAttribute(KONTO_NUMMER);
-          if (ktonr != null && ktonr.length() > 0)
-          {
-            Double endbestand = (Double) z.getAttribute(ENDBESTAND);
-            Anfangsbestand anf = (Anfangsbestand) Einstellungen.getDBService()
-                .createObject(Anfangsbestand.class, null);
-            String konto = z.getInteger(KONTO_ID).toString();
-            anf.setBetrag(endbestand);
-            anf.setDatum(Datum.addTage(ja.getBis(), 1));
-            anf.setKontoId(konto);
-            anf.store();
-          }
-        }
-      }
-      DBTransaction.commit();
-      GUI.getStatusBar().setSuccessText("Jahresabschluss gespeichert");
-    }
-
-    catch (RemoteException e)
-    {
-      DBTransaction.rollback();
-      String fehler = "Fehler beim speichern des Jahresabschlusses";
-      Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
-    }
-    catch (ParseException e)
-    {
-      DBTransaction.rollback();
-      String fehler = "Fehler beim speichern des Jahresabschlusses";
-      Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
-    }
-    catch (ApplicationException e)
-    {
-      DBTransaction.rollback();
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
-  }
-
-  /**
-   * Infotext bei Fehlenden Angaben bestimmen.
-   * 
-   * @return
-   */
-  public String getInfo()
-  {
-    String text = "";
-    try
-    {
-      Date vongj = getDatumvon().getDate();
-      Date bisgj = getDatumbis().getDate();
-      DBService service = Einstellungen.getDBService();
-      DBIterator<Konto> kontenIt = service.createList(Konto.class);
-      kontenIt.addFilter("kontoart = ?", Kontoart.ANLAGE.getKey());
-      kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)", bisgj);
-      kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)", vongj);
-      while (kontenIt.hasNext())
-      {
-        Konto konto = (Konto) kontenIt.next();
-        if (konto.getEroeffnung() == null)
-        {
-          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer()
-              + " hat kein Eröffnungsdatum\n";
-        }
-        if (konto.getAnschaffung() == null)
-        {
-          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer()
-              + " hat kein Anschaffungsdatum. Bitte auf Plausibilität prüfen!\n";
-        }
-        else if (konto.getAnschaffung().after(Datum.addTage(vongj, -1))
-            && konto.getAnschaffung().before(Datum.addTage(bisgj, 1)))
-        {
-          ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-              "buchung");
-          Double betrag = 0d;
-          it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
-          it.addFilter("konto = ?", konto.getID());
-          it.addFilter("IFNULL(buchungsart.abschreibung, 0) IS FALSE");
-          it.addFilter("datum <= ?", bisgj);
-          it.addColumn("sum(buchung.betrag) as summe");
-          PseudoDBObject o = it.next();
-          if (o != null && o.getDouble("summe") != null)
-          {
-            betrag = o.getDouble("summe");
-          }
-          if (Math.abs(betrag - konto.getBetrag()) >= 0.01d)
-          {
-            text += "Für das Anlagenkonto mit der Nummer " + konto.getNummer()
-                + " stimmt die Summe der Buchungen ("
-                + Einstellungen.DECIMALFORMAT.format(betrag)
-                + ") nicht mit den Anschaffungskosten ("
-                + Einstellungen.DECIMALFORMAT.format(konto.getBetrag())
-                + ") überein. Bitte auf Plausibilität prüfen!\n";
-          }
-        }
-      }
-    }
-    catch (Exception e)
-    {
-      String fehler = "Fehler beim Initialisieren der Anzeige";
-      Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
-    }
-    return text;
+    // Es gibt keinen Refresh
   }
 
   @Override
   protected String getTableTitle()
   {
-    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_TITEL, this);
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL);
   }
 
   @Override
   protected String getTableSubtitle()
   {
-    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_SUBTITEL, this);
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL);
   }
 
   @Override
   protected String getTableDateiname()
   {
-    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_DATEINAME, this);
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME);
   }
+
 }

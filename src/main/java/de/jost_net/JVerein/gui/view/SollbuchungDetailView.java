@@ -22,7 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.SollbuchungDetailControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
@@ -37,14 +37,14 @@ import de.willuhn.util.ApplicationException;
 
 public class SollbuchungDetailView extends AbstractDetailView
 {
-  private SollbuchungControl control;
+  private SollbuchungDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Sollbuchung");
 
-    control = new SollbuchungControl(this);
+    control = new SollbuchungDetailControl(this);
     final boolean isEditable = control.isSollbuchungEditable();
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);

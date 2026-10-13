@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
+import de.jost_net.JVerein.gui.control.SpendenbescheinigungDetailControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
@@ -29,14 +29,14 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class SpendenbescheinigungDetailView extends AbstractDetailView
 {
-  private SpendenbescheinigungControl control;
+  private SpendenbescheinigungDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Spendenbescheinigung");
 
-    control = new SpendenbescheinigungControl(this);
+    control = new SpendenbescheinigungDetailControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent());
 

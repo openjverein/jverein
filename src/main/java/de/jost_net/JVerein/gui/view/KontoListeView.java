@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.HibiscusKontenImportAction;
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.KontoListeControl;
+import de.jost_net.JVerein.gui.control.KontoControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -39,7 +39,7 @@ public class KontoListeView extends AbstractView
   {
     GUI.getView().setTitle("Konten");
 
-    KontoListeControl control = new KontoListeControl(this);
+    KontoControl control = new KontoControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);

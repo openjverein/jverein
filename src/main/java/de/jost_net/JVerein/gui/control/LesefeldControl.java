@@ -17,44 +17,37 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+import java.util.List;
+
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import bsh.EvalError;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.gui.menu.LesefeldMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.LesefeldDetailView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.TextAreaInput;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 
-public class LesefeldControl extends VorZurueckControl implements Savable
+public class LesefeldControl extends FilterControl
 {
-  private Settings settings;
 
-  private Lesefeld lesefeld = null;
+  private AbstractInput suchMitglied;
 
-  private AbstractInput mitglied;
-
-  private TextInput scriptName;
-
-  private TextAreaInput scriptCode;
-
-  private TextAreaInput scriptResult;
+  private JVereinTablePart lesefeldList;
 
   private Mitglied selectedMitglied = null;
 
@@ -63,8 +56,6 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   public LesefeldControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
     String m = settings.getString("mitglied", "");
     if (m.length() > 0)
     {
@@ -105,57 +96,59 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   }
 
   /**
-   * @return Das Lesefeld welches im LesefeldDetailView bearbeitet wird.
-   * 
-   */
-  public Lesefeld getLesefeld()
-  {
-    if (lesefeld != null)
-    {
-      return lesefeld;
-    }
-    lesefeld = (Lesefeld) getCurrentObject();
-    return lesefeld;
-  }
-
-  /**
    * 
    * @throws RemoteException
-   * @return Das Mitglied Feld welches im LesefeldDetailView für die Anzeige der
+   * @return Das Mitglied Feld welches im LesefeldListeView für die Anzeige der
    *         Lesefelder verwendet wird.
    * 
    */
-  public Input getMitglied() throws RemoteException
+  public Input getSuchMitglied() throws RemoteException
   {
-    if (mitglied != null)
+    if (suchMitglied != null)
     {
-      return mitglied;
+      return suchMitglied;
     }
-    mitglied = new MitgliedInput().getMitgliedInput(mitglied, selectedMitglied,
+    suchMitglied = new MitgliedInput().getMitgliedInput(suchMitglied,
+        selectedMitglied,
         (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
-    mitglied.addListener(new MitgliedListener());
-    // Im LesefelderDetailView braucht man nicht alle Lesefelder aus der DB
-    // lesen. Zur Evaluierung wird das aktuelle Lesefeld genommen.
-    return mitglied;
+    suchMitglied.addListener(new SuchMitgliedListener());
+    // In LesefelderListeView alle Lesefelder aus der DB lesen und evaluieren
+    // Dadurch kann die evaluierte Ausgabe in der Liste angezeigt werden
+    lesefeldAuswerter.setLesefelderDefinitionsFromDatabase();
+    if (selectedMitglied != null)
+    {
+      lesefeldAuswerter
+          .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
+      // Mitglied in Settings speichern damit es beim Editieren oder der Neu
+      // Action im LesefeldDetailView erscheint.
+      settings.setAttribute("mitglied", selectedMitglied.getID());
+    }
+    lesefeldAuswerter.evalAlleLesefelder();
+    return suchMitglied;
   }
 
   /**
-   * Listener, der Änderungen bei mitglied überwacht.
+   * Listener, der Änderungen bei suchMitglied überwacht.
    * 
    */
-  private class MitgliedListener implements Listener
+  private class SuchMitgliedListener implements Listener
   {
     @Override
     public void handleEvent(Event event)
     {
       try
       {
-        Mitglied selected = (Mitglied) getMitglied().getValue();
+        Mitglied selected = (Mitglied) getSuchMitglied().getValue();
         if (selected == null || selected == selectedMitglied)
           return;
         selectedMitglied = selected;
-        updateScriptResult();
+        // Wenn sich das Mitglied im LesefelderListeView ändert, dann alle
+        // Lesefelder neu evaluieren, geladen sind sie ja schon
+        lesefeldAuswerter
+            .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
+        lesefeldAuswerter.evalAlleLesefelder();
         settings.setAttribute("mitglied", selectedMitglied.getID());
+        TabRefresh();
       }
       catch (RemoteException e)
       {
@@ -167,166 +160,72 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   }
 
   /**
-   * Name des bearbeiteten Lesefeldes Scripts.
-   * 
    * @throws RemoteException
-   * @return Eingabefeld für den Script Namen.
+   * @return Die Lesefelder Tabelle für den LesefeldListeView.
    * 
-   */
-  public TextInput getScriptName() throws RemoteException
-  {
-    if (scriptName != null)
-    {
-      return scriptName;
-    }
-    scriptName = new TextInput(getLesefeld().getBezeichnung(), 50);
-    scriptName.setMandatory(true);
-    return scriptName;
-  }
-
-  /**
-   * Code des bearbeiteten Lesefeldes Scripts.
-   * 
-   * @throws RemoteException
-   * @return Eingabefeld für den Script Code.
-   * 
-   */
-  public TextAreaInput getScriptCode() throws RemoteException
-  {
-    if (scriptCode != null)
-    {
-      return scriptCode;
-    }
-    scriptCode = new TextAreaInput(getLesefeld().getScript(), 1000);
-    scriptCode.setMandatory(true);
-    scriptCode.setHeight(200);
-    return scriptCode;
-  }
-
-  /**
-   * Ausgabe des bearbeiteten Lesefeldes Scripts.
-   * 
-   * @throws RemoteException
-   * @return Ausgabefeld für die Script Ausgabe.
-   * 
-   */
-  public TextAreaInput getScriptResult() throws RemoteException
-  {
-    if (scriptResult != null)
-    {
-      return scriptResult;
-    }
-    scriptResult = new TextAreaInput(getLesefeld().getEvaluatedContent());
-    scriptResult.setEnabled(false);
-    return scriptResult;
-  }
-
-  /**
-   * @throws EvalError
-   * @return Button zur Anzeige der verfügbaren Variablen.
-   * 
-   */
-  public ButtonRtoL getVariablenAnzeigenButton() throws EvalError
-  {
-    return new ButtonRtoL("Variablen anzeigen",
-        new InsertVariableDialogAction(lesefeldAuswerter.getMap(), false), null,
-        false, "bookmark.png");
-  }
-
-  /**
-   * @return Button zur Aktualisierung der Ausgabe eines Scriptes.
-   * 
-   */
-  public ButtonRtoL getAktualisierenButton()
-  {
-    return new ButtonRtoL("Aktualisieren", context -> {
-      updateScriptResult();
-    }, this, false, "view-refresh.png");
-  }
-
-  /**
-   * Holt aktuelles Skript von GUI, evaluiert dieses und schreibt Ergebnis
-   * zurück in die GUI.
-   *
-   * @return true bei Erfolg, sonst false (Fehlermeldung wird in
-   *         Skript-Ausgabe-Feld geschrieben).
-   */
-  public boolean updateScriptResult()
-  {
-    String result = "";
-    boolean success = true;
-    try
-    {
-      if (selectedMitglied != null)
-      {
-        lesefeldAuswerter
-            .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
-      }
-      result = (String) lesefeldAuswerter
-          .eval(getScriptCode().getValue().toString());
-      if (result == null)
-      {
-        result = "Skript-Fehler: Skript muss Rückgabewert liefern.";
-        success = false;
-      }
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler", e);
-      result = "Skript-Fehler:\r\n" + e.getMessage();
-      success = false;
-    }
-    finally
-    {
-      scriptResult.setValue(result);
-    }
-    return success;
-  }
-
-  /**
-   * Bereitet das Lesesefeld Objekt mit aktuellen Werten zum Speichern vor.
-   * 
-   * @throws RemoteException
-   * @throws ApplicationException
-   * @return Das vorbereitete Lesesefeld Objekt
    */
   @Override
-  public JVereinDBObject prepareStore()
-      throws RemoteException, ApplicationException
+  public JVereinTablePart getTablePart() throws RemoteException
   {
-    Lesefeld l = getLesefeld();
-    // Speichern nur wenn keine Fehler im Script sind.
-    if (updateScriptResult())
+    if (lesefeldList != null)
     {
-      l.setBezeichnung(getScriptName().getValue().toString());
-      l.setScript(getScriptCode().getValue().toString());
+      return lesefeldList;
     }
-    else
-    {
-      throw new ApplicationException(
-          "Skript enthält Fehler. Kann nicht gespeichert werden.");
-    }
-    return l;
+    // Wir holen die Lesefelder vom lesefeldAuswerter weil bei denen auch die
+    // evaluierte Ausgabe gesetzt ist
+    lesefeldList = new JVereinTablePart(lesefeldAuswerter.getLesefelder(),
+        null);
+    lesefeldList.addColumn("Skript-Name", "bezeichnung");
+    lesefeldList.addColumn("Erste Zeile der Script-Ausgabe", "ausgabe");
+    lesefeldList.setContextMenu(new LesefeldMenu(lesefeldList));
+    lesefeldList.setMulti(true);
+    lesefeldList
+        .setAction(new EditAction(LesefeldDetailView.class, lesefeldList));
+    VorZurueckControl.setObjektListe(null, null);
+    return lesefeldList;
   }
 
   /**
-   * Speichert das Lesesefeld Objekt mit aktuellen Werten.
+   * Baut die LesefelderList neu auf.
    * 
-   * @throws ApplicationException
    */
-  @Override
-  public void handleStore() throws ApplicationException
+  protected void TabRefresh()
   {
+    if (lesefeldList == null)
+    {
+      return;
+    }
+    lesefeldList.removeAll();
     try
     {
-      prepareStore().store();
+      List<Lesefeld> lesefelder = lesefeldAuswerter.getLesefelder();
+      for (Lesefeld l : lesefelder)
+      {
+        lesefeldList.addItem(l);
+      }
+      lesefeldList.sort();
     }
-    catch (RemoteException e)
+    catch (RemoteException ex)
     {
-      String fehler = "Fehler bei speichern des Lesefeldes";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
+      Logger.error("Fehler beim Refresh der Tabelle", ex);
     }
   }
 
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.LESEFELDER_TITEL);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.LESEFELDER_SUBTITEL);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.LESEFELDER_DATEINAME);
+  }
 }

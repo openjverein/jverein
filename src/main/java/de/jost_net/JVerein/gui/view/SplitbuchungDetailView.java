@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.SplitbuchungAufloesenAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungDetailControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
@@ -34,14 +34,14 @@ import de.willuhn.util.ApplicationException;
 
 public class SplitbuchungDetailView extends AbstractView
 {
-  private BuchungsControl control;
+  private BuchungDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Splitbuchungen");
 
-    control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
+    control = new BuchungDetailControl(this, Kontenfilter.GELDKONTO);
 
     final boolean editable = control.isSplitBuchungEditable();
 

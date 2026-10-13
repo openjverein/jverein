@@ -43,7 +43,7 @@ public class FamilienbeitragControl extends FilterControl
 
   public FamilienbeitragControl(AbstractView view)
   {
-    super(view, FamilienbeitragControl.class);
+    super(view);
   }
 
   @Override

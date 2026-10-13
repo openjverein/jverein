@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.StartViewAction;
-import de.jost_net.JVerein.gui.control.SpendenbescheinigungListeControl;
+import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
@@ -38,7 +38,7 @@ public class SpendenbescheinigungListeView extends AbstractView
   {
     GUI.getView().setTitle("Spendenbescheinigungen");
 
-    SpendenbescheinigungListeControl control = new SpendenbescheinigungListeControl(
+    SpendenbescheinigungControl control = new SpendenbescheinigungControl(
         this);
     control.init("spendenliste.");
 

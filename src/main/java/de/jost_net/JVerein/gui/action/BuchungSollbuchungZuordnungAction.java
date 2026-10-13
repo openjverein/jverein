@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.gui.control.BuchungListeControl;
+import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
@@ -44,9 +44,9 @@ import de.willuhn.util.ApplicationException;
  */
 public class BuchungSollbuchungZuordnungAction implements Action
 {
-  private BuchungListeControl control;
+  private BuchungsControl control;
 
-  public BuchungSollbuchungZuordnungAction(BuchungListeControl control)
+  public BuchungSollbuchungZuordnungAction(BuchungsControl control)
   {
     this.control = control;
   }

@@ -25,8 +25,8 @@ import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
-import de.jost_net.JVerein.gui.control.RechnungControl;
-import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
+import de.jost_net.JVerein.gui.control.RechnungDetailControl;
+import de.jost_net.JVerein.gui.control.RechnungDetailControl.TYP;
 import de.jost_net.JVerein.gui.control.RechnungMailControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.keys.Filter;
@@ -47,7 +47,7 @@ public class RechnungMailView extends AbstractView
     GUI.getView().setTitle("Rechnungen");
 
     final RechnungMailControl control = new RechnungMailControl(this);
-    control.init(RechnungControl.TYP.RECHNUNG.name() + ".mail.");
+    control.init(RechnungDetailControl.TYP.RECHNUNG.name() + ".mail.");
 
     if (this.getCurrentObject() == null)
     {

@@ -20,7 +20,7 @@ import de.jost_net.JVerein.gui.action.ArbeitseinsatzAbrechnenAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzAuswertungAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzZusatzbetraegeAction;
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.ArbeitseinsatzListeControl;
+import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -43,7 +43,7 @@ public class ArbeitseinsatzListeView extends AbstractView
   {
     GUI.getView().setTitle("Arbeitseinsätze");
 
-    final ArbeitseinsatzListeControl control = new ArbeitseinsatzListeControl(
+    final ArbeitseinsatzControl control = new ArbeitseinsatzControl(
         this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");

@@ -21,11 +21,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
 
 public class WirtschaftsplanParameterMap extends AbstractMap
 {
-  public Map<String, Object> getMap(WirtschaftsplanControl control,
+  public Map<String, Object> getMap(WirtschaftsplanDetailControl control,
       Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;

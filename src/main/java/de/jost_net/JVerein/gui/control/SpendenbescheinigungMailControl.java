@@ -61,7 +61,7 @@ public class SpendenbescheinigungMailControl extends DruckMailControl
 
   public SpendenbescheinigungMailControl(AbstractView view)
   {
-    super(view, SpendenbescheinigungControl.class);
+    super(view);
   }
 
   @Override

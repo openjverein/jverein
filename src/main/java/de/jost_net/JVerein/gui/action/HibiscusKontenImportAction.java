@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.KontoListeControl;
+import de.jost_net.JVerein.gui.control.KontoControl;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -35,9 +35,9 @@ import de.willuhn.util.ApplicationException;
 public class HibiscusKontenImportAction implements Action
 {
 
-  private KontoListeControl control;
+  private KontoControl control;
 
-  public HibiscusKontenImportAction(KontoListeControl control)
+  public HibiscusKontenImportAction(KontoControl control)
   {
     this.control = control;
   }

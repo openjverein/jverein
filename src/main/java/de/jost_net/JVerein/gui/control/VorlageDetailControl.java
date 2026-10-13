@@ -1,0 +1,126 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.JVerein.gui.control;
+
+import java.rmi.RemoteException;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Vorlage;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
+
+public class VorlageDetailControl extends VorZurueckControl implements Savable
+{
+
+  private Vorlage vorlage;
+
+  private Input muster;
+
+  private Input vorschau;
+
+  public VorlageDetailControl(AbstractView view)
+  {
+    super(view);
+  }
+
+  public Vorlage getVorlage() throws ApplicationException
+  {
+    if (vorlage != null)
+    {
+      return vorlage;
+    }
+    vorlage = (Vorlage) getCurrentObject();
+    if (vorlage == null)
+    {
+      throw new ApplicationException("Keine Vorlage ausgewählt");
+    }
+    return vorlage;
+  }
+
+  public Input getMuster() throws RemoteException, ApplicationException
+  {
+    if (muster != null)
+    {
+      return muster;
+    }
+    muster = new TextInput(getVorlage().getMuster(), 250);
+    return muster;
+  }
+
+  public Input getVorschau() throws RemoteException, ApplicationException
+  {
+    if (vorschau != null)
+    {
+      return vorschau;
+    }
+    vorschau = new TextInput(
+        VorlageUtil.getDummyName(VorlageTyp.getByKey(getVorlage().getKey()),
+            getVorlage().getMuster()),
+        1000);
+    vorschau.disable();
+    return vorschau;
+  }
+
+  public void updateVorschau() throws RemoteException, ApplicationException
+  {
+    getVorschau().setValue(
+        VorlageUtil.getDummyName(VorlageTyp.getByKey(getVorlage().getKey()),
+            getMuster().getValue().toString()));
+  }
+
+  /**
+   * This method sets the attributes of the Vorlage.
+   * 
+   * @return
+   * @throws ApplicationException
+   * 
+   * @throws RemoteException
+   */
+  @Override
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
+  {
+    Vorlage bv = getVorlage();
+    bv.setMuster((String) getMuster().getValue());
+    return bv;
+  }
+
+  /**
+   * This method stores the Vorlage using the current values.
+   * 
+   * @throws ApplicationException
+   */
+  @Override
+  public void handleStore() throws ApplicationException
+  {
+    try
+    {
+      prepareStore().store();
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler bei speichern des Dateinamen";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
+    }
+  }
+
+}

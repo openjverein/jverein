@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.EigenschaftGruppeListeControl;
+import de.jost_net.JVerein.gui.control.EigenschaftGruppeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -34,7 +34,7 @@ public class EigenschaftGruppeListeView extends AbstractView
   {
     GUI.getView().setTitle("Eigenschaftengruppen");
 
-    EigenschaftGruppeListeControl control = new EigenschaftGruppeListeControl(
+    EigenschaftGruppeControl control = new EigenschaftGruppeControl(
         this);
 
     control.getTablePart().paint(this.getParent());

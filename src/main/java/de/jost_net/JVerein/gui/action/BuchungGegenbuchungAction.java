@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.BuchungListeControl;
+import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.gui.dialogs.KontoAuswahlDialog;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
@@ -34,9 +34,9 @@ import de.willuhn.util.ApplicationException;
 public class BuchungGegenbuchungAction implements Action
 {
 
-  private BuchungListeControl control;
+  private BuchungsControl control;
 
-  public BuchungGegenbuchungAction(BuchungListeControl control)
+  public BuchungGegenbuchungAction(BuchungsControl control)
   {
     this.control = control;
   }

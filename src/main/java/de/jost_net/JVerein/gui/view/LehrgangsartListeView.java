@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.LehrgangsartListeControl;
+import de.jost_net.JVerein.gui.control.LehrgangsartControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -34,7 +34,7 @@ public class LehrgangsartListeView extends AbstractView
   {
     GUI.getView().setTitle("Lehrgangsarten");
 
-    LehrgangsartListeControl control = new LehrgangsartListeControl(this);
+    LehrgangsartControl control = new LehrgangsartControl(this);
 
     control.getTablePart().paint(this.getParent());
 

@@ -39,7 +39,7 @@ public class KontoauszugMailControl extends DruckMailControl
 
   public KontoauszugMailControl(AbstractView view)
   {
-    super(view, SollbuchungControl.class);
+    super(view);
   }
 
   public Button getStartKontoauszugButton(final Object currentObject)

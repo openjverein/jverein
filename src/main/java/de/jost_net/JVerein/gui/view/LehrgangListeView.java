@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.LehrgangListeControl;
+import de.jost_net.JVerein.gui.control.LehrgangControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -40,7 +40,7 @@ public class LehrgangListeView extends AbstractView
   {
     GUI.getView().setTitle("Lehrgänge");
 
-    final LehrgangListeControl control = new LehrgangListeControl(this);
+    final LehrgangControl control = new LehrgangControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);

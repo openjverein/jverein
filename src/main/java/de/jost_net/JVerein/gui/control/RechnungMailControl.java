@@ -57,7 +57,7 @@ public class RechnungMailControl extends DruckMailControl
 
   public RechnungMailControl(AbstractView view)
   {
-    super(view, RechnungControl.class);
+    super(view);
   }
 
   public Button getStartRechnungButton(final Object currentObject)
@@ -71,7 +71,7 @@ public class RechnungMailControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-          new Rechnungsausgabe(RechnungControl.TYP.RECHNUNG, null).aufbereiten(
+          new Rechnungsausgabe(RechnungDetailControl.TYP.RECHNUNG, null).aufbereiten(
               getRechnungen(currentObject),
               (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
               getTxtString(), true, false, (Boolean) versand.getValue());
@@ -101,7 +101,7 @@ public class RechnungMailControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-          new Rechnungsausgabe(RechnungControl.TYP.MAHNUNG,
+          new Rechnungsausgabe(RechnungDetailControl.TYP.MAHNUNG,
               (Formular) RechnungMailControl.this.getFormular(null).getValue())
                   .aufbereiten(getRechnungen(currentObject),
                       (Ausgabeart) getAusgabeart().getValue(),

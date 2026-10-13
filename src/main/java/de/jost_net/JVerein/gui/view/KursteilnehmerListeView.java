@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.KursteilnehmerListeControl;
+import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -40,7 +40,7 @@ public class KursteilnehmerListeView extends AbstractView
   {
     GUI.getView().setTitle("Kursteilnehmer");
 
-    final KursteilnehmerListeControl control = new KursteilnehmerListeControl(
+    final KursteilnehmerControl control = new KursteilnehmerControl(
         this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");

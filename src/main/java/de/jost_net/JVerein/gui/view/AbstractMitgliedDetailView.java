@@ -39,8 +39,8 @@ import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.gui.control.LesefeldMitgliedControl;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.MitgliedControl.TabSelection;
+import de.jost_net.JVerein.gui.control.MitgliedDetailControl;
+import de.jost_net.JVerein.gui.control.MitgliedDetailControl.TabSelection;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
@@ -93,7 +93,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   // Die aufgerufene Funktion: B=Bearbeiten, N=Neu, D=Duplizieren
   int funktion = 'B';
 
-  final MitgliedControl control = new MitgliedControl(this);
+  final MitgliedDetailControl control = new MitgliedDetailControl(this);
 
   final LesefeldMitgliedControl lesefeldControl = control.getLesefeldControl();
 

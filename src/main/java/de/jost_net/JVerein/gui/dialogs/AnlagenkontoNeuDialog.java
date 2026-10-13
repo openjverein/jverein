@@ -24,8 +24,8 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.KontoControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.KontoDetailControl;
+import de.jost_net.JVerein.gui.control.BuchungDetailControl;
 import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
@@ -71,7 +71,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
 
   private Buchung buchung = null;
 
-  final KontoControl control = new KontoControl(null);
+  final KontoDetailControl control = new KontoDetailControl(null);
 
   /**
    * @param position
@@ -159,7 +159,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       konto.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
       konto.setKommentar(buchung.getKommentar());
       konto.store();
-      BuchungsControl bcontrol = new BuchungsControl(null,
+      BuchungDetailControl bcontrol = new BuchungDetailControl(null,
           Kontenfilter.ANLAGEKONTO);
       bcontrol.getSettings().setAttribute("anlagenkonto.kontoid",
           konto.getID());

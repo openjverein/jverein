@@ -25,7 +25,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AnlagenbuchungExportAction;
 import de.jost_net.JVerein.gui.action.AnlagenbuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
-import de.jost_net.JVerein.gui.control.BuchungListeControl;
+import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
@@ -52,7 +52,7 @@ public class AnlagenbuchungListeView extends AbstractView
   {
     GUI.getView().setTitle("Anlagenbuchungen");
 
-    final BuchungListeControl control = new BuchungListeControl(this,
+    final BuchungsControl control = new BuchungsControl(this,
         Kontenfilter.ANLAGEKONTO);
 
     TabFolder folder = new TabFolder(getParent(), SWT.V_SCROLL | SWT.BORDER);

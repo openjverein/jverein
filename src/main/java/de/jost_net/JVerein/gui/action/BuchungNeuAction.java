@@ -20,8 +20,8 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.BuchungDetailControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungListeControl;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -31,6 +31,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -43,24 +44,33 @@ public class BuchungNeuAction implements Action
 
   private boolean isAnlageKonto;
 
-  public BuchungNeuAction(BuchungListeControl blControl,
-      BuchungsControl bControl)
+  public BuchungNeuAction(BuchungsControl blControl,
+      BuchungDetailControl bControl)
   {
     // Die Action kann aus dem DetailView oder ListeView ausgerufen werden.
     if (blControl != null)
     {
       kontoid = blControl.getSettings().getString(
-          blControl.getSettingsPrefix() + BuchungsControl.KONTO_ID, "");
+          blControl.getSettingsPrefix() + BuchungDetailControl.KONTO_ID, "");
       konto = (Konto) blControl.getFilterValue(Filter.KONTO);
       isAnlageKonto = blControl.getSettingsPrefix()
-          .equals(BuchungsControl.ANLAGENKONTO_PREFIX);
+          .equals(BuchungDetailControl.ANLAGENKONTO_PREFIX);
     }
     else if (bControl != null)
     {
       kontoid = bControl.getSettings().getString(
-          bControl.getSettingsPrefix() + BuchungsControl.KONTO_ID, "");
+          bControl.getSettingsPrefix() + BuchungDetailControl.KONTO_ID, "");
+      // Wegen Umbenennung der Controls in #1699
+      // Wenn noch nichts im Control gespeichert ist schauen wir noch in
+      // BuchungsControl nach.
+      if (kontoid == null)
+      {
+        Settings tempSettings = new Settings(BuchungsControl.class);
+        kontoid = tempSettings.getString(
+            bControl.getSettingsPrefix() + BuchungDetailControl.KONTO_ID, "");
+      }
       isAnlageKonto = bControl.getSettingsPrefix()
-          .equals(BuchungsControl.ANLAGENKONTO_PREFIX);
+          .equals(BuchungDetailControl.ANLAGENKONTO_PREFIX);
     }
   }
 

@@ -29,7 +29,7 @@ import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.MailControl;
+import de.jost_net.JVerein.gui.control.MailDetailControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
@@ -41,14 +41,14 @@ import de.willuhn.util.ApplicationException;
 
 public class MailDetailView extends AbstractDetailView
 {
-  private MailControl control;
+  private MailDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Mail");
 
-    control = new MailControl(this);
+    control = new MailDetailControl(this);
 
     Composite comp = new Composite(this.getParent(), SWT.NONE);
     comp.setLayoutData(new GridData(GridData.FILL_BOTH));

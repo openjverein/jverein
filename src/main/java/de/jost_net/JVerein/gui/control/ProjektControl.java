@@ -17,118 +17,130 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.util.Date;
+import java.util.Map.Entry;
+
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.menu.ProjektMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.ProjektDetailView;
+import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ProjektControl extends VorZurueckControl implements Savable
+public class ProjektControl extends FilterControl
 {
 
-  private Input bezeichnung;
-
-  private DateInput startDatum;
-
-  private DateInput endeDatum;
-
-  private Projekt projekt;
+  private JVereinTablePart projektList;
 
   public ProjektControl(AbstractView view)
   {
     super(view);
   }
 
-  private Projekt getProjekt()
+  @Override
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
-    if (projekt != null)
+    if (projektList != null)
     {
-      return projekt;
+      return projektList;
     }
-    projekt = (Projekt) getCurrentObject();
-    return projekt;
-  }
-
-  public Input getBezeichnung() throws RemoteException
-  {
-    if (bezeichnung != null)
-    {
-      return bezeichnung;
-    }
-    bezeichnung = new TextInput(getProjekt().getBezeichnung(), 50);
-    bezeichnung.setName("Bezeichnung");
-    bezeichnung.setMandatory(true);
-    return bezeichnung;
-  }
-
-  public Input getStartDatum() throws RemoteException
-  {
-    if (startDatum != null)
-    {
-      return startDatum;
-    }
-
-    Date d = getProjekt().getStartDatum();
-    if (d.equals(Einstellungen.NODATE))
-    {
-      d = null;
-    }
-    startDatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    startDatum.setName("Startdatum");
-    return startDatum;
-  }
-
-  public Input getEndeDatum() throws RemoteException
-  {
-    if (endeDatum != null)
-    {
-      return endeDatum;
-    }
-
-    Date d = getProjekt().getEndeDatum();
-    if (d.equals(Einstellungen.NODATE))
-    {
-      d = null;
-    }
-    endeDatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    endeDatum.setName("Endedatum");
-    return endeDatum;
+    projektList = new JVereinTablePart(getProjekte(), null);
+    projektList.addColumn(getGesperrtColumn(), false);
+    projektList.addColumn("Bezeichnung", "bezeichnung");
+    projektList.addColumn("Startdatum", "startdatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    projektList.addColumn("Endedatum", "endedatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    projektList.setContextMenu(new ProjektMenu(projektList));
+    projektList.setMulti(true);
+    projektList.setAction(new EditAction(ProjektDetailView.class, projektList));
+    VorZurueckControl.setObjektListe(null, null);
+    return projektList;
   }
 
   @Override
-  public JVereinDBObject prepareStore() throws RemoteException
+  protected void TabRefresh() throws ApplicationException
   {
-    Projekt p = getProjekt();
-    p.setBezeichnung((String) getBezeichnung().getValue());
-    p.setStartDatum((Date) getStartDatum().getValue());
-    p.setEndeDatum((Date) getEndeDatum().getValue());
-    return p;
-  }
-
-  /**
-   * This method stores the project using the current values.
-   * 
-   * @throws ApplicationException
-   */
-  @Override
-  public void handleStore() throws ApplicationException
-  {
+    if (projektList == null)
+    {
+      return;
+    }
+    projektList.removeAll();
     try
     {
-      prepareStore().store();
+      DBIterator<Projekt> projekte = getProjekte();
+      while (projekte.hasNext())
+      {
+        projektList.addItem(projekte.next());
+      }
+      projektList.sort();
     }
-    catch (RemoteException e)
+    catch (RemoteException e1)
     {
-      String fehler = "Fehler bei speichern des Projektes";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
+      Logger.error("Fehler beim Refresh der Tabelle", e1);
     }
   }
 
+  private DBIterator<Projekt> getProjekte()
+      throws RemoteException, ApplicationException
+  {
+    DBIterator<Projekt> projekte = Einstellungen.getDBService()
+        .createList(Projekt.class);
+
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
+    {
+      Object value = entry.getValue();
+      switch (entry.getKey())
+      {
+        case BEZEICHNUNG:
+          projekte.addFilter("(lower(bezeichnung) like ?)",
+              "%" + value.toString().toLowerCase() + "%");
+          break;
+        case DATUM_START_VON:
+          projekte.addFilter("startdatum >= ?", value);
+          break;
+        case DATUM_START_BIS:
+          projekte.addFilter("startdatum <= ?", value);
+          break;
+        case DATUM_ENDE_VON:
+          projekte.addFilter("endedatum >= ?", value);
+          break;
+        case DATUM_ENDE_BIS:
+          projekte.addFilter("endedatum <= ?", value);
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
+      }
+    }
+    projekte.setOrder("ORDER BY bezeichnung");
+    return projekte;
+  }
+
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.PROJEKTE_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.PROJEKTE_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.PROJEKTE_DATEINAME, this);
+  }
 }
