@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
-import de.jost_net.JVerein.gui.control.SollbuchungListeControl;
+import de.jost_net.JVerein.gui.control.SollbuchungAuswahlDialogControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
@@ -59,7 +59,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 
   private Object choosen = null;
 
-  private SollbuchungListeControl control;
+  private SollbuchungAuswahlDialogControl control;
 
   private JVereinTablePart sollbuchunglist = null;
 
@@ -90,7 +90,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    control = new SollbuchungListeControl(null);
+    control = new SollbuchungAuswahlDialogControl(null);
     final TabFolder folder = new TabFolder(parent, SWT.NONE);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
     folder.addSelectionListener(new SelectionAdapter()

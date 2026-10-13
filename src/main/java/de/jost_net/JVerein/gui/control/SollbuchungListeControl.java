@@ -17,9 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
@@ -30,65 +27,27 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.logging.Logger;
 
 public class SollbuchungListeControl extends FilterControl
 {
 
-  // SollbuchungListeView, SollbuchungAuswahldialog
   private BetragSummaryTablePart sollbuchungenList;
-
-  private JVereinTablePart mitgliederList;
-
-  private TextInput suchname2 = null;
-
-  private CheckboxInput spezialsuche = null;
 
   private boolean umwandeln;
 
   public SollbuchungListeControl(AbstractView view)
   {
     super(view, SollbuchungControl.class);
-  }
-
-  // Für SollbuchungAuswahlDialog
-  public CheckboxInput getSpezialSuche()
-  {
-    if (spezialsuche != null && !spezialsuche.getControl().isDisposed())
-    {
-      return spezialsuche;
-    }
-    spezialsuche = new CheckboxInput(false);
-    spezialsuche.setName("Erlaube Teilstring Vergleich");
-    spezialsuche.addListener(e -> refreshMitgliederList());
-
-    return spezialsuche;
-  }
-
-  // Für SollbuchungAuswahlDialog
-  public TextInput getSuchName2(boolean newcontrol)
-  {
-    if (!newcontrol && suchname2 != null)
-    {
-      return suchname2;
-    }
-    suchname2 = new TextInput("", 30);
-    suchname2.setName("Name");
-    return suchname2;
   }
 
   @Override
@@ -153,7 +112,6 @@ public class SollbuchungListeControl extends FilterControl
     return sollbuchungenList;
   }
 
-  // Für Sollbuchungen View
   @Override
   protected void TabRefresh()
   {
@@ -178,111 +136,6 @@ public class SollbuchungListeControl extends FilterControl
       {
         Logger.error("Fehler beim Refresh der Tabelle", e);
       }
-    }
-  }
-
-  public JVereinTablePart getMitgliederList(Action action, ContextMenu menu)
-      throws RemoteException
-  {
-    GenericIterator<Mitglied> mitglieder = getMitgliedIterator();
-    if (mitgliederList == null)
-    {
-      mitgliederList = new JVereinTablePart(mitglieder, action);
-      mitgliederList.addColumn("Name", "name");
-      mitgliederList.addColumn("Vorname", "vorname");
-      mitgliederList.setContextMenu(menu);
-      mitgliederList.setMulti(true);
-    }
-    else
-    {
-      mitgliederList.removeAll();
-      while (mitglieder.hasNext())
-      {
-        mitgliederList.addItem(mitglieder.next());
-      }
-      mitgliederList.sort();
-    }
-    return mitgliederList;
-  }
-
-  public void refreshMitgliederList()
-  {
-    try
-    {
-      GenericIterator<Mitglied> mitglieder = getMitgliedIterator();
-      mitgliederList.removeAll();
-      while (mitglieder.hasNext())
-      {
-        mitgliederList.addItem(mitglieder.next());
-      }
-      mitgliederList.sort();
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-    }
-  }
-
-  private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException
-  {
-    DBIterator<Mitglied> mitglieder = Einstellungen.getDBService()
-        .createList(Mitglied.class);
-    // MitgliedUtils.setMitgliedOderSpender(mitglieder);
-    if (suchname2 != null && suchname2.getValue() != null)
-    {
-      StringBuffer where = new StringBuffer();
-      ArrayList<String> object = new ArrayList<>();
-      StringTokenizer tok = new StringTokenizer((String) suchname2.getValue(),
-          " ,-");
-      where.append("(");
-      boolean first = true;
-      while (tok.hasMoreElements())
-      {
-        if (!first)
-        {
-          where.append("or ");
-        }
-        first = false;
-        where.append(
-            "upper(name) like upper(?) or upper(vorname) like upper(?) ");
-        String o = tok.nextToken();
-        if ((Boolean) getSpezialSuche().getValue())
-        {
-          o = "%" + o + "%";
-        }
-        object.add(o);
-        object.add(o);
-      }
-      where.append(")");
-      if (where.length() > 2)
-      {
-        mitglieder.addFilter(where.toString(), object.toArray());
-      }
-    }
-    mitglieder.setOrder("order by name, vorname");
-    return mitglieder;
-  }
-
-  public void refreshSollbuchungenList()
-  {
-    try
-    {
-      @SuppressWarnings("rawtypes")
-      GenericIterator sollbIterator = new SollbuchungQuery(getFilter(),
-          umwandeln, null).get();
-      sollbuchungenList.removeAll();
-      if (sollbIterator != null)
-      {
-        while (sollbIterator.hasNext())
-        {
-          sollbuchungenList.addItem(sollbIterator.next());
-        }
-      }
-      sollbuchungenList.sort();
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
     }
   }
 
