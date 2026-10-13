@@ -24,6 +24,36 @@ public class StringTool
   }
 
   /**
+   * Trimmt eine Zeichenkette, niemals null.
+   *
+   * @param text
+   *          die zu trimmende Zeichenkette, darf null sein.
+   * @return die getrimmte Zeichenkette oder Leerstring, falls text null ist.
+   */
+  public static String trimToEmpty(CharSequence text)
+  {
+    return text == null ? "" : text.toString().trim();
+  }
+
+  /**
+   * Trimmt eine Zeichenkette, niemals Leerstring.
+   *
+   * @param text
+   *          die zu trimmende Zeichenkette, darf null sein.
+   * @return die getrimmte Zeichenkette oder null, falls text null oder nach
+   *         dem Trimmen leer ist.
+   */
+  public static String trimToNull(CharSequence text)
+  {
+    if (text == null)
+    {
+      return null;
+    }
+    String trimmed = text.toString().trim();
+    return trimmed.isEmpty() ? null : trimmed;
+  }
+
+  /**
    * Formatiert eine Zeichenkette so, dass sie eine feste Länge (len) bekommt,
    * wobei Leerzeichen am Ende der Zeichenkette angehängt werden.
    * 

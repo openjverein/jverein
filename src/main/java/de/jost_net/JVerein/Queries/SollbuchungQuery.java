@@ -24,8 +24,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Differenz;
@@ -184,10 +184,12 @@ public class SollbuchungQuery
         ArrayList<Long> namenids = getNamenIds(zahlerName);
         if (namenids != null)
         {
+          String namenidsJoined = namenids.stream().map(String::valueOf)
+              .collect(Collectors.joining(","));
           sollbuchungen.addFilter("(" + Sollbuchung.T_ZAHLER + " in ("
-              + StringUtils.join(namenids, ",") + ") OR "
+              + namenidsJoined + ") OR "
               + Sollbuchung.T_MITGLIED + " in ("
-              + StringUtils.join(namenids, ",") + "))");
+              + namenidsJoined + "))");
         }
       }
 
@@ -285,11 +287,13 @@ public class SollbuchungQuery
           (String) filter.get(Filter.ZAHLER));
       if (namenids != null)
       {
+        String namenidsJoined = namenids.stream().map(String::valueOf)
+            .collect(Collectors.joining(","));
         where.append(where.length() == 0 ? "" : " AND ")
             .append("(" + Sollbuchung.T_ZAHLER + " in ("
-                + StringUtils.join(namenids, ",") + ") OR "
+                + namenidsJoined + ") OR "
                 + Sollbuchung.T_MITGLIED + " in ("
-                + StringUtils.join(namenids, ",") + "))");
+                + namenidsJoined + "))");
       }
     }
     if (vd != null)
@@ -374,7 +378,8 @@ public class SollbuchungQuery
     }
     DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
         .createList(Sollbuchung.class);
-    sollbIt.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
+    sollbIt.addFilter("id in (" + ids.stream().map(String::valueOf)
+        .collect(Collectors.joining(",")) + ")");
     sollbIt.setOrder("ORDER BY " + Sollbuchung.T_DATUM + " desc");
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     return sollbIt;

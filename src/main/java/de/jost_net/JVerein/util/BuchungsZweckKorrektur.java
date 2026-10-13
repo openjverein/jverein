@@ -2,8 +2,6 @@ package de.jost_net.JVerein.util;
 
 import java.rmi.RemoteException;
 
-import org.apache.commons.lang.StringUtils;
-
 import de.willuhn.jameica.hbci.rmi.Transfer;
 import de.willuhn.jameica.hbci.server.VerwendungszweckUtil;
 import de.willuhn.jameica.hbci.server.VerwendungszweckUtil.Tag;
@@ -21,7 +19,7 @@ public class BuchungsZweckKorrektur
     try
     {
       Transfer t = new Verwendungszweck(value);
-      String s = StringUtils
+      String s = StringTool
           .trimToNull(VerwendungszweckUtil.getTag(t, Tag.SVWZ));
       if (!withRealLineBreak)
       {
