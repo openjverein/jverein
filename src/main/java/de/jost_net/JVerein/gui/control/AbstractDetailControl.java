@@ -27,37 +27,44 @@ public abstract class AbstractDetailControl extends AbstractJVereinControl
   protected IJVereinPart getTablePart()
       throws RemoteException, ApplicationException
   {
-    return null;
+    throw new ApplicationException(
+        "Tabelle Spaltenauswahl und Export sind nicht unterstützt");
   }
 
   /**
    * Liefert den Titel für die Tabellenreports
    * 
    * @return
+   * @throws ApplicationException
    */
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
-    return null;
+    throw new ApplicationException(
+        "Tabelle Spaltenauswahl und Export sind nicht unterstützt");
   }
 
   /**
    * Liefert den Subtitel für die Tabellenreports
    * 
    * @return
+   * @throws ApplicationException
    */
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
-    return null;
+    throw new ApplicationException(
+        "Tabelle Spaltenauswahl und Export sind nicht unterstützt");
   }
 
   /**
    * Liefert den Dateinamen für die Tabellenreports
    * 
    * @return
+   * @throws ApplicationException
    */
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
-    return null;
+    throw new ApplicationException(
+        "Tabelle Spaltenauswahl und Export sind nicht unterstützt");
   }
 
 }
