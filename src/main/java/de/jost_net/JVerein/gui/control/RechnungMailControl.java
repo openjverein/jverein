@@ -22,29 +22,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Queries.RechnungQuery;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.Ausgabeart;
-import de.jost_net.JVerein.keys.Differenz;
-import de.jost_net.JVerein.keys.Filter;
-import de.jost_net.JVerein.keys.MailAuswahl;
-import de.jost_net.JVerein.keys.SuchVersand;
-import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
-import de.jost_net.JVerein.rmi.Sollbuchung;
-import de.jost_net.JVerein.server.ExtendedDBIterator;
-import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Datum;
-import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -71,10 +58,10 @@ public class RechnungMailControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-          new Rechnungsausgabe(RechnungDetailControl.TYP.RECHNUNG, null).aufbereiten(
-              getRechnungen(currentObject),
-              (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
-              getTxtString(), true, false, (Boolean) versand.getValue());
+          new Rechnungsausgabe(RechnungDetailControl.TYP.RECHNUNG, null)
+              .aufbereiten(getRechnungen(currentObject),
+                  (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
+                  getTxtString(), true, false, (Boolean) versand.getValue());
         }
         catch (ApplicationException ae)
         {
@@ -119,124 +106,6 @@ public class RechnungMailControl extends DruckMailControl
       }
     }, null, true, "walking.png");
     return button;
-  }
-
-  @SuppressWarnings("unchecked")
-  private GenericIterator<Rechnung> getRechnungIterator()
-      throws RemoteException, ApplicationException
-  {
-    DBIterator<Rechnung> rechnungenIt = Einstellungen.getDBService()
-        .createList(Rechnung.class);
-
-    boolean joinMitglied = false;
-    for (Entry<Filter, Object> entry : getFilter().entrySet())
-    {
-      Object value = entry.getValue();
-
-      switch (entry.getKey())
-      {
-        case VERSAND:
-          switch ((SuchVersand) value)
-          {
-            case VERSAND:
-              rechnungenIt.addFilter("rechnung.versanddatum IS NOT NULL");
-              break;
-            case NICHT_VERSAND:
-              rechnungenIt.addFilter("rechnung.versanddatum IS NULL");
-              break;
-          }
-          break;
-        case DATUM_VON:
-          rechnungenIt.addFilter("rechnung.datum >= ? ", value);
-          break;
-        case DATUM_BIS:
-          rechnungenIt.addFilter("rechnung.datum <= ? ", value);
-          break;
-        case NAME:
-          joinMitglied = true;
-          rechnungenIt.addFilter(
-              "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?))",
-              "%" + ((String) value).toLowerCase() + "%",
-              "%" + ((String) value).toLowerCase() + "%");
-          break;
-        case MAIL:
-          switch ((MailAuswahl) value)
-          {
-            case OHNE:
-              joinMitglied = true;
-              rechnungenIt.addFilter(
-                  "(mitglied.email is null or length(mitglied.email) = 0)");
-              break;
-            case MIT:
-              joinMitglied = true;
-              rechnungenIt.addFilter(
-                  "(mitglied.email is  not null and length(mitglied.email) > 0)");
-          }
-          break;
-        case OHNE_ABBUCHER:
-          if ((boolean) value)
-          {
-            rechnungenIt.addFilter("rechnung.zahlungsweg <> ?",
-                Zahlungsweg.BASISLASTSCHRIFT);
-          }
-          break;
-        case DIFFERENZ:
-          Double limit = (Double) getFilter().get(Filter.DIFFERENZ_LIMIT);
-          if (limit == null)
-          {
-            limit = 0.005d;
-          }
-          // Es ist egal ob der Betrag positiv oder negativ eingetragen
-          // wurde
-          limit = Math.abs(limit);
-
-          ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-              Sollbuchung.TABLE_NAME);
-          it.addColumn(Sollbuchung.T_RECHNUNG + " as rid");
-          it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
-              + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
-          it.leftJoin(
-              "(SELECT sum(COALESCE((betrag),0)) AS ist,"
-                  + Buchung.T_SOLLBUCHUNG + " FROM buchung GROUP BY "
-                  + Buchung.T_SOLLBUCHUNG + ") AS buchung",
-              Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
-
-          if (value == Differenz.FEHLBETRAG)
-          {
-            it.addHaving("dif < ?", -limit);
-          }
-          else
-          {
-            it.addHaving("dif > ?", limit);
-          }
-          it.addGroupBy(Sollbuchung.T_RECHNUNG);
-          ArrayList<String> diffIds = new ArrayList<>();
-          while (it.hasNext())
-          {
-            diffIds.add(String.valueOf(it.next().getAttribute("rid")));
-          }
-          if (diffIds.size() == 0)
-          {
-            return PseudoIterator.fromArray(new GenericObject[] {});
-          }
-          rechnungenIt
-              .addFilter("rechnung.id in (" + String.join(",", diffIds) + ")");
-          break;
-        case DIFFERENZ_LIMIT:
-          // Wird oben getestet
-          break;
-        default:
-          throw new ApplicationException(
-              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
-      }
-    }
-    if (joinMitglied)
-    {
-      rechnungenIt.join("mitglied");
-      rechnungenIt.addFilter("mitglied.id = rechnung.mitglied");
-    }
-
-    return rechnungenIt;
   }
 
   @Override
@@ -292,7 +161,7 @@ public class RechnungMailControl extends DruckMailControl
     }
 
     ArrayList<Rechnung> rechn = (ArrayList<Rechnung>) PseudoIterator
-        .asList(getRechnungIterator());
+        .asList(new RechnungQuery(getFilter()).get());
 
     if (rechn == null || rechn.size() == 0)
     {
