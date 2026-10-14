@@ -109,6 +109,7 @@ public class SollbuchungDetailView extends AbstractDetailView
   public void unbind() throws OperationCanceledException, ApplicationException
   {
     control.deregisterSollbuchungConsumer();
+    control.deregisterMitgliedskontoConsumer();
     super.unbind();
   }
 }
