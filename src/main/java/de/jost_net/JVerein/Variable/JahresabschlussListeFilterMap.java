@@ -19,13 +19,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.gui.control.JahresabschlussControl;
+import de.jost_net.JVerein.gui.control.JahresabschlussDetailControl;
 import de.willuhn.logging.Logger;
 
 public class JahresabschlussListeFilterMap extends AbstractMap
 {
 
-  public Map<String, Object> getMap(JahresabschlussControl control,
+  public Map<String, Object> getMap(JahresabschlussDetailControl control,
       Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;

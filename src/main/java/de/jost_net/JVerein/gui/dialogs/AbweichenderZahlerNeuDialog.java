@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedDetailControl;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -46,7 +46,7 @@ public class AbweichenderZahlerNeuDialog extends AbstractDialog<Boolean>
 
   private Boolean abort = true;
 
-  private MitgliedControl control;
+  private MitgliedDetailControl control;
 
   private Mitglied mitglied;
 
@@ -61,7 +61,7 @@ public class AbweichenderZahlerNeuDialog extends AbstractDialog<Boolean>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    control = new MitgliedControl(null);
+    control = new MitgliedDetailControl(null);
     control.setMitglied(mitglied);
     zeicheStammdaten(parent);
     zeichneZahlung(parent);

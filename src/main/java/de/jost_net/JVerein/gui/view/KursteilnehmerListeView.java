@@ -40,7 +40,8 @@ public class KursteilnehmerListeView extends AbstractView
   {
     GUI.getView().setTitle("Kursteilnehmer");
 
-    final KursteilnehmerControl control = new KursteilnehmerControl(this);
+    final KursteilnehmerControl control = new KursteilnehmerControl(
+        this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);

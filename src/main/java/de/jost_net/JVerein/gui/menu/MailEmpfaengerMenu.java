@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.MailEmpfaengerEntfernenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.control.MailControl;
+import de.jost_net.JVerein.gui.control.MailDetailControl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -30,7 +30,7 @@ import de.willuhn.jameica.gui.parts.ContextMenuItem;
 public class MailEmpfaengerMenu extends ContextMenu
 {
 
-  public MailEmpfaengerMenu(MailControl control)
+  public MailEmpfaengerMenu(MailDetailControl control)
   {
     addItem(new CheckedContextMenuItem("Entfernen",
         new MailEmpfaengerEntfernenAction(), "user-trash-full.png"));

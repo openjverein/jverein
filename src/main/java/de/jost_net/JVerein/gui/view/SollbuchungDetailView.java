@@ -21,13 +21,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.SollbuchungDetailControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
-import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -39,14 +37,14 @@ import de.willuhn.util.ApplicationException;
 
 public class SollbuchungDetailView extends AbstractDetailView
 {
-  private SollbuchungControl control;
+  private SollbuchungDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Sollbuchung");
 
-    control = new SollbuchungControl(this);
+    control = new SollbuchungDetailControl(this);
     final boolean isEditable = control.isSollbuchungEditable();
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
@@ -67,7 +65,7 @@ public class SollbuchungDetailView extends AbstractDetailView
         "Sollbuchungspositionen");
 
     ButtonAreaRtoL buttons1 = new ButtonAreaRtoL();
-    ButtonRtoL neu = new NewButton(new SollbuchungPositionNeuAction());
+    ButtonRtoL neu = control.getNeuButton();
     neu.setEnabled(isEditable);
     buttons1.addButton(neu);
 
@@ -78,7 +76,7 @@ public class SollbuchungDetailView extends AbstractDetailView
     comp.setLayoutData(new GridData(GridData.END));
 
     buttons1.paint(cont.getComposite());
-    cont.addPart(control.getSollbuchungList());
+    cont.addPart(control.getSollbuchungPositionList());
 
     LabelGroup buch = new LabelGroup(scrolled.getComposite(),
         "Zugeordnete Buchungen");

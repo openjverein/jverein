@@ -31,113 +31,21 @@ import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Vorlage;
 import de.jost_net.JVerein.server.VorlageImpl;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class VorlageControl extends FilterControl implements Savable
+public class VorlageControl extends FilterControl
 {
 
   private JVereinTablePart namenList;
 
-  private Vorlage vorlage;
-
-  private Input muster;
-
-  private Input vorschau;
-
   public VorlageControl(AbstractView view)
   {
     super(view);
-  }
-
-  public Vorlage getVorlage() throws ApplicationException
-  {
-    if (vorlage != null)
-    {
-      return vorlage;
-    }
-    vorlage = (Vorlage) getCurrentObject();
-    if (vorlage == null)
-    {
-      throw new ApplicationException("Keine Vorlage ausgewählt");
-    }
-    return vorlage;
-  }
-
-  public Input getMuster() throws RemoteException, ApplicationException
-  {
-    if (muster != null)
-    {
-      return muster;
-    }
-    muster = new TextInput(getVorlage().getMuster(), 250);
-    return muster;
-  }
-
-  public Input getVorschau() throws RemoteException, ApplicationException
-  {
-    if (vorschau != null)
-    {
-      return vorschau;
-    }
-    vorschau = new TextInput(
-        VorlageUtil.getDummyName(VorlageTyp.getByKey(getVorlage().getKey()),
-            getVorlage().getMuster()),
-        1000);
-    vorschau.disable();
-    return vorschau;
-  }
-
-  public void updateVorschau() throws RemoteException, ApplicationException
-  {
-    getVorschau().setValue(
-        VorlageUtil.getDummyName(VorlageTyp.getByKey(getVorlage().getKey()),
-            getMuster().getValue().toString()));
-  }
-
-  /**
-   * This method sets the attributes of the Vorlage.
-   * 
-   * @return
-   * @throws ApplicationException
-   * 
-   * @throws RemoteException
-   */
-  @Override
-  public JVereinDBObject prepareStore()
-      throws RemoteException, ApplicationException
-  {
-    Vorlage bv = getVorlage();
-    bv.setMuster((String) getMuster().getValue());
-    return bv;
-  }
-
-  /**
-   * This method stores the Vorlage using the current values.
-   * 
-   * @throws ApplicationException
-   */
-  @Override
-  public void handleStore() throws ApplicationException
-  {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern des Dateinamen";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
   }
 
   @Override

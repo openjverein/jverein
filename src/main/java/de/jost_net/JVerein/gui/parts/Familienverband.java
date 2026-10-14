@@ -23,7 +23,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedDetailControl;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.willuhn.jameica.gui.Part;
@@ -37,9 +37,9 @@ public class Familienverband implements Part
 
   private Beitragsgruppe gruppe;
 
-  private MitgliedControl control;
+  private MitgliedDetailControl control;
 
-  public Familienverband(MitgliedControl control, Beitragsgruppe gruppe)
+  public Familienverband(MitgliedDetailControl control, Beitragsgruppe gruppe)
   {
     this.control = control;
     this.gruppe = gruppe;

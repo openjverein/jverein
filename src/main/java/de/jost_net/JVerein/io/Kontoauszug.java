@@ -26,7 +26,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
-import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.KontoauszugMailControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.dialogs.ExporterExportDialog;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
@@ -48,11 +48,11 @@ public class Kontoauszug extends AbstractAusgabe
 
   private Reporter rpt;
 
-  private SollbuchungControl control;
+  private KontoauszugMailControl control;
 
   private ExportLayoutParam params;
 
-  public Kontoauszug(SollbuchungControl control) throws Exception
+  public Kontoauszug(KontoauszugMailControl control) throws Exception
   {
     this.control = control;
   }

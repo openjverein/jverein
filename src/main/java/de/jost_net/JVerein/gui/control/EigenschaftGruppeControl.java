@@ -26,118 +26,19 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EigenschaftGruppeDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftGruppeControl extends VorZurueckControl
-    implements Savable
+public class EigenschaftGruppeControl extends FilterControl
 {
   private JVereinTablePart eigenschaftgruppeList;
-
-  private Input bezeichnung;
-
-  private CheckboxInput pflicht;
-
-  private CheckboxInput max1;
-
-  private EigenschaftGruppe eigenschaftgruppe;
-
-  private TextInput name;
 
   public EigenschaftGruppeControl(AbstractView view)
   {
     super(view);
-  }
-
-  private EigenschaftGruppe getEigenschaftGruppe()
-  {
-    if (eigenschaftgruppe != null)
-    {
-      return eigenschaftgruppe;
-    }
-    eigenschaftgruppe = (EigenschaftGruppe) getCurrentObject();
-    return eigenschaftgruppe;
-  }
-
-  public Input getBezeichnung() throws RemoteException
-  {
-    if (bezeichnung != null)
-    {
-      return bezeichnung;
-    }
-    bezeichnung = new TextInput(getEigenschaftGruppe().getBezeichnung(), 30);
-    bezeichnung.setMandatory(true);
-    return bezeichnung;
-  }
-
-  public Input getName() throws RemoteException
-  {
-    if (name != null)
-    {
-      return name;
-    }
-    name = new TextInput(getEigenschaftGruppe().getName(), 30);
-    name.setMandatory(true);
-    return name;
-  }
-
-  public CheckboxInput getPflicht() throws RemoteException
-  {
-    if (pflicht != null)
-    {
-      return pflicht;
-    }
-    pflicht = new CheckboxInput(getEigenschaftGruppe().getPflicht());
-    return pflicht;
-  }
-
-  public CheckboxInput getMax1() throws RemoteException
-  {
-    if (max1 != null)
-    {
-      return max1;
-    }
-    max1 = new CheckboxInput(getEigenschaftGruppe().getMax1());
-    return max1;
-  }
-
-  @Override
-  public JVereinDBObject prepareStore() throws RemoteException
-  {
-    EigenschaftGruppe eg = getEigenschaftGruppe();
-    eg.setName((String) getName().getValue());
-    eg.setBezeichnung((String) getBezeichnung().getValue());
-    eg.setPflicht((Boolean) getPflicht().getValue());
-    eg.setMax1((Boolean) getMax1().getValue());
-    return eg;
-  }
-
-  /**
-   * This method stores the project using the current values.
-   * 
-   * @throws ApplicationException
-   */
-  @Override
-  public void handleStore() throws ApplicationException
-  {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern der Eigenschaft Gruppe";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
   }
 
   @Override
@@ -171,6 +72,12 @@ public class EigenschaftGruppeControl extends VorZurueckControl
   }
 
   @Override
+  protected void TabRefresh() throws ApplicationException
+  {
+    // Es gibt keinen Refresh
+  }
+
+  @Override
   protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTENGRUPPEN_TITEL);
@@ -187,4 +94,5 @@ public class EigenschaftGruppeControl extends VorZurueckControl
   {
     return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTENGRUPPEN_DATEINAME);
   }
+
 }

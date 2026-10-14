@@ -25,7 +25,7 @@ import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
-import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
+import de.jost_net.JVerein.gui.control.SpendenbescheinigungMailControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
@@ -44,7 +44,7 @@ public class SpendenbescheinigungMailView extends AbstractView
   {
     GUI.getView().setTitle("Spendenbescheinigungen");
 
-    final SpendenbescheinigungControl control = new SpendenbescheinigungControl(
+    final SpendenbescheinigungMailControl control = new SpendenbescheinigungMailControl(
         this);
     control.init("spenden.");
 

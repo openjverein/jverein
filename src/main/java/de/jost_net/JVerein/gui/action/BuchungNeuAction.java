@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.BuchungDetailControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.keys.Filter;
@@ -30,38 +31,65 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class BuchungNeuAction implements Action
 {
-  private BuchungsControl control;
 
-  public BuchungNeuAction(BuchungsControl control)
+  private Konto konto;
+
+  private String kontoid;
+
+  private boolean isAnlageKonto;
+
+  public BuchungNeuAction(BuchungsControl blControl,
+      BuchungDetailControl bControl)
   {
-    this.control = control;
+    // Die Action kann aus dem DetailView oder ListeView ausgerufen werden.
+    if (blControl != null)
+    {
+      kontoid = blControl.getSettings().getString(
+          blControl.getSettingsPrefix() + BuchungDetailControl.KONTO_ID, "");
+      konto = (Konto) blControl.getFilterValue(Filter.KONTO);
+      isAnlageKonto = blControl.getSettingsPrefix()
+          .equals(BuchungDetailControl.ANLAGENKONTO_PREFIX);
+    }
+    else if (bControl != null)
+    {
+      kontoid = bControl.getSettings().getString(
+          bControl.getSettingsPrefix() + BuchungDetailControl.KONTO_ID, "");
+      // Wegen Umbenennung der Controls in #1699
+      // Wenn noch nichts im Control gespeichert ist schauen wir noch in
+      // BuchungsControl nach.
+      if (kontoid == null || kontoid.isEmpty())
+      {
+        Settings tempSettings = new Settings(BuchungsControl.class);
+        kontoid = tempSettings.getString(
+            bControl.getSettingsPrefix() + BuchungDetailControl.KONTO_ID, "");
+      }
+      isAnlageKonto = bControl.getSettingsPrefix()
+          .equals(BuchungDetailControl.ANLAGENKONTO_PREFIX);
+    }
   }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
     Buchung buch = null;
-    Konto konto = null;
     try
     {
       buch = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
           null);
 
-      konto = (Konto) control.getFilterValue(Filter.KONTO);
       if (konto != null)
       {
-        // Das Konto ist im Filterbereich ausgewählt
+        // Das Konto ist im Filterbereich des ListeView ausgewählt
         updateBuchung(buch, konto);
       }
       else
       {
-        String kontoid = control.getSettings().getString(
-            control.getSettingsPrefix() + BuchungsControl.KONTO_ID, "");
         if (kontoid != null && !kontoid.isEmpty())
         {
           // Das ist das Konto welches als letztes benutzt wurde und darum in
@@ -87,8 +115,7 @@ public class BuchungNeuAction implements Action
         DBIterator<Konto> it = Einstellungen.getDBService()
             .createList(Konto.class);
         it.setLimit(1);
-        if (control.getSettingsPrefix()
-            .equals(BuchungsControl.ANLAGENKONTO_PREFIX))
+        if (isAnlageKonto)
         {
           it.addFilter("kontoart = ?", Kontoart.ANLAGE.getKey());
         }

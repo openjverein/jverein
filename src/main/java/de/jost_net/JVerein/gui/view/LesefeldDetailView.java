@@ -17,7 +17,7 @@
 
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.control.LesefeldControl;
+import de.jost_net.JVerein.gui.control.LesefeldDetailControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
@@ -31,13 +31,13 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
  */
 public class LesefeldDetailView extends AbstractDetailView
 {
-  private LesefeldControl control;
+  private LesefeldDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Lesefeld");
-    control = new LesefeldControl(this);
+    control = new LesefeldDetailControl(this);
 
     SimpleContainer container = new SimpleContainer(getParent(), false);
     container.addLabelPair("Mitglied", control.getMitglied());

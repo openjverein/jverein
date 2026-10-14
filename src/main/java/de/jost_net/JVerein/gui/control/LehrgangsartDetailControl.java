@@ -1,0 +1,151 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.JVerein.gui.control;
+
+import java.rmi.RemoteException;
+import java.util.Date;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Lehrgangsart;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
+
+public class LehrgangsartDetailControl extends VorZurueckControl implements Savable
+{
+
+  private TextInput bezeichnung;
+
+  private DateInput von;
+
+  private DateInput bis;
+
+  private TextInput veranstalter;
+
+  private Lehrgangsart lehrgangsart;
+
+  public LehrgangsartDetailControl(AbstractView view)
+  {
+    super(view);
+  }
+
+  private Lehrgangsart getLehrgangsart()
+  {
+    if (lehrgangsart != null)
+    {
+      return lehrgangsart;
+    }
+    lehrgangsart = (Lehrgangsart) getCurrentObject();
+    return lehrgangsart;
+  }
+
+  public TextInput getBezeichnung(boolean withFocus) throws RemoteException
+  {
+    if (bezeichnung != null)
+    {
+      return bezeichnung;
+    }
+    bezeichnung = new TextInput(getLehrgangsart().getBezeichnung(), 50);
+    if (withFocus)
+    {
+      bezeichnung.focus();
+    }
+    bezeichnung.setMandatory(true);
+    return bezeichnung;
+  }
+
+  public DateInput getVon() throws RemoteException
+  {
+    if (von != null)
+    {
+      return von;
+    }
+    Date d = getLehrgangsart().getVon();
+    if (d != null && d.equals(Einstellungen.NODATE))
+    {
+      d = null;
+    }
+    this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    this.von.setTitle("Von/am");
+    this.von.setText("Bitte Beginn oder Tag der Veranstaltung wählen");
+    von.setMandatory(true);
+    return von;
+  }
+
+  public DateInput getBis() throws RemoteException
+  {
+    if (bis != null)
+    {
+      return bis;
+    }
+    Date d = getLehrgangsart().getBis();
+    if (d != null && d.equals(Einstellungen.NODATE))
+    {
+      d = null;
+    }
+    this.bis = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    this.bis.setTitle("Bis");
+    this.bis.setText("Bitte Ende der Veranstaltung wählen");
+    return bis;
+  }
+
+  public TextInput getVeranstalter() throws RemoteException
+  {
+    if (veranstalter != null)
+    {
+      return veranstalter;
+    }
+    veranstalter = new TextInput(getLehrgangsart().getVeranstalter(), 50);
+    return veranstalter;
+  }
+
+  @Override
+  public JVereinDBObject prepareStore() throws RemoteException
+  {
+    Lehrgangsart l = getLehrgangsart();
+    l.setBezeichnung((String) getBezeichnung(false).getValue());
+    l.setVon((Date) getVon().getValue());
+    l.setBis((Date) getBis().getValue());
+    l.setVeranstalter((String) getVeranstalter().getValue());
+    return l;
+  }
+
+  /**
+   * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
+   */
+  @Override
+  public void handleStore() throws ApplicationException
+  {
+    try
+    {
+      prepareStore().store();
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler beim Speichern der Lehrgangsart";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
+    }
+  }
+
+}

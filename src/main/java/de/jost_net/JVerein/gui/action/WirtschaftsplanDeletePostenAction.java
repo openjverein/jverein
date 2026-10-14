@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
@@ -26,9 +26,9 @@ import de.willuhn.util.ApplicationException;
 
 public class WirtschaftsplanDeletePostenAction implements Action
 {
-  private final WirtschaftsplanControl control;
+  private final WirtschaftsplanDetailControl control;
 
-  public WirtschaftsplanDeletePostenAction(WirtschaftsplanControl control)
+  public WirtschaftsplanDeletePostenAction(WirtschaftsplanDetailControl control)
   {
     this.control = control;
   }

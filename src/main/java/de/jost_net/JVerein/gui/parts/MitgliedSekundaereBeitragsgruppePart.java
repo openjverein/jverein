@@ -20,20 +20,20 @@ import java.rmi.RemoteException;
 
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedDetailControl;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class MitgliedSekundaereBeitragsgruppePart implements Part
 {
-  private MitgliedControl control;
+  private MitgliedDetailControl control;
 
   private Container cont;
 
   private Composite parent;
 
-  public MitgliedSekundaereBeitragsgruppePart(MitgliedControl control)
+  public MitgliedSekundaereBeitragsgruppePart(MitgliedDetailControl control)
   {
     this.control = control;
   }

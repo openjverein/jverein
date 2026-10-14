@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.MitgliedNextBGruppeLoeschenAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedDetailControl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
@@ -26,7 +26,7 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
  */
 public class MitgliedNextBGruppeMenue extends ContextMenu
 {
-  public MitgliedNextBGruppeMenue(MitgliedControl control)
+  public MitgliedNextBGruppeMenue(MitgliedDetailControl control)
   {
     addItem(new CheckedContextMenuItem("Beitragsgruppe löschen",
         new MitgliedNextBGruppeLoeschenAction(), "user-trash-full.png"));

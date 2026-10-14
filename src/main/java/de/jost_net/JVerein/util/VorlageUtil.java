@@ -40,8 +40,8 @@ import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
 import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
-import de.jost_net.JVerein.gui.control.JahresabschlussControl;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.JahresabschlussDetailControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.VelocityTool;
@@ -305,7 +305,7 @@ public class VorlageUtil
         case JAHRESABSCHLUSS_TITEL:
         case JAHRESABSCHLUSS_SUBTITEL:
           map = new JahresabschlussListeFilterMap()
-              .getMap((JahresabschlussControl) obj, map);
+              .getMap((JahresabschlussDetailControl) obj, map);
           break;
         case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:
         case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:
@@ -317,7 +317,7 @@ public class VorlageUtil
         case WIRTSCHAFTSPLAN_TITEL:
         case WIRTSCHAFTSPLAN_SUBTITEL:
           map = new WirtschaftsplanParameterMap()
-              .getMap((WirtschaftsplanControl) obj, map);
+              .getMap((WirtschaftsplanDetailControl) obj, map);
           break;
         case SPENDENBESCHEINIGUNG_DATEINAME:
         case RECHNUNG_DATEINAME:
