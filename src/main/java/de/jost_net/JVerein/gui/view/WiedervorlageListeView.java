@@ -40,7 +40,8 @@ public class WiedervorlageListeView extends AbstractView
   {
     GUI.getView().setTitle("Wiedervorlagen");
 
-    final WiedervorlageControl control = new WiedervorlageControl(this);
+    final WiedervorlageControl control = new WiedervorlageControl(
+        this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);

@@ -60,7 +60,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public abstract class FilterControl extends VorZurueckControl
+public abstract class FilterControl extends AbstractListeControl
 {
   private Calendar calendar = Calendar.getInstance();
 

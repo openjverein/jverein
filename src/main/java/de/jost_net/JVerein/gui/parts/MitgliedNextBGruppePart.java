@@ -22,7 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.MitgliedNextBGruppeNeuAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedDetailControl;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -30,9 +30,9 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class MitgliedNextBGruppePart implements Part
 {
-  private MitgliedControl control;
+  private MitgliedDetailControl control;
 
-  public MitgliedNextBGruppePart(MitgliedControl control)
+  public MitgliedNextBGruppePart(MitgliedDetailControl control)
   {
     this.control = control;
   }

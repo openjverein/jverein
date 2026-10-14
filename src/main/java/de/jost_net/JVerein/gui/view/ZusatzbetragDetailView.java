@@ -23,7 +23,7 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
+import de.jost_net.JVerein.gui.control.ZusatzbetragDetailControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
@@ -35,13 +35,13 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 public class ZusatzbetragDetailView extends AbstractDetailView
 {
 
-  private ZusatzbetragControl control;
+  private ZusatzbetragDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Zusatzbetrag");
-    control = new ZusatzbetragControl(this);
+    control = new ZusatzbetragDetailControl(this);
 
     final ZusatzbetragPart part = control.getZusatzbetragPart();
     part.paint(getParent());

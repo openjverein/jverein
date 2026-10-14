@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
-import de.jost_net.JVerein.gui.control.MailControl;
+import de.jost_net.JVerein.gui.control.MailDetailControl;
 import de.jost_net.JVerein.keys.Eigenschaftenauswahl;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
@@ -53,7 +53,7 @@ import de.willuhn.util.ApplicationException;
 public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
 {
 
-  private MailControl control;
+  private MailDetailControl control;
 
   private TextInput auswahlinput;
 
@@ -69,7 +69,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
 
   private Eigenschaftenauswahl selection = Eigenschaftenauswahl.KEINE;
 
-  public MailEmpfaengerAuswahlDialog(MailControl control, int position)
+  public MailEmpfaengerAuswahlDialog(MailDetailControl control, int position)
   {
     super(position);
     this.control = control;

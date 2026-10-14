@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
@@ -29,9 +29,9 @@ import de.willuhn.util.ApplicationException;
 public class WirtschaftsplanExportAction implements Action
 {
 
-  private WirtschaftsplanControl control;
+  private WirtschaftsplanDetailControl control;
 
-  public WirtschaftsplanExportAction(WirtschaftsplanControl control)
+  public WirtschaftsplanExportAction(WirtschaftsplanDetailControl control)
   {
     this.control = control;
   }

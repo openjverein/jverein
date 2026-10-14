@@ -1,0 +1,119 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ *
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.JVerein.gui.control;
+
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.MailVorlage;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.input.TextAreaInput;
+import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
+
+public class MailVorlageDetailControl extends VorZurueckControl
+    implements Savable, IMailControl
+{
+
+  private TextInput betreff;
+
+  private TextAreaInput txt;
+
+  private MailVorlage mailvorlage;
+
+  public MailVorlageDetailControl(AbstractView view)
+  {
+    super(view);
+  }
+
+  private MailVorlage getMailVorlage()
+  {
+    if (mailvorlage != null)
+    {
+      return mailvorlage;
+    }
+    mailvorlage = (MailVorlage) getCurrentObject();
+    return mailvorlage;
+  }
+
+  public TextInput getBetreff(boolean withFocus) throws RemoteException
+  {
+    if (betreff != null)
+    {
+      return betreff;
+    }
+    betreff = new TextInput(getMailVorlage().getBetreff(), 100);
+    betreff.setName("Betreff");
+    betreff.setMandatory(true);
+    if (withFocus)
+    {
+      betreff.focus();
+    }
+    return betreff;
+  }
+
+  @Override
+  public String getBetreffString()
+  {
+    return (String) betreff.getValue();
+  }
+
+  public TextAreaInput getTxt() throws RemoteException
+  {
+    if (txt != null)
+    {
+      return txt;
+    }
+    txt = new TextAreaInput(getMailVorlage().getTxt(), 10000);
+    txt.setName("Text");
+    txt.setMandatory(true);
+    return txt;
+  }
+
+  @Override
+  public String getTxtString()
+  {
+    return (String) txt.getValue();
+  }
+
+  @Override
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
+  {
+    MailVorlage mv = getMailVorlage();
+    mv.setBetreff((String) getBetreff(false).getValue());
+    mv.setTxt((String) getTxt().getValue());
+    return mv;
+  }
+
+  @Override
+  public void handleStore() throws ApplicationException
+  {
+    try
+    {
+      prepareStore().store();
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler bei speichern der MailVorlage";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
+    }
+  }
+
+}

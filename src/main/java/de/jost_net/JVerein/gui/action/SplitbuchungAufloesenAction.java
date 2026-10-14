@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungDetailControl;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -25,9 +25,9 @@ import de.willuhn.logging.Logger;
 
 public class SplitbuchungAufloesenAction implements Action
 {
-  private BuchungsControl control;
+  private BuchungDetailControl control;
 
-  public SplitbuchungAufloesenAction(BuchungsControl control)
+  public SplitbuchungAufloesenAction(BuchungDetailControl control)
   {
     this.control = control;
   }

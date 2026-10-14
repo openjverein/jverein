@@ -24,107 +24,21 @@ import de.jost_net.JVerein.gui.menu.MailVorlageMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MailVorlageDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.TextAreaInput;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailVorlageControl extends VorZurueckControl
-    implements Savable, IMailControl
+public class MailVorlageControl extends FilterControl
 {
 
   private JVereinTablePart mailvorlageList;
 
-  private TextInput betreff;
-
-  private TextAreaInput txt;
-
-  private MailVorlage mailvorlage;
-
   public MailVorlageControl(AbstractView view)
   {
     super(view);
-  }
-
-  private MailVorlage getMailVorlage()
-  {
-    if (mailvorlage != null)
-    {
-      return mailvorlage;
-    }
-    mailvorlage = (MailVorlage) getCurrentObject();
-    return mailvorlage;
-  }
-
-  public TextInput getBetreff(boolean withFocus) throws RemoteException
-  {
-    if (betreff != null)
-    {
-      return betreff;
-    }
-    betreff = new TextInput(getMailVorlage().getBetreff(), 100);
-    betreff.setName("Betreff");
-    betreff.setMandatory(true);
-    if (withFocus)
-    {
-      betreff.focus();
-    }
-    return betreff;
-  }
-
-  @Override
-  public String getBetreffString()
-  {
-    return (String) betreff.getValue();
-  }
-
-  public TextAreaInput getTxt() throws RemoteException
-  {
-    if (txt != null)
-    {
-      return txt;
-    }
-    txt = new TextAreaInput(getMailVorlage().getTxt(), 10000);
-    txt.setName("Text");
-    txt.setMandatory(true);
-    return txt;
-  }
-
-  @Override
-  public String getTxtString()
-  {
-    return (String) txt.getValue();
-  }
-
-  @Override
-  public JVereinDBObject prepareStore()
-      throws RemoteException, ApplicationException
-  {
-    MailVorlage mv = getMailVorlage();
-    mv.setBetreff((String) getBetreff(false).getValue());
-    mv.setTxt((String) getTxt().getValue());
-    return mv;
-  }
-
-  @Override
-  public void handleStore() throws ApplicationException
-  {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern der MailVorlage";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
   }
 
   @Override
@@ -145,6 +59,12 @@ public class MailVorlageControl extends VorZurueckControl
 
     VorZurueckControl.setObjektListe(null, null);
     return mailvorlageList;
+  }
+
+  @Override
+  protected void TabRefresh() throws ApplicationException
+  {
+    // Es gibt keinen Refresh
   }
 
   @Override

@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungDetailControl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -32,9 +32,9 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class BuchungPart implements Part
 {
-  private BuchungsControl control;
+  private BuchungDetailControl control;
 
-  public BuchungPart(BuchungsControl control)
+  public BuchungPart(BuchungDetailControl control)
   {
     this.control = control;
   }

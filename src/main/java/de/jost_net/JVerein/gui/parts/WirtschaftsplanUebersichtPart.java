@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
@@ -40,7 +40,7 @@ import de.willuhn.util.ApplicationException;
 
 public class WirtschaftsplanUebersichtPart implements Part
 {
-  private final WirtschaftsplanControl control;
+  private final WirtschaftsplanDetailControl control;
 
   private TextInput bezeichnung;
 
@@ -58,7 +58,7 @@ public class WirtschaftsplanUebersichtPart implements Part
 
   private DecimalInput sollRuecklagenAufgeloest;
 
-  public WirtschaftsplanUebersichtPart(WirtschaftsplanControl control)
+  public WirtschaftsplanUebersichtPart(WirtschaftsplanDetailControl control)
   {
     this.control = control;
   }

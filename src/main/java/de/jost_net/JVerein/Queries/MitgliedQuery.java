@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FilterControl;
@@ -469,7 +469,8 @@ public class MitgliedQuery
 
     DBIterator<Mitglied> list = Einstellungen.getDBService()
         .createList(Mitglied.class);
-    list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
+    list.addFilter("id in (" + ids.stream().map(String::valueOf)
+        .collect(Collectors.joining(",")) + ")");
     if (sort != null && !sort.isEmpty())
     {
       if (sort.equals("Name, Vorname"))

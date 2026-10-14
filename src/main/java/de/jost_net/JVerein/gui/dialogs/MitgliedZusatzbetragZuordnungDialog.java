@@ -28,7 +28,7 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
-import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
+import de.jost_net.JVerein.gui.control.ZusatzbetragDetailControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
@@ -79,7 +79,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
     part = new ZusatzbetragPart(zusatzb, false);
     part.paint(parent);
 
-    final ZusatzbetragControl control = new ZusatzbetragControl(null);
+    final ZusatzbetragDetailControl control = new ZusatzbetragDetailControl(null);
     LabelGroup group = new LabelGroup(parent, "Vorlagen");
     group.addLabelPair("Als Vorlage speichern", control.getVorlage());
 
@@ -123,9 +123,9 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
           zb.store();
           count++;
         }
-        if (control.getVorlage().getValue().equals(ZusatzbetragControl.MITDATUM)
+        if (control.getVorlage().getValue().equals(ZusatzbetragDetailControl.MITDATUM)
             || control.getVorlage().getValue()
-                .equals(ZusatzbetragControl.OHNEDATUM))
+                .equals(ZusatzbetragDetailControl.OHNEDATUM))
         {
           ZusatzbetragVorlage zv = (ZusatzbetragVorlage) Einstellungen
               .getDBService().createObject(ZusatzbetragVorlage.class, null);
@@ -135,7 +135,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
           zv.setBuchungstext((String) part.getBuchungstext().getValue());
           zv.setBetrag((Double) part.getBetrag().getValue());
           if (control.getVorlage().getValue()
-              .equals(ZusatzbetragControl.MITDATUM))
+              .equals(ZusatzbetragDetailControl.MITDATUM))
           {
             zv.setEndedatum((Date) part.getEndedatum().getValue());
             zv.setFaelligkeit((Date) part.getFaelligkeit().getValue());

@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.control.VorlageControl;
+import de.jost_net.JVerein.gui.control.VorlageDetailControl;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.util.ApplicationException;
 
@@ -33,11 +33,11 @@ public class VorlageVorschauAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    VorlageControl control = null;
+    VorlageDetailControl control = null;
 
-    if (context instanceof VorlageControl)
+    if (context instanceof VorlageDetailControl)
     {
-      control = (VorlageControl) context;
+      control = (VorlageDetailControl) context;
     }
     else
     {

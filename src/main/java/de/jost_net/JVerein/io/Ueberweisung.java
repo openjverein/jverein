@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
 import org.kapott.hbci.GV.SepaUtil;
 import org.kapott.hbci.GV.generators.ISEPAGenerator;
 import org.kapott.hbci.GV.generators.SEPAGeneratorFactory;
@@ -107,20 +106,20 @@ public class Ueberweisung
     for (Lastschrift ls : lastschriften)
     {
       ls_properties.setProperty(SepaUtil.insertIndex("dst.bic", counter),
-          StringUtils.trimToEmpty(ls.getBic()));
+          StringTool.trimToEmpty(ls.getBic()));
       ls_properties.setProperty(SepaUtil.insertIndex("dst.iban", counter),
-          StringUtils.trimToEmpty(ls.getIban()));
+          StringTool.trimToEmpty(ls.getIban()));
       if (ls.getMitglied() != null)
       {
         ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),
-            StringUtils.trimToEmpty(ls.getMitglied()
+            StringTool.trimToEmpty(ls.getMitglied()
                 .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)
                 .toUpperCase()));
       }
       else if (ls.getKursteilnehmer() != null)
       {
         ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),
-            StringUtils.trimToEmpty(ls.getKursteilnehmer()
+            StringTool.trimToEmpty(ls.getKursteilnehmer()
                 .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)
                 .toUpperCase()));
       }
@@ -139,17 +138,17 @@ public class Ueberweisung
       if (verwendungszweck != null)
       {
         ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),
-            StringUtils.trimToEmpty(eval(ls, verwendungszweck)));
+            StringTool.trimToEmpty(eval(ls, verwendungszweck)));
       }
       else
       {
         ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),
-            StringUtils.trimToEmpty(ls.getVerwendungszweck()));
+            StringTool.trimToEmpty(ls.getVerwendungszweck()));
       }
       ls_properties.setProperty(SepaUtil.insertIndex("endtoendid", counter),
           "NOTPROVIDED");
       ls_properties.setProperty(SepaUtil.insertIndex("mandateid", counter),
-          StringUtils.trimToEmpty(ls.getMandatID()));
+          StringTool.trimToEmpty(ls.getMandatID()));
       ls_properties.setProperty(SepaUtil.insertIndex("manddateofsig", counter),
           ISO_DATE.format(ls.getMandatDatum()));
       counter += 1;

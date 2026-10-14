@@ -21,21 +21,21 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.gui.control.ProjektControl;
+import de.jost_net.JVerein.gui.control.ProjektDetailControl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class ProjektDetailView extends AbstractDetailView
 {
 
-  private ProjektControl control;
+  private ProjektDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Projekt");
 
-    control = new ProjektControl(this);
+    control = new ProjektDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Projekt");
     group.addInput(control.getBezeichnung());

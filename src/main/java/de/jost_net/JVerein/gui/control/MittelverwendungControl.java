@@ -22,7 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.time.DateUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -39,6 +38,7 @@ import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -199,7 +199,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       List<Jahresabschluss> jahresabschluesse = PseudoIterator
           .asList(abschluesse);
 
-      Date abschlussvon = DateUtils.addYears(getDatumvon().getDate(), -1);
+      Date abschlussvon = Datum.addJahre(getDatumvon().getDate(), -1);
 
       // Es gibt noch keinen Jahresabschluss, dann wird er erzeugt
       // Oder es ist der Mittelverwendungsreport des ersten Jahressabschlusses

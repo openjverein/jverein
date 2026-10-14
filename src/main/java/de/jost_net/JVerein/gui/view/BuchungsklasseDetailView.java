@@ -21,20 +21,20 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.gui.control.BuchungsklasseControl;
+import de.jost_net.JVerein.gui.control.BuchungsklasseDetailControl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class BuchungsklasseDetailView extends AbstractDetailView
 {
-  private BuchungsklasseControl control;
+  private BuchungsklasseDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Buchungsklasse");
 
-    control = new BuchungsklasseControl(this);
+    control = new BuchungsklasseDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Buchungsklasse");
     group.addLabelPair("Nummer", control.getNummer(true));

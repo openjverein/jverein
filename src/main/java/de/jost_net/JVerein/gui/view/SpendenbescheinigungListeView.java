@@ -38,7 +38,8 @@ public class SpendenbescheinigungListeView extends AbstractView
   {
     GUI.getView().setTitle("Spendenbescheinigungen");
 
-    SpendenbescheinigungControl control = new SpendenbescheinigungControl(this);
+    SpendenbescheinigungControl control = new SpendenbescheinigungControl(
+        this);
     control.init("spendenliste.");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");

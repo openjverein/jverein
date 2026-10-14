@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.jost_net.JVerein.gui.dialogs.DropdownDialog;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -35,11 +35,11 @@ import de.willuhn.util.ApplicationException;
 
 public class WirtschaftsplanAddBuchungsartAction implements Action
 {
-  private final WirtschaftsplanControl control;
+  private final WirtschaftsplanDetailControl control;
 
   private final int art;
 
-  public WirtschaftsplanAddBuchungsartAction(WirtschaftsplanControl control,
+  public WirtschaftsplanAddBuchungsartAction(WirtschaftsplanDetailControl control,
       int art)
   {
     this.control = control;

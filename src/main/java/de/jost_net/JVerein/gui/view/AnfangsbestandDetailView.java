@@ -20,20 +20,20 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
-import de.jost_net.JVerein.gui.control.AnfangsbestandControl;
+import de.jost_net.JVerein.gui.control.AnfangsbestandDetailControl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class AnfangsbestandDetailView extends AbstractDetailView
 {
-  private AnfangsbestandControl control;
+  private AnfangsbestandDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Anfangsbestand");
 
-    control = new AnfangsbestandControl(this);
+    control = new AnfangsbestandDetailControl(this);
     final boolean editable = control.isAnfangsbestandEditable();
 
     LabelGroup group = new LabelGroup(getParent(), "Anfangsbestand");

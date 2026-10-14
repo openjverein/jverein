@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Messaging.FamilienbeitragMessage;
 import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedDetailControl;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -47,14 +47,14 @@ import de.willuhn.util.ApplicationException;
 public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
 {
 
-  private MitgliedControl control;
+  private MitgliedDetailControl control;
 
   public FamilienmitgliedEntfernenDialog(FamilienbeitragNode fbn)
   {
     super(AbstractDialog.POSITION_CENTER);
     setTitle("Person aus Familienverband entfernen");
     setSize(450, SWT.DEFAULT);
-    control = new MitgliedControl(null);
+    control = new MitgliedDetailControl(null);
     control.setMitglied(fbn.getMitglied());
     try
     {

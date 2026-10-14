@@ -25,125 +25,19 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EigenschaftDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Eigenschaft;
-import de.jost_net.JVerein.rmi.EigenschaftGruppe;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftControl extends VorZurueckControl implements Savable
+public class EigenschaftControl extends FilterControl
 {
   private JVereinTablePart eigenschaftList;
-
-  private Input bezeichnung;
-
-  private SelectInput eigenschaftgruppe;
-
-  private Eigenschaft eigenschaft;
-
-  private TextInput name;
 
   public EigenschaftControl(AbstractView view)
   {
     super(view);
-  }
-
-  private Eigenschaft getEigenschaft() throws RemoteException
-  {
-    if (eigenschaft != null)
-    {
-      return eigenschaft;
-    }
-    eigenschaft = (Eigenschaft) getCurrentObject();
-    if (eigenschaft == null)
-    {
-      eigenschaft = (Eigenschaft) Einstellungen.getDBService()
-          .createObject(Eigenschaft.class, null);
-    }
-    return eigenschaft;
-  }
-
-  public Input getName() throws RemoteException
-  {
-    if (name != null)
-    {
-      return name;
-    }
-    name = new TextInput(getEigenschaft().getName(), 30);
-    name.setMandatory(true);
-    return name;
-  }
-
-  public Input getBezeichnung() throws RemoteException
-  {
-    if (bezeichnung != null)
-    {
-      return bezeichnung;
-    }
-    bezeichnung = new TextInput(getEigenschaft().getBezeichnung(), 30);
-    bezeichnung.setMandatory(true);
-    return bezeichnung;
-  }
-
-  public Input getEigenschaftGruppe() throws RemoteException
-  {
-    if (eigenschaftgruppe != null)
-    {
-      return eigenschaftgruppe;
-    }
-    DBIterator<EigenschaftGruppe> list = Einstellungen.getDBService()
-        .createList(EigenschaftGruppe.class);
-    list.setOrder("ORDER BY bezeichnung");
-    eigenschaftgruppe = new SelectInput(
-        list != null ? PseudoIterator.asList(list) : null,
-        getEigenschaft().getEigenschaftGruppe());
-    eigenschaftgruppe.setValue(getEigenschaft().getEigenschaftGruppe());
-    eigenschaftgruppe.setAttribute("bezeichnung");
-    eigenschaftgruppe.setPleaseChoose("Bitte auswählen");
-    eigenschaftgruppe.setMandatory(true);
-    return eigenschaftgruppe;
-  }
-
-  @Override
-  public JVereinDBObject prepareStore() throws RemoteException
-  {
-    Eigenschaft ei = getEigenschaft();
-
-    GenericObject o = (GenericObject) getEigenschaftGruppe().getValue();
-    if (o != null)
-    {
-      ei.setEigenschaftGruppe(Long.valueOf(o.getID()));
-    }
-    else
-    {
-      ei.setEigenschaftGruppe(null);
-    }
-    ei.setBezeichnung((String) getBezeichnung().getValue());
-    ei.setName((String) getName().getValue());
-    return ei;
-  }
-
-  @Override
-  public void handleStore() throws ApplicationException
-  {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern der Eigenschaft";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
   }
 
   @Override
@@ -173,6 +67,12 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
   }
 
   @Override
+  protected void TabRefresh() throws ApplicationException
+  {
+    // Es gibt keinen Refresh
+  }
+
+  @Override
   protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTEN_TITEL);
@@ -189,4 +89,5 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
   {
     return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTEN_DATEINAME);
   }
+
 }

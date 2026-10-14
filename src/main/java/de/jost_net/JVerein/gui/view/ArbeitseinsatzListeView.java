@@ -43,7 +43,8 @@ public class ArbeitseinsatzListeView extends AbstractView
   {
     GUI.getView().setTitle("Arbeitseinsätze");
 
-    final ArbeitseinsatzControl control = new ArbeitseinsatzControl(this);
+    final ArbeitseinsatzControl control = new ArbeitseinsatzControl(
+        this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);

@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.VorlageVorschauAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
-import de.jost_net.JVerein.gui.control.VorlageControl;
+import de.jost_net.JVerein.gui.control.VorlageDetailControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
@@ -32,14 +32,14 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 public class EinstellungenVorlageDetailView extends AbstractDetailView
 {
 
-  private VorlageControl control;
+  private VorlageDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Einstellungen Vorlage");
 
-    control = new VorlageControl(this);
+    control = new VorlageDetailControl(this);
     VorlageTyp typ = VorlageTyp.getByKey(control.getVorlage().getKey());
 
     LabelGroup grName = new LabelGroup(getParent(), typ.toString());

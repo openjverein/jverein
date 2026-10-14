@@ -21,20 +21,20 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.gui.control.EigenschaftControl;
+import de.jost_net.JVerein.gui.control.EigenschaftDetailControl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class EigenschaftDetailView extends AbstractDetailView
 {
-  private EigenschaftControl control;
+  private EigenschaftDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Eigenschaft");
 
-    control = new EigenschaftControl(this);
+    control = new EigenschaftDetailControl(this);
 
     LabelGroup grEigenschaft = new LabelGroup(getParent(), "Eigenschaft");
     grEigenschaft.addLabelPair("Name", control.getName());

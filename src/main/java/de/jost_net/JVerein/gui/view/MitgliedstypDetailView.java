@@ -21,20 +21,20 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.gui.control.MitgliedstypControl;
+import de.jost_net.JVerein.gui.control.MitgliedstypDetailControl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class MitgliedstypDetailView extends AbstractDetailView
 {
-  private MitgliedstypControl control;
+  private MitgliedstypDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Mitgliedstyp");
 
-    control = new MitgliedstypControl(this);
+    control = new MitgliedstypDetailControl(this);
     final boolean editable = control.isMitgliedstypEditable();
 
     LabelGroup group = new LabelGroup(getParent(), "Mitgliedstyp");

@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.action.MitgliederImportAction;
-import de.jost_net.JVerein.gui.control.MitgliedListeControl;
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -40,7 +40,7 @@ import de.willuhn.util.ApplicationException;
 public abstract class AbstractMitgliedListeView extends AbstractView
 {
 
-  final MitgliedListeControl control = new MitgliedListeControl(this);
+  final MitgliedControl control = new MitgliedControl(this);
 
   @Override
   public void bind() throws Exception

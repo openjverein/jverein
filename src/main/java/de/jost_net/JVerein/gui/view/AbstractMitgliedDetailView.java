@@ -38,10 +38,10 @@ import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.DokumentControl;
-import de.jost_net.JVerein.gui.control.LesefeldControl;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.MitgliedControl.TabSelection;
-import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.LesefeldMitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedDetailControl;
+import de.jost_net.JVerein.gui.control.MitgliedDetailControl.TabSelection;
+import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
@@ -93,11 +93,11 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   // Die aufgerufene Funktion: B=Bearbeiten, N=Neu, D=Duplizieren
   int funktion = 'B';
 
-  final MitgliedControl control = new MitgliedControl(this);
+  final MitgliedDetailControl control = new MitgliedDetailControl(this);
 
-  final LesefeldControl lesefeldControl = control.getLesefeldControl();
+  final LesefeldMitgliedControl lesefeldControl = control.getLesefeldControl();
 
-  final SollbuchungControl controlSollb = new SollbuchungControl(this);
+  final MitgliedskontoControl controlMk = new MitgliedskontoControl(this);
 
   private DokumentControl dcontrol;
 
@@ -195,8 +195,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     showInTab = Einstellungen.getSettingBoolean("ZeigeMitgliedskontoInTab",
         true);
-    zeichneMitgliedkonto(controlSollb,
-        showInTab ? folder : oben.getComposite());
+    zeichneMitgliedkonto(controlMk, showInTab ? folder : oben.getComposite());
 
     showInTab = Einstellungen.getSettingBoolean("ZeigeVermerkeInTab", true);
     zeichneVermerke(showInTab ? folder : oben.getComposite(), 1);
@@ -593,7 +592,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
    * Sinn!)
    * 
    */
-  private void zeichneMitgliedkonto(SollbuchungControl controlSollb,
+  private void zeichneMitgliedkonto(MitgliedskontoControl controlSollb,
       Composite parentComposite) throws RemoteException
   {
     if (!control.getMitglied().isNewObject())
@@ -923,7 +922,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   @Override
   public void unbind() throws OperationCanceledException, ApplicationException
   {
-    controlSollb.deregisterMitgliedskontoConsumer();
+    controlMk.deregisterMitgliedskontoConsumer();
     super.unbind();
   }
 

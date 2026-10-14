@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.action.MailAnhangAnzeigeAction;
 import de.jost_net.JVerein.gui.action.MailAnhangDeleteAction;
-import de.jost_net.JVerein.gui.control.MailControl;
+import de.jost_net.JVerein.gui.control.MailDetailControl;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -32,9 +32,9 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
 public class MailAnhangMenu extends ContextMenu
 {
 
-  MailControl control;
+  MailDetailControl control;
 
-  public MailAnhangMenu(MailControl control)
+  public MailAnhangMenu(MailDetailControl control)
   {
     this.control = control;
     addItem(new CheckedSingleContextMenuItem("Anzeigen",

@@ -141,7 +141,7 @@ public class BuchungListeView extends AbstractView
         "file-import.png");
     buttons.addButton(new Button("Export", new BuchungExportAction(), control,
         false, "document-save.png"));
-    buttons.addButton(new NewButton(new BuchungNeuAction(control)));
+    buttons.addButton(new NewButton(new BuchungNeuAction(control, null)));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
