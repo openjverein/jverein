@@ -807,7 +807,9 @@ public enum VorlageTyp
   BUCHUNG_DOKUMENT_PFAD("buchung-dokument-pfad", "Buchung Dokument Pfad",
       "/$buchung_kontonummer/$buchung_id", Vorlageart.PFAD.getKey()),
   MITGLIED_DOKUMENT_PFAD("mitglied-dokument-pfad", "Mitglied Dokument Pfad",
-      "/$mitglied_id", Vorlageart.PFAD.getKey());
+      "/$mitglied_id", Vorlageart.PFAD.getKey()),
+  IDEA_DATEINAME("idea-dateiname", "IDEA-Export Dateiname",
+      "IDEA export $filter_geschaefts_jahr", Vorlageart.DATEINAME.getKey());
 
   private final String text;
 

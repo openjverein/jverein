@@ -183,6 +183,7 @@ public class VorlageUtil
         case AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME:
         case AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL:
         case AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL:
+        case IDEA_DATEINAME:
           map = ((AuswertungControl) obj).getMap(map);
           break;
         case AUSWERTUNG_MITGLIED_DATEINAME:
@@ -559,6 +560,10 @@ public class VorlageUtil
           set.add(Filter.DATUM_VON);
           set.add(Filter.DATUM_BIS);
           set.add(Filter.EIGENSCHAFTEN);
+          map = new FilterMap().getDummyMap(set, map);
+          break;
+        case IDEA_DATEINAME:
+          set.add(Filter.GESCHAEFTSJAHR);
           map = new FilterMap().getDummyMap(set, map);
           break;
         case RECHNUNG_MITGLIED_DATEINAME:
