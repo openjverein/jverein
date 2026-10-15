@@ -357,7 +357,7 @@ public class BelegControl extends VorZurueckControl implements Savable
     switch (selectedTab)
     {
       case TAB_BUCHUNGEN:
-        return VorlageUtil.getName(VorlageTyp.BUCHUNGEN_TITEL, this);
+        return VorlageUtil.getName(VorlageTyp.BELEGE_BUCHUNGEN_TITEL, this);
       default:
         return null;
     }
@@ -369,7 +369,7 @@ public class BelegControl extends VorZurueckControl implements Savable
     switch (selectedTab)
     {
       case TAB_BUCHUNGEN:
-        return VorlageUtil.getName(VorlageTyp.BUCHUNGEN_SUBTITEL, this);
+        return VorlageUtil.getName(VorlageTyp.BELEGE_BUCHUNGEN_SUBTITEL, this);
       default:
         return null;
     }
@@ -381,7 +381,7 @@ public class BelegControl extends VorZurueckControl implements Savable
     switch (selectedTab)
     {
       case TAB_BUCHUNGEN:
-        return VorlageUtil.getName(VorlageTyp.BUCHUNGEN_DATEINAME, this);
+        return VorlageUtil.getName(VorlageTyp.BELEGE_BUCHUNGEN_DATEINAME, this);
       default:
         return null;
     }

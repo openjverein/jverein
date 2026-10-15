@@ -190,18 +190,18 @@ public class BelegListControl extends FilterControl
   @Override
   protected String getTableTitle()
   {
-    return VorlageUtil.getName(VorlageTyp.BELEG_TITEL);
+    return VorlageUtil.getName(VorlageTyp.BELEGE_TITEL);
   }
 
   @Override
   protected String getTableSubtitle()
   {
-    return VorlageUtil.getName(VorlageTyp.BELEG_SUBTITEL);
+    return VorlageUtil.getName(VorlageTyp.BELEGE_SUBTITEL);
   }
 
   @Override
   protected String getTableDateiname()
   {
-    return VorlageUtil.getName(VorlageTyp.BELEG_DATEINAME);
+    return VorlageUtil.getName(VorlageTyp.BELEGE_DATEINAME);
   }
 }

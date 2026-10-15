@@ -171,9 +171,9 @@ public class VorlageUtil
         case ANLAGEN_SUMMENBUCHUNGEN_TITEL:
         case ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL:
         case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
-        case BELEG_TITEL:
-        case BELEG_SUBTITEL:
-        case BELEG_DATEINAME:
+        case BELEGE_TITEL:
+        case BELEGE_SUBTITEL:
+        case BELEGE_DATEINAME:
           map = new FilterMap().getMap((FilterControl) obj, map);
           break;
         case AUSWERTUNG_ALTERSJUBILARE_DATEINAME:
@@ -389,6 +389,9 @@ public class VorlageUtil
           break;
         case BELEG_PFAD:
           map.put("file_name", name);
+        case BELEGE_BUCHUNGEN_DATEINAME:
+        case BELEGE_BUCHUNGEN_SUBTITEL:
+        case BELEGE_BUCHUNGEN_TITEL:
           map = new BelegMap().getMap((Beleg) obj, map);
           break;
       }
@@ -418,9 +421,9 @@ public class VorlageUtil
       map = new AllgemeineMap().getMap(null);
       switch (typ)
       {
-        case BELEG_TITEL:
-        case BELEG_SUBTITEL:
-        case BELEG_DATEINAME:
+        case BELEGE_TITEL:
+        case BELEGE_SUBTITEL:
+        case BELEGE_DATEINAME:
           set = new HashSet<>();
           set.add(Filter.NUMMER);
           set.add(Filter.BEZEICHNUNG);
@@ -905,6 +908,9 @@ public class VorlageUtil
           break;
         case BELEG_PFAD:
           map.put("file_name", "Filename.pdf");
+        case BELEGE_BUCHUNGEN_DATEINAME:
+        case BELEGE_BUCHUNGEN_SUBTITEL:
+        case BELEGE_BUCHUNGEN_TITEL:
           map = new BelegMap().getMap(null, map);
           break;
       }

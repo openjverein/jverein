@@ -809,11 +809,20 @@ public enum VorlageTyp
   MITGLIED_DOKUMENT_PFAD("mitglied-dokument-pfad", "Mitglied Dokument Pfad",
       "/$mitglied_id", Vorlageart.PFAD.getKey()),
 
-  BELEG_TITEL("beleg-titel", "Beleg Titel", "Belege",
+  BELEGE_TITEL("belege-titel", "Beleg Titel", "Belege",
       Vorlageart.TITEL.getKey()),
-  BELEG_SUBTITEL("beleg-subtitel", "Beleg Subtitel", "",
+  BELEGE_SUBTITEL("belege-subtitel", "Beleg Subtitel", "",
       Vorlageart.TITEL.getKey()),
-  BELEG_DATEINAME("beleg-dateiname", "Beleg Dateiname", "Belege",
+  BELEGE_DATEINAME("belege-dateiname", "Beleg Dateiname", "Belege",
+      Vorlageart.DATEINAME.getKey()),
+  BELEGE_BUCHUNGEN_TITEL("belege-buchungen-titel", "Belege Buchungen Titel",
+      "Belege-Buchungen-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.TITEL.getKey()),
+  BELEGE_BUCHUNGEN_SUBTITEL("belege-buchungen-subtitel",
+      "Belege Buchungen Subtitel", "", Vorlageart.TITEL.getKey()),
+  BELEGE_BUCHUNGEN_DATEINAME("belege-buchungen-dateiname",
+      "Belege Buchungen Dateiname",
+      "Belege-Buchungen-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey());
 
   private final String text;
