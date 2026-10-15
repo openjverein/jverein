@@ -87,7 +87,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
 
   private SelectInput belegArt;
 
-  public BelegDetailControl(AbstractView view, AbstractBelegDBObject belegObject)
+  public BelegDetailControl(AbstractView view,
+      AbstractBelegDBObject belegObject)
   {
     super(view);
     this.belegObject = belegObject;
@@ -165,6 +166,7 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     }
     bemerkung = new TextInput(getBeleg().getBemerkung(), 50);
     bemerkung.setName("Bemerkung");
+    bemerkung.setMandatory(true);
     return bemerkung;
   }
 
