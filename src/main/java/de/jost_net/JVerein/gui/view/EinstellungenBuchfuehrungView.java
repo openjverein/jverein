@@ -16,11 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.util.Map;
-
-import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.BelegMap;
-import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
@@ -63,14 +58,9 @@ public class EinstellungenBuchfuehrungView extends AbstractView
             + "Verwendungszweck aus den Sollbuchungspositionen übernehmen",
         control.getSplitPositionZweck());
 
-    Map<String, Object> map = new AllgemeineMap().getMap(null);
-    map = new BelegMap().getMap(null, map);
-
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(
         new HelpButton(DokumentationUtil.EINSTELLUNGEN_BUCHFUEHRUNG));
-    buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
-        control, false, "bookmark.png");
     buttons.addButton(new SaveButton(o -> control.handleStoreBuchfuehrung()));
     buttons.paint(this.getParent());
   }
