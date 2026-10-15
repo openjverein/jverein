@@ -70,7 +70,7 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
       }
       if (getBemerkung() == null || getBemerkung().isBlank())
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bemerkung eingeben");
       }
     }
     catch (RemoteException e)
@@ -87,7 +87,7 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
     {
       if (getBemerkung() == null || getBemerkung().isBlank())
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bemerkung eingeben");
       }
     }
     catch (RemoteException e)
