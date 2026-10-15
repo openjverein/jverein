@@ -181,9 +181,8 @@ public class SpendenbescheinigungControl extends FilterControl
     {
       sql += "left join mitglied on (spendenbescheinigung.mitglied = mitglied.id) ";
     }
-    Object spart = getFilter().get(Filter.SPENDENART);
-    if (spart != null && spart != SuchSpendenart.GELDSPENDE
-        && spart != SuchSpendenart.SACHSPENDE)
+    if (suchSpendenart != null && suchSpendenart != SuchSpendenart.GELDSPENDE
+        && suchSpendenart != SuchSpendenart.SACHSPENDE)
     {
       sql += "left join buchung on (spendenbescheinigung.id = buchung.spendenbescheinigung) ";
     }
