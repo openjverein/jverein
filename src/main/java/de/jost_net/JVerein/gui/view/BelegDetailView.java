@@ -6,7 +6,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
 
-import de.jost_net.JVerein.gui.control.BelegControl;
+import de.jost_net.JVerein.gui.control.BelegDetailControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
@@ -37,14 +37,14 @@ public class BelegDetailView extends AbstractDetailView
   // Statische Variable, die den zuletzt ausgewählten Tab speichert.
   private static int tabindex = -1;
 
-  private BelegControl control;
+  private BelegDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Beleg");
 
-    control = new BelegControl(this, belegObject);
+    control = new BelegDetailControl(this, belegObject);
 
     LabelGroup group = new LabelGroup(getParent(), "Beleg");
     if (!((Beleg) getCurrentObject()).isNewObject())

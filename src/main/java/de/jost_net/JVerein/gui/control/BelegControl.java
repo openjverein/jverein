@@ -18,397 +18,190 @@ package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.Arrays;
 import java.util.Date;
-
-import org.eclipse.swt.widgets.FileDialog;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.DokumentShowAction;
-import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
-import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.IBANFormatter;
-import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
-import de.jost_net.JVerein.gui.menu.BuchungAbrechnugslaufMenu;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.dialogs.DropdownDialog;
+import de.jost_net.JVerein.gui.menu.BelegMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
-import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
-import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.BelegDetailView;
 import de.jost_net.JVerein.keys.BelegArt;
-import de.jost_net.JVerein.keys.SplitbuchungTyp;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.FileInput;
-import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.OperationCanceledException;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BelegControl extends VorZurueckControl implements Savable
+public class BelegControl extends FilterControl
 {
-  private TextInput bemerkung;
+  private JVereinTablePart docsList;
 
-  private FileInput datei;
-
-  private Settings settings;
-
-  private AutoUpdateTablePart buchungList;
-
-  public final static int TAB_BUCHUNGEN = 0;
-
-  private int selectedTab = TAB_BUCHUNGEN;
-
-  private AbstractBelegDBObject belegObject;
-
-  private Beleg beleg;
-
-  private DateInput datum;
-
-  private TextInput belegnummer;
-
-  private SelectInput belegArt;
-
-  public BelegControl(AbstractView view, AbstractBelegDBObject belegObject)
+  public BelegControl(AbstractView view)
   {
     super(view);
-    this.belegObject = belegObject;
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-  }
-
-  private Beleg getBeleg() throws RemoteException
-  {
-    if (beleg != null)
-    {
-      return beleg;
-    }
-    beleg = (Beleg) getCurrentObject();
-    return beleg;
   }
 
   @Override
-  public Beleg prepareStore() throws RemoteException, ApplicationException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
-    Beleg beleg = getBeleg();
-    beleg.setBemerkung((String) getBemerkung().getValue());
-    if (beleg.isNewObject())
+    if (docsList != null)
     {
-      beleg.setDatum((Date) getDatum().getValue());
+      return docsList;
     }
-
-    if (datei != null)
+    docsList = new AutoUpdateTablePart(getList(), null);
+    docsList.setTableName("Belege");
+    docsList.addColumn("Belegnummer", "belegnummer");
+    docsList.addColumn(getAbgeschlossenColumn(), false);
+    docsList.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    docsList.addColumn("Bemerkung", "bemerkung");
+    docsList.addColumn("Pfad", "vollpfad");
+    docsList.addColumn("Art", "belegart",
+        i -> BelegArt.getByKey((Integer) i).toString());
+    docsList.setContextMenu(new BelegMenu(docsList));
+    docsList.setMulti(true);
+    // Nur in der View, nicht im Dialog
+    if (this.view != null)
     {
-      File file = new File((String) datei.getValue());
-      settings.setAttribute("lastdir", file.getParent());
-      beleg.setFile(file);
+      docsList.setAction(new EditAction(BelegDetailView.class, docsList));
+      VorZurueckControl.setObjektListe(null, null);
     }
-
-    beleg.setBelegArt((BelegArt) getBelegArt().getValue());
-
-    return beleg;
+    return docsList;
   }
 
-  @Override
-  public void handleStore() throws ApplicationException
+  /**
+   * Erstellt einen Neuen Beleg mit der angegebenen Datei. Datum und Bemerkung
+   * werden automatisch bestimmt.
+   * 
+   * @param filename
+   */
+  public void addFile(String[] filenames)
   {
-    DBTransaction.starten();
     try
     {
-      Beleg beleg = prepareStore();
-      beleg.store();
-      if (belegObject != null)
+      DropdownDialog<BelegArt> dialog = new DropdownDialog<>(
+          Arrays.asList(BelegArt.values()));
+      dialog.setTitle("Belegart wählen");
+      dialog.setText("Als welche Belegart sollen die neuen\n"
+          + "Belege gespeichert werden?");
+      BelegArt belegArt = dialog.open();
+      if (belegArt == null)
       {
-        belegObject.addBeleg(beleg);
-        // belegObject wird nur hier für das hinzufügen gebraucht, damit es
-        // nicht nochmal hinzugefügt wird, auf null setzen
-        belegObject = null;
+        throw new OperationCanceledException();
       }
-      DBTransaction.commit();
+
+      DBTransaction.starten();
+
+      for (String filename : filenames)
+      {
+        Beleg document = Einstellungen.getDBService().createObject(Beleg.class,
+            null);
+        File file = new File(filename);
+
+        document.setBemerkung(file.getName());
+        document.setDatum(new Date());
+        document.setBelegArt(belegArt);
+
+        document.setFile(file);
+        document.store();
+
+        getTablePart().addItem(document);
+
+        DBTransaction.commit();
+      }
     }
-    catch (RemoteException e)
+    catch (OperationCanceledException e)
     {
-      DBTransaction.rollback();
-      String fehler = "Fehler bei speichern des Belegs";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
-    catch (ApplicationException e)
-    {
-      DBTransaction.rollback();
       throw e;
     }
+    catch (Exception e)
+    {
+      DBTransaction.rollback();
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim Hinzufügen der Datei:" + e.getMessage());
+    }
   }
 
-  public TextInput getBemerkung() throws RemoteException
-  {
-    if (bemerkung != null)
-    {
-      return bemerkung;
-    }
-    bemerkung = new TextInput(getBeleg().getBemerkung(), 50);
-    bemerkung.setName("Bemerkung");
-    return bemerkung;
-  }
-
-  public Input getDatei()
-  {
-    if (datei != null)
-    {
-      return datei;
-    }
-    datei = new FileInput("", false)
-    {
-      @Override
-      protected void customize(FileDialog fd)
-      {
-        fd.setFilterPath(settings.getString("lastdir", ""));
-      }
-    };
-    datei.setMandatory(true);
-    datei.setName("Datei");
-    return datei;
-  }
-
-  public Input getPfad() throws RemoteException
-  {
-    String text;
-    if (getBeleg().getPfad() == null || getBeleg().getPfad().isBlank())
-    {
-      text = "-- Das Dokument ist mit Jameica Messaging gespeichert --";
-    }
-    else
-    {
-      text = getBeleg().getRootDir() + getBeleg().getPfad();
-    }
-    Input pfad = new TextInput(text);
-    pfad.setName("Pfad");
-    pfad.disable();
-    return pfad;
-  }
-
-  public Input getDatum() throws RemoteException
-  {
-    if (datum != null)
-    {
-      return datum;
-    }
-    datum = new DateInput(getBeleg().getDatum());
-    datum.setName("Datum");
-    if (getBeleg().isNewObject())
-    {
-      datum.setValue(new Date());
-    }
-    else
-    {
-      datum.disable();
-    }
-    return datum;
-  }
-
-  public Input getBelegnummer() throws RemoteException
-  {
-    if (belegnummer != null)
-    {
-      return belegnummer;
-    }
-    belegnummer = new TextInput(getBeleg().getBelegnummer());
-    belegnummer.setName("Belegnummer");
-    belegnummer.disable();
-    return belegnummer;
-  }
-
-  public Input getBelegArt() throws RemoteException
-  {
-    if (belegArt != null)
-    {
-      return belegArt;
-    }
-
-    BelegArt def = getBeleg().getBelegArt();
-    if (def == null)
-    {
-      def = belegObject != null ? belegObject.getBelegArt()
-          : BelegArt.SONSTIGES;
-    }
-
-    belegArt = new SelectInput(BelegArt.values(), def);
-    belegArt.setName("Belegart");
-    if (!getBeleg().isNewObject())
-    {
-      belegArt.disable();
-    }
-    return belegArt;
-  }
-
-  @SuppressWarnings("unchecked")
-  public JVereinTablePart getBuchungList()
+  public DBIterator<Beleg> getList()
       throws RemoteException, ApplicationException
   {
-    if (buchungList != null)
+    DBIterator<Beleg> docs = Einstellungen.getDBService()
+        .createList(Beleg.class);
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      return buchungList;
-    }
-    DBIterator<Buchung> it = Einstellungen.getDBService()
-        .createList(Buchung.class);
-    it.join("belegbuchung");
-    it.addFilter("belegbuchung.referenz = buchung.id");
-    it.addFilter("belegbuchung.beleg = ?", getBeleg().getID());
-
-    buchungList = new BuchungListTablePart(PseudoIterator.asList(it),
-        new BuchungAction(false, null));
-    buchungList.setTableName("Buchungen");
-    buchungList.addColumn("Nr", "id-int");
-    buchungList.addColumn(getAbgeschlossenColumn(), false);
-    buchungList.addColumn("Geprüft", "geprueft",
-        o -> (Boolean) o ? "\u2705" : "");
-    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
-    {
-      buchungList.addColumn("D", "document");
-    }
-    buchungList.addColumn("S", "splittyp",
-        o -> SplitbuchungTyp.get((Integer) o).substring(0, 1));
-
-    buchungList.addColumn("Konto", "konto");
-    buchungList.addColumn("Datum", "datum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-
-    buchungList.addColumn("Name", "name");
-    buchungList.addColumn("IBAN oder Kontonummer", "iban", new IBANFormatter());
-    buchungList.addColumn("Verwendungszweck", "zweck", o -> {
-      if (o == null)
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        return null;
-      }
-      String s = o.toString();
-      s = s.replaceAll("\r\n", " ");
-      s = s.replaceAll("\r", " ");
-      s = s.replaceAll("\n", " ");
-      return s;
-    });
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
-    {
-      buchungList.addColumn("Buchungsklasse", "buchungsklasse",
-          new BuchungsklasseFormatter());
-    }
-
-    buchungList.addColumn("Buchungsart", "buchungsart",
-        new BuchungsartFormatter());
-    buchungList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
-    {
-      buchungList.addColumn("Netto", "netto",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
-      {
-        buchungList.addColumn("Steuer", "steuer.name", null, false,
-            Column.ALIGN_RIGHT);
+        case BELEGNUMMER:
+          docs.addFilter("(lower(belegnummer) like ?)",
+              "%" + ((String) value).toLowerCase() + "%");
+          break;
+        case BEMERKUNG:
+          docs.addFilter("(lower(bemerkung) like ?)",
+              "%" + ((String) value).toLowerCase() + "%");
+          break;
+        case NICHT_ZUGEORDNET:
+          if ((boolean) value)
+          {
+            docs.addFilter("NOT EXISTS " + "(SELECT * FROM belegbuchung "
+                + "WHERE belegbuchung.beleg = beleg.id)");
+          }
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
     }
-    buchungList.addColumn(new Column(Buchung.SOLLBUCHUNG,
-        "Mitglied - Sollbuchung", new SollbuchungFormatter(), false,
-        Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
-    buchungList.setMulti(true);
-
-    buchungList.setContextMenu(new BuchungAbrechnugslaufMenu());
-    return buchungList;
-  }
-
-  public void setFolderSelection(int selection)
-  {
-    selectedTab = selection;
+    docs.setOrder("ORDER BY datum desc");
+    return docs;
   }
 
   @Override
-  protected IJVereinPart getTablePart()
-      throws RemoteException, ApplicationException
+  protected void TabRefresh() throws ApplicationException
   {
-    switch (selectedTab)
+    try
     {
-      case TAB_BUCHUNGEN:
-        return getBuchungList();
-      default:
-        return null;
+      docsList.removeAll();
+      DBIterator<Beleg> it = getList();
+      while (it.hasNext())
+      {
+        docsList.addItem(it.next());
+      }
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler bei Datenbankzugriff", e1);
     }
   }
 
   @Override
   protected String getTableTitle()
   {
-    switch (selectedTab)
-    {
-      case TAB_BUCHUNGEN:
-        return VorlageUtil.getName(VorlageTyp.BELEGE_BUCHUNGEN_TITEL, this);
-      default:
-        return null;
-    }
+    return VorlageUtil.getName(VorlageTyp.BELEGE_TITEL);
   }
 
   @Override
   protected String getTableSubtitle()
   {
-    switch (selectedTab)
-    {
-      case TAB_BUCHUNGEN:
-        return VorlageUtil.getName(VorlageTyp.BELEGE_BUCHUNGEN_SUBTITEL, this);
-      default:
-        return null;
-    }
+    return VorlageUtil.getName(VorlageTyp.BELEGE_SUBTITEL);
   }
 
   @Override
   protected String getTableDateiname()
   {
-    switch (selectedTab)
-    {
-      case TAB_BUCHUNGEN:
-        return VorlageUtil.getName(VorlageTyp.BELEGE_BUCHUNGEN_DATEINAME, this);
-      default:
-        return null;
-    }
-  }
-
-  public PanelButton getDetailSpaltenPanelButton()
-  {
-    return new PanelButton("document-properties.png", context -> {
-      try
-      {
-        new TabelleSpaltenAuswahlDialog(getBuchungList()).open();
-      }
-      catch (OperationCanceledException | ApplicationException e)
-      {
-        throw e;
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
-        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
-      }
-    }, "Spalten auswählen");
-  }
-
-  public ButtonRtoL getAnzeigenButton()
-  {
-    return new ButtonRtoL("Anzeigen", new DokumentShowAction(),
-        getCurrentObject(), false, "eye.png");
+    return VorlageUtil.getName(VorlageTyp.BELEGE_DATEINAME);
   }
 }

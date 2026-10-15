@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.BelegListControl;
+import de.jost_net.JVerein.gui.control.BelegControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
@@ -37,7 +37,7 @@ public class BelegListeView extends AbstractView
   {
     GUI.getView().setTitle("Belege");
 
-    final BelegListControl control = new BelegListControl(this);
+    final BelegControl control = new BelegControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     group.addInput(control.getFilterInput(Filter.BELEGNUMMER));

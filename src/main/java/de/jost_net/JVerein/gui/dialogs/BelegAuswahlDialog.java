@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.gui.control.BelegListControl;
+import de.jost_net.JVerein.gui.control.BelegControl;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Beleg;
@@ -46,7 +46,7 @@ public class BelegAuswahlDialog extends AbstractDialog<Beleg[]>
   protected void paint(Composite parent)
       throws RemoteException, ApplicationException
   {
-    final BelegListControl control = new BelegListControl(null);
+    final BelegControl control = new BelegControl(null);
 
     LabelGroup group = new LabelGroup(parent, "Filter");
     group.addInput(control.getFilterInput(Filter.NUMMER));
