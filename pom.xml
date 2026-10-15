@@ -116,7 +116,7 @@
       <version>3.5.4</version>
       <exclusions>
         <exclusion>
-          <groupId>com.beust</groupId>
+          <groupId>org.jcommander</groupId>
           <artifactId>jcommander</artifactId>
         </exclusion>
       </exclusions>
