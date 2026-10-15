@@ -84,8 +84,7 @@ public class BelegAuswahlDialog extends AbstractDialog<Beleg[]>
     });
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Abbrechen", e -> close(), null, false,
-        "process-stop.png");
+
     buttons.addButton("Auswahl Zuordnen", e -> {
       if (auswahl == null)
       {
@@ -94,6 +93,8 @@ public class BelegAuswahlDialog extends AbstractDialog<Beleg[]>
       data = auswahl;
       close();
     }, null, true, "document-save.png");
+    buttons.addButton("Abbrechen", e -> close(), null, false,
+        "process-stop.png");
     buttons.paint(parent);
   }
 
