@@ -38,7 +38,7 @@ public class BelegAuswahlDialog extends AbstractDialog<Beleg[]>
   public BelegAuswahlDialog()
   {
     super(BelegAuswahlDialog.POSITION_CENTER);
-    super.setSize(1200, 400);
+    super.setSize(1200, 700);
     setTitle("Belege");
   }
 
