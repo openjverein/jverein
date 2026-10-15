@@ -163,4 +163,10 @@ public class SollbuchungExportCSV extends SollbuchungExport
     return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME, object)
         + ".csv";
   }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
 }

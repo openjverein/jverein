@@ -62,7 +62,7 @@ public class ExportLayoutParam
 
   private BaseColor colorTable2;
 
-  private Boolean filterParameter;
+  private Boolean filterParameter = false;
 
   public Integer getLinks()
   {

@@ -58,25 +58,21 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected boolean supportTable2;
 
+  protected boolean supportFilterParams;
+
   protected AbstractPartExportDialogControl control = null;
 
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
       String title, String subtitle, String filename, String dialogTitel,
-      IJVereinPart part) throws ApplicationException
-  {
-    this(settingPrefix, art, title, subtitle, filename, dialogTitel, part,
-        false);
-  }
-
-  public AbstractPartExportDialog(String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename, String dialogTitel,
-      IJVereinPart part, boolean supportTable2) throws ApplicationException
+      IJVereinPart part, boolean supportTable2, boolean supportFilterParams)
+      throws ApplicationException
   {
     super(AbstractPartExportDialog.POSITION_CENTER);
     this.filename = filename;
     this.art = art;
     this.settingPrefix = settingPrefix + art.toString() + ".";
     this.supportTable2 = supportTable2;
+    this.supportFilterParams = supportFilterParams;
     settings = new Settings(this.getClass());
     this.control = new AbstractPartExportDialogControl(this, settings,
         this.settingPrefix, art, part, title, subtitle);
@@ -202,13 +198,16 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         "edit-undo.png");
     tabFont.addButtonArea(sbuttons);
 
-    // Optionen
-    TabGroup tabOptionen = new TabGroup(folder, "Optionen", true, 2);
-    tabOptionen.addInput(control.getFilterParameter());
-    ButtonArea obuttons = new ButtonArea();
-    obuttons.addButton("Reset", c -> control.resetOptionen(), null, false,
-        "edit-undo.png");
-    tabOptionen.addButtonArea(obuttons);
+    // Optionen, Aktuell nur für Exportparameter
+    if (supportFilterParams)
+    {
+      TabGroup tabOptionen = new TabGroup(folder, "Optionen", true, 2);
+      tabOptionen.addInput(control.getFilterParameter());
+      ButtonArea obuttons = new ButtonArea();
+      obuttons.addButton("Reset", c -> control.resetOptionen(), null, false,
+          "edit-undo.png");
+      tabOptionen.addButtonArea(obuttons);
+    }
   }
 
   protected void export() throws ApplicationException

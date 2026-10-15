@@ -109,4 +109,6 @@ public interface Exporter extends IO
   {
     return null;
   }
+
+  public boolean supportFilterParams();
 }

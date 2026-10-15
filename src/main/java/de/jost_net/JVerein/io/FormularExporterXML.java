@@ -117,4 +117,10 @@ public class FormularExporterXML implements Exporter
     writer.close();
   }
 
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
+
 }

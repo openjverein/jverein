@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.TabelleExportProfilePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.jameica.gui.parts.Column;
@@ -57,12 +58,15 @@ public class TablePartExportDialog extends AbstractPartExportDialog
 
   private JVereinTablePart tablePart;
 
+  private Map<Filter, String> filterparams;
+
   public TablePartExportDialog(Table table, String settingPrefix, ExportArt art,
       String title, String subtitle, String filename,
-      JVereinTablePart tablePart) throws ApplicationException
+      JVereinTablePart tablePart, Map<Filter, String> filterparams)
+      throws ApplicationException
   {
     super(settingPrefix, art, title, subtitle, filename, "Tabelle exportieren",
-        tablePart);
+        tablePart, false, filterparams != null);
 
     if (table == null || table.isDisposed() || !(table instanceof Table))
     {
@@ -75,6 +79,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
 
     this.table = table;
     this.tablePart = tablePart;
+    this.filterparams = filterparams;
   }
 
   @Override
@@ -220,7 +225,11 @@ public class TablePartExportDialog extends AbstractPartExportDialog
           }
         }
       }
-      reporter.addParams(filterparams, control.getExportLayoutParam());
+      reporter.closeTable();
+      if (control.getExportLayoutParam().getFilterParameter())
+      {
+        reporter.addParams(filterparams, control.getExportLayoutParam());
+      }
       FileViewer.show(file);
     }
   }

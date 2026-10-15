@@ -215,7 +215,8 @@ public class ExportDialog extends AbstractDialog<Object>
             exporter.hasColortable2(dateinameObject), prefix, ExportArt.PDF,
             exporter.getTitle(dateinameObject),
             exporter.getSubtitle(dateinameObject),
-            exporter.getDateiname(dateinameObject));
+            exporter.getDateiname(dateinameObject),
+            exporter.supportFilterParams());
         if (!d.open())
         {
           throw new OperationCanceledException();

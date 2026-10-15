@@ -121,8 +121,10 @@ public class AuswertungMitgliedAdresslistePDF
                   : mitgliedstyp.getBezeichnungPlural(),
               list.size()),
           params.getFontNormal()));
-
-      reporter.addParams(filterparams, params);
+      if (params.getFilterParameter())
+      {
+        reporter.addParams(filterparams, params);
+      }
       reporter.close();
       fos.close();
       GUI.getStatusBar().setSuccessText(
@@ -168,5 +170,11 @@ public class AuswertungMitgliedAdresslistePDF
       }
     };
     return new IOFormat[] { f };
+  }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return true;
   }
 }

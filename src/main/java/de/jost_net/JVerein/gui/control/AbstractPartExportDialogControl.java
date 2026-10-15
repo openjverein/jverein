@@ -531,7 +531,10 @@ public class AbstractPartExportDialogControl
 
   public void resetOptionen()
   {
-    filterParameter.setValue(DEFAULT_FILTER_PARAMETER);
+    if (filterParameter != null)
+    {
+      filterParameter.setValue(DEFAULT_FILTER_PARAMETER);
+    }
   }
 
   public void setChecked()
@@ -695,8 +698,15 @@ public class AbstractPartExportDialogControl
         settings.setAttribute(prefix + "color_green2", (String) null);
         settings.setAttribute(prefix + "color_blue2", (String) null);
       }
-      settings.setAttribute(prefix + "filter_parameter",
-          (Boolean) filterParameter.getValue());
+      if (filterParameter != null)
+      {
+        settings.setAttribute(prefix + "filter_parameter",
+            (Boolean) filterParameter.getValue());
+      }
+      else
+      {
+        settings.setAttribute(prefix + "filter_parameter", (String) null);
+      }
     }
   }
 
@@ -788,8 +798,11 @@ public class AbstractPartExportDialogControl
             (int) settings.getInt(prefix + "color_blue2", DEFAULT_COLOR_BLUE2));
         colorTable2.setValue(col);
       }
-      filterParameter.setValue(settings.getBoolean(prefix + "filter_parameter",
-          DEFAULT_FILTER_PARAMETER));
+      if (filterParameter != null)
+      {
+        filterParameter.setValue(settings
+            .getBoolean(prefix + "filter_parameter", DEFAULT_FILTER_PARAMETER));
+      }
     }
   }
 
@@ -897,7 +910,10 @@ public class AbstractPartExportDialogControl
       params.setColorTable2(getHintergrundTabelle2());
     }
     params.setNegativRot((Boolean) negativRot.getValue());
-    params.setFilterParameter((Boolean) filterParameter.getValue());
+    if (filterParameter != null)
+    {
+      params.setFilterParameter((Boolean) filterParameter.getValue());
+    }
   }
 
   public ExportLayoutParam getExportLayoutParam()

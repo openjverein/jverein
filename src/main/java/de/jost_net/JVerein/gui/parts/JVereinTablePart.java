@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.willuhn.datasource.GenericIterator;
@@ -340,13 +341,13 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
    */
   @Override
   public void export(String title, String subtitle, String filename,
-      ExportArt art) throws ApplicationException
+      ExportArt art, Map<Filter, String> filtertext) throws ApplicationException
   {
     try
     {
       if (!new TablePartExportDialog((Table) tableControl,
           getTablePartID(tablePartId, tableName), art, title, subtitle,
-          filename, this).open())
+          filename, this, filtertext).open())
       {
         throw new OperationCanceledException();
       }

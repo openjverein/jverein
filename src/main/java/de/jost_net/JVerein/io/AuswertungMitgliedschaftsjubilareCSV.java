@@ -115,4 +115,10 @@ public class AuswertungMitgliedschaftsjubilareCSV
       Logger.error("Fehler", e);
     }
   }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
 }

@@ -187,8 +187,10 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
                   : mitgliedstyp.getBezeichnungPlural(),
               list.size()),
           params.getFontNormal()));
-
-      reporter.addParams(filterparams, params);
+      if (params.getFilterParameter())
+      {
+        reporter.addParams(filterparams, params);
+      }
       reporter.closeTable();
       reporter.close();
       GUI.getStatusBar().setSuccessText(
@@ -234,5 +236,11 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
       }
     };
     return new IOFormat[] { f };
+  }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return true;
   }
 }

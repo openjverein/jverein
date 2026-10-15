@@ -138,4 +138,10 @@ public class AuswertungJahrgangsstatistikPDF
     fos.close();
   }
 
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
+
 }

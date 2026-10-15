@@ -103,6 +103,11 @@ public abstract class FilterControl extends AbstractListeControl
     settings.setStoreWhenRead(true);
   }
 
+  public boolean isFilterMapEmpty()
+  {
+    return filterMap.isEmpty();
+  }
+
   /**
    * Gibt alle angewendeten Filter zurück
    * 

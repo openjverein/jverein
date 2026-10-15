@@ -293,7 +293,10 @@ public class BuchungsjournalExportPDF implements Exporter
     }
 
     reporter.closeTable();
-    reporter.addParams(filterparams, params);
+    if (params.getFilterParameter())
+    {
+      reporter.addParams(filterparams, params);
+    }
     reporter.close();
     fos.close();
   }
@@ -324,5 +327,11 @@ public class BuchungsjournalExportPDF implements Exporter
           params.getColorHeader(), params.getFontHeader());
     }
     reporter.createHeader();
+  }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return true;
   }
 }

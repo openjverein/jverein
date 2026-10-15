@@ -180,7 +180,7 @@ public class Kontoauszug extends AbstractAusgabe
     if (params == null)
     {
       ExporterExportDialog d = new ExporterExportDialog(false, "Kontoauszug",
-          ExportArt.PDF, "", "", null);
+          ExportArt.PDF, "", "", null, false);
       try
       {
         if (!d.open())
