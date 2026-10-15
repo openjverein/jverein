@@ -2224,7 +2224,7 @@ public class EinstellungControl extends AbstractControl
     }
     belegZaehlerBuchung = new IntegerInput(
         (Integer) Einstellungen.getEinstellung(Property.BELEG_ZAEHLER_BUCHUNG));
-    belegZaehlerBuchung.setName("Zaehler Buchungs-Beleg");
+    belegZaehlerBuchung.setName("Zähler Buchungs-Beleg");
     return belegZaehlerBuchung;
   }
 
@@ -2237,7 +2237,7 @@ public class EinstellungControl extends AbstractControl
     belegnummerSonstiges = new TextInput(
         (String) Einstellungen.getEinstellung(Property.BELEGNUMMER_SONSTIGES),
         500);
-    belegnummerSonstiges.setName("Belegnummer sontige Belege");
+    belegnummerSonstiges.setName("Belegnummer sonstige Belege");
     return belegnummerSonstiges;
   }
 
@@ -2249,7 +2249,7 @@ public class EinstellungControl extends AbstractControl
     }
     belegZaehlerSonstiges = new IntegerInput((Integer) Einstellungen
         .getEinstellung(Property.BELEG_ZAEHLER_SONSTIGES));
-    belegZaehlerSonstiges.setName("Zaehler sonstige Belege");
+    belegZaehlerSonstiges.setName("Zähler sonstige Belege");
     return belegZaehlerSonstiges;
   }
 
@@ -2711,7 +2711,7 @@ public class EinstellungControl extends AbstractControl
         dialog.setTitle("Verzeichnis geändert");
         dialog
             .setText("Das Verzeichnis für Mitglieds-Dokumente wurde geändert.\n"
-                + "Bitte Verschieben sie ggf. vorhandene Dokument manuell von '"
+                + "Bitte Verschieben sie ggf. vorhandene Dokumente manuell von '"
                 + Einstellungen.getMitgliedDokumentVerzeichnis() + "' nach '"
                 + mitgliedsDokumentVerzeichnis.getValue() + "'\n"
                 + "Fortfahren?");
@@ -2725,12 +2725,10 @@ public class EinstellungControl extends AbstractControl
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
         dialog.setTitle("Verzeichnis geändert");
-        dialog
-            .setText("Das Verzeichnis für Buchungs-Dokumente wurde geändert.\n"
-                + "Bitte Verschieben sie ggf. vorhandene Dokument manuell von '"
-                + Einstellungen.getBelegBuchungVerzeichnis() + "' nach '"
-                + buchungsDokumentVerzeichnis.getValue() + "'\n"
-                + "Fortfahren?");
+        dialog.setText("Das Verzeichnis für Buchungs-Belege wurde geändert.\n"
+            + "Bitte Verschieben sie ggf. vorhandene Belege manuell von '"
+            + Einstellungen.getBelegBuchungVerzeichnis() + "' nach '"
+            + buchungsDokumentVerzeichnis.getValue() + "'\n" + "Fortfahren?");
         if (!(Boolean) dialog.open())
         {
           throw new OperationCanceledException();
