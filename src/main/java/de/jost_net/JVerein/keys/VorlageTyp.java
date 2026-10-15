@@ -804,8 +804,10 @@ public enum VorlageTyp
       Vorlageart.TITEL.getKey()),
   STEUERN_SUBTITEL("steuern-subtitel", "Steuern Subtitel", "",
       Vorlageart.TITEL.getKey()),
-  BELEG_PFAD("dateiname-beleg", "Beleg Pfad", "$beleg_nummer-$file_name",
-      Vorlageart.PFAD.getKey()),
+  BELEG_BUCHUNGEN_PFAD("dateiname-buchungen-beleg", "Buchungs-Beleg Pfad",
+      "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
+  BELEG_ALLGEMEIN_PFAD("dateiname-allgemein-beleg", "Allgemeiner Beleg Pfad",
+      "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
   MITGLIED_DOKUMENT_PFAD("mitglied-dokument-pfad", "Mitglied Dokument Pfad",
       "/$mitglied_id", Vorlageart.PFAD.getKey()),
 

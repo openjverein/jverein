@@ -178,7 +178,16 @@ public class BelegImpl extends AbstractDokumentImpl implements Beleg
   @Override
   protected String getDateiPfad(String filename) throws RemoteException
   {
-    return VorlageUtil.getName(VorlageTyp.BELEG_PFAD, this, filename);
+    switch (getBelegArt())
+    {
+      case BUCHUNG:
+        return VorlageUtil.getName(VorlageTyp.BELEG_BUCHUNGEN_PFAD, this,
+            filename);
+      case SONSTIGES:
+        return VorlageUtil.getName(VorlageTyp.BELEG_ALLGEMEIN_PFAD, this,
+            filename);
+    }
+    return null;
   }
 
   @Override

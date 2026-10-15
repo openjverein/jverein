@@ -387,7 +387,8 @@ public class VorlageUtil
           map.put("formular_name", name);
           map = new BuchungMap().getMap((Buchung) obj, map);
           break;
-        case BELEG_PFAD:
+        case BELEG_BUCHUNGEN_PFAD:
+        case BELEG_ALLGEMEIN_PFAD:
           map.put("file_name", name);
         case BELEGE_BUCHUNGEN_DATEINAME:
         case BELEGE_BUCHUNGEN_SUBTITEL:
@@ -906,7 +907,8 @@ public class VorlageUtil
           map.put("formular_name", "Buchungsreport");
           map = new BuchungMap().getMap(null, map);
           break;
-        case BELEG_PFAD:
+        case BELEG_BUCHUNGEN_PFAD:
+        case BELEG_ALLGEMEIN_PFAD:
           map.put("file_name", "Filename.pdf");
         case BELEGE_BUCHUNGEN_DATEINAME:
         case BELEGE_BUCHUNGEN_SUBTITEL:
