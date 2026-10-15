@@ -14,7 +14,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.parameters>true</maven.compiler.parameters>
-    <iban.commons.version>1.8.12-RC1</iban.commons.version>
+    <iban.commons.version>1.8.12</iban.commons.version>
     <!-- renovate: depName=beanshell/beanshell datasource=github-tags -->
     <bsh.version>2.1.1</bsh.version>
     <bsh.sha1>5c01a006b0aba21ef55c01f96ea062c1cb2bf707</bsh.sha1>
