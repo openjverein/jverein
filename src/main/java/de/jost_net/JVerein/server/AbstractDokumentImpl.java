@@ -229,6 +229,9 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
       setAttribute("datum", new Date());
     }
     File newFile = null;
+
+    // vor dem Kopieren der Datei schon prüfen, ob alle Angaben gemacht sind
+    insertCheck();
     if (file != null && getPfad() == null)
     {
       if (file.isDirectory())
