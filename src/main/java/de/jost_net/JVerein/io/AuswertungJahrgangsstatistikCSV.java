@@ -121,4 +121,10 @@ public class AuswertungJahrgangsstatistikCSV
   {
     //
   }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
 }

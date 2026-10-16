@@ -27,6 +27,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.dialogs.TreePartExportDialog;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TreePart;
@@ -168,13 +169,13 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
    */
   @Override
   public void export(String title, String subtitle, String filename,
-      ExportArt art) throws ApplicationException
+      ExportArt art, Map<Filter, String> filtertext) throws ApplicationException
   {
     try
     {
       if (!new TreePartExportDialog((Tree) treeControl,
           getTablePartID(tablePartId, tableName), art, title, subtitle,
-          filename, this).open())
+          filename, this, filtertext).open())
       {
         throw new OperationCanceledException();
       }

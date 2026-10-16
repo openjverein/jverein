@@ -141,4 +141,10 @@ public class KontenrahmenExportXMLv2 extends KontenrahmenExport
     output.close();
   }
 
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
+
 }

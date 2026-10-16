@@ -149,4 +149,10 @@ public class BuchungAuswertungExportCSV implements Exporter
     }
     return null;
   }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
 }

@@ -141,4 +141,10 @@ public class FormularfelderExportCSV extends FormularfelderExport
     writer.close();
   }
 
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
+
 }

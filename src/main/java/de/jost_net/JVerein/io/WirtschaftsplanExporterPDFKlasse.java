@@ -478,4 +478,10 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
   {
     return true;
   }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
 }

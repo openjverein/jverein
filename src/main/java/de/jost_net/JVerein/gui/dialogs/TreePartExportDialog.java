@@ -43,6 +43,7 @@ import de.jost_net.JVerein.gui.control.AbstractPartExportDialogControl.ExportSpa
 import de.jost_net.JVerein.gui.parts.JVereinTreePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericObjectNode;
@@ -57,12 +58,14 @@ public class TreePartExportDialog extends AbstractPartExportDialog
 
   private JVereinTreePart treePart;
 
+  private Map<Filter, String> filterparams;
+
   public TreePartExportDialog(Tree tree, String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename, JVereinTreePart treePart)
-      throws ApplicationException
+      String title, String subtitle, String filename, JVereinTreePart treePart,
+      Map<Filter, String> filterparams) throws ApplicationException
   {
     super(settingPrefix, art, title, subtitle, filename, "Baum exportieren",
-        treePart);
+        treePart, false, filterparams != null);
 
     if (tree == null || tree.isDisposed() || !(tree instanceof Tree))
     {
@@ -85,6 +88,7 @@ public class TreePartExportDialog extends AbstractPartExportDialog
 
     this.tree = tree;
     this.treePart = treePart;
+    this.filterparams = filterparams;
   }
 
   @SuppressWarnings("unchecked")
@@ -248,6 +252,11 @@ public class TreePartExportDialog extends AbstractPartExportDialog
                 font);
           }
         }
+      }
+      reporter.closeTable();
+      if (control.getExportLayoutParam().getFilterParameter())
+      {
+        reporter.addParams(filterparams, control.getExportLayoutParam());
       }
       FileViewer.show(file);
     }

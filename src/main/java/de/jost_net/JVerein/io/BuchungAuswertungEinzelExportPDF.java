@@ -256,7 +256,10 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
       }
       reporter.closeTable();
     }
-    reporter.addParams(filterparams, params);
+    if (params.getFilterParameter())
+    {
+      reporter.addParams(filterparams, params);
+    }
     reporter.close();
     fos.close();
   }
@@ -395,6 +398,12 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
       reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
     }
     reporter.closeTable();
+    return true;
+  }
+
+  @Override
+  public boolean supportFilterParams()
+  {
     return true;
   }
 }

@@ -158,4 +158,10 @@ public class AuswertungMitgliedschaftsjubilarePDF
     fos.close();
   }
 
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
+
 }

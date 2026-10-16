@@ -242,7 +242,10 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
       reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
       reporter.closeTable();
     }
-    reporter.addParams(filterparams, params);
+    if (params.getFilterParameter())
+    {
+      reporter.addParams(filterparams, params);
+    }
 
     reporter.close();
     fos.close();
@@ -312,6 +315,12 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
     {
       reporter.addColumn(buchungsartSumme);
     }
+    return true;
+  }
+
+  @Override
+  public boolean supportFilterParams()
+  {
     return true;
   }
 }

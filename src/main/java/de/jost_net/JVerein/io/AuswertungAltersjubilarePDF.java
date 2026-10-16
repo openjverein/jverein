@@ -158,4 +158,10 @@ public class AuswertungAltersjubilarePDF
     fos.close();
   }
 
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
+
 }

@@ -257,4 +257,10 @@ public class WirtschaftsplanCSV implements Exporter
         + ".csv";
   }
 
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
+
 }

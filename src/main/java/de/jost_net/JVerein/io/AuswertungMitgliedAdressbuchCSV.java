@@ -131,4 +131,10 @@ public class AuswertungMitgliedAdressbuchCSV
     };
     return new IOFormat[] { f };
   }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
 }

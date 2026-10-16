@@ -478,4 +478,10 @@ public class AuswertungMitgliederstatistikPDF implements Exporter
   {
     return new Filter[] { Filter.STICHTAG };
   }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
 }

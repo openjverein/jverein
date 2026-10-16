@@ -147,4 +147,10 @@ public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
     };
     return new IOFormat[] { f };
   }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
 }

@@ -108,4 +108,10 @@ public class AuswertungAltersjubilareCSV
     AuswertungMitgliedCSV mcsv = new AuswertungMitgliedCSV();
     mcsv.go(mitglieder, file);
   }
+
+  @Override
+  public boolean supportFilterParams()
+  {
+    return false;
+  }
 }
