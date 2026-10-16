@@ -21,7 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
@@ -397,6 +396,25 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     super.store();
     Cache.get(Konto.class, false).put(this); // Cache aktualisieren
+  }
+
+  @Override
+  public void insert() throws RemoteException, ApplicationException
+  {
+    super.insert();
+
+    // Bei neuem Konto Anfangsbestand anlegen
+    if (getEroeffnung() != null)
+    {
+      Anfangsbestand ab = Einstellungen.getDBService()
+          .createObject(Anfangsbestand.class, null);
+      ab.setKonto(this);
+      ab.setDatum(getEroeffnung());
+      ab.setBetrag(0d);
+      ab.store();
+      Logger.info("Anfangsbestand für neues Konto " + getBezeichnung()
+          + " gespeichert");
+    }
   }
 
   @Override
