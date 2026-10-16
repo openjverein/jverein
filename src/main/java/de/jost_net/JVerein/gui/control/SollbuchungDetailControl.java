@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.Messaging.SollbuchungMessage;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -58,7 +59,8 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungDetailControl extends VorZurueckControl implements Savable
+public class SollbuchungDetailControl extends VorZurueckControl
+    implements Savable
 {
   // SollbuchungDetailView
   private DateInput datum = null;
@@ -84,6 +86,8 @@ public class SollbuchungDetailControl extends VorZurueckControl implements Savab
   private boolean editable = false;
 
   private SollbuchungMessageConsumer sollbuchungConsumer = null;
+
+  private MitgliedskontoMessageConsumer mitgliedskontoConsumer = null;
 
   public SollbuchungDetailControl(AbstractView view)
   {
@@ -345,6 +349,9 @@ public class SollbuchungDetailControl extends VorZurueckControl implements Savab
     }
     istbuchungList = new BuchungListPart(getSollbuchung().getBuchungList(),
         new BuchungAction(false), new BuchungPartBearbeitenMenu());
+    this.mitgliedskontoConsumer = new MitgliedskontoMessageConsumer();
+    Application.getMessagingFactory()
+        .registerMessageConsumer(mitgliedskontoConsumer);
     return istbuchungList;
   }
 
@@ -421,6 +428,71 @@ public class SollbuchungDetailControl extends VorZurueckControl implements Savab
     }
   }
 
+  /**
+   * Wird benachrichtigt um die Anzeige zu aktualisieren.
+   */
+  private class MitgliedskontoMessageConsumer implements MessageConsumer
+  {
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
+     */
+    @Override
+    public boolean autoRegister()
+    {
+      return false;
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
+     */
+    @Override
+    public Class<?>[] getExpectedMessageTypes()
+    {
+      return new Class[] { MitgliedskontoMessage.class };
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
+     */
+    @Override
+    public void handleMessage(final Message message) throws Exception
+    {
+      GUI.getDisplay().syncExec(new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          try
+          {
+            if (istbuchungList != null)
+            {
+              MitgliedskontoMessage msg = (MitgliedskontoMessage) message;
+              istbuchungList.removeItem(msg.getObject());
+            }
+            else
+            {
+              // Eingabe-Feld existiert nicht. Also abmelden
+              Application.getMessagingFactory().unRegisterMessageConsumer(
+                  MitgliedskontoMessageConsumer.this);
+              return;
+            }
+
+          }
+          catch (Exception e)
+          {
+            // Wenn hier ein Fehler auftrat, deregistrieren wir uns wieder
+            Logger.error("unable to refresh saldo", e);
+            Application.getMessagingFactory()
+                .unRegisterMessageConsumer(MitgliedskontoMessageConsumer.this);
+          }
+        }
+
+      });
+    }
+  }
+
   public PanelButton getDetailSpaltenPanelButton()
   {
     return new PanelButton("document-properties.png", context -> {
@@ -445,6 +517,12 @@ public class SollbuchungDetailControl extends VorZurueckControl implements Savab
   {
     Application.getMessagingFactory()
         .unRegisterMessageConsumer(sollbuchungConsumer);
+  }
+
+  public void deregisterMitgliedskontoConsumer()
+  {
+    Application.getMessagingFactory()
+        .unRegisterMessageConsumer(mitgliedskontoConsumer);
   }
 
 }
