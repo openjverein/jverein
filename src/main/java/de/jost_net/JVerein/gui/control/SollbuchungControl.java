@@ -553,8 +553,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
     istbuchungList = new BuchungListPart(getSollbuchung().getBuchungList(),
         new BuchungAction(false), new BuchungPartBearbeitenMenu());
-    Application.getMessagingFactory()
-        .registerMessageConsumer(new MitgliedskontoMessageConsumer());
+    this.mc = new MitgliedskontoMessageConsumer();
+    Application.getMessagingFactory().registerMessageConsumer(mc);
     return istbuchungList;
   }
 
