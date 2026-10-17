@@ -42,7 +42,6 @@ import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
-import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -314,21 +313,7 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
       DBTransaction.starten();
 
       Konto konto = (Konto) prepareStore();
-      boolean neu = konto.isNewObject();
       konto.store();
-
-      // Bei neuem Konto Anfangsbestand anlegen
-      if (neu && konto.getEroeffnung() != null)
-      {
-        Anfangsbestand ab = Einstellungen.getDBService()
-            .createObject(Anfangsbestand.class, null);
-        ab.setKonto(konto);
-        ab.setDatum(konto.getEroeffnung());
-        ab.setBetrag(0d);
-        ab.store();
-        Logger.info("Anfangsbestand für neues Konto " + konto.getBezeichnung()
-            + " gespeichert");
-      }
       DBTransaction.commit();
     }
     catch (RemoteException e)
