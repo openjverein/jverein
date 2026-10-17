@@ -21,8 +21,10 @@ import java.util.Date;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
 
+/**
+ * Ein {@link Zahler} mit Bezug zu einem JVerein-Mitglied bzw. -Buchung.
+ */
 public class JVereinZahler extends Zahler
 {
 
