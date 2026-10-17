@@ -804,10 +804,28 @@ public enum VorlageTyp
       Vorlageart.TITEL.getKey()),
   STEUERN_SUBTITEL("steuern-subtitel", "Steuern Subtitel", "",
       Vorlageart.TITEL.getKey()),
-  BUCHUNG_DOKUMENT_PFAD("buchung-dokument-pfad", "Buchung Dokument Pfad",
-      "/$buchung_kontonummer/$buchung_id", Vorlageart.PFAD.getKey()),
+  BELEG_BUCHUNGEN_PFAD("dateiname-buchungen-beleg", "Buchungs-Beleg Pfad",
+      "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
+  BELEG_ALLGEMEIN_PFAD("dateiname-allgemein-beleg", "Allgemeiner Beleg Pfad",
+      "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
   MITGLIED_DOKUMENT_PFAD("mitglied-dokument-pfad", "Mitglied Dokument Pfad",
-      "/$mitglied_id", Vorlageart.PFAD.getKey());
+      "/$mitglied_id", Vorlageart.PFAD.getKey()),
+
+  BELEGE_TITEL("belege-titel", "Beleg Titel", "Belege",
+      Vorlageart.TITEL.getKey()),
+  BELEGE_SUBTITEL("belege-subtitel", "Beleg Subtitel", "",
+      Vorlageart.TITEL.getKey()),
+  BELEGE_DATEINAME("belege-dateiname", "Beleg Dateiname", "Belege",
+      Vorlageart.DATEINAME.getKey()),
+  BELEGE_BUCHUNGEN_TITEL("belege-buchungen-titel", "Belege Buchungen Titel",
+      "Belege-Buchungen-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.TITEL.getKey()),
+  BELEGE_BUCHUNGEN_SUBTITEL("belege-buchungen-subtitel",
+      "Belege Buchungen Subtitel", "", Vorlageart.TITEL.getKey()),
+  BELEGE_BUCHUNGEN_DATEINAME("belege-buchungen-dateiname",
+      "Belege Buchungen Dateiname",
+      "Belege-Buchungen-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey());
 
   private final String text;
 

@@ -31,7 +31,7 @@ import de.jost_net.JVerein.server.AltersstaffelImpl;
 import de.jost_net.JVerein.server.AnfangsbestandImpl;
 import de.jost_net.JVerein.server.ArbeitseinsatzImpl;
 import de.jost_net.JVerein.server.BeitragsgruppeImpl;
-import de.jost_net.JVerein.server.BuchungDokumentImpl;
+import de.jost_net.JVerein.server.BelegImpl;
 import de.jost_net.JVerein.server.BuchungImpl;
 import de.jost_net.JVerein.server.BuchungsartImpl;
 import de.jost_net.JVerein.server.BuchungsklasseImpl;
@@ -316,7 +316,7 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Dokumente zu Buchungen");
-          backup(BuchungDokumentImpl.class, writer, monitor);
+          backup(BelegImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Eigenschaften der Mitglieder");

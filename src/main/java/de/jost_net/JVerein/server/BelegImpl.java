@@ -1,0 +1,327 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.JVerein.server;
+
+import java.io.File;
+import java.rmi.RemoteException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.BelegMap;
+import de.jost_net.JVerein.Variable.BelegVar;
+import de.jost_net.JVerein.io.VelocityTool;
+import de.jost_net.JVerein.keys.BelegArt;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
+import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.util.ApplicationException;
+
+public class BelegImpl extends AbstractDokumentImpl implements Beleg
+{
+
+  // Hier müssen alle Implementierungen von AbstractBelegReferenz
+  // aufgelistet werden
+  private List<Class<? extends AbstractBelegReferenz>> belegReferenzList = Arrays
+      .asList(BelegBuchungImpl.class);
+
+  private static final long serialVersionUID = 1L;
+
+  public BelegImpl() throws RemoteException
+  {
+    super();
+  }
+
+  @Override
+  protected void updateCheck() throws ApplicationException
+  {
+    try
+    {
+      for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
+      {
+        DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
+            .createList(c);
+        it.addFilter("beleg = ?", getID());
+        while (it.hasNext())
+        {
+          it.next().checkChangesAllowed();
+        }
+      }
+      if (getBemerkung() == null || getBemerkung().isBlank())
+      {
+        throw new ApplicationException("Bitte Bemerkung eingeben");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim updateCheck");
+    }
+    super.updateCheck();
+  }
+
+  @Override
+  protected void insertCheck() throws ApplicationException
+  {
+    try
+    {
+      if (getBemerkung() == null || getBemerkung().isBlank())
+      {
+        throw new ApplicationException("Bitte Bemerkung eingeben");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim insertCheck");
+    }
+    super.insertCheck();
+  }
+
+  @Override
+  protected void deleteCheck() throws ApplicationException
+  {
+    try
+    {
+      // Alle vorhandenn erferenzen des Objects prüfen, ob sie geändert/gelöscht
+      // werden dürfen
+      for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
+      {
+        DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
+            .createList(c);
+        it.addFilter("beleg = ?", getID());
+        while (it.hasNext())
+        {
+          it.next().checkChangesAllowed();
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim insertCheck");
+    }
+  }
+
+  @Override
+  public void delete() throws RemoteException, ApplicationException
+  {
+    try
+    {
+      // Alle vorhandenn erferenzen des Objects impliziet löschen, damit dort im
+      // deleteCheck geprüft werden kann
+      DBTransaction.starten();
+      for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
+      {
+        DBIterator<DBObject> it = Einstellungen.getDBService().createList(c);
+        it.addFilter("beleg = ?", getID());
+        while (it.hasNext())
+        {
+          it.next().delete();
+        }
+      }
+      super.delete();
+      DBTransaction.commit();
+    }
+    catch (ApplicationException | RemoteException e)
+    {
+      DBTransaction.rollback();
+      throw e;
+    }
+  }
+
+  @Override
+  protected String getTableName()
+  {
+    return "beleg";
+  }
+
+  @Override
+  protected String getVerzeichnis()
+  {
+    // Für per Messaging gespeicherte Belege nötig. Damit auch bestehende Belege
+    // gefunden werden, bleibt es hier bei "buchungen"
+    return "buchungen";
+  }
+
+  @Override
+  public String getRootDir() throws RemoteException
+  {
+    switch (getBelegArt())
+    {
+      case BUCHUNG:
+        return Einstellungen.getBelegBuchungVerzeichnis() + File.separator;
+      case SONSTIGES:
+        return Einstellungen.getBelegAllgemeinVerzeichnis() + File.separator;
+    }
+    return null;
+  }
+
+  @Override
+  protected String getDateiPfad(String filename) throws RemoteException
+  {
+    switch (getBelegArt())
+    {
+      case BUCHUNG:
+        return VorlageUtil.getName(VorlageTyp.BELEG_BUCHUNGEN_PFAD, this,
+            filename);
+      case SONSTIGES:
+        return VorlageUtil.getName(VorlageTyp.BELEG_ALLGEMEIN_PFAD, this,
+            filename);
+    }
+    return null;
+  }
+
+  @Override
+  public String getBelegnummer() throws RemoteException
+  {
+    return (String) getAttribute("belegnummer");
+  }
+
+  @Override
+  public Object getAttribute(String fieldName) throws RemoteException
+  {
+    if ("belegnummer".equals(fieldName))
+    {
+      String nr = (String) super.getAttribute("belegnummer");
+      if (nr != null && !nr.isBlank())
+      {
+        return nr;
+      }
+
+      // Alte Dokumente haben zT. keine Belegnummer (Wenn es mehrere Dokumente
+      // in einer Buchung gab), dann als Fallback die Referenz verwenden
+      Long ref = getReferenz();
+      return ref == null ? null : ref.toString() + "-" + getID();
+    }
+    return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public void setBelegnummer(String belegnummer) throws RemoteException
+  {
+    setAttribute("belegnummer", belegnummer);
+  }
+
+  @Override
+  public BelegArt getBelegArt() throws RemoteException
+  {
+    Integer art = (Integer) getAttribute("belegart");
+    if (art == null)
+    {
+      return null;
+    }
+    return BelegArt.getByKey(art);
+  }
+
+  @Override
+  public void setBelegArt(BelegArt belegart) throws RemoteException
+  {
+    setAttribute("belegart", belegart.getKey());
+  }
+
+  @Override
+  public void store() throws RemoteException, ApplicationException
+  {
+    if (!isNewObject())
+    {
+      super.store();
+      return;
+    }
+    try
+    {
+      if (getBelegArt() == null)
+      {
+        throw new ApplicationException("Beleg-Art ist nicht gesetzt");
+      }
+
+      transactionBegin();
+
+      // Belegnummernummer erstellen
+      Map<String, Object> map = new AllgemeineMap().getMap(null);
+      map = new BelegMap().getMap(this, map);
+
+      String nummer = "";
+      switch (getBelegArt())
+      {
+        case BUCHUNG:
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_BUCHUNG);
+          break;
+        case SONSTIGES:
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_SONSTIGES);
+          break;
+      }
+      nummer = VelocityTool.eval(map, nummer);
+
+      if (nummer.length() > 50)
+      {
+        throw new ApplicationException(
+            "Belegnummer zu lang, maximal 50 Zeichen erlaubt!");
+      }
+      setBelegnummer(nummer);
+
+      // Prüfen, ob es schon einen Beleg mit dieser Nummer gibt
+      DBIterator<?> it = getList();
+      it.addFilter("belegnummer = ?", nummer);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Beleg mit dieser Nummer existiert bereits. Belegnummer in Einstellungen korrigieren!");
+      }
+      super.store();
+      // Belegnummer hochzählen
+      Property prop = null;
+      switch (getBelegArt())
+      {
+        case BUCHUNG:
+          prop = Property.BELEG_ZAEHLER_BUCHUNG;
+          break;
+        case SONSTIGES:
+          prop = Property.BELEG_ZAEHLER_SONSTIGES;
+          break;
+      }
+      Einstellungen.setEinstellung(prop,
+          Integer.parseInt(map.get(BelegVar.BELEG_ZAEHLER.getName()).toString())
+              + 1);
+
+      transactionCommit();
+    }
+    catch (Exception e)
+    {
+      transactionRollback();
+      throw e;
+    }
+  }
+
+  @Override
+  public String getNummer() throws RemoteException
+  {
+    return getBelegnummer();
+  }
+
+  @Override
+  public void setReferenz(Long referenz) throws RemoteException
+  {
+    throw new RemoteException("setReferenz bei Belegen nicht möglich!");
+  }
+}
