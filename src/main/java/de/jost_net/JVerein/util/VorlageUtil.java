@@ -390,9 +390,9 @@ public class VorlageUtil
         case BELEG_BUCHUNGEN_PFAD:
         case BELEG_ALLGEMEIN_PFAD:
           map.put("file_name", name);
-        case BELEGE_BUCHUNGEN_DATEINAME:
-        case BELEGE_BUCHUNGEN_SUBTITEL:
-        case BELEGE_BUCHUNGEN_TITEL:
+        case BELEG_BUCHUNGEN_DATEINAME:
+        case BELEG_BUCHUNGEN_SUBTITEL:
+        case BELEG_BUCHUNGEN_TITEL:
           map = new BelegMap().getMap((Beleg) obj, map);
           break;
       }
@@ -910,9 +910,9 @@ public class VorlageUtil
         case BELEG_BUCHUNGEN_PFAD:
         case BELEG_ALLGEMEIN_PFAD:
           map.put("file_name", "Filename.pdf");
-        case BELEGE_BUCHUNGEN_DATEINAME:
-        case BELEGE_BUCHUNGEN_SUBTITEL:
-        case BELEGE_BUCHUNGEN_TITEL:
+        case BELEG_BUCHUNGEN_DATEINAME:
+        case BELEG_BUCHUNGEN_SUBTITEL:
+        case BELEG_BUCHUNGEN_TITEL:
           map = new BelegMap().getMap(null, map);
           break;
       }

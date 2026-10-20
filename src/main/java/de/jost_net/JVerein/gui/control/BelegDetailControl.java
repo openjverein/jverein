@@ -95,7 +95,7 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
   }
 
-  private Beleg getBeleg() throws RemoteException
+  private Beleg getBeleg()
   {
     if (beleg != null)
     {
@@ -364,7 +364,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     switch (selectedTab)
     {
       case TAB_BUCHUNGEN:
-        return VorlageUtil.getName(VorlageTyp.BELEGE_BUCHUNGEN_TITEL, this);
+        return VorlageUtil.getName(VorlageTyp.BELEG_BUCHUNGEN_TITEL,
+            getBeleg());
       default:
         return null;
     }
@@ -376,7 +377,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     switch (selectedTab)
     {
       case TAB_BUCHUNGEN:
-        return VorlageUtil.getName(VorlageTyp.BELEGE_BUCHUNGEN_SUBTITEL, this);
+        return VorlageUtil.getName(VorlageTyp.BELEG_BUCHUNGEN_SUBTITEL,
+            getBeleg());
       default:
         return null;
     }
@@ -388,7 +390,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     switch (selectedTab)
     {
       case TAB_BUCHUNGEN:
-        return VorlageUtil.getName(VorlageTyp.BELEGE_BUCHUNGEN_DATEINAME, this);
+        return VorlageUtil.getName(VorlageTyp.BELEG_BUCHUNGEN_DATEINAME,
+            getBeleg());
       default:
         return null;
     }
