@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
@@ -310,23 +309,13 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
   {
     try
     {
-      DBTransaction.starten();
-
-      Konto konto = (Konto) prepareStore();
-      konto.store();
-      DBTransaction.commit();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
-      DBTransaction.rollback();
       String fehler = "Fehler beim Speichern des Kontos";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
-    }
-    catch (ApplicationException e)
-    {
-      DBTransaction.rollback();
-      throw e;
     }
   }
 
