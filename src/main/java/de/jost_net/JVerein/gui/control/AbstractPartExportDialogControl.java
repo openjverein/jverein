@@ -61,9 +61,13 @@ public class AbstractPartExportDialogControl
 
   private static final int DEFAULT_UNTEN = 20;
 
-  private static final String DEFAULT_HINTERGRUND = null;
+  private static String DEFAULT_HINTERGRUND = null;
 
-  private static final String DEFAULT_VORDERGRUND = null;
+  private static String DEFAULT_VORDERGRUND = null;
+
+  private static boolean DEFAULT_HEADER_TRANSPARENT = false;
+
+  private static boolean DEFAULT_ZELLEN_TRANSPARENT = false;
 
   private static final boolean DEFAULT_QUERFORMAT = false;
 
@@ -100,6 +104,10 @@ public class AbstractPartExportDialogControl
   private static final int DEFAULT_COLOR_GREEN2 = 230;
 
   private static final boolean DEFAULT_FILTER_PARAMETER = false;
+
+  private static boolean DEFAULT_KONTONUMMER_IN_BUCHUNGSLISTE = false;
+
+  private static boolean DEFAULT_WITSCHAFTSPLAN_IST_ANZEIGEN = false;
 
   protected IntegerInput links;
 
@@ -141,6 +149,10 @@ public class AbstractPartExportDialogControl
 
   protected CheckboxInput filterParameter;
 
+  private CheckboxInput kontonummer_in_buchungsliste;
+
+  private CheckboxInput wirtschaftsplan_ist_anzeigen;
+
   protected JVereinTablePart spaltenList;
 
   protected List<ExportSpalte> colList;
@@ -163,7 +175,7 @@ public class AbstractPartExportDialogControl
 
   public AbstractPartExportDialogControl(AbstractPartExportDialog dialog,
       Settings settings, String settingPrefix, ExportArt art, IJVereinPart part,
-      String title, String subtitle)
+      String title, String subtitle) throws RemoteException
   {
     this.dialog = dialog;
     this.settings = settings;
@@ -172,6 +184,18 @@ public class AbstractPartExportDialogControl
     this.part = part;
     this.title = title;
     this.subtitle = subtitle;
+    DEFAULT_HINTERGRUND = (String) Einstellungen
+        .getEinstellung(Property.FORMULAR_HINTERGRUND);
+    DEFAULT_VORDERGRUND = (String) Einstellungen
+        .getEinstellung(Property.FORMULAR_VORDERGRUND);
+    DEFAULT_HEADER_TRANSPARENT = (Boolean) Einstellungen
+        .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT);
+    DEFAULT_ZELLEN_TRANSPARENT = (Boolean) Einstellungen
+        .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT);
+    DEFAULT_KONTONUMMER_IN_BUCHUNGSLISTE = (Boolean) Einstellungen
+        .getEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE);
+    DEFAULT_WITSCHAFTSPLAN_IST_ANZEIGEN = (Boolean) Einstellungen
+        .getEinstellung(Property.WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN);
   }
 
   public String getTitle()
@@ -312,8 +336,7 @@ public class AbstractPartExportDialogControl
     if (headerTransparent == null)
     {
       headerTransparent = new CheckboxInput(settings.getBoolean(
-          settingPrefix + "headerTransparent", (Boolean) Einstellungen
-              .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT)));
+          settingPrefix + "headerTransparent", DEFAULT_HEADER_TRANSPARENT));
       headerTransparent.setName("Tabellen Header transparent");
     }
     return headerTransparent;
@@ -324,8 +347,7 @@ public class AbstractPartExportDialogControl
     if (zellenTransparent == null)
     {
       zellenTransparent = new CheckboxInput(settings.getBoolean(
-          settingPrefix + "zellenTransparent", (Boolean) Einstellungen
-              .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT)));
+          settingPrefix + "zellenTransparent", DEFAULT_ZELLEN_TRANSPARENT));
       zellenTransparent.setName("Tabellen Zellen transparent");
     }
     return zellenTransparent;
@@ -480,6 +502,33 @@ public class AbstractPartExportDialogControl
     return filterParameter;
   }
 
+  public CheckboxInput getKontonummerInBuchungsliste() throws RemoteException
+  {
+    if (kontonummer_in_buchungsliste != null)
+    {
+      return kontonummer_in_buchungsliste;
+    }
+    kontonummer_in_buchungsliste = new CheckboxInput(
+        settings.getBoolean(settingPrefix + "kontonummer_in_buchungsliste",
+            DEFAULT_KONTONUMMER_IN_BUCHUNGSLISTE));
+    kontonummer_in_buchungsliste.setName("Zeige Kontonummer in Buchungsliste");
+    return kontonummer_in_buchungsliste;
+  }
+
+  public CheckboxInput getWirtschaftsplanIstAnzeigen() throws RemoteException
+  {
+    if (wirtschaftsplan_ist_anzeigen != null)
+    {
+      return wirtschaftsplan_ist_anzeigen;
+    }
+    wirtschaftsplan_ist_anzeigen = new CheckboxInput(
+        settings.getBoolean(settingPrefix + "wirtschaftsplan_ist_anzeigen",
+            DEFAULT_WITSCHAFTSPLAN_IST_ANZEIGEN));
+    wirtschaftsplan_ist_anzeigen
+        .setName("Wirtschaftsplan Ist-Beträge von laufendem Zeitraum ausgeben");
+    return wirtschaftsplan_ist_anzeigen;
+  }
+
   public void resetRaender()
   {
     links.setValue(DEFAULT_LINKS);
@@ -488,23 +537,13 @@ public class AbstractPartExportDialogControl
     unten.setValue(DEFAULT_UNTEN);
   }
 
-  public void resetFormular() throws ApplicationException
+  public void resetFormular()
   {
-    try
-    {
-      hintergrund.setValue(DEFAULT_HINTERGRUND);
-      vordergrund.setValue(DEFAULT_VORDERGRUND);
-      headerTransparent.setValue((Boolean) Einstellungen
-          .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT));
-      zellenTransparent.setValue((Boolean) Einstellungen
-          .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT));
-      querformat.setValue(DEFAULT_QUERFORMAT);
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler beim Reset im Tabelle-Export-Dialog", e);
-      throw new ApplicationException("Serverfehler");
-    }
+    hintergrund.setValue(FormularInput.initdefault(DEFAULT_HINTERGRUND));
+    vordergrund.setValue(FormularInput.initdefault(DEFAULT_VORDERGRUND));
+    headerTransparent.setValue(DEFAULT_HEADER_TRANSPARENT);
+    zellenTransparent.setValue(DEFAULT_ZELLEN_TRANSPARENT);
+    querformat.setValue(DEFAULT_QUERFORMAT);
   }
 
   public void resetSchriftart()
@@ -529,11 +568,21 @@ public class AbstractPartExportDialogControl
     }
   }
 
-  public void resetOptionen()
+  public void resetOptionen() throws ApplicationException
   {
     if (filterParameter != null)
     {
       filterParameter.setValue(DEFAULT_FILTER_PARAMETER);
+    }
+    if (kontonummer_in_buchungsliste != null)
+    {
+      kontonummer_in_buchungsliste
+          .setValue(DEFAULT_KONTONUMMER_IN_BUCHUNGSLISTE);
+    }
+    if (wirtschaftsplan_ist_anzeigen != null)
+    {
+      wirtschaftsplan_ist_anzeigen
+          .setValue(DEFAULT_WITSCHAFTSPLAN_IST_ANZEIGEN);
     }
   }
 
@@ -707,6 +756,26 @@ public class AbstractPartExportDialogControl
       {
         settings.setAttribute(prefix + "filter_parameter", (String) null);
       }
+      if (kontonummer_in_buchungsliste != null)
+      {
+        settings.setAttribute(prefix + "kontonummer_in_buchungsliste",
+            (Boolean) kontonummer_in_buchungsliste.getValue());
+      }
+      else
+      {
+        settings.setAttribute(prefix + "kontonummer_in_buchungsliste",
+            (String) null);
+      }
+      if (wirtschaftsplan_ist_anzeigen != null)
+      {
+        settings.setAttribute(prefix + "wirtschaftsplan_ist_anzeigen",
+            (Boolean) wirtschaftsplan_ist_anzeigen.getValue());
+      }
+      else
+      {
+        settings.setAttribute(prefix + "wirtschaftsplan_ist_anzeigen",
+            (String) null);
+      }
     }
   }
 
@@ -752,12 +821,10 @@ public class AbstractPartExportDialogControl
           settings.getString(prefix + "hintergrund", DEFAULT_HINTERGRUND)));
       vordergrund.setPreselected(FormularInput.initdefault(
           settings.getString(prefix + "vordergrund", DEFAULT_VORDERGRUND)));
-      headerTransparent.setValue(settings
-          .getBoolean(prefix + "headerTransparent", (Boolean) Einstellungen
-              .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT)));
-      zellenTransparent.setValue(settings
-          .getBoolean(prefix + "zellenTransparent", (Boolean) Einstellungen
-              .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT)));
+      headerTransparent.setValue(settings.getBoolean(
+          prefix + "headerTransparent", DEFAULT_HEADER_TRANSPARENT));
+      zellenTransparent.setValue(settings.getBoolean(
+          prefix + "zellenTransparent", DEFAULT_ZELLEN_TRANSPARENT));
       querformat
           .setValue(settings.getBoolean(prefix + "quer", DEFAULT_QUERFORMAT));
 
@@ -802,6 +869,18 @@ public class AbstractPartExportDialogControl
       {
         filterParameter.setValue(settings
             .getBoolean(prefix + "filter_parameter", DEFAULT_FILTER_PARAMETER));
+      }
+      if (kontonummer_in_buchungsliste != null)
+      {
+        kontonummer_in_buchungsliste.setValue(
+            settings.getBoolean(settingPrefix + "kontonummer_in_buchungsliste",
+                DEFAULT_KONTONUMMER_IN_BUCHUNGSLISTE));
+      }
+      if (wirtschaftsplan_ist_anzeigen != null)
+      {
+        wirtschaftsplan_ist_anzeigen.setValue(
+            settings.getBoolean(settingPrefix + "wirtschaftsplan_ist_anzeigen",
+                DEFAULT_WITSCHAFTSPLAN_IST_ANZEIGEN));
       }
     }
   }
@@ -913,6 +992,16 @@ public class AbstractPartExportDialogControl
     if (filterParameter != null)
     {
       params.setFilterParameter((Boolean) filterParameter.getValue());
+    }
+    if (kontonummer_in_buchungsliste != null)
+    {
+      params.setKontonummer_in_buchungsliste(
+          (Boolean) kontonummer_in_buchungsliste.getValue());
+    }
+    if (wirtschaftsplan_ist_anzeigen != null)
+    {
+      params.setWirtschaftsplan_ist_anzeigen(
+          (Boolean) wirtschaftsplan_ist_anzeigen.getValue());
     }
   }
 

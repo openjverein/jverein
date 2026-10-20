@@ -38,16 +38,6 @@ public abstract class BuchungAuswertungExportPDF implements Exporter
 
   protected boolean kontonummer_in_buchungsliste = false;
 
-  protected boolean getKontonummer() throws RemoteException
-  {
-    if (Boolean.valueOf((Boolean) Einstellungen
-        .getEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE)))
-    {
-      return true;
-    }
-    return false;
-  }
-
   protected ArrayList<Buchungsart> getBuchungsarten(BuchungQuery query)
       throws RemoteException
   {

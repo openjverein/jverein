@@ -29,6 +29,7 @@ import com.itextpdf.text.Paragraph;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -239,8 +240,8 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
   }
 
   @Override
-  public boolean supportFilterParams()
+  public int getExportDialogOptions()
   {
-    return true;
+    return AbstractPartExportDialog.OPTION_FILTER_PARAMS;
   }
 }

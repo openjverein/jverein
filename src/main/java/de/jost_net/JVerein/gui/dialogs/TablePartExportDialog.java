@@ -63,10 +63,11 @@ public class TablePartExportDialog extends AbstractPartExportDialog
   public TablePartExportDialog(Table table, String settingPrefix, ExportArt art,
       String title, String subtitle, String filename,
       JVereinTablePart tablePart, Map<Filter, String> filterparams)
-      throws ApplicationException
+      throws ApplicationException, RemoteException
   {
     super(settingPrefix, art, title, subtitle, filename, "Tabelle exportieren",
-        tablePart, false, filterparams != null);
+        tablePart, false,
+        filterparams != null ? OPTION_FILTER_PARAMS : OPTION_NONE);
 
     if (table == null || table.isDisposed() || !(table instanceof Table))
     {

@@ -27,6 +27,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.gui.control.KontoauszugMailControl;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.dialogs.ExporterExportDialog;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
@@ -180,7 +181,8 @@ public class Kontoauszug extends AbstractAusgabe
     if (params == null)
     {
       ExporterExportDialog d = new ExporterExportDialog(false, "Kontoauszug",
-          ExportArt.PDF, "", "", null, false);
+          ExportArt.PDF, "", "", null,
+          AbstractPartExportDialog.OPTION_NONE);
       try
       {
         if (!d.open())

@@ -110,5 +110,10 @@ public interface Exporter extends IO
     return null;
   }
 
-  public boolean supportFilterParams();
+  /**
+   * Liefert Optionen für den PDF Teil des Export Dialogs
+   * 
+   * @return Optionen wie in AbstractPartExportDialog definiert
+   */
+  public int getExportDialogOptions();
 }

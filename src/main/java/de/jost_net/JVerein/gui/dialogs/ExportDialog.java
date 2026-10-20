@@ -216,7 +216,7 @@ public class ExportDialog extends AbstractDialog<Object>
             exporter.getTitle(dateinameObject),
             exporter.getSubtitle(dateinameObject),
             exporter.getDateiname(dateinameObject),
-            exporter.supportFilterParams());
+            exporter.getExportDialogOptions());
         if (!d.open())
         {
           throw new OperationCanceledException();

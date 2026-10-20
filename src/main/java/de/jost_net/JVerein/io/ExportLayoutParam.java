@@ -32,15 +32,15 @@ public class ExportLayoutParam
 
   private Integer unten;
 
-  private Boolean querformat;
+  private Boolean querformat = false;
 
   private Formular vordergrund;
 
   private Formular hintergrund;
 
-  private Boolean headerTransparent;
+  private Boolean headerTransparent = false;
 
-  private Boolean zellenTransparent;
+  private Boolean zellenTransparent = false;
 
   private Font fontHeader;
 
@@ -63,6 +63,10 @@ public class ExportLayoutParam
   private BaseColor colorTable2;
 
   private Boolean filterParameter = false;
+
+  private Boolean kontonummer_in_buchungsliste = false;
+
+  private Boolean wirtschaftsplan_ist_anzeigen = false;
 
   public Integer getLinks()
   {
@@ -282,6 +286,28 @@ public class ExportLayoutParam
   public void setFilterParameter(Boolean filterParameter)
   {
     this.filterParameter = filterParameter;
+  }
+
+  public Boolean getKontonummer_in_buchungsliste()
+  {
+    return kontonummer_in_buchungsliste;
+  }
+
+  public void setKontonummer_in_buchungsliste(
+      Boolean kontonummer_in_buchungsliste)
+  {
+    this.kontonummer_in_buchungsliste = kontonummer_in_buchungsliste;
+  }
+
+  public Boolean getWirtschaftsplan_ist_anzeigen()
+  {
+    return wirtschaftsplan_ist_anzeigen;
+  }
+
+  public void setWirtschaftsplan_ist_anzeigen(
+      Boolean wirtschaftsplan_ist_anzeigen)
+  {
+    this.wirtschaftsplan_ist_anzeigen = wirtschaftsplan_ist_anzeigen;
   }
 
 }

@@ -33,6 +33,7 @@ import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.keys.Filter;
@@ -480,8 +481,8 @@ public class AuswertungMitgliederstatistikPDF implements Exporter
   }
 
   @Override
-  public boolean supportFilterParams()
+  public int getExportDialogOptions()
   {
-    return false;
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 }

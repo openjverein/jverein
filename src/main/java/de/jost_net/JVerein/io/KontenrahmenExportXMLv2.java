@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -142,9 +143,9 @@ public class KontenrahmenExportXMLv2 extends KontenrahmenExport
   }
 
   @Override
-  public boolean supportFilterParams()
+  public int getExportDialogOptions()
   {
-    return false;
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 
 }
