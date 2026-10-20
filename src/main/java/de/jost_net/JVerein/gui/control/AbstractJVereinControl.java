@@ -66,7 +66,7 @@ public abstract class AbstractJVereinControl extends AbstractControl
               // Nur wenn der Liste View auch Filter Inputs erzeugt hat
               if (!((FilterControl) this).isFilterMapEmpty())
               {
-                filtertext = ((FilterControl) this).getFilterText(false);
+                filtertext = ((FilterControl) this).getFilterText(false, true);
               }
             }
             getTablePart().export(getTableTitle(), getTableSubtitle(),

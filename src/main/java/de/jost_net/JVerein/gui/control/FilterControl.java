@@ -177,6 +177,24 @@ public abstract class FilterControl extends AbstractListeControl
    */
   public Map<Filter, String> getFilterText(boolean alle) throws RemoteException
   {
+    return getFilterText(alle, false);
+  }
+
+  /**
+   * Gibt alle Angewendeten Filter als Map zurück. Value ist der angezeigte
+   * Text.
+   * 
+   * @param alle
+   *          wenn true werden auch die nicht eingeblendeten Filter
+   *          zurückgegeben
+   * @param ohneNein
+   *          Boolean Nein wird nicht ausgegeben
+   * @return
+   * @throws RemoteException
+   */
+  public Map<Filter, String> getFilterText(boolean alle, boolean ohneNein)
+      throws RemoteException
+  {
     Map<Filter, String> map = new HashMap<>();
     for (Filter filter : Filter.values())
     {
@@ -205,7 +223,14 @@ public abstract class FilterControl extends AbstractListeControl
       }
       else if (input instanceof CheckboxInput)
       {
-        text = ((Boolean) value) ? "Ja" : "Nein";
+        if (ohneNein)
+        {
+          text = ((Boolean) value) ? "Ja" : "";
+        }
+        else
+        {
+          text = ((Boolean) value) ? "Ja" : "Nein";
+        }
       }
       else if (input instanceof DialogInput)
       {
