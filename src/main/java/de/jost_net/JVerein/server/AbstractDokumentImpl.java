@@ -222,7 +222,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void store() throws RemoteException, ApplicationException
+  public void insert() throws RemoteException, ApplicationException
   {
     if (getDatum() == null)
     {
@@ -232,6 +232,8 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
 
     // vor dem Kopieren der Datei schon prüfen, ob alle Angaben gemacht sind
     insertCheck();
+    // Wenn getPfad gesetzt ist, wurde schon gespeichern, also ist irgendwas
+    // faul
     if (file != null && getPfad() == null)
     {
       if (file.isDirectory())
@@ -321,7 +323,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     }
     try
     {
-      super.store();
+      super.insert();
     }
     catch (Exception e)
     {
