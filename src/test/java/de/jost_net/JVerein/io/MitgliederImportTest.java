@@ -132,7 +132,9 @@ class MitgliederImportTest
         Class<?> klasse = invocation.getArgument(0);
         if (klasse == Mitglied.class)
         {
-          return neuesMitglied(mitgliedstyp);
+          String id = invocation.getArgument(1);
+          return id == null ? neuesMitglied(mitgliedstyp)
+              : gespeichertMitId(id);
         }
         return mock(klasse);
       }
@@ -312,6 +314,18 @@ class MitgliederImportTest
           return null;
       }
     });
+  }
+
+  private Mitglied gespeichertMitId(String id) throws Exception
+  {
+    for (Mitglied m : gespeichert)
+    {
+      if (id.equals(m.getID()))
+      {
+        return m;
+      }
+    }
+    throw new AssertionError("Mitglied nicht gespeichert: " + id);
   }
 
   private Mitglied gespeichert(String externeMitgliedsnummer) throws Exception
@@ -494,11 +508,11 @@ class MitgliederImportTest
   // ---- Reihenfolge der Verarbeitung ----
 
   @Test
-  void zeileKommtNachDerZeileAufDieSieVerweist() throws Exception
+  void vollzahlerKommenVorAngehoerigen() throws Exception
   {
-    // Zeile 1 (Anna) verweist auf M-1 (Zeile 2), Zeile 4 (Eva) per ^ auf
-    // Zeile 3, Zeile 5 (Willi) hat M-1 als abweichenden Zahler
-    assertEquals(List.of("M-1:2", "M-2:1", "M-3:3", "M-4:4", "M-5:5"),
+    // Zeile 1 (Anna) und Zeile 4 (Eva) haben eine Vollzahler-Angabe und kommen
+    // nach den Zeilen 2, 3 und 5
+    assertEquals(List.of("M-1:2", "M-3:3", "M-5:5", "M-2:1", "M-4:4"),
         durchlaufen(resource(FAMILIEN)));
   }
 
@@ -864,7 +878,6 @@ class MitgliederImportTest
 
     verify(monitor).log(contains(
         "Zeile 1: Alternativer Zahler mit externer Mitgliedsnummer nicht gefunden: 99"));
-    assertTrue(nichtPersistiert("1"));
   }
 
   // ---- Fehler bei der Planung (vor dem Import) ----
@@ -879,45 +892,85 @@ class MitgliederImportTest
 
     verify(monitor).log(contains(
         "Zeile 1: Alternativer Zahler mit externer Mitgliedsnummer nicht gefunden: unbekannt"));
-    assertEquals(1, datenbank.size());
   }
 
   @Test
-  void ungueltigeVerweiseBrechenVorDemImportAb() throws Exception
+  void ungueltigeVerweiseBrechenAb() throws Exception
   {
-    importieren(csv(ALLE_SPALTEN, "1;Mustermann;Max;Vollzahler;;;;",
-        "1;Mustermann;Anna;Angehoeriger;;1;;"));
-    verify(monitor).log(contains(
-        "Zeile 2: In externezahlerid verwiesene externe Mitgliedsnummer 1 kommt in der Datei mehrfach vor"));
-
     importieren(csv(ALLE_SPALTEN, "1;Mustermann;Max;Vollzahler;^;;;"));
     verify(monitor).log(contains("Zeile 1: Kein Zahler oberhalb für ^"));
 
+    // Max ist beim Verweis noch nicht gespeichert (Familienangehörige nach
+    // allen anderen Zeilen), ein Zahler kann nicht sein eigener Angehöriger sein
     importieren(csv(ALLE_SPALTEN, "1;Mustermann;Max;Angehoeriger;;1;;"));
     verify(monitor).log(contains(
-        "Zeile 1: Ein Mitglied kann nicht sein eigener Zahler sein"));
+        "Zeile 1: Vollzahler mit externer Mitgliedsnummer nicht gefunden: 1"));
 
-    // Nichts davon darf etwas gespeichert haben
     assertTrue(datenbank.isEmpty());
   }
 
   @Test
-  void zyklischeVerweiseBrechenAb() throws Exception
+  void mehrfachVorkommendeExterneNummerInDerDateiBrichtBeimVerweisAb()
+      throws Exception
   {
-    importieren(csv(ALLE_SPALTEN, "1;Mustermann;Max;Angehoeriger;;2;;",
-        "2;Mustermann;Anna;Angehoeriger;;1;;"));
+    importieren(csv(ALLE_SPALTEN, "1;Mustermann;Max;Vollzahler;;;;",
+        "1;Mustermann;Tom;Vollzahler;;;;", "2;Mustermann;Anna;Angehoeriger;;1;;"));
 
-    verify(monitor).log(contains("Zahler-Verweise sind zyklisch"));
-    assertTrue(datenbank.isEmpty());
+    verify(monitor).log(contains(
+        "Zeile 3: Externe Mitgliedsnummer 1 kommt in der Datei mehrfach vor"));
+  }
+
+  // ---- Reihenfolge ohne Abhängigkeitsplanung ----
+
+  @Test
+  void vollzahlerMitAbweichendemZahlerUndAngehoerigerDarueber() throws Exception
+  {
+    vorhandenesMitglied("Zahler", "Paul", "9"); // ID 1
+
+    // Anna steht über ihrem Vollzahler Max, Max hat Paul als abweichenden Zahler
+    importieren(csv(ALLE_SPALTEN, "2;Mustermann;Anna;Angehoeriger;;1;;",
+        "1;Mustermann;Max;Vollzahler;;;;9"));
+
+    verify(monitor, never()).log(anyString());
+    assertEquals(dbId("Max"), persistiertNachVorname("Anna").get("VollZahlerID"));
+    assertEquals(Long.valueOf(1),
+        persistiertNachVorname("Max").get("AbweichenderZahlerID"));
   }
 
   @Test
-  void zyklusUeberAlternativenZahlerWirdErkannt() throws Exception
+  void abweichenderZahlerKannEinWeiterUntenStehenderAngehoerigerSein()
+      throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, "1;Meier;Tom;Vollzahler;;;;E",
+        "2;Wichtig;Hans;Vollzahler;;;;", "E;Wichtig;Eva;Angehoeriger;;2;;"));
+
+    verify(monitor, never()).log(anyString());
+    assertEquals(dbId("Eva"),
+        persistiertNachVorname("Tom").get("AbweichenderZahlerID"));
+    assertEquals(dbId("Hans"), persistiertNachVorname("Eva").get("VollZahlerID"));
+  }
+
+  @Test
+  void abweichendeZahlerDuerfenSichGegenseitigZahlen() throws Exception
   {
     importieren(csv(ALLE_SPALTEN, "1;Mustermann;Max;Vollzahler;;;;2",
-        "2;Mustermann;Anna;Vollzahler;;1;;"));
+        "2;Mustermann;Anna;Vollzahler;;;;1"));
 
-    verify(monitor).log(contains("Zahler-Verweise sind zyklisch"));
-    assertTrue(datenbank.isEmpty());
+    verify(monitor, never()).log(anyString());
+    assertEquals(dbId("Anna"),
+        persistiertNachVorname("Max").get("AbweichenderZahlerID"));
+    assertEquals(dbId("Max"),
+        persistiertNachVorname("Anna").get("AbweichenderZahlerID"));
+  }
+
+  @Test
+  void angehoerigerKannNichtAufWeiterUntenStehendenAngehoerigenVerweisen()
+      throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, "1;Mustermann;Anna;Angehoeriger;;2;;",
+        "2;Mustermann;Tom;Angehoeriger;;3;;", "3;Mustermann;Max;Vollzahler;;;;"));
+
+    verify(monitor).log(contains(
+        "Zeile 1: Vollzahler mit externer Mitgliedsnummer nicht gefunden: 2"));
   }
 }
