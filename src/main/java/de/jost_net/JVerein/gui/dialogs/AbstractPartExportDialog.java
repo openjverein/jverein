@@ -46,6 +46,18 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     CSV
   }
 
+  // Keine Export Dialog Optionen ausgeben
+  public static final int OPTION_NONE = 0;
+
+  // Filter Parameter in PDF Reports ausgeben
+  public static final int OPTION_FILTER_PARAMS = 1;
+
+  // Zeige Kontonummer in Buchungsliste
+  public static final int OPTION_KONTONUMMER = 1 << 1;
+
+  // Zeige Wirtschaftsplan Ist-Beträge
+  public static final int OPTION_WIRSCHAFTSPALN_IST = 1 << 2;
+
   protected boolean success = false;
 
   protected Settings settings;
@@ -58,21 +70,21 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected boolean supportTable2;
 
-  protected boolean supportFilterParams;
+  protected int dialogOptions;
 
   protected AbstractPartExportDialogControl control = null;
 
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
       String title, String subtitle, String filename, String dialogTitel,
-      IJVereinPart part, boolean supportTable2, boolean supportFilterParams)
-      throws ApplicationException
+      IJVereinPart part, boolean supportTable2, int dialogOptions)
+      throws ApplicationException, RemoteException
   {
     super(AbstractPartExportDialog.POSITION_CENTER);
     this.filename = filename;
     this.art = art;
     this.settingPrefix = settingPrefix + art.toString() + ".";
     this.supportTable2 = supportTable2;
-    this.supportFilterParams = supportFilterParams;
+    this.dialogOptions = dialogOptions;
     settings = new Settings(this.getClass());
     this.control = new AbstractPartExportDialogControl(this, settings,
         this.settingPrefix, art, part, title, subtitle);
@@ -199,10 +211,21 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     tabFont.addButtonArea(sbuttons);
 
     // Optionen, Aktuell nur für Exportparameter
-    if (supportFilterParams)
+    if (dialogOptions != 0)
     {
       TabGroup tabOptionen = new TabGroup(folder, "Optionen", true, 2);
-      tabOptionen.addInput(control.getFilterParameter());
+      if ((dialogOptions & OPTION_FILTER_PARAMS) != 0)
+      {
+        tabOptionen.addInput(control.getFilterParameter());
+      }
+      if ((dialogOptions & OPTION_KONTONUMMER) != 0)
+      {
+        tabOptionen.addInput(control.getKontonummerInBuchungsliste());
+      }
+      if ((dialogOptions & OPTION_WIRSCHAFTSPALN_IST) != 0)
+      {
+        tabOptionen.addInput(control.getWirtschaftsplanIstAnzeigen());
+      }
       ButtonArea obuttons = new ButtonArea();
       obuttons.addButton("Reset", c -> control.resetOptionen(), null, false,
           "edit-undo.png");

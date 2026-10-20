@@ -37,10 +37,11 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
   public SaldoPartExportDialog(ISaldoExport export,
       ArrayList<PseudoDBObject> zeile, String settingPrefix, ExportArt art,
       String title, String subtitle, String filename)
-      throws ApplicationException
+      throws ApplicationException, RemoteException
   {
     super(settingPrefix, art, title, subtitle, filename,
-        "Saldo Report generieren", null, false, false);
+        "Saldo Report generieren", null, false,
+        AbstractPartExportDialog.OPTION_NONE);
     this.export = export;
     this.zeile = zeile;
   }

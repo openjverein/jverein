@@ -62,10 +62,12 @@ public class TreePartExportDialog extends AbstractPartExportDialog
 
   public TreePartExportDialog(Tree tree, String settingPrefix, ExportArt art,
       String title, String subtitle, String filename, JVereinTreePart treePart,
-      Map<Filter, String> filterparams) throws ApplicationException
+      Map<Filter, String> filterparams)
+      throws ApplicationException, RemoteException
   {
     super(settingPrefix, art, title, subtitle, filename, "Baum exportieren",
-        treePart, false, filterparams != null);
+        treePart, false,
+        filterparams != null ? OPTION_FILTER_PARAMS : OPTION_NONE);
 
     if (tree == null || tree.isDisposed() || !(tree instanceof Tree))
     {

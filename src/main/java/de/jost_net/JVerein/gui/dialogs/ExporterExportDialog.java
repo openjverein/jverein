@@ -30,10 +30,10 @@ public class ExporterExportDialog extends AbstractPartExportDialog
 
   public ExporterExportDialog(boolean hasColortable2, String settingPrefix,
       ExportArt art, String title, String subtitle, String filename,
-      boolean supportFilterParams) throws ApplicationException
+      int dialogOptions) throws ApplicationException, RemoteException
   {
     super(settingPrefix, art, title, subtitle, filename, "Report generieren",
-        null, hasColortable2, supportFilterParams);
+        null, hasColortable2, dialogOptions);
   }
 
   @Override
