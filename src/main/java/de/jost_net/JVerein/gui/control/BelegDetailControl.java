@@ -117,8 +117,13 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
 
     if (datei != null)
     {
-      File file = new File((String) datei.getValue());
-      settings.setAttribute("lastdir", file.getParent());
+      String filename = (String) datei.getValue();
+      File file = null;
+      if (filename != null && !filename.isBlank())
+      {
+        file = new File(filename);
+        settings.setAttribute("lastdir", file.getParent());
+      }
       beleg.setFile(file);
     }
 
