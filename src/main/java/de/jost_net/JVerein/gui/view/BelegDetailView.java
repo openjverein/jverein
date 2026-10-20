@@ -100,9 +100,12 @@ public class BelegDetailView extends AbstractDetailView
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
-    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
-    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
+    if (!((Beleg) getCurrentObject()).isNewObject())
+    {
+      GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+      GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+      GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
+    }
   }
 
   @Override
