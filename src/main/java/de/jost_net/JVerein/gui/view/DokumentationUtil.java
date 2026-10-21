@@ -91,11 +91,10 @@ public class DokumentationUtil
 
   public static final String FORDERUNG = MITGLIEDER + "forderung";
 
-  // Belege
-  public static final String BELEG = FUNKTIONEN + "belege";
-
   // Buchführung
   public static final String ANFANGSBESTAENDE = BUCHF + "anfangsbestand";
+
+  public static final String BELEG = BUCHF + "belege";
 
   public static final String BUCHUNGEN = BUCHF + "buchungen";
 
