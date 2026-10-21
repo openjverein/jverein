@@ -22,6 +22,7 @@ import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.Suchjahr;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -50,7 +51,7 @@ public class ArbeitseinsatzAuswertungDialog extends AbstractDialog<Boolean>
         null);
 
     LabelGroup group = new LabelGroup(parent, "Filter");
-    group.addInput(control.getSuchjahrInput());
+    group.addInput(control.getFilterInput(Filter.SUCHJAHR, Suchjahr.getList()));
     group.addInput(control.getFilterInput(Filter.AUSWERTUNG));
 
     GridData gridData = new GridData(GridData.FILL_BOTH);

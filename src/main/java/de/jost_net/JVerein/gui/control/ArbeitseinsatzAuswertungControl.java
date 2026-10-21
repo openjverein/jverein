@@ -25,7 +25,6 @@ import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
-import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
@@ -73,12 +72,6 @@ public class ArbeitseinsatzAuswertungControl extends FilterControl
       dialog.close();
     }, null, false, "process-stop.png");
     return b;
-  }
-
-  public Input getSuchjahrInput() throws RemoteException, ApplicationException
-  {
-    Filter.SUCHJAHR.setArray(Suchjahr.getList());
-    return getFilterInput(Filter.SUCHJAHR);
   }
 
   @Override
