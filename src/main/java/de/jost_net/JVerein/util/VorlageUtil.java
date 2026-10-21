@@ -35,14 +35,12 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SaldoFilterMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.WirtschaftsplanParameterMap;
-import de.jost_net.JVerein.Variable.ZusatzbetragListeFilterMap;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
 import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.JahresabschlussDetailControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
-import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Zeichen;
@@ -107,6 +105,9 @@ public class VorlageUtil
         case LEHRGAENGE_DATEINAME:
         case LEHRGAENGE_SUBTITEL:
         case LEHRGAENGE_TITEL:
+        case ZUSATZBETRAEGE_DATEINAME:
+        case ZUSATZBETRAEGE_TITEL:
+        case ZUSATZBETRAEGE_SUBTITEL:
         case MAILS_DATEINAME:
         case MAILS_SUBTITEL:
         case MAILS_TITEL:
@@ -294,12 +295,6 @@ public class VorlageUtil
         case ABRECHNUNGSLAUF_ALLEBUCHUNGEN_SUBTITEL:
           map = new AbrechnungSollbuchungenParameterMap()
               .getMap((Abrechnungslauf) obj, map);
-          break;
-        case ZUSATZBETRAEGE_DATEINAME:
-        case ZUSATZBETRAEGE_TITEL:
-        case ZUSATZBETRAEGE_SUBTITEL:
-          map = new ZusatzbetragListeFilterMap()
-              .getMap((ZusatzbetragControl) obj, map);
           break;
         case JAHRESABSCHLUSS_DATEINAME:
         case JAHRESABSCHLUSS_TITEL:
@@ -682,7 +677,8 @@ public class VorlageUtil
         case ZUSATZBETRAEGE_DATEINAME:
         case ZUSATZBETRAEGE_TITEL:
         case ZUSATZBETRAEGE_SUBTITEL:
-          map = ZusatzbetragListeFilterMap.getDummyMap(map);
+          set.add(Filter.AUSFUEHRUNG);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case ARBEITSEINSAETZE_DATEINAME:
         case ARBEITSEINSAETZE_TITEL:
