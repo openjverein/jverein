@@ -51,8 +51,8 @@ public class ArbeitseinsatzAuswertungPart extends JVereinTablePart
 
   private JVereinTablePart arbeitseinsatzueberpruefungList;
 
-  public ArbeitseinsatzAuswertungPart(Action action, ArbeitseinsatzAuswertung schluessel,
-      Integer year)
+  public ArbeitseinsatzAuswertungPart(Action action,
+      ArbeitseinsatzAuswertung schluessel, Integer year)
   {
     super(action);
     this.schluessel = schluessel;
@@ -129,7 +129,8 @@ public class ArbeitseinsatzAuswertungPart extends JVereinTablePart
         "(mitglied.eintritt is null or year(mitglied.eintritt) <= ?) and "
             + "(mitglied.austritt is null or year(mitglied.austritt) >= ?) ",
         year, year);
-    if (schluessel != ArbeitseinsatzAuswertung.MEHRLEISTUNG && schluessel != ArbeitseinsatzAuswertung.ALLE)
+    if (schluessel != null
+        && schluessel != ArbeitseinsatzAuswertung.MEHRLEISTUNG)
     {
       it.addFilter("beitragsgruppe.arbeitseinsatzstunden is not null and "
           + "beitragsgruppe.arbeitseinsatzstunden > 0");
@@ -148,7 +149,7 @@ public class ArbeitseinsatzAuswertungPart extends JVereinTablePart
     {
       it.addHaving(ISTSTUNDEN + " > " + SOLLSTUNDEN);
     }
-    if (schluessel == ArbeitseinsatzAuswertung.ALLE)
+    if (schluessel == null)
     {
       it.addHaving(ISTSTUNDEN + " > 0 or " + SOLLSTUNDEN + " > 0");
     }

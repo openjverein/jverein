@@ -4,8 +4,7 @@ public enum ArbeitseinsatzAuswertung implements KeyEnum
 {
   MINDERLEISTUNG(1, "Minderleistung"),
   PASSENDELEISTUNG(2, "Passende Leistung"),
-  MEHRLEISTUNG(3, "Mehrleistung"),
-  ALLE(4, "Alle");
+  MEHRLEISTUNG(3, "Mehrleistung");
 
   private int key;
 
