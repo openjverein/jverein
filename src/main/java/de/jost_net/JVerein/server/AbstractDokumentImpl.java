@@ -44,7 +44,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
 
   private static final long serialVersionUID = 1L;
 
-  private static String HASH_ALGORITHM = "SHA-512";
+  protected static String HASH_ALGORITHM = "SHA-512";
 
   private File file;
 
@@ -57,11 +57,6 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   public String getPrimaryAttribute()
   {
     return "bemerkung";
-  }
-
-  @Override
-  protected void deleteCheck() throws ApplicationException
-  {
   }
 
   @Override
@@ -92,12 +87,6 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     {
       throw new ApplicationException("Pfad darf nicht verändert werden!");
     }
-  }
-
-  @Override
-  protected Class<?> getForeignObject(String field)
-  {
-    return null;
   }
 
   @Override
@@ -134,7 +123,9 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   public void setBemerkung(String bemerkung) throws RemoteException
   {
     setAttribute("bemerkung",
-        bemerkung.length() > 50 ? bemerkung.substring(0, 50) : bemerkung);
+        bemerkung != null && bemerkung.length() > 50
+            ? bemerkung.substring(0, 50)
+            : bemerkung);
   }
 
   @Override
@@ -231,14 +222,19 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void store() throws RemoteException, ApplicationException
+  public void insert() throws RemoteException, ApplicationException
   {
     if (getDatum() == null)
     {
       setAttribute("datum", new Date());
     }
     File newFile = null;
-    if (file != null)
+
+    // vor dem Kopieren der Datei schon prüfen, ob alle Angaben gemacht sind
+    insertCheck();
+    // Wenn getPfad gesetzt ist, wurde schon gespeichern, also ist irgendwas
+    // faul
+    if (file != null && getPfad() == null)
     {
       if (file.isDirectory())
       {
@@ -256,32 +252,31 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
         {
           throw new ApplicationException("Datei ist leer");
         }
-        // TODO sollte nach Belegumstellung reaktiviert werden
-        // if (!(Boolean) Einstellungen
-        // .getEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING))
-        // {
-        // String pfad = getDateiPfad() + File.separator + file.getName();
-        //
-        // newFile = new File(getRootDir() + pfad);
-        // if (newFile.exists())
-        // {
-        // throw new ApplicationException("Datei existiert bereits!");
-        // }
-        // newFile.getParentFile().mkdirs();
-        //
-        // try (FileOutputStream fos = new FileOutputStream(newFile, true))
-        // {
-        // byte[] buffer = new byte[1024];
-        // int length;
-        // while ((length = fis.read(buffer)) > 0)
-        // {
-        // fos.write(buffer, 0, length);
-        // }
-        // }
-        //
-        // setPfad(pfad);
-        // }
-        // else
+        if (!(Boolean) Einstellungen
+            .getEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING))
+        {
+          String pfad = getDateiPfad(file.getName());
+
+          newFile = new File(getRootDir() + pfad);
+          if (newFile.exists())
+          {
+            throw new ApplicationException("Datei existiert bereits!");
+          }
+          newFile.getParentFile().mkdirs();
+
+          try (FileOutputStream fos = new FileOutputStream(newFile, true))
+          {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fis.read(buffer)) > 0)
+            {
+              fos.write(buffer, 0, length);
+            }
+          }
+
+          setPfad(pfad);
+        }
+        else
         {
           if (!JVereinPlugin.isArchiveServiceActive())
           {
@@ -290,7 +285,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
                     + " Bitte in Einstellungen korrigieren.");
           }
           QueryMessage qm = new QueryMessage(
-              getVerzeichnis() + "." + getReferenz(), fis);
+              getVerzeichnis() + "." + getNummer(), fis);
           Application.getMessagingFactory()
               .getMessagingQueue("jameica.messaging.put").sendSyncMessage(qm);
 
@@ -328,7 +323,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     }
     try
     {
-      super.store();
+      super.insert();
     }
     catch (Exception e)
     {
@@ -362,7 +357,8 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     return (byte[]) getAttribute("hash");
   }
 
-  protected abstract String getDateiPfad() throws RemoteException;
+  protected abstract String getDateiPfad(String filename)
+      throws RemoteException;
 
   @Override
   public void delete() throws RemoteException, ApplicationException
@@ -412,4 +408,10 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
 
   @Override
   public abstract String getRootDir() throws RemoteException;
+
+  // Wird zum Speichern per Messaging benötigt
+  public String getNummer() throws RemoteException
+  {
+    return getReferenz().toString();
+  }
 }

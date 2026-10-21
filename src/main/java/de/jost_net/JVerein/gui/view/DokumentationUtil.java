@@ -94,6 +94,8 @@ public class DokumentationUtil
   // Buchführung
   public static final String ANFANGSBESTAENDE = BUCHF + "anfangsbestand";
 
+  public static final String BELEG = BUCHF + "belege";
+
   public static final String BUCHUNGEN = BUCHF + "buchungen";
 
   public static final String ANLAGENBUCHUNGEN = BUCHF + "anlagenbuchungen";
