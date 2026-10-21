@@ -41,6 +41,8 @@ public enum Filter
       FilterArt.SELECT, Abrechnungslauf.class),
   ABRECHNUNGSLAUF_AB("filter_abrechnungslauf_ab", "Abrechnungslauf ab", "4",
       FilterArt.INTEGER),
+  AUSFUEHRUNG("filter_ausfuehrungstag", "Ausführungstag", "20.04.2026",
+      FilterArt.SELECT_OHNE_NULL, new Ausfuehrung[1]),
   AUSTRITT_BIS("filter_austrittsdatum_bis_f", "Austritt bis", "20241231",
       FilterArt.DATE),
   AUSTRITT_VON("filter_austrittsdatum_von_f", "Austritt von", "20240101",
@@ -269,6 +271,11 @@ public enum Filter
   public KeyEnum[] getArray()
   {
     return array;
+  }
+
+  public void setArray(KeyEnum[] array)
+  {
+    this.array = array;
   }
 
   public static Filter getByKey(String key)

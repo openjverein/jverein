@@ -234,6 +234,23 @@ public abstract class FilterControl extends AbstractListeControl
    * Erstellt den Filter-Input
    * 
    * @param filter
+   * @param array
+   *          Liste der Elemente
+   * @return
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
+  public Input getFilterInput(Filter filter, KeyEnum[] array)
+      throws RemoteException, ApplicationException
+  {
+    filter.setArray(array);
+    return getFilterInput(filter);
+  }
+
+  /**
+   * Erstellt den Filter-Input
+   * 
+   * @param filter
    * @return
    * @throws RemoteException
    * @throws ApplicationException
