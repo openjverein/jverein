@@ -25,7 +25,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AbrechnungSollbuchungenParameterMap;
 import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.AuswertungArbeitseinsatzFilterMap;
 import de.jost_net.JVerein.Variable.BelegMap;
 import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.Variable.FilterMap;
@@ -37,7 +36,6 @@ import de.jost_net.JVerein.Variable.SaldoFilterMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.WirtschaftsplanParameterMap;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
-import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
 import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.JahresabschlussDetailControl;
@@ -172,6 +170,9 @@ public class VorlageUtil
         case ANLAGEN_SUMMENBUCHUNGEN_TITEL:
         case ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL:
         case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
+        case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:
+        case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:
+        case AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL:
         case BELEGE_TITEL:
         case BELEGE_SUBTITEL:
         case BELEGE_DATEINAME:
@@ -306,12 +307,6 @@ public class VorlageUtil
         case JAHRESABSCHLUSS_SUBTITEL:
           map = new JahresabschlussListeFilterMap()
               .getMap((JahresabschlussDetailControl) obj, map);
-          break;
-        case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:
-        case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:
-        case AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL:
-          map = new AuswertungArbeitseinsatzFilterMap()
-              .getMap((ArbeitseinsatzAbrechnungControl) obj, map);
           break;
         case WIRTSCHAFTSPLAN_DATEINAME:
         case WIRTSCHAFTSPLAN_TITEL:
@@ -801,7 +796,9 @@ public class VorlageUtil
         case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:
         case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:
         case AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL:
-          map = AuswertungArbeitseinsatzFilterMap.getDummyMap(map);
+          set.add(Filter.ARBEITSEINSATZ_JAHR);
+          set.add(Filter.ARBEITSEINSATZ_AUSWERTUNG);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case BUCHUNGSARTEN_DATEINAME:
         case BUCHUNGSARTEN_TITEL:
