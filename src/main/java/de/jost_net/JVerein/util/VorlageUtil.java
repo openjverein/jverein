@@ -25,6 +25,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AbrechnungSollbuchungenParameterMap;
 import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.BelegMap;
 import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.Variable.FilterMap;
 import de.jost_net.JVerein.Variable.JahresabschlussListeFilterMap;
@@ -34,13 +35,11 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SaldoFilterMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.WirtschaftsplanParameterMap;
-import de.jost_net.JVerein.Variable.ZusatzbetragListeFilterMap;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.JahresabschlussDetailControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
-import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Zeichen;
@@ -49,6 +48,7 @@ import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -105,6 +105,9 @@ public class VorlageUtil
         case LEHRGAENGE_DATEINAME:
         case LEHRGAENGE_SUBTITEL:
         case LEHRGAENGE_TITEL:
+        case ZUSATZBETRAEGE_DATEINAME:
+        case ZUSATZBETRAEGE_TITEL:
+        case ZUSATZBETRAEGE_SUBTITEL:
         case MAILS_DATEINAME:
         case MAILS_SUBTITEL:
         case MAILS_TITEL:
@@ -170,6 +173,9 @@ public class VorlageUtil
         case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:
         case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:
         case AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL:
+        case BELEGE_TITEL:
+        case BELEGE_SUBTITEL:
+        case BELEGE_DATEINAME:
           map = new FilterMap().getMap((FilterControl) obj, map);
           break;
         case AUSWERTUNG_ALTERSJUBILARE_DATEINAME:
@@ -296,12 +302,6 @@ public class VorlageUtil
           map = new AbrechnungSollbuchungenParameterMap()
               .getMap((Abrechnungslauf) obj, map);
           break;
-        case ZUSATZBETRAEGE_DATEINAME:
-        case ZUSATZBETRAEGE_TITEL:
-        case ZUSATZBETRAEGE_SUBTITEL:
-          map = new ZusatzbetragListeFilterMap()
-              .getMap((ZusatzbetragControl) obj, map);
-          break;
         case JAHRESABSCHLUSS_DATEINAME:
         case JAHRESABSCHLUSS_TITEL:
         case JAHRESABSCHLUSS_SUBTITEL:
@@ -375,8 +375,15 @@ public class VorlageUtil
           break;
         case BUCHUNGSREPORT_DATEINAME:
           map.put("formular_name", name);
-        case BUCHUNG_DOKUMENT_PFAD:
           map = new BuchungMap().getMap((Buchung) obj, map);
+          break;
+        case BELEG_BUCHUNGEN_PFAD:
+        case BELEG_ALLGEMEIN_PFAD:
+          map.put("file_name", name);
+        case BELEG_BUCHUNGEN_DATEINAME:
+        case BELEG_BUCHUNGEN_SUBTITEL:
+        case BELEG_BUCHUNGEN_TITEL:
+          map = new BelegMap().getMap((Beleg) obj, map);
           break;
       }
     }
@@ -405,6 +412,15 @@ public class VorlageUtil
       map = new AllgemeineMap().getMap(null);
       switch (typ)
       {
+        case BELEGE_TITEL:
+        case BELEGE_SUBTITEL:
+        case BELEGE_DATEINAME:
+          set = new HashSet<>();
+          set.add(Filter.NUMMER);
+          set.add(Filter.BEZEICHNUNG);
+          set.add(Filter.NICHT_ZUGEORDNET);
+          map = new FilterMap().getDummyMap(set, map);
+          break;
         case ABRECHNUNGSLAEUFE_DATEINAME:
         case ABRECHNUNGSLAEUFE_SUBTITEL:
         case ABRECHNUNGSLAEUFE_TITEL:
@@ -677,7 +693,8 @@ public class VorlageUtil
         case ZUSATZBETRAEGE_DATEINAME:
         case ZUSATZBETRAEGE_TITEL:
         case ZUSATZBETRAEGE_SUBTITEL:
-          map = ZusatzbetragListeFilterMap.getDummyMap(map);
+          set.add(Filter.AUSFUEHRUNG);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case ARBEITSEINSAETZE_DATEINAME:
         case ARBEITSEINSAETZE_TITEL:
@@ -881,8 +898,15 @@ public class VorlageUtil
           break;
         case BUCHUNGSREPORT_DATEINAME:
           map.put("formular_name", "Buchungsreport");
-        case BUCHUNG_DOKUMENT_PFAD:
           map = new BuchungMap().getMap(null, map);
+          break;
+        case BELEG_BUCHUNGEN_PFAD:
+        case BELEG_ALLGEMEIN_PFAD:
+          map.put("file_name", "Filename.pdf");
+        case BELEG_BUCHUNGEN_DATEINAME:
+        case BELEG_BUCHUNGEN_SUBTITEL:
+        case BELEG_BUCHUNGEN_TITEL:
+          map = new BelegMap().getMap(null, map);
           break;
       }
     }

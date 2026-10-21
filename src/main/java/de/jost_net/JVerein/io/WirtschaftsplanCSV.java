@@ -34,6 +34,7 @@ import org.supercsv.prefs.CsvPreference;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -258,9 +259,9 @@ public class WirtschaftsplanCSV implements Exporter
   }
 
   @Override
-  public boolean supportFilterParams()
+  public int getExportDialogOptions()
   {
-    return false;
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 
 }

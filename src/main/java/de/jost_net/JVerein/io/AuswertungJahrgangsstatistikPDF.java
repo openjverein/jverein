@@ -24,6 +24,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -139,9 +140,9 @@ public class AuswertungJahrgangsstatistikPDF
   }
 
   @Override
-  public boolean supportFilterParams()
+  public int getExportDialogOptions()
   {
-    return false;
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 
 }

@@ -31,6 +31,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
@@ -330,8 +331,8 @@ public class BuchungsjournalExportPDF implements Exporter
   }
 
   @Override
-  public boolean supportFilterParams()
+  public int getExportDialogOptions()
   {
-    return true;
+    return AbstractPartExportDialog.OPTION_FILTER_PARAMS;
   }
 }

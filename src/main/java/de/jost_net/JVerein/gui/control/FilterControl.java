@@ -205,7 +205,14 @@ public abstract class FilterControl extends AbstractListeControl
       }
       else if (input instanceof CheckboxInput)
       {
-        text = ((Boolean) value) ? "Ja" : "Nein";
+        if (alle)
+        {
+          text = ((Boolean) value) ? "Ja" : "Nein";
+        }
+        else
+        {
+          text = ((Boolean) value) ? "Ja" : "";
+        }
       }
       else if (input instanceof DialogInput)
       {

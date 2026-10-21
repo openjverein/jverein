@@ -26,6 +26,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -159,9 +160,9 @@ public class AuswertungAltersjubilarePDF
   }
 
   @Override
-  public boolean supportFilterParams()
+  public int getExportDialogOptions()
   {
-    return false;
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 
 }

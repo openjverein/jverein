@@ -23,6 +23,8 @@ import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
+import de.jost_net.JVerein.keys.Ausfuehrung;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -39,8 +41,9 @@ public class ZusatzbetragListeView extends AbstractView
 
     final ZusatzbetragControl control = new ZusatzbetragControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Ausführungstag");
-    group.addLabelPair("Ausführungstag", control.getAusfuehrungSuch());
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    group.addInput(
+        control.getFilterInput(Filter.AUSFUEHRUNG, Ausfuehrung.getList()));
 
     control.getTablePart().paint(this.getParent());
 

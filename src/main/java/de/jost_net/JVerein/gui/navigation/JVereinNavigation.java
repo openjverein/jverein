@@ -33,6 +33,7 @@ import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.AnlagenverzeichnisView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzListeView;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeListeView;
+import de.jost_net.JVerein.gui.view.BelegListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungsartListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
@@ -50,6 +51,7 @@ import de.jost_net.JVerein.gui.view.EinstellungenRechnungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenReportsView;
 import de.jost_net.JVerein.gui.view.EinstellungenSpendenbescheinigungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenStatistikView;
+import de.jost_net.JVerein.gui.view.EinstellungenBelegView;
 import de.jost_net.JVerein.gui.view.EinstellungenVorlageListeView;
 import de.jost_net.JVerein.gui.view.FamilienbeitragView;
 import de.jost_net.JVerein.gui.view.FormularListeView;
@@ -193,6 +195,8 @@ public class JVereinNavigation implements Extension
       // Buchungen
       buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Buchungen",
           new StartViewAction(BuchungListeView.class), "emblem-documents.png"));
+      buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Belege",
+          new StartViewAction(BelegListeView.class), "emblem-documents.png"));
       buchfuehrung.addChild(
           new JVereinNavigationItem(buchfuehrung, "Buchungsklassensaldo",
               new StartViewAction(BuchungsklasseSaldoView.class),
@@ -316,11 +320,9 @@ public class JVereinNavigation implements Extension
           new JVereinNavigationItem(administrationEinstellungen, "Abrechnung",
               new StartViewAction(EinstellungenAbrechnungView.class),
               "wrench.png"));
-      // TODO Sollte nach Beleg umstellung reaktiviert werden
-      // administrationEinstellungen.addChild(new JVereinNavigationItem(
-      // administrationEinstellungen, "Verzeichnisse",
-      // new StartViewAction(EinstellungenVerzeichnisView.class),
-      // "wrench.png"));
+      administrationEinstellungen.addChild(
+          new JVereinNavigationItem(administrationEinstellungen, "Belege",
+              new StartViewAction(EinstellungenBelegView.class), "wrench.png"));
       administrationEinstellungen.addChild(
           new JVereinNavigationItem(administrationEinstellungen, "Vorlagen",
               new StartViewAction(EinstellungenVorlageListeView.class),

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 import com.itextpdf.text.DocumentException;
 
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -133,8 +134,8 @@ public class AuswertungMitgliedAdressbuchCSV
   }
 
   @Override
-  public boolean supportFilterParams()
+  public int getExportDialogOptions()
   {
-    return false;
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 }

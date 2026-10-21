@@ -17,17 +17,17 @@
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.rmi.Beleg;
 
-public class ZusatzbetragListeFilterMap extends AbstractMap
+public class BelegMap extends AbstractMap
 {
-
-  public Map<String, Object> getMap(ZusatzbetragControl control,
-      Map<String, Object> inma) throws RemoteException
+  public Map<String, Object> getMap(Beleg beleg, Map<String, Object> inma)
+      throws RemoteException
   {
     Map<String, Object> map = null;
     if (inma == null)
@@ -39,13 +39,51 @@ public class ZusatzbetragListeFilterMap extends AbstractMap
       map = inma;
     }
 
-    for (ZusatzbetragListeFilterVar var : ZusatzbetragListeFilterVar.values())
+    if (beleg == null)
+    {
+      return getDummyMap(map);
+    }
+
+    for (BelegVar var : BelegVar.values())
     {
       Object value = null;
       switch (var)
       {
-        case FILTER_AUSFUEHRUNGSTAG:
-          value = control.getAusfuehrungSuch().getText();
+        case BELEG_ZAEHLER:
+          switch (beleg.getBelegArt())
+          {
+            case BUCHUNG:
+              value = Einstellungen
+                  .getEinstellung(Property.BELEG_ZAEHLER_BUCHUNG).toString();
+              break;
+            case SONSTIGES:
+              value = Einstellungen
+                  .getEinstellung(Property.BELEG_ZAEHLER_SONSTIGES).toString();
+              break;
+          }
+          break;
+        case BELEG_NUMMER:
+          value = beleg.getBelegnummer();
+          break;
+      }
+      map.put(var.getName(), value);
+    }
+
+    return map;
+  }
+
+  private Map<String, Object> getDummyMap(Map<String, Object> map)
+  {
+    for (BelegVar var : BelegVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case BELEG_NUMMER:
+          value = "B-1234";
+          break;
+        case BELEG_ZAEHLER:
+          value = "1234";
           break;
       }
       map.put(var.getName(), value);
@@ -53,28 +91,4 @@ public class ZusatzbetragListeFilterMap extends AbstractMap
     return map;
   }
 
-  public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
-  {
-    Map<String, Object> map = null;
-    if (inMap == null)
-    {
-      map = new HashMap<>();
-    }
-    else
-    {
-      map = inMap;
-    }
-    for (ZusatzbetragListeFilterVar var : ZusatzbetragListeFilterVar.values())
-    {
-      Object value = null;
-      switch (var)
-      {
-        case FILTER_AUSFUEHRUNGSTAG:
-          value = "ALLE";
-          break;
-      }
-      map.put(var.getName(), value);
-    }
-    return map;
-  }
 }
