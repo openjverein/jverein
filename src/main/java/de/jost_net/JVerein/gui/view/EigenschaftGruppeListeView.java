@@ -34,7 +34,8 @@ public class EigenschaftGruppeListeView extends AbstractView
   {
     GUI.getView().setTitle("Eigenschaftengruppen");
 
-    EigenschaftGruppeControl control = new EigenschaftGruppeControl(this);
+    EigenschaftGruppeControl control = new EigenschaftGruppeControl(
+        this);
 
     control.getTablePart().paint(this.getParent());
 

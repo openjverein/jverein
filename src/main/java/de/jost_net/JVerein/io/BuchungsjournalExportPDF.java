@@ -31,6 +31,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
@@ -293,7 +294,10 @@ public class BuchungsjournalExportPDF implements Exporter
     }
 
     reporter.closeTable();
-    reporter.addParams(filterparams, params);
+    if (params.getFilterParameter())
+    {
+      reporter.addParams(filterparams, params);
+    }
     reporter.close();
     fos.close();
   }
@@ -324,5 +328,11 @@ public class BuchungsjournalExportPDF implements Exporter
           params.getColorHeader(), params.getFontHeader());
     }
     reporter.createHeader();
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_FILTER_PARAMS;
   }
 }

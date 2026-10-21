@@ -37,17 +37,11 @@ import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
-import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Buchungsart;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
-import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -60,59 +54,17 @@ import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 
-public class ZusatzbetragControl extends VorZurueckControl implements Savable
+public class ZusatzbetragControl extends FilterControl
 {
-  private Zusatzbetrag zuab;
-
-  private ZusatzbetragPart part;
-
-  private SelectInput vorlage = null;
 
   private SelectInput ausfuehrungSuch = null;
 
   private BetragSummaryTablePart zusatzbetraegeList;
 
-  public static final String NEIN = "nein";
-
-  public static final String MITDATUM = "ja, mit Datum";
-
-  public static final String OHNEDATUM = "ja, ohne Datum";
-
   public ZusatzbetragControl(AbstractView view)
   {
     super(view);
-  }
-
-  public Zusatzbetrag getZusatzbetrag()
-  {
-    if (zuab != null)
-    {
-      return zuab;
-    }
-    zuab = (Zusatzbetrag) getCurrentObject();
-    return zuab;
-  }
-
-  public ZusatzbetragPart getZusatzbetragPart()
-  {
-    if (part != null)
-    {
-      return part;
-    }
-    part = new ZusatzbetragPart(getZusatzbetrag(), true);
-    return part;
-  }
-
-  public SelectInput getVorlage()
-  {
-    if (vorlage != null)
-    {
-      return vorlage;
-    }
-    vorlage = new SelectInput(new Object[] { NEIN, MITDATUM, OHNEDATUM }, NEIN);
-    return vorlage;
   }
 
   public SelectInput getAusfuehrungSuch() throws RemoteException
@@ -159,87 +111,6 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     });
 
     return ausfuehrungSuch;
-  }
-
-  @Override
-  public JVereinDBObject prepareStore()
-      throws RemoteException, ApplicationException
-  {
-    Zusatzbetrag z = getZusatzbetrag();
-    z.setFaelligkeit((Date) getZusatzbetragPart().getFaelligkeit().getValue());
-    z.setStartdatum(
-        (Date) getZusatzbetragPart().getStartdatum(false).getValue());
-    IntervallZusatzzahlung iz = (IntervallZusatzzahlung) getZusatzbetragPart()
-        .getIntervall().getValue();
-    z.setIntervall(iz.getKey());
-    z.setEndedatum((Date) getZusatzbetragPart().getEndedatum().getValue());
-    z.setBuchungstext(
-        (String) getZusatzbetragPart().getBuchungstext().getValue());
-    z.setBuchungsart(
-        (Buchungsart) getZusatzbetragPart().getBuchungsart().getValue());
-    z.setBuchungsklasseId(getZusatzbetragPart().getSelectedBuchungsKlasseId());
-    z.setBetrag((Double) getZusatzbetragPart().getBetrag().getValue());
-    z.setZahlungsweg(
-        (Zahlungsweg) getZusatzbetragPart().getZahlungsweg().getValue());
-    if (getZusatzbetragPart().isSteuerActive())
-    {
-      z.setSteuer((Steuer) getZusatzbetragPart().getSteuer().getValue());
-    }
-    if (z.isNewObject())
-    {
-      if (getZusatzbetragPart().getMitglied().getValue() != null)
-      {
-        Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied().getValue();
-        z.setMitglied(Integer.parseInt(m.getID()));
-      }
-      else
-      {
-        z.setMitglied(null);
-      }
-    }
-    z.setMitgliedzahltSelbst(
-        (Boolean) getZusatzbetragPart().getMitgliedzahltSelbst().getValue());
-    return z;
-  }
-
-  @Override
-  public void handleStore() throws ApplicationException
-  {
-    try
-    {
-      Zusatzbetrag z = (Zusatzbetrag) prepareStore();
-      z.store();
-      if (getVorlage().getValue().equals(MITDATUM)
-          || getVorlage().getValue().equals(OHNEDATUM))
-      {
-        ZusatzbetragVorlage zv = (ZusatzbetragVorlage) Einstellungen
-            .getDBService().createObject(ZusatzbetragVorlage.class, null);
-        zv.setIntervall(z.getIntervall());
-        zv.setBuchungstext(z.getBuchungstext());
-        zv.setBetrag(z.getBetrag());
-        if (getVorlage().getValue().equals(MITDATUM))
-        {
-          zv.setEndedatum(z.getEndedatum());
-          zv.setFaelligkeit(z.getFaelligkeit());
-          zv.setStartdatum(z.getStartdatum());
-        }
-        zv.setBuchungsart(z.getBuchungsart());
-        zv.setBuchungsklasseId(z.getBuchungsklasseId());
-        zv.setZahlungsweg(z.getZahlungsweg());
-        if (getZusatzbetragPart().isSteuerActive())
-        {
-          zv.setSteuer(z.getSteuer());
-        }
-        zv.setMitgliedzahltSelbst(z.getMitgliedzahltSelbst());
-        zv.store();
-      }
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern des Zusatzbetrages";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
   }
 
   @Override

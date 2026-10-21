@@ -55,11 +55,12 @@ public class MitgliedDokumentImpl extends AbstractDokumentImpl
   }
 
   @Override
-  protected String getDateiPfad() throws RemoteException
+  protected String getDateiPfad(String filename) throws RemoteException
   {
     AbstractJVereinDBObject dbObject = Einstellungen.getDBService()
         .createObject(Mitglied.class, getReferenz().toString());
-    return VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENT_PFAD, dbObject);
+    return VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENT_PFAD, dbObject,
+        filename);
   }
 
 }

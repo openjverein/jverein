@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.io.File;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Map;
 
@@ -99,13 +98,9 @@ public class FormularAnzeigeAction implements Action
       fab.closeFormular();
       fab.showFormular();
     }
-    catch (RemoteException e)
+    catch (ApplicationException e)
     {
-      throw new ApplicationException(e);
-    }
-    catch (IOException e)
-    {
-      throw new ApplicationException(e);
+      throw e;
     }
     catch (Exception e)
     {

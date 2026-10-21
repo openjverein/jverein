@@ -29,6 +29,7 @@ import org.supercsv.prefs.CsvPreference;
 
 import com.itextpdf.text.DocumentException;
 
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -120,5 +121,11 @@ public class AuswertungJahrgangsstatistikCSV
   protected void close() throws IOException, DocumentException
   {
     //
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 }

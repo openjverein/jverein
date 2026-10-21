@@ -46,12 +46,11 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getSollbuchung().getAbrechnungslauf() != null
-          && getSollbuchung().getAbrechnungslauf().getAbgeschlossen())
+      if (getSollbuchung().isAbgeschlossen())
       {
         throw new ApplicationException(
-            "Sollbuchungsposition kann nicht gelöscht werden weil der zugehörige "
-                + "Abrechnungslauf abgeschlossen ist!");
+            "Sollbuchungsposition kann nicht gelöscht werden weil die zugehörige "
+                + "Sollbuchung abgeschlossen ist!");
       }
     }
     catch (RemoteException e)

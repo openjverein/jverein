@@ -162,7 +162,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
                 this),
             VorlageUtil.getName(
                 VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME, this),
-            art);
+            art, null);
       }
       catch (OperationCanceledException ex)
       {

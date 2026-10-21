@@ -7,7 +7,7 @@
 
   <groupId>io.github.openjverein</groupId>
   <artifactId>jverein</artifactId>
-  <version>4.3.0</version>
+  <version>4.4.0</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -36,7 +36,7 @@
     <swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
     <icu4j.version>52.2</icu4j.version>
     <jaxb.api.version>2.4.0-b180830.0359</jaxb.api.version>
-    <bytebuddy.agent.version>1.18.14-jdk5</bytebuddy.agent.version>
+    <bytebuddy.agent.version>1.18.15-jdk5</bytebuddy.agent.version>
     <release.root>${project.build.directory}/releases</release.root>
     <release.plugin.dir>${release.root}/${project.artifactId}</release.plugin.dir>
     <release.nightly.generated.dir>${project.build.directory}/generated-resources/nightly</release.nightly.generated.dir>
@@ -50,9 +50,19 @@
   <dependencies>
     <!-- JVerein paketiert diese Bibliotheken selbst im Release-ZIP unter jverein/lib. -->
     <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>1.1.1</version>
+      <groupId>org.eclipse.angus</groupId>
+      <artifactId>angus-mail</artifactId>
+      <version>2.0.5</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
+      <version>2.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>2.1.4</version>
     </dependency>
     <dependency>
       <groupId>com.google.zxing</groupId>
@@ -65,14 +75,19 @@
       <version>1.0.46</version>
     </dependency>
     <dependency>
-      <groupId>org.dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>2.2.0</version>
-    </dependency>
-    <dependency>
       <groupId>com.googlecode.ez-vcard</groupId>
       <artifactId>ez-vcard</artifactId>
       <version>0.12.2</version>
+    </dependency>
+    <!-- jsoup/freemarker/jackson-core werden von JVerein selbst nicht
+         importiert, sondern von ez-vcard intern fuers HTML-/JSON-vCard-
+         Lesen/Schreiben genutzt. Explizit deklariert, um neuere Versionen
+         zu erzwingen als die, die ez-vcard 0.12.2 selbst transitiv
+         mitbringt (jsoup 1.22.1, freemarker 2.3.34, jackson-core 2.21.0). -->
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.23.2</version>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
@@ -85,14 +100,15 @@
       <version>5.1.1</version>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.22.3</version>
+      <groupId>com.itextpdf.tool</groupId>
+      <artifactId>xmlworker</artifactId>
+      <version>5.5.13.6</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>jakarta.activation</groupId>
-      <artifactId>jakarta.activation-api</artifactId>
-      <version>2.1.4</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.22.4</version>
     </dependency>
     <dependency>
       <groupId>com.google.zxing</groupId>
@@ -100,44 +116,10 @@
       <version>3.5.4</version>
       <exclusions>
         <exclusion>
-          <groupId>com.beust</groupId>
+          <groupId>org.jcommander</groupId>
           <artifactId>jcommander</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.mail</groupId>
-      <artifactId>javax.mail</artifactId>
-      <version>1.6.2</version>
-    </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.14.4</version>
-    </dependency>
-    <dependency>
-      <groupId>de.jollyday</groupId>
-      <artifactId>jollyday</artifactId>
-      <version>0.5.10</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.glassfish.jaxb</groupId>
-          <artifactId>jaxb-runtime</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.threeten</groupId>
-          <artifactId>threeten-extra</artifactId>
-        </exclusion>
-         <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jsoup</groupId>
-      <artifactId>jsoup</artifactId>
-      <version>1.23.2</version>
     </dependency>
     <dependency>
       <groupId>org.mustangproject</groupId>
@@ -174,16 +156,9 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>2.7</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.mangstadt</groupId>
-      <artifactId>vinnie</artifactId>
-      <version>2.0.2</version>
-    </dependency>
+    <!-- Wird von keiner anderen Abhaengigkeit deklariert, aber von PDFBox zur
+         Laufzeit reflektiv fuer XMP-Metadaten in der PDF-Erzeugung
+         nachgeladen (sonst NoClassDefFoundError, siehe FormularAufbereitungTest). -->
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>xmpbox</artifactId>
@@ -197,12 +172,6 @@
     </dependency>
     <!-- Compile-Zeit-Abhaengigkeiten, die zur Laufzeit vom Jameica-Host bereitgestellt werden. -->
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>be.cyberelf.nanoxml</groupId>
       <artifactId>nanoxml</artifactId>
       <version>2.2.3</version>
@@ -214,6 +183,12 @@
       <version>1.7</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+	  <groupId>oro</groupId>
+	  <artifactId>oro</artifactId>
+	  <version>2.0.8</version>
+	  <scope>provided</scope>
+	</dependency>
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>${swt.artifactId}</artifactId>
@@ -300,6 +275,12 @@
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy-agent</artifactId>
       <version>${bytebuddy.agent.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.redsix</groupId>
+      <artifactId>pdfcompare</artifactId>
+      <version>1.2.11</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

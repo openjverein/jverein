@@ -24,7 +24,7 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.ZusatzbetragVorlageControl;
+import de.jost_net.JVerein.gui.control.ZusatzbetragVorlageDetailControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
@@ -35,13 +35,13 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 public class ZusatzbetragVorlageDetailView extends AbstractDetailView
 {
 
-  private ZusatzbetragVorlageControl control;
+  private ZusatzbetragVorlageDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Zusatzbetrag-Vorlage");
-    control = new ZusatzbetragVorlageControl(this);
+    control = new ZusatzbetragVorlageDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Zusatzbetrag-Vorlage");
     group.addLabelPair("Erste Fälligkeit ", control.getStartdatum(true));

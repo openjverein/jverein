@@ -24,7 +24,7 @@ import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.keys.Kontoart;
-import de.jost_net.JVerein.gui.control.KontoControl;
+import de.jost_net.JVerein.gui.control.KontoDetailControl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -33,14 +33,14 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class KontoDetailView extends AbstractDetailView
 {
-  private KontoControl control;
+  private KontoDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Konto");
 
-    control = new KontoControl(this);
+    control = new KontoDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Konto");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);

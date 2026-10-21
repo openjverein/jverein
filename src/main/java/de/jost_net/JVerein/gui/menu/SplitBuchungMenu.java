@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungDeleteAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungWiederherstellenAction;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungDetailControl;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -35,7 +35,7 @@ public class SplitBuchungMenu extends ContextMenu
    * Erzeugt ein Kontext-Menu fuer die Liste der Splitbuchungen.
    */
 
-  public SplitBuchungMenu(BuchungsControl control)
+  public SplitBuchungMenu(BuchungDetailControl control)
   {
     addItem(new CheckedSplitBuchungItem("Bearbeiten", new BuchungAction(true),
         "text-x-generic.png"));

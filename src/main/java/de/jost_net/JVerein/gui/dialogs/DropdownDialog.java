@@ -35,6 +35,8 @@ public class DropdownDialog<T> extends AbstractDialog<T>
 
   private T value;
 
+  private String text;
+
   public DropdownDialog(List<T> auswahl)
   {
     super(AbstractDialog.POSITION_CENTER);
@@ -52,6 +54,10 @@ public class DropdownDialog<T> extends AbstractDialog<T>
 
     auswahlInput = new SelectInput(auswahl,
         auswahl.isEmpty() ? null : auswahl.get(0));
+    if (text != null)
+    {
+      group.addText(text, false);
+    }
     group.addLabelPair("Bitte wählen", auswahlInput);
 
     ButtonArea buttonArea = new ButtonArea();
@@ -63,6 +69,17 @@ public class DropdownDialog<T> extends AbstractDialog<T>
       throw new OperationCanceledException();
     }, null, false, "process-stop.png");
     buttonArea.paint(parent);
+  }
+
+  /**
+   * Speichert den anzuzeigenden Text.
+   * 
+   * @param text
+   *          anzuzeigender Text.
+   */
+  public void setText(String text)
+  {
+    this.text = text;
   }
 
   @Override

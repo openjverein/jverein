@@ -72,12 +72,6 @@ public class AboutView extends AbstractDialog<Object>
     group.addLabelPair("Version",
         new LabelInput("" + p.getManifest().getVersion()));
 
-    group.addLabelPair("Build-Date",
-        new LabelInput("" + p.getManifest().getBuildDate()));
-
-    group.addLabelPair("Build-Nr",
-        new LabelInput("" + p.getManifest().getBuildnumber()));
-
     Version v = (Version) Einstellungen.getDBService()
         .createObject(Version.class, "1");
     group.addLabelPair("Datenbank-Version",

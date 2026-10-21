@@ -18,12 +18,14 @@ package de.jost_net.JVerein.io;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -53,10 +55,16 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 import com.ibm.icu.util.Calendar;
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.FontProvider;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.ICC_Profile;
 import com.itextpdf.text.pdf.PdfAConformanceException;
 import com.itextpdf.text.pdf.PdfAConformanceLevel;
@@ -64,7 +72,27 @@ import com.itextpdf.text.pdf.PdfAWriter;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.ElementList;
+import com.itextpdf.tool.xml.XMLWorker;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
+import com.itextpdf.tool.xml.css.CssFile;
+import com.itextpdf.tool.xml.css.StyleAttrCSSResolver;
+import com.itextpdf.tool.xml.exceptions.RuntimeWorkerException;
+import com.itextpdf.tool.xml.html.CssAppliers;
+import com.itextpdf.tool.xml.html.CssAppliersImpl;
+import com.itextpdf.tool.xml.html.DummyTagProcessor;
+import com.itextpdf.tool.xml.html.HTML.Tag;
+import com.itextpdf.tool.xml.html.TagProcessorFactory;
+import com.itextpdf.tool.xml.html.Tags;
+import com.itextpdf.tool.xml.parser.XMLParser;
+import com.itextpdf.tool.xml.pipeline.css.CSSResolver;
+import com.itextpdf.tool.xml.pipeline.css.CssResolverPipeline;
+import com.itextpdf.tool.xml.pipeline.end.ElementHandlerPipeline;
+import com.itextpdf.tool.xml.pipeline.html.AbstractImageProvider;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipeline;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -73,6 +101,7 @@ import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
+import de.jost_net.JVerein.keys.Fonts;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
@@ -94,7 +123,6 @@ import de.willuhn.util.ApplicationException;
 
 public class FormularAufbereitung
 {
-
   private Document doc;
 
   private FileOutputStream fos;
@@ -125,6 +153,7 @@ public class FormularAufbereitung
     this.f = f;
     this.pdfa = pdfa;
     this.encrypt = encrypt;
+    Fonts.register();
   }
 
   private void init()
@@ -218,7 +247,7 @@ public class FormularAufbereitung
               StringTool.lpad(zaehler.toString(), zaehlerLaenge, "0"));
         }
 
-        goFormularfeld(contentByte, f, map);
+        goFormularfeld(contentByte, f, map, page);
       }
     }
 
@@ -335,18 +364,25 @@ public class FormularAufbereitung
   }
 
   private void goFormularfeld(PdfContentByte contentByte, Formularfeld feld,
-      Map<String, Object> map)
+      Map<String, Object> map, PdfImportedPage page)
       throws DocumentException, IOException, ApplicationException
   {
-    String filename = String.format("/fonts/%s.ttf", feld.getFont());
-    BaseFont baseFont = BaseFont.createFont(filename, BaseFont.IDENTITY_H,
-        true);
+    // Fontname aus Key holen, so wird die Fallback Font verwendet, falls die
+    // angegebene nicht existiert
+    Fonts font = Fonts.getByName(feld.getFont());
+    String fontName = font.getName();
+    BaseFont baseFont = BaseFont.createFont(font.getResourcePath(),
+        BaseFont.IDENTITY_H, true);
 
     float x = mm2point(feld.getX().floatValue());
     float y = mm2point(feld.getY().floatValue());
 
     Object val;
     String inhalt = feld.getName();
+
+    boolean isHtml = inhalt.matches("(?si).*</(p|span|div|h[1-6]|b|i|u|s|table|"
+        + "ol|ul|strong|small|a|em|font|sub|sup|pre|code|blockquote)>.*");
+
     // (Alte) Felder mit nur einer Variable direkt aus der Map holen
     if (inhalt.matches("^\\$?[a-zA-Z0-9_]+$"))
     {
@@ -359,93 +395,251 @@ public class FormularAufbereitung
     else
     {
       // Felder mit Text und Variablen
-      val = VelocityTool.eval(map, inhalt);
+      val = VelocityTool.eval(map, inhalt, false, isHtml);
     }
 
     String stringVal = getString(val).replace("\\n", "\n").replaceAll("\r\n",
         "\n");
-    for (String s : stringVal.split("\n"))
+
+    boolean first = true;
+    for (String textSeite : stringVal.split("(?i)\\[\\[newPage\\]\\]"))
     {
-      Object o = null;
-      // Unterschrift und QR-Code durch Bild ersetzen
-      if (s.matches("^\\$?[a-zA-Z0-9_]+$"))
+      if (!first)
       {
-        if (s.replace("$", "")
-            .equalsIgnoreCase(RechnungVar.QRCODE_SUMME.getName()))
+        doc.newPage();
+        contentByte = writer.getDirectContent();
+        contentByte.addTemplate(page, 0, 0);
+      }
+      first = false;
+      // HTML Parsen
+      if (isHtml)
+      {
+        float width;
+        float height = y;
+        String align;
+        float xPos;
+        switch (feld.getAusrichtung())
         {
-          // QR Code nur bei Zahlungsweg "Überweisung" anzeigen
-          if (map.get(RechnungVar.ZAHLUNGSWEG.getName()) != null
-              && Zahlungsweg.ÜBERWEISUNG != (int) map
-                  .get(RechnungVar.ZAHLUNGSWEG.getName()))
-          {
-            continue;
-          }
+          case RECHTS:
+            width = x;
+            xPos = 0;
+            align = "right";
+            break;
+          case MITTE:
+            width = contentByte.getPdfDocument().getPageSize().getWidth();
+            xPos = x < width / 2 ? 0 : x * 2 - width;
+            width = x < width / 2 ? x * 2 : (width - x) * 2;
+            align = "center";
+            break;
+          default:
+            width = contentByte.getPdfDocument().getPageSize().getWidth() - x;
+            xPos = x;
+            align = "left";
+            break;
+        }
 
-          com.itextpdf.text.Image i = com.itextpdf.text.Image
-              .getInstance(getPaymentQRCode(map), Color.BLACK);
-          float sz = mm2point(
-              (Integer) Einstellungen.getEinstellung(Property.QRCODESIZEINMM));
+        PdfTemplate template = contentByte.createTemplate(width, height);
+        ColumnText ct = new ColumnText(template);
+        ct.setSimpleColumn(0, 0, width, height);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("*{font-family:'");
+        sb.append(fontName);
+        sb.append("';text-align:");
+        sb.append(align);
+        sb.append(";font-size:");
+        sb.append(feld.getFontsize());
+        sb.append("pt;");
+        sb.append("}");
+
+        try
+        {
+          for (Element e : parseHtml(textSeite, sb.toString()))
+          {
+            ct.addElement(e);
+          }
+          if (ct.go() != ColumnText.NO_MORE_TEXT)
+          {
+            Logger.warn("Nicht aller Text passt auf die Seite");
+          }
+          contentByte.addTemplate(template, xPos, y - height);
+        }
+        catch (RuntimeWorkerException | SecurityException e)
+        {
+          String fehler = "Fehler beim Parsen des HTML-Feldes '"
+              + feld.getName().split("\n")[0] + "'.";
+          Logger.error(fehler, e);
+          throw new ApplicationException(fehler + " " + e.getMessage());
+        }
+      }
+      else
+      {
+        for (String s : textSeite.split("\n"))
+        {
+          Object o = null;
+          // Unterschrift und QR-Code durch Bild ersetzen
+          if (s.matches("^\\$?[a-zA-Z0-9_]+$"))
+          {
+            if (s.replace("$", "")
+                .equalsIgnoreCase(RechnungVar.QRCODE_SUMME.getName()))
+            {
+              // QR Code nur bei Zahlungsweg "Überweisung" anzeigen
+              if (map.get(RechnungVar.ZAHLUNGSWEG.getName()) != null
+                  && Zahlungsweg.ÜBERWEISUNG != (int) map
+                      .get(RechnungVar.ZAHLUNGSWEG.getName()))
+              {
+                continue;
+              }
+
+              com.itextpdf.text.Image i = com.itextpdf.text.Image
+                  .getInstance(getPaymentQRCode(map), Color.BLACK);
+              float sz = mm2point((Integer) Einstellungen
+                  .getEinstellung(Property.QRCODESIZEINMM));
+              float offset = 0;
+              switch (feld.getAusrichtung())
+              {
+                case RECHTS:
+                  offset = sz;
+                  break;
+                case MITTE:
+                  offset = sz / 2;
+                default:
+                  break;
+              }
+              contentByte.addImage(i, sz, 0, 0, sz, x - offset, y - sz);
+              y -= sz + 3;
+              continue;
+            }
+
+            // Unterschrift
+            o = map.get(s.replace("$", ""));
+            if (o instanceof com.itextpdf.text.Image)
+            {
+              com.itextpdf.text.Image i = (com.itextpdf.text.Image) o;
+              float sh = i.getScaledHeight();
+              float sw = i.getScaledWidth();
+              float offset = 0;
+              switch (feld.getAusrichtung())
+              {
+                case RECHTS:
+                  offset = sw;
+                  break;
+                case MITTE:
+                  offset = sw / 2;
+                default:
+                  break;
+              }
+              contentByte.addImage(i, sw, 0, 0, sh, x - offset, y);
+              y -= sh + 3;
+              continue;
+            }
+            else if (o instanceof String)
+            {
+              s = (String) o;
+            }
+          }
+          contentByte.setFontAndSize(baseFont, feld.getFontsize().floatValue());
+          contentByte.beginText();
           float offset = 0;
           switch (feld.getAusrichtung())
           {
             case RECHTS:
-              offset = sz;
+              offset = contentByte.getEffectiveStringWidth(s, true);
               break;
             case MITTE:
-              offset = sz / 2;
+              offset = contentByte.getEffectiveStringWidth(s, true) / 2;
             default:
               break;
           }
-          contentByte.addImage(i, sz, 0, 0, sz, x - offset, y - sz);
-          y -= sz + 3;
-          continue;
-        }
-
-        // Unterschrift
-        o = map.get(s.replace("$", ""));
-        if (o instanceof com.itextpdf.text.Image)
-        {
-          com.itextpdf.text.Image i = (com.itextpdf.text.Image) val;
-          float sh = i.getScaledHeight();
-          float sw = i.getScaledWidth();
-          float offset = 0;
-          switch (feld.getAusrichtung())
-          {
-            case RECHTS:
-              offset = sw;
-              break;
-            case MITTE:
-              offset = sw / 2;
-            default:
-              break;
-          }
-          contentByte.addImage(i, sw, 0, 0, sh, x - offset, y);
-          y -= sh + 3;
-          continue;
-        }
-        else if (o instanceof String)
-        {
-          s = (String) o;
+          contentByte.moveText(x - offset, y);
+          contentByte.showText(s);
+          contentByte.endText();
+          y -= feld.getFontsize().floatValue() + 3;
         }
       }
-      contentByte.setFontAndSize(baseFont, feld.getFontsize().floatValue());
-      contentByte.beginText();
-      float offset = 0;
-      switch (feld.getAusrichtung())
-      {
-        case RECHTS:
-          offset = contentByte.getEffectiveStringWidth(s, true);
-          break;
-        case MITTE:
-          offset = contentByte.getEffectiveStringWidth(s, true) / 2;
-        default:
-          break;
-      }
-      contentByte.moveText(x - offset, y);
-      contentByte.showText(s);
-      contentByte.endText();
-      y -= feld.getFontsize().floatValue() + 3;
     }
+  }
+
+  ElementList parseHtml(String html, String css) throws IOException
+  {
+    // Eigenen FontProvider verwenden, damit die Unicode Variante der Schrift
+    // verwendet wird.
+    FontProvider fontProvider = new FontProvider()
+    {
+      @Override
+      public Font getFont(String fontname, String encoding, boolean embedded,
+          float size, int style, BaseColor color)
+      {
+        return FontFactory.getFont(fontname, BaseFont.IDENTITY_H,
+            BaseFont.EMBEDDED, size, style, color);
+      }
+
+      @Override
+      public boolean isRegistered(String fontname)
+      {
+        return FontFactory.isRegistered(fontname);
+      }
+    };
+
+    // CSS
+    CSSResolver cssResolver = new StyleAttrCSSResolver();
+    if (css != null)
+    {
+      CssFile cssFile = XMLWorkerHelper.getCSS(
+          new ByteArrayInputStream(css.getBytes(StandardCharsets.UTF_8)));
+      cssResolver.addCss(cssFile);
+    }
+
+    // HTML
+    CssAppliers cssAppliers = new CssAppliersImpl(fontProvider);
+    HtmlPipelineContext htmlContext = new HtmlPipelineContext(cssAppliers);
+    htmlContext.autoBookmark(false);
+
+    // Keine Tags mit externen Resourcen erlauben
+    TagProcessorFactory factory = Tags.getHtmlTagProcessorFactory();
+    factory.addProcessor(new DummyTagProcessor(), Tag.IMG, Tag.LINK, Tag.OBJECT,
+        Tag.META);
+    htmlContext.setTagFactory(factory);
+
+    // Keine Bilder laden
+    htmlContext.setImageProvider(new AbstractImageProvider()
+    {
+      @Override
+      public com.itextpdf.text.Image retrieve(String src)
+      {
+        if (src == null)
+        {
+          return null;
+        }
+        if (src.matches("(?i)^[a-z][a-z0-9+.-]*:.*") || src.startsWith("//"))
+        {
+          throw new SecurityException("Externe Ressource blockiert: " + src);
+        }
+
+        return null;
+      }
+
+      @Override
+      public String getImageRootPath()
+      {
+        return null;
+      }
+    });
+
+    // Pipelines
+    ElementList elements = new ElementList();
+    ElementHandlerPipeline end = new ElementHandlerPipeline(elements, null);
+    HtmlPipeline htmlPipeline = new HtmlPipeline(htmlContext, end);
+    CssResolverPipeline cssPipeline = new CssResolverPipeline(cssResolver,
+        htmlPipeline);
+
+    // XML Worker
+    XMLWorker worker = new XMLWorker(cssPipeline, true);
+    XMLParser p = new XMLParser(worker);
+    p.parse(new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8)),
+        StandardCharsets.UTF_8);
+
+    return elements;
   }
 
   private float mm2point(float mm)

@@ -33,7 +33,6 @@ import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 
 public class AbweichenderZahlerControl extends FilterControl
@@ -45,8 +44,6 @@ public class AbweichenderZahlerControl extends FilterControl
   public AbweichenderZahlerControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   @Override
@@ -168,8 +165,9 @@ public class AbweichenderZahlerControl extends FilterControl
                   AbweichenderZahlerMessageConsumer.this);
               return;
             }
-            abweichenderzahlertree.setRootObject(new AbweichenderZahlerNode(
-                (MitgliedStatus) getFilter().get(Filter.MITGLIEDSCHAFT_STATUS)));
+            abweichenderzahlertree.setRootObject(
+                new AbweichenderZahlerNode((MitgliedStatus) getFilter()
+                    .get(Filter.MITGLIEDSCHAFT_STATUS)));
           }
           catch (Exception e)
           {

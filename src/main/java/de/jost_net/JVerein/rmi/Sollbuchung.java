@@ -104,4 +104,6 @@ public interface Sollbuchung extends JVereinDBObject, IGutschriftProvider
 
   public void setRechnung(Rechnung rechnung) throws RemoteException;
 
+  public boolean isAbgeschlossen() throws RemoteException;
+
 }

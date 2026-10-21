@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.control.RechnungControl;
+import de.jost_net.JVerein.gui.control.RechnungDetailControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
@@ -29,14 +29,14 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 public class RechnungDetailView extends AbstractDetailView
 {
 
-  RechnungControl control;
+  RechnungDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Rechnungen");
 
-    control = new RechnungControl(this);
+    control = new RechnungDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Rechnung");
 
@@ -76,7 +76,7 @@ public class RechnungDetailView extends AbstractDetailView
     right.addInput(control.getErstattungsbetrag());
 
     LabelGroup cont = new LabelGroup(getParent(), "Rechnungspositionen", true);
-    cont.addPart(control.getSollbuchungPositionListPart());
+    cont.addPart(control.getTablePart());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.RECHNUNG));
@@ -88,7 +88,7 @@ public class RechnungDetailView extends AbstractDetailView
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
   @Override

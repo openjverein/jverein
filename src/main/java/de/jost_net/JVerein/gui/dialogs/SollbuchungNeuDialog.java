@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.SollbuchungDetailControl;
 import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
 import de.jost_net.JVerein.gui.input.MitgliedSearchInput;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
@@ -49,7 +49,7 @@ import de.willuhn.logging.Logger;
 public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
 {
 
-  private SollbuchungControl sollbControl;
+  private SollbuchungDetailControl sollbControl;
 
   private SollbuchungPositionControl sollbPosControl;
 
@@ -72,7 +72,7 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     sollbuchungPosition = (SollbuchungPosition) Einstellungen.getDBService()
         .createObject(SollbuchungPosition.class, null);
 
-    sollbControl = new SollbuchungControl(null, sollbuchung);
+    sollbControl = new SollbuchungDetailControl(null, sollbuchung);
     sollbControl.isSollbuchungEditable();
     sollbPosControl = new SollbuchungPositionControl(null, sollbuchungPosition);
 

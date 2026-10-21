@@ -26,6 +26,7 @@ import java.rmi.RemoteException;
 
 import com.itextpdf.text.DocumentException;
 
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
@@ -115,6 +116,12 @@ public class FormularExporterXML implements Exporter
     }
 
     writer.close();
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 
 }

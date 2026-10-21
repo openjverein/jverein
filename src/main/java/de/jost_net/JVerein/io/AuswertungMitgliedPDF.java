@@ -29,6 +29,7 @@ import com.itextpdf.text.Paragraph;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -187,8 +188,10 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
                   : mitgliedstyp.getBezeichnungPlural(),
               list.size()),
           params.getFontNormal()));
-
-      reporter.addParams(filterparams, params);
+      if (params.getFilterParameter())
+      {
+        reporter.addParams(filterparams, params);
+      }
       reporter.closeTable();
       reporter.close();
       GUI.getStatusBar().setSuccessText(
@@ -234,5 +237,11 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
       }
     };
     return new IOFormat[] { f };
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_FILTER_PARAMS;
   }
 }

@@ -21,20 +21,20 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.gui.control.LehrgangsartControl;
+import de.jost_net.JVerein.gui.control.LehrgangsartDetailControl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class LehrgangsartDetailView extends AbstractDetailView
 {
-  private LehrgangsartControl control;
+  private LehrgangsartDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Lehrgangsart");
 
-    control = new LehrgangsartControl(this);
+    control = new LehrgangsartDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Lehrgangsart");
     group.addLabelPair("Bezeichnung", control.getBezeichnung(true));

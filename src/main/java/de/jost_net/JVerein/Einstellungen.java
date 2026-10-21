@@ -276,7 +276,12 @@ public class Einstellungen
         Boolean.class, "0"),
     ZAHLERBEILASTSCHRIFT("zahlerbeilastschrift", Boolean.class, "1"),
 
-    // Verzeichnisse
+    // Belege
+    BELEG_ZAEHLER_BUCHUNG("beleg_zaehler", Integer.class, "1"),
+    BELEGNUMMER_BUCHUNG("belegnummer", String.class, "B-$beleg_zaehler"),
+    BELEG_ZAEHLER_SONSTIGES("beleg_zaehler_sonstiges", Integer.class, "1"),
+    BELEGNUMMER_SONSTIGES("belegnummer_sonstiges", String.class,
+        "S-$beleg_zaehler"),
 
     // Spendenbescheinigung
     FINANZAMT("finanzamt", String.class, ""),
@@ -303,7 +308,6 @@ public class Einstellungen
     AUTOBUCHUNGUEBERNAHME("autobuchunguebernahme", Boolean.class, "1"),
     AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS("autobuchungskorrekturhibiscus",
         Boolean.class, "1"),
-
     KONTONUMMERINBUCHUNGSLISTE("kontonummer_in_buchungsliste", Boolean.class,
         "0"),
     OPTIERT("optiert", Boolean.class, "0"),
@@ -315,7 +319,6 @@ public class Einstellungen
 
     // Rechnung
     RECHNUNGSNUMMER("rechnungsnummer", String.class, "$rechnung_id"),
-    // festlegen muss
     RECHNUNG_ZAHLER("rechnung_zaehler", Integer.class, "1"),
     RECHNUNGTEXTABBUCHUNG("rechnungtextabbuchung", String.class,
         "Der Betrag wird vom Konto ${IBAN}, (BIC ${BIC}) abgebucht."),
@@ -799,17 +802,30 @@ public class Einstellungen
     settings.setAttribute("mitgliedDokumentVerzeichnis", value);
   }
 
-  public static String getBuchungDokumentVerzeichnis()
+  public static String getBelegBuchungVerzeichnis()
   {
     loadSettings();
     return settings.getString("buchungDokumentVerzeichnis",
         Einstellungen.getWorkPath() + File.separator + "Buchungen");
   }
 
-  public static void setBuchungDokumentVerzeichnis(String value)
+  public static void setBelegBuchungVerzeichnis(String value)
   {
     loadSettings();
     settings.setAttribute("buchungDokumentVerzeichnis", value);
+  }
+
+  public static String getBelegAllgemeinVerzeichnis()
+  {
+    loadSettings();
+    return settings.getString("belegAllgemeinVerzeichnis",
+        Einstellungen.getWorkPath() + File.separator + "Allgemein");
+  }
+
+  public static void setBelegeAllgemeinVerzeichnis(String value)
+  {
+    loadSettings();
+    settings.setAttribute("belegAllgemeinVerzeichnis", value);
   }
 
   private static String getWorkPath()
@@ -817,4 +833,5 @@ public class Einstellungen
     return Application.getPluginLoader().getPlugin(JVereinPlugin.class)
         .getResources().getWorkPath();
   }
+
 }

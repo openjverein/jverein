@@ -14,9 +14,19 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
 
-public interface BuchungDokument extends AbstractDokument
+package de.jost_net.JVerein.Messaging;
+
+import de.willuhn.datasource.GenericObject;
+import de.willuhn.jameica.hbci.messaging.ObjectMessage;
+
+/**
+ * Wird versendet, wenn eine Beleg gelöscht wird.
+ */
+public class BelegRemoveMessage extends ObjectMessage
 {
-  //
+  public BelegRemoveMessage(GenericObject object)
+  {
+    super(object);
+  }
 }

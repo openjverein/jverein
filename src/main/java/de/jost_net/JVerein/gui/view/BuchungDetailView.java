@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungDetailControl;
 import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
@@ -39,7 +39,7 @@ import de.willuhn.util.ApplicationException;
 
 public class BuchungDetailView extends AbstractDetailView
 {
-  private BuchungsControl control;
+  private BuchungDetailControl control;
 
   private BuchungPart part;
 
@@ -55,12 +55,12 @@ public class BuchungDetailView extends AbstractDetailView
           && bu.getKonto().getKontoArt() == Kontoart.ANLAGE)
         art = Kontenfilter.ANLAGEKONTO;
     }
-    control = new BuchungsControl(this, art);
+    control = new BuchungDetailControl(this, art);
 
     final boolean editable = control.isBuchungEditable();
     final boolean splitbuchung = control.getBuchung().isSplitbuchung();
 
-    part = new BuchungPart(control, !editable);
+    part = new BuchungPart(control);
     part.paint(this.getParent());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
@@ -106,7 +106,7 @@ public class BuchungDetailView extends AbstractDetailView
         }
         else
         {
-          new BuchungNeuAction(control).handleAction(null);
+          new BuchungNeuAction(null, control).handleAction(null);
         }
         GUI.getStatusBar().setSuccessText("Buchung übernommen");
       }

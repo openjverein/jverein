@@ -36,6 +36,10 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
 
   private static final long serialVersionUID = 1L;
 
+  public static final String GESPERRT = "Gesperrt";
+
+  public static final String ABGESCHLOSSEN = "Abgeschlosssen";
+
   // Speichert ob Löschen ohne Delete Check gemacht wird
   protected boolean forcedDelete = false;
 
@@ -108,6 +112,19 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
       {
         Logger.error("unable to parse id: " + getID());
         return getID();
+      }
+    }
+    else if (GESPERRT.equals(fieldName) || ABGESCHLOSSEN.equals(fieldName))
+    {
+      try
+      {
+        deleteCheck();
+        return "";
+      }
+      catch (ApplicationException ex)
+      {
+        // Icon für abgeschlossen
+        return "\uD83D\uDD12";
       }
     }
     Object o = super.getAttribute(fieldName);

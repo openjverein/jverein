@@ -43,8 +43,8 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
 
   private boolean mailsenden = true;
 
-  public MailVorlagenAuswahlDialog(MailVorlageControl control, int position,
-      boolean mailsenden)
+  public MailVorlagenAuswahlDialog(MailVorlageControl control,
+      int position, boolean mailsenden)
   {
     super(position);
     this.control = control;

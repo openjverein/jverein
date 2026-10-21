@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -28,129 +27,23 @@ import de.jost_net.JVerein.gui.view.AnfangsbestandDetailView;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
-import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AnfangsbestandControl extends FilterControl implements Savable
+public class AnfangsbestandControl extends FilterControl
 {
 
   private JVereinTablePart anfangsbestandList;
 
-  private TextInput konto;
-
-  private DateInput datum;
-
-  private DecimalInput betrag;
-
-  private Anfangsbestand anfangsbestand;
-
-  private boolean editable = false;
-
   public AnfangsbestandControl(AbstractView view)
   {
     super(view);
-  }
-
-  private Anfangsbestand getAnfangsbestand()
-  {
-    if (anfangsbestand != null)
-    {
-      return anfangsbestand;
-    }
-    anfangsbestand = (Anfangsbestand) getCurrentObject();
-    return anfangsbestand;
-  }
-
-  public boolean isAnfangsbestandEditable() throws RemoteException
-  {
-    if (getAnfangsbestand().getJahresabschluss() != null)
-    {
-      GUI.getStatusBar()
-          .setErrorText("Anfangsbestand ist bereits abgeschlossen.");
-      return editable = false;
-    }
-    return editable = true;
-  }
-
-  public TextInput getKonto() throws RemoteException
-  {
-    if (konto != null)
-    {
-      return konto;
-    }
-    konto = new TextInput(getAnfangsbestand().getKonto().getNummer(), 35);
-    konto.setEnabled(false);
-    return konto;
-  }
-
-  public DateInput getDatum() throws RemoteException
-  {
-    if (datum != null)
-    {
-      return datum;
-    }
-    datum = new DateInput(getAnfangsbestand().getDatum());
-    datum.focus();
-    if (!getAnfangsbestand().isNewObject())
-    {
-      datum.setEnabled(false);
-    }
-    datum.setMandatory(true);
-    return datum;
-  }
-
-  public DecimalInput getBetrag() throws RemoteException
-  {
-    if (betrag != null)
-    {
-      return betrag;
-    }
-    betrag = new DecimalInput(getAnfangsbestand().getBetrag(),
-        Einstellungen.DECIMALFORMAT);
-    betrag.setMandatory(true);
-    betrag.setEnabled(editable);
-    return betrag;
-  }
-
-  @Override
-  public JVereinDBObject prepareStore() throws RemoteException
-  {
-    Anfangsbestand a = getAnfangsbestand();
-    // Konto ist schon gesetzt und ist nicht editierbar
-    a.setDatum((Date) getDatum().getValue());
-    a.setBetrag((Double) getBetrag().getValue());
-    return a;
-  }
-
-  /**
-   * This method stores the project using the current values.
-   * 
-   * @throws ApplicationException
-   */
-  @Override
-  public void handleStore() throws ApplicationException
-  {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern des Anfangsbestandes";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
   }
 
   @Override
@@ -163,6 +56,7 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     }
     anfangsbestandList = new JVereinTablePart(getAnfangsstaende(), null);
     anfangsbestandList.addColumn("Nr", "id-int");
+    anfangsbestandList.addColumn(getAbgeschlossenColumn(), false);
     anfangsbestandList.addColumn("Nummer", "nummer");
     anfangsbestandList.addColumn("Bezeichnung", "bezeichnung");
     anfangsbestandList.addColumn("Datum", "datum",

@@ -26,6 +26,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -156,6 +157,12 @@ public class AuswertungMitgliedschaftsjubilarePDF
   {
     reporter.close();
     fos.close();
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 
 }

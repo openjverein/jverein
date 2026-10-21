@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.WiedervorlageControl;
+import de.jost_net.JVerein.gui.control.WiedervorlageDetailControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
@@ -27,13 +27,13 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class WiedervorlageDetailView extends AbstractDetailView
 {
-  private WiedervorlageControl control;
+  private WiedervorlageDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Wiedervorlage");
-    control = new WiedervorlageControl(this);
+    control = new WiedervorlageDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Wiedervorlage");
     group.addLabelPair("Mitglied", control.getMitglied());

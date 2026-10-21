@@ -51,6 +51,11 @@ public class EinstellungenReportsView extends AbstractView
     cont.addLabelPair("Tabellen Zellen transparent",
         control.getZellenTransparent());
 
+    cont.addSeparator();
+    cont.addText(
+        "Die Einstellungen sind Voreinstellungen und können beim Export individuell festgelegt werden",
+        false);
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(new HelpButton(DokumentationUtil.EINSTELLUNGEN_REPORTS));
     buttons.addButton(new SaveButton(o -> control.handleStoreReports()));

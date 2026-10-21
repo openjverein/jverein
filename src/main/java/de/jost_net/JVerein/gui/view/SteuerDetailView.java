@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.SteuerControl;
+import de.jost_net.JVerein.gui.control.SteuerDetailControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
@@ -30,13 +30,13 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 public class SteuerDetailView extends AbstractDetailView
 {
 
-  SteuerControl control = null;
+  SteuerDetailControl control = null;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Steuer");
-    control = new SteuerControl(this);
+    control = new SteuerDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Steuer");
     group.addLabelPair("Name", control.getName());

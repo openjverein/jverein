@@ -24,108 +24,20 @@ import de.jost_net.JVerein.gui.menu.MitgliedstypMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MitgliedstypDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedstypControl extends VorZurueckControl implements Savable
+public class MitgliedstypControl extends FilterControl
 {
   private JVereinTablePart mitgliedstypList;
-
-  private Input bezeichnung;
-
-  private Input bezeichnungplural;
-
-  private Mitgliedstyp mitgliedstyp;
-
-  private boolean editable = false;
 
   public MitgliedstypControl(AbstractView view)
   {
     super(view);
-  }
-
-  private Mitgliedstyp getMitgliedstyp()
-  {
-    if (mitgliedstyp != null)
-    {
-      return mitgliedstyp;
-    }
-    mitgliedstyp = (Mitgliedstyp) getCurrentObject();
-    return mitgliedstyp;
-  }
-
-  public boolean isMitgliedstypEditable() throws RemoteException
-  {
-    if (getMitgliedstyp().getJVereinid() > 0)
-    {
-      GUI.getStatusBar().setErrorText(
-          "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
-      return editable = false;
-    }
-    return editable = true;
-  }
-
-  public Input getBezeichnung() throws RemoteException
-  {
-    if (bezeichnung != null)
-    {
-      return bezeichnung;
-    }
-    bezeichnung = new TextInput(getMitgliedstyp().getBezeichnung(), 30);
-    bezeichnung.setMandatory(true);
-    bezeichnung.setEnabled(editable);
-    return bezeichnung;
-  }
-
-  public Input getBezeichnungPlural() throws RemoteException
-  {
-    if (bezeichnungplural != null)
-    {
-      return bezeichnungplural;
-    }
-    bezeichnungplural = new TextInput(getMitgliedstyp().getBezeichnungPlural(),
-        30);
-    bezeichnungplural.setMandatory(true);
-    bezeichnungplural.setEnabled(editable);
-    return bezeichnungplural;
-  }
-
-  @Override
-  public JVereinDBObject prepareStore() throws RemoteException
-  {
-    Mitgliedstyp mt = getMitgliedstyp();
-    mt.setBezeichnung((String) getBezeichnung().getValue());
-    mt.setBezeichnungPlural((String) getBezeichnungPlural().getValue());
-    return mt;
-  }
-
-  /**
-   * This method stores the project using the current values.
-   * 
-   * @throws ApplicationException
-   */
-  @Override
-  public void handleStore() throws ApplicationException
-  {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern des Mitgliedstyp";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
   }
 
   @Override
@@ -140,6 +52,7 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     mtIt.setOrder("ORDER BY " + Mitgliedstyp.BEZEICHNUNG);
 
     mitgliedstypList = new JVereinTablePart(mtIt, null);
+    mitgliedstypList.addColumn(getGesperrtColumn(), false);
     mitgliedstypList.addColumn("Bezeichnung", Mitgliedstyp.BEZEICHNUNG);
     mitgliedstypList.addColumn("Bezeichnung Plural",
         Mitgliedstyp.BEZEICHNUNG_PLURAL);
@@ -150,6 +63,12 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
         new EditAction(MitgliedstypDetailView.class, mitgliedstypList));
     VorZurueckControl.setObjektListe(null, null);
     return mitgliedstypList;
+  }
+
+  @Override
+  protected void TabRefresh() throws ApplicationException
+  {
+    // Es gibt keinen Refresh
   }
 
   @Override

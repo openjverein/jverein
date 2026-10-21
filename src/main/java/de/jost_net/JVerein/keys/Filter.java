@@ -47,6 +47,7 @@ public enum Filter
       FilterArt.DATE),
   BEITRAGSGRUPPE("filter_beitragsgruppe", "Beitragsgruppe", FilterControl.ALLE,
       FilterArt.SELECT, Beitragsgruppe.class),
+  BELEGNUMMER("filter_belegnummer", "Belegnummer", "0123", FilterArt.TEXT),
   BEMERKUNG("filter_bemerkung", "Bemerkung", "Bemerkung", FilterArt.TEXT),
   BETRAG("filter_betrag", "Betrag", "50", FilterArt.BETRAG),
   BETREFF("filter_betreff", "Betreff", "Betreff", FilterArt.TEXT),
@@ -181,6 +182,8 @@ public enum Filter
   ZUSATZFELD("filter_zusatzfelder", "Zusatzfelder", "Zusatzfeld",
       FilterArt.ZUSATZFELD),
   ZWECK("filter_zweck", "Zweck", "Zweck", FilterArt.TEXT),
+  NICHT_ZUGEORDNET("filter_nicht_zugeordnet", "Nicht zugeordnet", "0",
+      FilterArt.CHECKBOX),
 
   // Für Auswertung
   JUBELJAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,

@@ -25,7 +25,6 @@ import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -38,20 +37,20 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
   public SaldoPartExportDialog(ISaldoExport export,
       ArrayList<PseudoDBObject> zeile, String settingPrefix, ExportArt art,
       String title, String subtitle, String filename)
-      throws ApplicationException
+      throws ApplicationException, RemoteException
   {
     super(settingPrefix, art, title, subtitle, filename,
-        "Saldo Report generieren", null);
+        "Saldo Report generieren", null, false,
+        AbstractPartExportDialog.OPTION_NONE);
     this.export = export;
     this.zeile = zeile;
-    settings = new Settings(this.getClass());
   }
 
   @Override
   protected void paint(Composite parent)
       throws ApplicationException, RemoteException
   {
-    createGui(parent, null);
+    createGui(parent);
   }
 
   @Override
@@ -69,7 +68,7 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
-        export.export(zeile, file, getExportLayoutParam());
+        export.export(zeile, file, control.getExportLayoutParam());
       }
 
       @Override
@@ -88,19 +87,7 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
   }
 
   @Override
-  void setChecked()
-  {
-    // Kein Spalten Tab
-  }
-
-  @Override
-  void resetSpalten()
-  {
-    // Kein Spalten Tab
-  }
-
-  @Override
-  Item getColumn(String name)
+  public Item getColumn(String name)
   {
     // hier nicht nötig
     return null;

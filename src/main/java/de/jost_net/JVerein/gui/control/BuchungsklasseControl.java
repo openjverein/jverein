@@ -25,97 +25,19 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.BuchungsklasseDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsklasseControl extends VorZurueckControl implements Savable
+public class BuchungsklasseControl extends FilterControl
 {
   private JVereinTablePart buchungsklassenList;
-
-  private TextInput nummer;
-
-  private Input bezeichnung;
-
-  private Buchungsklasse buchungsklasse;
 
   public BuchungsklasseControl(AbstractView view)
   {
     super(view);
-  }
-
-  private Buchungsklasse getBuchungsklasse()
-  {
-    if (buchungsklasse != null)
-    {
-      return buchungsklasse;
-    }
-    buchungsklasse = (Buchungsklasse) getCurrentObject();
-    return buchungsklasse;
-  }
-
-  public TextInput getNummer(boolean withFocus) throws RemoteException
-  {
-    if (nummer != null)
-    {
-      return nummer;
-    }
-    nummer = new TextInput(getBuchungsklasse().getNummer(), 50);
-    if (withFocus)
-    {
-      nummer.focus();
-    }
-    nummer.setMandatory(true);
-    return nummer;
-  }
-
-  public Input getBezeichnung() throws RemoteException
-  {
-    if (bezeichnung != null)
-    {
-      return bezeichnung;
-    }
-    bezeichnung = new TextInput(getBuchungsklasse().getBezeichnung(), 255);
-    bezeichnung.setMandatory(true);
-    return bezeichnung;
-  }
-
-  @Override
-  public JVereinDBObject prepareStore() throws RemoteException
-  {
-    Buchungsklasse b = getBuchungsklasse();
-    if (getNummer(false).getValue() != null)
-    {
-      b.setNummer((String) getNummer(false).getValue());
-    }
-    b.setBezeichnung((String) getBezeichnung().getValue());
-    return b;
-  }
-
-  /**
-   * This method stores the project using the current values.
-   * 
-   * @throws ApplicationException
-   */
-  @Override
-  public void handleStore() throws ApplicationException
-  {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern der Buchungsklasse";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
   }
 
   @Override
@@ -131,6 +53,7 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     buchungsklassen.setOrder("ORDER BY nummer");
 
     buchungsklassenList = new JVereinTablePart(buchungsklassen, null);
+    buchungsklassenList.addColumn(getGesperrtColumn(), false);
     buchungsklassenList.addColumn("Nummer", "nummer");
     buchungsklassenList.addColumn("Bezeichnung", "bezeichnung");
     buchungsklassenList
@@ -140,6 +63,12 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
         new EditAction(BuchungsklasseDetailView.class, buchungsklassenList));
     VorZurueckControl.setObjektListe(null, null);
     return buchungsklassenList;
+  }
+
+  @Override
+  protected void TabRefresh() throws ApplicationException
+  {
+    // Es gibt keinen Refresh
   }
 
   @Override
@@ -159,4 +88,5 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
   {
     return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_DATEINAME);
   }
+
 }

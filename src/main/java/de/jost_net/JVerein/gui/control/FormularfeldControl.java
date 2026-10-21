@@ -91,7 +91,7 @@ public class FormularfeldControl extends AbstractControl implements Savable
       return name;
     }
 
-    name = new TextAreaInput(getFormularfeld().getName(), 1000);
+    name = new TextAreaInput(getFormularfeld().getName());
     name.setHeight(200);
     return name;
   }

@@ -33,6 +33,7 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -146,5 +147,11 @@ public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
       }
     };
     return new IOFormat[] { f };
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 }

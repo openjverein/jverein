@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
+import de.jost_net.JVerein.gui.control.AbrechnungslaufDetailControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
@@ -48,14 +48,14 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
   // Statische Variable, die den zuletzt ausgewählten Tab speichert.
   private static int tabindex = -1;
 
-  private AbrechnungslaufControl control;
+  private AbrechnungslaufDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Abrechnungslauf");
 
-    control = new AbrechnungslaufControl(this);
+    control = new AbrechnungslaufDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Detaildaten");
 

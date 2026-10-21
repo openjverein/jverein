@@ -18,6 +18,7 @@ package de.jost_net.JVerein.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -96,6 +97,19 @@ public class Datum
     cal.setTime(datum);
     cal.add(Calendar.DAY_OF_MONTH, tage);
     return cal.getTime();
+  }
+
+  /**
+   * Addiert (oder subtrahiert bei negativem Wert) Jahre zu einem Datum.
+   *
+   * @param datum das Ausgangsdatum.
+   * @param jahre die Anzahl der zu addierenden Jahre.
+   * @return das um jahre verschobene Datum.
+   */
+  public static Date addJahre(Date datum, int jahre)
+  {
+    return Date.from(datum.toInstant().atZone(ZoneId.systemDefault())
+        .plusYears(jahre).toInstant());
   }
 
   public static Date toDate(String value) throws ParseException

@@ -36,6 +36,7 @@ import org.supercsv.prefs.CsvPreference;
 
 import com.itextpdf.text.DocumentException;
 
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
@@ -139,6 +140,12 @@ public class FormularfelderExportCSV extends FormularfelderExport
       writer.write(ffmap, header);
     }
     writer.close();
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 
 }

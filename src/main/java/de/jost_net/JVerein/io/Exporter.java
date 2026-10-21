@@ -109,4 +109,11 @@ public interface Exporter extends IO
   {
     return null;
   }
+
+  /**
+   * Liefert Optionen für den PDF Teil des Export Dialogs
+   * 
+   * @return Optionen wie in AbstractPartExportDialog definiert
+   */
+  public int getExportDialogOptions();
 }

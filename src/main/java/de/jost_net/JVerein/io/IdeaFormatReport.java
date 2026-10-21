@@ -17,6 +17,7 @@ import java.util.zip.ZipOutputStream;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.JVereinPlugin;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.io.idea.AnfangsbestandIDEATable;
 import de.jost_net.JVerein.io.idea.BuchungIDEATable;
@@ -405,6 +406,12 @@ public class IdeaFormatReport implements Exporter
   public Filter[] getAusgabeParameter(Object object)
   {
     return new Filter[] { Filter.GESCHAEFTSJAHR };
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 
 }

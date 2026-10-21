@@ -36,6 +36,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -148,5 +149,11 @@ public class BuchungAuswertungExportCSV implements Exporter
       Logger.error("Fehler", e);
     }
     return null;
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 }

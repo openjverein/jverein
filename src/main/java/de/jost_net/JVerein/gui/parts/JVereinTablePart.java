@@ -33,6 +33,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
@@ -43,6 +44,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.willuhn.datasource.GenericIterator;
@@ -202,9 +204,9 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
 
     table.addListener(SWT.MenuDetect, event -> {
       Point point = table.toControl(event.x, event.y);
-
-      // Nur reagieren, wenn der Klick im Tabellenkopf liegt
-      if (point.y <= 0 && point.y > -table.getHeaderHeight())
+      Rectangle clientArea = table.getClientArea();
+      if (clientArea.y <= point.y
+          && point.y < (clientArea.y + table.getHeaderHeight()))
       {
         Menu headerMenu = new Menu(table.getShell());
 
@@ -339,13 +341,13 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
    */
   @Override
   public void export(String title, String subtitle, String filename,
-      ExportArt art) throws ApplicationException
+      ExportArt art, Map<Filter, String> filtertext) throws ApplicationException
   {
     try
     {
       if (!new TablePartExportDialog((Table) tableControl,
           getTablePartID(tablePartId, tableName), art, title, subtitle,
-          filename, this).open())
+          filename, this, filtertext).open())
       {
         throw new OperationCanceledException();
       }

@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.jost_net.JVerein.gui.control.DruckMailControl;
-import de.jost_net.JVerein.gui.control.MailControl;
+import de.jost_net.JVerein.gui.control.MailDetailControl;
 import de.jost_net.JVerein.gui.dialogs.MailVorlagenAuswahlDialog;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.jameica.gui.Action;
@@ -36,7 +36,7 @@ public class MailVorlageZuweisenAction implements Action
     try
     {
       if (context != null && (context instanceof DruckMailControl
-          || context instanceof MailControl))
+          || context instanceof MailDetailControl))
       {
         MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
             new MailVorlageControl(null),
@@ -51,9 +51,9 @@ public class MailVorlageZuweisenAction implements Action
             kto.getBetreff().setValue(mv.getBetreff());
             kto.getTxt().setValue(mv.getTxt());
           }
-          else if (context instanceof MailControl)
+          else if (context instanceof MailDetailControl)
           {
-            MailControl kto = (MailControl) context;
+            MailDetailControl kto = (MailDetailControl) context;
             kto.getBetreff().setValue(mv.getBetreff());
             kto.getTxt().setValue(mv.getTxt());
           }

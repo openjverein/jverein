@@ -33,6 +33,7 @@ import com.itextpdf.text.Element;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -131,10 +132,9 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
       reporter.addHeaderColumn("Soll", Element.ALIGN_CENTER, 50,
           params.getColorHeader(), params.getFontHeader());
       // Wenn es für diesen Plan noch keine Ist-Buchungen gab, spalte "Ist"
-      // ausblenden. Oder wenn Ende noch in der Zukkunft und in Einstellungen so
-      // festgelegt.
-      if (((Boolean) Einstellungen
-          .getEinstellung(Property.WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN)
+      // ausblenden. Oder wenn Ende noch in der Zukkunft und im Export Dialog
+      // so ausgewählt.
+      if ((params.getWirtschaftsplan_ist_anzeigen()
           || wirtschaftsplaene[i].getDatumBis().before(new Date()))
           && (Math.abs(wirtschaftsplaene[i].getIstEinnahme()) >= 0.01d
               || Math.abs(wirtschaftsplaene[i].getIstAusgabe()) >= 0.01d))
@@ -477,5 +477,11 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
   public boolean hasColortable2(Object object)
   {
     return true;
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_WIRSCHAFTSPALN_IST;
   }
 }

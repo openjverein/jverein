@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Item;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.io.ExportLayoutParam;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -30,20 +29,18 @@ public class ExporterExportDialog extends AbstractPartExportDialog
 {
 
   public ExporterExportDialog(boolean hasColortable2, String settingPrefix,
-      ExportArt art, String title, String subtitle, String filename)
-      throws ApplicationException
+      ExportArt art, String title, String subtitle, String filename,
+      int dialogOptions) throws ApplicationException, RemoteException
   {
     super(settingPrefix, art, title, subtitle, filename, "Report generieren",
-        null);
-    supportTable2 = hasColortable2;
-    settings = new Settings(this.getClass());
+        null, hasColortable2, dialogOptions);
   }
 
   @Override
   protected void paint(Composite parent)
       throws ApplicationException, RemoteException
   {
-    createGui(parent, null);
+    createGui(parent);
   }
 
   @Override
@@ -51,8 +48,8 @@ public class ExporterExportDialog extends AbstractPartExportDialog
   {
     try
     {
-      saveSettings();
-      storeExportLayoutParam();
+      control.saveSettings(settingPrefix);
+      control.storeExportLayoutParam();
       success = true;
     }
     catch (RemoteException e)
@@ -66,7 +63,7 @@ public class ExporterExportDialog extends AbstractPartExportDialog
 
   public ExportLayoutParam getParams()
   {
-    return getExportLayoutParam();
+    return control.getExportLayoutParam();
   }
 
   @Override
@@ -82,19 +79,7 @@ public class ExporterExportDialog extends AbstractPartExportDialog
   }
 
   @Override
-  void setChecked()
-  {
-    // Kein Spalten Tab
-  }
-
-  @Override
-  void resetSpalten()
-  {
-    // Kein Spalten Tab
-  }
-
-  @Override
-  Item getColumn(String name)
+  public Item getColumn(String name)
   {
     // hier nicht nötig
     return null;

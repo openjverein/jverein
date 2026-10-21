@@ -35,6 +35,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
@@ -144,7 +145,7 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
     Map<Filter, String> filterparams = (Map<Filter, String>) objects[1];
     BuchungQuery query = control.getQuery();
     ArrayList<Buchungsart> buchungsarten = getBuchungsarten(query);
-    kontonummer_in_buchungsliste = getKontonummer();
+    kontonummer_in_buchungsliste = params.getKontonummer_in_buchungsliste();
     FileOutputStream fos = new FileOutputStream(file);
 
     Reporter reporter = new Reporter(fos, params);
@@ -256,7 +257,10 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
       }
       reporter.closeTable();
     }
-    reporter.addParams(filterparams, params);
+    if (params.getFilterParameter())
+    {
+      reporter.addParams(filterparams, params);
+    }
     reporter.close();
     fos.close();
   }
@@ -396,5 +400,12 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
     }
     reporter.closeTable();
     return true;
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_FILTER_PARAMS
+        | AbstractPartExportDialog.OPTION_KONTONUMMER;
   }
 }

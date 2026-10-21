@@ -95,6 +95,16 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     }
   }
 
+  public boolean isAbgeschlossen() throws RemoteException
+  {
+    if (this.getRechnung() != null || (getAbrechnungslauf() != null
+        && getAbrechnungslauf().getAbgeschlossen()))
+    {
+      return true;
+    }
+    return false;
+  }
+
   @Override
   protected void insertCheck() throws ApplicationException
   {

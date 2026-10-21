@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.system.Settings;
@@ -37,7 +38,8 @@ public interface IJVereinPart
   public Map<String, Boolean> getDefaults();
 
   public void export(String title, String subtitle, String filename,
-      ExportArt art) throws ApplicationException;
+      ExportArt art, Map<Filter, String> filtertext)
+      throws ApplicationException;
 
   public void saveSpalten(List<Column> columns) throws RemoteException;
 

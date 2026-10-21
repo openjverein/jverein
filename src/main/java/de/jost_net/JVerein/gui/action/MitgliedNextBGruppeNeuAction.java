@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedDetailControl;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
@@ -30,9 +30,9 @@ import de.willuhn.logging.Logger;
  */
 public class MitgliedNextBGruppeNeuAction implements Action
 {
-  MitgliedControl control;
+  MitgliedDetailControl control;
 
-  public MitgliedNextBGruppeNeuAction(MitgliedControl control)
+  public MitgliedNextBGruppeNeuAction(MitgliedDetailControl control)
   {
     this.control = control;
   }

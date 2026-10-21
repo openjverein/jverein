@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Steuer;
+import de.jost_net.JVerein.server.AbstractJVereinDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -45,7 +46,8 @@ public class SollbuchungPositionListPart extends BetragSummaryTablePart
     super(list, action);
 
     setTableName("SollbuchungsPositionen");
-
+    addColumn(new Column(AbstractJVereinDBObject.ABGESCHLOSSEN,
+        AbstractJVereinDBObject.ABGESCHLOSSEN), false);
     addColumn("Datum", "datum", new DateFormatter(new JVDateFormatTTMMJJJJ()));
     addColumn("Zweck", "zweck");
     addColumn("Betrag", "betrag",

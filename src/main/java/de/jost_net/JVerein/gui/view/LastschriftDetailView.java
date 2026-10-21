@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.control.LastschriftControl;
+import de.jost_net.JVerein.gui.control.LastschriftDetailControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.willuhn.jameica.gui.AbstractView;
@@ -28,14 +28,14 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class LastschriftDetailView extends AbstractView
 {
-  private LastschriftControl control;
+  private LastschriftDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Lastschrift");
 
-    control = new LastschriftControl(this);
+    control = new LastschriftDetailControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 

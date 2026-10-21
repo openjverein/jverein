@@ -16,8 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.gui.control.RechnungDetailControl.TYP;
 import de.jost_net.JVerein.gui.control.RechnungControl;
-import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;

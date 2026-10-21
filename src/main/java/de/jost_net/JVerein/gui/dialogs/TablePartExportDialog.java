@@ -17,11 +17,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -39,13 +41,15 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.pdf.BaseFont;
 
+import de.jost_net.JVerein.gui.control.AbstractPartExportDialogControl.ExportSpalte;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.TabelleExportProfilePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 
 public class TablePartExportDialog extends AbstractPartExportDialog
@@ -54,12 +58,16 @@ public class TablePartExportDialog extends AbstractPartExportDialog
 
   private JVereinTablePart tablePart;
 
+  private Map<Filter, String> filterparams;
+
   public TablePartExportDialog(Table table, String settingPrefix, ExportArt art,
       String title, String subtitle, String filename,
-      JVereinTablePart tablePart) throws ApplicationException
+      JVereinTablePart tablePart, Map<Filter, String> filterparams)
+      throws ApplicationException, RemoteException
   {
     super(settingPrefix, art, title, subtitle, filename, "Tabelle exportieren",
-        tablePart);
+        tablePart, false,
+        filterparams != null ? OPTION_FILTER_PARAMS : OPTION_NONE);
 
     if (table == null || table.isDisposed() || !(table instanceof Table))
     {
@@ -72,7 +80,15 @@ public class TablePartExportDialog extends AbstractPartExportDialog
 
     this.table = table;
     this.tablePart = tablePart;
-    settings = new Settings(this.getClass());
+    this.filterparams = filterparams;
+  }
+
+  @Override
+  protected void paint(Composite parent)
+      throws ApplicationException, RemoteException
+  {
+    new TabelleExportProfilePart(this, settings, settingPrefix).paint(parent);
+    super.paint(parent);
   }
 
   @Override
@@ -82,7 +98,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE))
     {
       @SuppressWarnings("unchecked")
-      List<ExportSpalte> spalten = spaltenList.getItems();
+      List<ExportSpalte> spalten = control.getSpaltenList().getItems();
 
       CellProcessor[] cellProcessor = new CellProcessor[spalten.size()];
       String[] header = new String[spalten.size()];
@@ -121,16 +137,19 @@ public class TablePartExportDialog extends AbstractPartExportDialog
       throws IOException, DocumentException, ApplicationException
   {
     try (FileOutputStream fos = new FileOutputStream(file);
-        Reporter reporter = new Reporter(fos, title, subtitle,
-            (Integer) links.getValue(), (Integer) rechts.getValue(),
-            (Integer) oben.getValue(), (Integer) unten.getValue(), false,
-            (Formular) vordergrund.getValue(),
-            (Formular) hintergrund.getValue(), (Boolean) querformat.getValue(),
-            (Boolean) headerTransparent.getValue(),
-            (Boolean) zellenTransparent.getValue());)
+        Reporter reporter = new Reporter(fos, control.getTitle(),
+            control.getSubtitle(), (Integer) control.getLinks().getValue(),
+            (Integer) control.getRechts().getValue(),
+            (Integer) control.getOben().getValue(),
+            (Integer) control.getUnten().getValue(), false,
+            (Formular) control.getVordergrund().getValue(),
+            (Formular) control.getHintergrund().getValue(),
+            (Boolean) control.getQuerformat().getValue(),
+            (Boolean) control.getHeaderTransparent().getValue(),
+            (Boolean) control.getZellenTransparent().getValue());)
     {
       @SuppressWarnings("unchecked")
-      List<ExportSpalte> listeAuswahl = spaltenList.getItems();
+      List<ExportSpalte> listeAuswahl = control.getSpaltenList().getItems();
 
       Object testObject = tablePart.getItems().get(0);
       for (ExportSpalte col : listeAuswahl)
@@ -162,8 +181,8 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         }
 
         reporter.addHeaderColumn(col.getColumn().getName(), col.getAlign(),
-            col.getBreite(), getHintergrundHeader(),
-            getFontHeader(BaseColor.BLACK));
+            col.getBreite(), control.getHintergrundHeader(),
+            control.getFontHeader(BaseColor.BLACK));
       }
       reporter.createHeader();
 
@@ -178,7 +197,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
           // Die Hintergrundfarbe muss in Data gespeichert sein, sonst hängt sie
           // vom verwendeten Theme ab.
           Color bg = (Color) tItem.getData("background");
-          Font font = getFont(text, tItem.getFont().getFontData());
+          Font font = control.getFont(text, tItem.getFont().getFontData());
 
           // Icons ersetzen die in den Standard Fonts nicht enthalten sind
           Font iconfont = FontFactory.getFont("/fonts/fontawesome-webfont.ttf",
@@ -202,10 +221,15 @@ public class TablePartExportDialog extends AbstractPartExportDialog
           }
           else
           {
-            reporter.addColumn(text, spalte.getAlign(), getHintergrundTabelle(),
-                font);
+            reporter.addColumn(text, spalte.getAlign(),
+                control.getHintergrundTabelle(), font);
           }
         }
+      }
+      reporter.closeTable();
+      if (control.getExportLayoutParam().getFilterParameter())
+      {
+        reporter.addParams(filterparams, control.getExportLayoutParam());
       }
       FileViewer.show(file);
     }
@@ -224,7 +248,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
   }
 
   @Override
-  Item getColumn(String name)
+  public Item getColumn(String name)
   {
     for (TableColumn c : table.getColumns())
     {

@@ -39,15 +39,16 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 
+import de.jost_net.JVerein.gui.control.AbstractPartExportDialogControl.ExportSpalte;
 import de.jost_net.JVerein.gui.parts.JVereinTreePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 
 public class TreePartExportDialog extends AbstractPartExportDialog
@@ -57,12 +58,16 @@ public class TreePartExportDialog extends AbstractPartExportDialog
 
   private JVereinTreePart treePart;
 
+  private Map<Filter, String> filterparams;
+
   public TreePartExportDialog(Tree tree, String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename, JVereinTreePart treePart)
-      throws ApplicationException
+      String title, String subtitle, String filename, JVereinTreePart treePart,
+      Map<Filter, String> filterparams)
+      throws ApplicationException, RemoteException
   {
     super(settingPrefix, art, title, subtitle, filename, "Baum exportieren",
-        treePart);
+        treePart, false,
+        filterparams != null ? OPTION_FILTER_PARAMS : OPTION_NONE);
 
     if (tree == null || tree.isDisposed() || !(tree instanceof Tree))
     {
@@ -85,7 +90,7 @@ public class TreePartExportDialog extends AbstractPartExportDialog
 
     this.tree = tree;
     this.treePart = treePart;
-    settings = new Settings(this.getClass());
+    this.filterparams = filterparams;
   }
 
   @SuppressWarnings("unchecked")
@@ -95,7 +100,7 @@ public class TreePartExportDialog extends AbstractPartExportDialog
     try (ICsvMapWriter writer = new CsvMapWriter(new FileWriter(file),
         CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE))
     {
-      List<ExportSpalte> spalten = spaltenList.getItems();
+      List<ExportSpalte> spalten = control.getSpaltenList().getItems();
       List<MyItem> rows = new ArrayList<>();
 
       for (GenericObjectNode item : (List<GenericObjectNode>) treePart
@@ -163,15 +168,18 @@ public class TreePartExportDialog extends AbstractPartExportDialog
       throws IOException, DocumentException, ApplicationException
   {
     try (FileOutputStream fos = new FileOutputStream(file);
-        Reporter reporter = new Reporter(fos, title, subtitle,
-            (Integer) links.getValue(), (Integer) rechts.getValue(),
-            (Integer) oben.getValue(), (Integer) unten.getValue(), false,
-            (Formular) vordergrund.getValue(),
-            (Formular) hintergrund.getValue(), (Boolean) querformat.getValue(),
-            (Boolean) headerTransparent.getValue(),
-            (Boolean) zellenTransparent.getValue());)
+        Reporter reporter = new Reporter(fos, control.getTitle(),
+            control.getSubtitle(), (Integer) control.getLinks().getValue(),
+            (Integer) control.getRechts().getValue(),
+            (Integer) control.getOben().getValue(),
+            (Integer) control.getUnten().getValue(), false,
+            (Formular) control.getVordergrund().getValue(),
+            (Formular) control.getHintergrund().getValue(),
+            (Boolean) control.getQuerformat().getValue(),
+            (Boolean) control.getHeaderTransparent().getValue(),
+            (Boolean) control.getZellenTransparent().getValue());)
     {
-      List<ExportSpalte> listeAuswahl = spaltenList.getItems();
+      List<ExportSpalte> listeAuswahl = control.getSpaltenList().getItems();
       List<MyItem> rows = new ArrayList<>();
 
       for (GenericObjectNode item : (List<GenericObjectNode>) treePart
@@ -210,8 +218,8 @@ public class TreePartExportDialog extends AbstractPartExportDialog
             break;
         }
         reporter.addHeaderColumn(col.getColumn().getName(), col.getAlign(),
-            col.getBreite(), getHintergrundHeader(),
-            getFontHeader(BaseColor.BLACK));
+            col.getBreite(), control.getHintergrundHeader(),
+            control.getFontHeader(BaseColor.BLACK));
       }
       reporter.createHeader();
 
@@ -228,7 +236,8 @@ public class TreePartExportDialog extends AbstractPartExportDialog
           // Die Hintergrundfarbe muss in Data gespeichert sein, sonst hängt sie
           // vom verwendeten Theme ab.
           Color bg = (Color) tItem.getData("background");
-          Font font = getFont(text, ((TreeItem) tItem).getFont().getFontData());
+          Font font = control.getFont(text,
+              ((TreeItem) tItem).getFont().getFontData());
 
           int alignment = spalte.getAlign();
           if (row.getEbene() == 1 && n++ == 0)
@@ -241,9 +250,15 @@ public class TreePartExportDialog extends AbstractPartExportDialog
           }
           else
           {
-            reporter.addColumn(text, alignment, getHintergrundTabelle(), font);
+            reporter.addColumn(text, alignment, control.getHintergrundTabelle(),
+                font);
           }
         }
+      }
+      reporter.closeTable();
+      if (control.getExportLayoutParam().getFilterParameter())
+      {
+        reporter.addParams(filterparams, control.getExportLayoutParam());
       }
       FileViewer.show(file);
     }
@@ -309,7 +324,7 @@ public class TreePartExportDialog extends AbstractPartExportDialog
   }
 
   @Override
-  Item getColumn(String name)
+  public Item getColumn(String name)
   {
     for (TreeColumn c : tree.getColumns())
     {

@@ -67,6 +67,7 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont2.addLabelPair("Rücklagenkonten", control.getRuecklagenkonten());
     cont2.addLabelPair("Forderungen/Verbindlichkeiten Konten",
         control.getVerbindlichkeitenForderungen());
+
     cont2.addHeadline("Sonstige Feature Auswahl");
     cont2.addLabelPair("Dokumentenspeicherung",
         control.getDokumentenspeicherung());

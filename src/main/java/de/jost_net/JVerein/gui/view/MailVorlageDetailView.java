@@ -27,7 +27,7 @@ import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.util.JameicaUtil;
-import de.jost_net.JVerein.gui.control.MailVorlageControl;
+import de.jost_net.JVerein.gui.control.MailVorlageDetailControl;
 import de.willuhn.jameica.gui.GUI;
 
 import java.util.Map;
@@ -39,14 +39,14 @@ import org.eclipse.swt.widgets.Composite;
 
 public class MailVorlageDetailView extends AbstractDetailView
 {
-  private MailVorlageControl control;
+  private MailVorlageDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Mail-Vorlage");
 
-    control = new MailVorlageControl(this);
+    control = new MailVorlageDetailControl(this);
 
     Composite comp = new Composite(this.getParent(), SWT.NONE);
     comp.setLayoutData(new GridData(GridData.FILL_BOTH));

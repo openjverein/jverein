@@ -38,6 +38,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.control.PersonalbogenControl;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.dialogs.ExporterExportDialog;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -138,7 +139,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     if (params == null)
     {
       ExporterExportDialog d = new ExporterExportDialog(false, "Personalbogen",
-          ExportArt.PDF, "", "", null);
+          ExportArt.PDF, "", "", null,
+          AbstractPartExportDialog.OPTION_NONE);
       try
       {
         if (!d.open())

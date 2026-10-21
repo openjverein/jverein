@@ -17,15 +17,12 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.util.Date;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.LehrgangsartMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangsartDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -33,129 +30,15 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangsartControl extends VorZurueckControl implements Savable
+public class LehrgangsartControl extends FilterControl
 {
   private JVereinTablePart lehrgangsartList;
-
-  private TextInput bezeichnung;
-
-  private DateInput von;
-
-  private DateInput bis;
-
-  private TextInput veranstalter;
-
-  private Lehrgangsart lehrgangsart;
 
   public LehrgangsartControl(AbstractView view)
   {
     super(view);
-  }
-
-  private Lehrgangsart getLehrgangsart()
-  {
-    if (lehrgangsart != null)
-    {
-      return lehrgangsart;
-    }
-    lehrgangsart = (Lehrgangsart) getCurrentObject();
-    return lehrgangsart;
-  }
-
-  public TextInput getBezeichnung(boolean withFocus) throws RemoteException
-  {
-    if (bezeichnung != null)
-    {
-      return bezeichnung;
-    }
-    bezeichnung = new TextInput(getLehrgangsart().getBezeichnung(), 50);
-    if (withFocus)
-    {
-      bezeichnung.focus();
-    }
-    bezeichnung.setMandatory(true);
-    return bezeichnung;
-  }
-
-  public DateInput getVon() throws RemoteException
-  {
-    if (von != null)
-    {
-      return von;
-    }
-    Date d = getLehrgangsart().getVon();
-    if (d != null && d.equals(Einstellungen.NODATE))
-    {
-      d = null;
-    }
-    this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.von.setTitle("Von/am");
-    this.von.setText("Bitte Beginn oder Tag der Veranstaltung wählen");
-    von.setMandatory(true);
-    return von;
-  }
-
-  public DateInput getBis() throws RemoteException
-  {
-    if (bis != null)
-    {
-      return bis;
-    }
-    Date d = getLehrgangsart().getBis();
-    if (d != null && d.equals(Einstellungen.NODATE))
-    {
-      d = null;
-    }
-    this.bis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.bis.setTitle("Bis");
-    this.bis.setText("Bitte Ende der Veranstaltung wählen");
-    return bis;
-  }
-
-  public TextInput getVeranstalter() throws RemoteException
-  {
-    if (veranstalter != null)
-    {
-      return veranstalter;
-    }
-    veranstalter = new TextInput(getLehrgangsart().getVeranstalter(), 50);
-    return veranstalter;
-  }
-
-  @Override
-  public JVereinDBObject prepareStore() throws RemoteException
-  {
-    Lehrgangsart l = getLehrgangsart();
-    l.setBezeichnung((String) getBezeichnung(false).getValue());
-    l.setVon((Date) getVon().getValue());
-    l.setBis((Date) getBis().getValue());
-    l.setVeranstalter((String) getVeranstalter().getValue());
-    return l;
-  }
-
-  /**
-   * This method stores the project using the current values.
-   * 
-   * @throws ApplicationException
-   */
-  @Override
-  public void handleStore() throws ApplicationException
-  {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler beim Speichern der Lehrgangsart";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
   }
 
   @Override
@@ -171,6 +54,7 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     lehrgangsarten.setOrder("ORDER BY bezeichnung");
 
     lehrgangsartList = new JVereinTablePart(lehrgangsarten, null);
+    lehrgangsartList.addColumn(getGesperrtColumn(), false);
     lehrgangsartList.addColumn("Bezeichnung", "bezeichnung");
     lehrgangsartList.addColumn("Von/am", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -183,6 +67,12 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
         new EditAction(LehrgangsartDetailView.class, lehrgangsartList));
     VorZurueckControl.setObjektListe(null, null);
     return lehrgangsartList;
+  }
+
+  @Override
+  protected void TabRefresh() throws ApplicationException
+  {
+    // Es gibt keinen Refresh
   }
 
   @Override

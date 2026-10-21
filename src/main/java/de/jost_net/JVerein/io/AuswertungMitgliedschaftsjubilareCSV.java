@@ -20,6 +20,7 @@ package de.jost_net.JVerein.io;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -114,5 +115,11 @@ public class AuswertungMitgliedschaftsjubilareCSV
     {
       Logger.error("Fehler", e);
     }
+  }
+
+  @Override
+  public int getExportDialogOptions()
+  {
+    return AbstractPartExportDialog.OPTION_NONE;
   }
 }

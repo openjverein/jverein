@@ -60,7 +60,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public abstract class FilterControl extends VorZurueckControl
+public abstract class FilterControl extends AbstractListeControl
 {
   private Calendar calendar = Calendar.getInstance();
 
@@ -101,6 +101,11 @@ public abstract class FilterControl extends VorZurueckControl
     super(view);
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
+  }
+
+  public boolean isFilterMapEmpty()
+  {
+    return filterMap.isEmpty();
   }
 
   /**
@@ -200,7 +205,14 @@ public abstract class FilterControl extends VorZurueckControl
       }
       else if (input instanceof CheckboxInput)
       {
-        text = ((Boolean) value) ? "Ja" : "Nein";
+        if (alle)
+        {
+          text = ((Boolean) value) ? "Ja" : "Nein";
+        }
+        else
+        {
+          text = ((Boolean) value) ? "Ja" : "";
+        }
       }
       else if (input instanceof DialogInput)
       {
@@ -324,10 +336,13 @@ public abstract class FilterControl extends VorZurueckControl
         };
 
         d1.addCloseListener(e -> {
-          EigenschaftenAuswahlParameter p = (EigenschaftenAuswahlParameter) e.data;
-          dialogInput.setText(p == null ? "" : p.getString());
-          dialogInput.setValue(p);
-          refresh();
+          if (e.detail != SWT.CANCEL)
+          {
+            EigenschaftenAuswahlParameter p = (EigenschaftenAuswahlParameter) e.data;
+            dialogInput.setText(p == null ? "" : p.getString());
+            dialogInput.setValue(p);
+            refresh();
+          }
         });
         dialogInput.disableClientControl();
 
