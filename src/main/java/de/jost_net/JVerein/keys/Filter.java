@@ -168,7 +168,7 @@ public enum Filter
       Steuer.class),
   STICHTAG("filter_stichtag_f", "Stichtag", "20240101", FilterArt.DATE),
   SUCHJAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,
-      Suchjahr.getList()),
+      new Suchjahr[1]),
   UNGEPRUEFT("filter_nur_ungepruefte", "Nur ungeprüfte", "Ja",
       FilterArt.CHECKBOX),
   VERANSTALTER("filter_veranstalter", "Veranstalter", "Kursleiter",
