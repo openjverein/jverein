@@ -50,7 +50,6 @@ import de.jost_net.JVerein.gui.view.EinstellungenRechnungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenReportsView;
 import de.jost_net.JVerein.gui.view.EinstellungenSpendenbescheinigungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenStatistikView;
-import de.jost_net.JVerein.gui.view.EinstellungenVerzeichnisView;
 import de.jost_net.JVerein.gui.view.EinstellungenVorlageListeView;
 import de.jost_net.JVerein.gui.view.FamilienbeitragView;
 import de.jost_net.JVerein.gui.view.FormularListeView;

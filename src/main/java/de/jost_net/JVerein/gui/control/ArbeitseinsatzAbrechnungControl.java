@@ -14,7 +14,6 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -26,32 +25,24 @@ import org.kapott.hbci.sepa.SepaVersion;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
-import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
+import de.jost_net.JVerein.gui.parts.ArbeitseinsatzAuswertungPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
+import de.jost_net.JVerein.keys.Auswertung;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
-import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.keys.Suchjahr;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.server.Bug;
-import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -60,29 +51,17 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
 {
   public static final String MITGLIED = "mitglied";
 
-  public static final String MITGLIED_ID = "id";
-
-  public static final String SOLLSTUNDEN = "sollstunden";
-
-  public static final String ISTSTUNDEN = "iststunden";
-
-  public static final String DIFFERENZ = "differenz";
-
-  public static final String STUNDENSATZ = "stundensatz";
-
   public static final String GESAMTBETRAG = "gesamtbetrag";
 
-  public static final int AUSWERTUNG = 1;
+  public static final int ZUSATZBETRAEGE = 1;
 
-  public static final int ZUSATZBETRAEGE = 2;
-
-  public static final int ABRECHNUNG = 3;
+  public static final int ABRECHNUNG = 2;
 
   private JVereinTablePart arbeitseinsatzueberpruefungList;
 
-  private SelectInput suchjahr = null;
+  private ArbeitseinsatzAuswertungPart auswertungPart;
 
-  private ArbeitseinsatzUeberpruefungInput auswertungschluessel = null;
+  private SelectInput suchjahr = null;
 
   private Zusatzbetrag zusatzb;
 
@@ -103,74 +82,21 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     return part;
   }
 
-  public ArbeitseinsatzUeberpruefungInput getAuswertungSchluessel()
-      throws RemoteException
-  {
-    if (auswertungschluessel != null)
-    {
-      return auswertungschluessel;
-    }
-    auswertungschluessel = new ArbeitseinsatzUeberpruefungInput(
-        ArbeitseinsatzUeberpruefungInput.MINDERLEISTUNG);
-    auswertungschluessel.addListener(new FilterListener());
-    return auswertungschluessel;
-  }
-
   public SelectInput getSuchJahr() throws RemoteException
   {
     if (suchjahr != null)
     {
       return suchjahr;
     }
-    DBIterator<Arbeitseinsatz> list = Einstellungen.getDBService()
-        .createList(Arbeitseinsatz.class);
-    list.setOrder("ORDER BY datum");
-    Arbeitseinsatz ae = null;
-    Calendar von = Calendar.getInstance();
-    if (list.hasNext())
-    {
-      ae = list.next();
-      von.setTime(ae.getDatum());
-    }
-    Calendar bis = Calendar.getInstance();
     ArrayList<Integer> jahre = new ArrayList<>();
-
-    for (int i = von.get(Calendar.YEAR); i <= bis.get(Calendar.YEAR); i++)
+    for (Suchjahr jahr : Suchjahr.getList())
     {
-      jahre.add(i);
+      jahre.add(jahr.getKey());
     }
     suchjahr = new SelectInput(jahre, settings.getInt("jahr", jahre.get(0)));
-    suchjahr.setPreselected(settings.getInt("jahr", bis.get(Calendar.YEAR)));
+    suchjahr.setPreselected(settings.getInt("jahr", jahre.get(0)));
     suchjahr.addListener(new FilterListener());
     return suchjahr;
-  }
-
-  public Button exportButton(ExportArt art) throws ApplicationException
-  {
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      if (arbeitseinsatzueberpruefungList == null)
-      {
-        throw new ApplicationException(
-            "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
-      }
-      try
-      {
-        arbeitseinsatzueberpruefungList.export(
-            VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_TITEL,
-                this),
-            VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL,
-                this),
-            VorlageUtil.getName(
-                VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME, this),
-            art, null);
-      }
-      catch (OperationCanceledException ex)
-      {
-        // Ignorieren und Dialog nicht schließen
-        return;
-      }
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
   private Zusatzbetrag getZusatzbetrag() throws RemoteException
@@ -202,7 +128,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       throws RemoteException, ApplicationException
   {
     List<Zusatzbetrag> list = new ArrayList<>();
-    for (PseudoDBObject o : getList())
+    for (PseudoDBObject o : auswertungPart.getList())
     {
       Mitglied m = (Mitglied) o.getAttribute(MITGLIED);
       Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
@@ -241,100 +167,12 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     }
     else
     {
-      arbeitseinsatzueberpruefungList = new JVereinTablePart(getList(), null);
-      arbeitseinsatzueberpruefungList.addColumn("Name", MITGLIED);
-      arbeitseinsatzueberpruefungList.addColumn("Sollstunden", SOLLSTUNDEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      arbeitseinsatzueberpruefungList.addColumn("Iststunden", ISTSTUNDEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      arbeitseinsatzueberpruefungList.addColumn("Differenz", DIFFERENZ,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      arbeitseinsatzueberpruefungList.addColumn("Stundensatz", STUNDENSATZ,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      arbeitseinsatzueberpruefungList.addColumn("Gesamtbetrag", GESAMTBETRAG,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
+      auswertungPart = new ArbeitseinsatzAuswertungPart(null,
+          Auswertung.MINDERLEISTUNG, (Integer) getSuchJahr().getValue());
+      arbeitseinsatzueberpruefungList = auswertungPart
+          .getArbeitseinsatzUeberpruefungList();
       return arbeitseinsatzueberpruefungList;
     }
-  }
-
-  public ArrayList<PseudoDBObject> getList() throws RemoteException
-  {
-    ExtendedDBIterator<PseudoDBObject> it = getIterator();
-
-    ArrayList<PseudoDBObject> zeilen = new ArrayList<>();
-    while (it.hasNext())
-    {
-      PseudoDBObject o = it.next();
-      Double soll = o.getAttribute(SOLLSTUNDEN) == null ? 0d
-          : o.getDouble(SOLLSTUNDEN);
-      Double ist = o.getAttribute(ISTSTUNDEN) == null ? 0d
-          : o.getDouble(ISTSTUNDEN);
-      Double satz = o.getDouble(STUNDENSATZ);
-      Mitglied mitglied = (Mitglied) Einstellungen.getDBService()
-          .createObject(Mitglied.class, o.getAttribute(MITGLIED_ID).toString());
-      o.setAttribute(DIFFERENZ, ist - soll);
-      o.setAttribute(GESAMTBETRAG, satz == null ? null : (ist - soll) * satz);
-      o.setAttribute(MITGLIED, mitglied);
-      zeilen.add(o);
-    }
-    return zeilen;
-  }
-
-  protected ExtendedDBIterator<PseudoDBObject> getIterator()
-      throws RemoteException
-  {
-    int year = (Integer) getSuchJahr().getValue();
-    int schluessel = ArbeitseinsatzUeberpruefungInput.MINDERLEISTUNG;
-    if (auswertungschluessel != null)
-    {
-      schluessel = (Integer) getAuswertungSchluessel().getValue();
-    }
-
-    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-        "mitglied");
-    it.addColumn("mitglied.id as " + MITGLIED_ID);
-    it.addColumn("arbeitseinsatzstunden as " + SOLLSTUNDEN);
-    it.addColumn("beitragsgruppe.arbeitseinsatzbetrag as " + STUNDENSATZ);
-    it.addColumn("sum(stunden) as " + ISTSTUNDEN);
-    it.join("beitragsgruppe", "mitglied.beitragsgruppe = beitragsgruppe.id");
-    it.leftJoin("arbeitseinsatz",
-        "mitglied.id = arbeitseinsatz.mitglied and year(arbeitseinsatz.datum) = ? ",
-        year);
-    it.addFilter(
-        "(mitglied.eintritt is null or year(mitglied.eintritt) <= ?) and "
-            + "(mitglied.austritt is null or year(mitglied.austritt) >= ?) ",
-        year, year);
-    if (schluessel != ArbeitseinsatzUeberpruefungInput.MEHRLEISTUNG
-        && schluessel != ArbeitseinsatzUeberpruefungInput.ALLE)
-    {
-      it.addFilter("beitragsgruppe.arbeitseinsatzstunden is not null and "
-          + "beitragsgruppe.arbeitseinsatzstunden > 0");
-    }
-    it.addGroupBy("mitglied.id, year(arbeitseinsatz.datum)");
-    if (schluessel == ArbeitseinsatzUeberpruefungInput.MINDERLEISTUNG)
-    {
-      it.addHaving((ISTSTUNDEN + " < " + SOLLSTUNDEN + " or " + ISTSTUNDEN
-          + " is null"));
-    }
-    if (schluessel == ArbeitseinsatzUeberpruefungInput.PASSENDELEISTUNG)
-    {
-      it.addHaving(ISTSTUNDEN + " = " + SOLLSTUNDEN);
-    }
-    if (schluessel == ArbeitseinsatzUeberpruefungInput.MEHRLEISTUNG)
-    {
-      it.addHaving(ISTSTUNDEN + " > " + SOLLSTUNDEN);
-    }
-    if (schluessel == ArbeitseinsatzUeberpruefungInput.ALLE)
-    {
-      it.addHaving(ISTSTUNDEN + " > 0 or " + SOLLSTUNDEN + " > 0");
-    }
-    it.setOrder("Order by mitglied.name, mitglied.vorname, mitglied.id ");
-    return it;
   }
 
   private void refreshList()
@@ -344,12 +182,8 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       if (arbeitseinsatzueberpruefungList != null)
       {
         saveSettings();
-        arbeitseinsatzueberpruefungList.removeAll();
-        for (PseudoDBObject o : getList())
-        {
-          arbeitseinsatzueberpruefungList.addItem(o);
-        }
-        arbeitseinsatzueberpruefungList.sort();
+        auswertungPart.refreshList(Auswertung.MINDERLEISTUNG,
+            (Integer) getSuchJahr().getValue());
       }
     }
     catch (RemoteException e)
@@ -423,7 +257,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
         checkVerrechnungskonto(bugs);
       }
 
-      for (PseudoDBObject o : getList())
+      for (PseudoDBObject o : auswertungPart.getList())
       {
         Mitglied m = (Mitglied) o.getAttribute(MITGLIED);
         Mitglied zahler = m.getZahler();
@@ -525,8 +359,6 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       case ZUSATZBETRAEGE:
         starteZusatzberaegeGenerierung();
         break;
-      case AUSWERTUNG:
-        // Nichts zu tun
     }
   }
 

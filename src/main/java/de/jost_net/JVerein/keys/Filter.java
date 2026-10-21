@@ -45,6 +45,8 @@ public enum Filter
       FilterArt.DATE),
   AUSTRITT_VON("filter_austrittsdatum_von_f", "Austritt von", "20240101",
       FilterArt.DATE),
+  AUSWERTUNG("filter_auswertung", "Auswertung", "2024",
+      FilterArt.SELECT_OHNE_NULL, Auswertung.values()),
   BEITRAGSGRUPPE("filter_beitragsgruppe", "Beitragsgruppe", FilterControl.ALLE,
       FilterArt.SELECT, Beitragsgruppe.class),
   BEMERKUNG("filter_bemerkung", "Bemerkung", "Bemerkung", FilterArt.TEXT),
@@ -165,6 +167,8 @@ public enum Filter
   STEUER("filter_steuer", "Steuer", FilterControl.ALLE, FilterArt.SELECT,
       Steuer.class),
   STICHTAG("filter_stichtag_f", "Stichtag", "20240101", FilterArt.DATE),
+  SUCHJAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,
+      Suchjahr.getList()),
   UNGEPRUEFT("filter_nur_ungepruefte", "Nur ungeprüfte", "Ja",
       FilterArt.CHECKBOX),
   VERANSTALTER("filter_veranstalter", "Veranstalter", "Kursleiter",
@@ -269,6 +273,11 @@ public enum Filter
   public KeyEnum[] getArray()
   {
     return array;
+  }
+
+  public void setArray(KeyEnum[] array)
+  {
+    this.array = array;
   }
 
   public static Filter getByKey(String key)
