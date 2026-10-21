@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.keys.Auswertung;
+import de.jost_net.JVerein.keys.ArbeitseinsatzAuswertung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
@@ -45,13 +45,13 @@ public class ArbeitseinsatzAuswertungPart extends JVereinTablePart
 
   public static final String GESAMTBETRAG = "gesamtbetrag";
 
-  private Auswertung schluessel = Auswertung.MINDERLEISTUNG;
+  private ArbeitseinsatzAuswertung schluessel = ArbeitseinsatzAuswertung.MINDERLEISTUNG;
 
   private int year;
 
   private JVereinTablePart arbeitseinsatzueberpruefungList;
 
-  public ArbeitseinsatzAuswertungPart(Action action, Auswertung schluessel,
+  public ArbeitseinsatzAuswertungPart(Action action, ArbeitseinsatzAuswertung schluessel,
       Integer year)
   {
     super(action);
@@ -129,26 +129,26 @@ public class ArbeitseinsatzAuswertungPart extends JVereinTablePart
         "(mitglied.eintritt is null or year(mitglied.eintritt) <= ?) and "
             + "(mitglied.austritt is null or year(mitglied.austritt) >= ?) ",
         year, year);
-    if (schluessel != Auswertung.MEHRLEISTUNG && schluessel != Auswertung.ALLE)
+    if (schluessel != ArbeitseinsatzAuswertung.MEHRLEISTUNG && schluessel != ArbeitseinsatzAuswertung.ALLE)
     {
       it.addFilter("beitragsgruppe.arbeitseinsatzstunden is not null and "
           + "beitragsgruppe.arbeitseinsatzstunden > 0");
     }
     it.addGroupBy("mitglied.id, year(arbeitseinsatz.datum)");
-    if (schluessel == Auswertung.MINDERLEISTUNG)
+    if (schluessel == ArbeitseinsatzAuswertung.MINDERLEISTUNG)
     {
       it.addHaving((ISTSTUNDEN + " < " + SOLLSTUNDEN + " or " + ISTSTUNDEN
           + " is null"));
     }
-    if (schluessel == Auswertung.PASSENDELEISTUNG)
+    if (schluessel == ArbeitseinsatzAuswertung.PASSENDELEISTUNG)
     {
       it.addHaving(ISTSTUNDEN + " = " + SOLLSTUNDEN);
     }
-    if (schluessel == Auswertung.MEHRLEISTUNG)
+    if (schluessel == ArbeitseinsatzAuswertung.MEHRLEISTUNG)
     {
       it.addHaving(ISTSTUNDEN + " > " + SOLLSTUNDEN);
     }
-    if (schluessel == Auswertung.ALLE)
+    if (schluessel == ArbeitseinsatzAuswertung.ALLE)
     {
       it.addHaving(ISTSTUNDEN + " > 0 or " + SOLLSTUNDEN + " > 0");
     }
@@ -156,7 +156,7 @@ public class ArbeitseinsatzAuswertungPart extends JVereinTablePart
     return it;
   }
 
-  public void refreshList(Auswertung schluessel, int year)
+  public void refreshList(ArbeitseinsatzAuswertung schluessel, int year)
   {
     try
     {

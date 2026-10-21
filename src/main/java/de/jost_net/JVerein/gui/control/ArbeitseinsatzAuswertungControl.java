@@ -16,9 +16,9 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzAuswertungPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.keys.Auswertung;
+import de.jost_net.JVerein.keys.ArbeitseinsatzAuswertung;
 import de.jost_net.JVerein.keys.Filter;
-import de.jost_net.JVerein.keys.Suchjahr;
+import de.jost_net.JVerein.keys.ArbeitseinsatzJahr;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
@@ -84,8 +84,8 @@ public class ArbeitseinsatzAuswertungControl extends FilterControl
     else
     {
       auswertungPart = new ArbeitseinsatzAuswertungPart(null,
-          (Auswertung) getFilterValue(Filter.AUSWERTUNG),
-          ((Suchjahr) getFilterValue(Filter.SUCHJAHR)).getKey());
+          (ArbeitseinsatzAuswertung) getFilterValue(Filter.ARBEITSEINSATZ_AUSWERTUNG),
+          ((ArbeitseinsatzJahr) getFilterValue(Filter.ARBEITSEINSATZ_JAHR)).getKey());
       return auswertungPart.getArbeitseinsatzUeberpruefungList();
     }
   }
@@ -93,8 +93,8 @@ public class ArbeitseinsatzAuswertungControl extends FilterControl
   @Override
   protected void TabRefresh() throws ApplicationException
   {
-    auswertungPart.refreshList((Auswertung) getFilterValue(Filter.AUSWERTUNG),
-        ((Suchjahr) getFilterValue(Filter.SUCHJAHR)).getKey());
+    auswertungPart.refreshList((ArbeitseinsatzAuswertung) getFilterValue(Filter.ARBEITSEINSATZ_AUSWERTUNG),
+        ((ArbeitseinsatzJahr) getFilterValue(Filter.ARBEITSEINSATZ_JAHR)).getKey());
   }
 
   @Override

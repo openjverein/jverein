@@ -30,9 +30,9 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
-import de.jost_net.JVerein.keys.Auswertung;
+import de.jost_net.JVerein.keys.ArbeitseinsatzAuswertung;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
-import de.jost_net.JVerein.keys.Suchjahr;
+import de.jost_net.JVerein.keys.ArbeitseinsatzJahr;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -89,7 +89,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       return suchjahr;
     }
     ArrayList<Integer> jahre = new ArrayList<>();
-    for (Suchjahr jahr : Suchjahr.getList())
+    for (ArbeitseinsatzJahr jahr : ArbeitseinsatzJahr.getList())
     {
       jahre.add(jahr.getKey());
     }
@@ -168,7 +168,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     else
     {
       auswertungPart = new ArbeitseinsatzAuswertungPart(null,
-          Auswertung.MINDERLEISTUNG, (Integer) getSuchJahr().getValue());
+          ArbeitseinsatzAuswertung.MINDERLEISTUNG, (Integer) getSuchJahr().getValue());
       arbeitseinsatzueberpruefungList = auswertungPart
           .getArbeitseinsatzUeberpruefungList();
       return arbeitseinsatzueberpruefungList;
@@ -182,7 +182,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       if (arbeitseinsatzueberpruefungList != null)
       {
         saveSettings();
-        auswertungPart.refreshList(Auswertung.MINDERLEISTUNG,
+        auswertungPart.refreshList(ArbeitseinsatzAuswertung.MINDERLEISTUNG,
             (Integer) getSuchJahr().getValue());
       }
     }

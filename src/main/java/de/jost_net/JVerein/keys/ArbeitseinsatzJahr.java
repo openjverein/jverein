@@ -24,17 +24,17 @@ import de.willuhn.logging.Logger;
 /**
  * Arbeitseinsatzjahre
  */
-public class Suchjahr implements KeyEnum
+public class ArbeitseinsatzJahr implements KeyEnum
 {
 
   private int jahr;
 
-  public Suchjahr(int key)
+  public ArbeitseinsatzJahr(int key)
   {
     jahr = key;
   }
 
-  public static Suchjahr[] getList()
+  public static ArbeitseinsatzJahr[] getList()
   {
     try
     {
@@ -52,12 +52,12 @@ public class Suchjahr implements KeyEnum
 
       int vonjahr = von.get(Calendar.YEAR);
       int bisjahr = bis.get(Calendar.YEAR);
-      Suchjahr[] jahre = new Suchjahr[1 + bisjahr - vonjahr];
+      ArbeitseinsatzJahr[] jahre = new ArbeitseinsatzJahr[1 + bisjahr - vonjahr];
 
       int j = 0;
       for (int i = bisjahr; i >= vonjahr; i--)
       {
-        jahre[j] = new Suchjahr(i);
+        jahre[j] = new ArbeitseinsatzJahr(i);
         j++;
       }
       return jahre;
@@ -65,7 +65,7 @@ public class Suchjahr implements KeyEnum
     catch (RemoteException ex)
     {
       Logger.error("unable to build description", ex);
-      return new Suchjahr[0];
+      return new ArbeitseinsatzJahr[0];
     }
   }
 

@@ -796,8 +796,8 @@ public class VorlageUtil
         case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:
         case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:
         case AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL:
-          set.add(Filter.SUCHJAHR);
-          set.add(Filter.AUSWERTUNG);
+          set.add(Filter.ARBEITSEINSATZ_JAHR);
+          set.add(Filter.ARBEITSEINSATZ_AUSWERTUNG);
           map = new FilterMap().getDummyMap(set, map);
           break;
         case BUCHUNGSARTEN_DATEINAME:

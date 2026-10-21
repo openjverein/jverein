@@ -1,6 +1,6 @@
 package de.jost_net.JVerein.keys;
 
-public enum Auswertung implements KeyEnum
+public enum ArbeitseinsatzAuswertung implements KeyEnum
 {
   MINDERLEISTUNG(1, "Minderleistung"),
   PASSENDELEISTUNG(2, "Passende Leistung"),
@@ -11,7 +11,7 @@ public enum Auswertung implements KeyEnum
 
   private String text;
 
-  private Auswertung(int key, String text)
+  private ArbeitseinsatzAuswertung(int key, String text)
   {
     this.key = key;
     this.text = text;
