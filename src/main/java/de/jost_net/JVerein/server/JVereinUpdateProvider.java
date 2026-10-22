@@ -54,6 +54,8 @@ public class JVereinUpdateProvider
 
   public static final String MYSQL = DBSupportMySqlImpl.class.getName();
 
+  public static final String H14199 = DBSupportH14199Impl.class.getName();
+
   public static final String H2 = DBSupportH2Impl.class.getName();
 
   public JVereinUpdateProvider(Connection conn, ProgressMonitor progressmonitor)
@@ -314,6 +316,10 @@ public class JVereinUpdateProvider
   {
     String driver = JVereinDBService.SETTINGS.getString("database.driver",
         DBSupportH2Impl.class.getName());
+    if (driver.equals(H14199))
+    {
+      driver = H2;
+    }
     String sql = statements.get(driver);
     if (sql != null)
     {
@@ -6434,7 +6440,7 @@ public class JVereinUpdateProvider
   @SuppressWarnings("unused")
   private void update0322(Connection conn) throws ApplicationException
   {
-    if (driver.equals(H2))
+    if (driver.equals(H2) || driver.equals(H14199))
     {
       return;
     }
@@ -6609,7 +6615,7 @@ public class JVereinUpdateProvider
   @SuppressWarnings("unused")
   private void update0324(Connection conn) throws ApplicationException
   {
-    if (driver.equals(H2))
+    if (driver.equals(H2) || driver.equals(H14199))
     {
       return;
     }
@@ -7261,7 +7267,8 @@ public class JVereinUpdateProvider
   private String alterColumn(String _driver, String table, String column,
       String type)
   {
-    if (driver.equals(H2) && _driver.equals(H2))
+    if ((driver.equals(H2) && _driver.equals(H2))
+        || ((driver.equals(H14199) && _driver.equals(H14199))))
     {
       return "ALTER TABLE " + table + " ALTER COLUMN " + column + " " + type
           + ";\n";
