@@ -4,15 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 
-import de.jost_net.OBanToo.SEPA.SEPAException;
-
 import org.junit.jupiter.api.Test;
-import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
 
-class AbrechnungSEPATest
+import de.willuhn.util.ApplicationException;
+
+final class AbrechnungSEPATest
 {
   @Test
-  void test01() throws SEPAException
+  void addFasstVerwendungszweckeZusammen() throws ApplicationException
   {
     Zahler z1 = new Zahler();
     z1.setBetrag(BigDecimal.valueOf(1.00));
@@ -29,5 +28,4 @@ class AbrechnungSEPATest
     assertEquals("ZWECK 1 1.0, ZWECK 2 1.0, ZWECK 3 1.0",
         z1.getVerwendungszweck());
   }
-
 }

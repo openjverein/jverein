@@ -19,8 +19,7 @@ package de.jost_net.JVerein.gui.control.listener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
-import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.willuhn.jameica.gui.input.TextInput;
 
 /**
@@ -44,10 +43,10 @@ public class BICListener implements Listener
     {
       String bi = ((String) bic.getValue()).toUpperCase();
       bic.setValue(bi);
-      Bank b = Banken.getBankByBIC(bi);
-      if (b != null)
+      String bankname = IbanUtil.getBankname(bi);
+      if (bankname != null)
       {
-        bic.setComment(b.getBezeichnung());
+        bic.setComment(bankname);
       }
     }
   }

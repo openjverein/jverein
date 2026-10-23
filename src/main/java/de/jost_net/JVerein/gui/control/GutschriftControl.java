@@ -37,9 +37,7 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.server.Bug;
 import de.jost_net.JVerein.server.IGutschriftProvider;
-import de.jost_net.OBanToo.SEPA.BIC;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -637,9 +635,9 @@ public class GutschriftControl extends AbstractAbrechnungControl
       {
         try
         {
-          new IBAN(iban);
+          IbanUtil.checkIban(iban);
         }
-        catch (SEPAException e)
+        catch (ApplicationException e)
         {
           meldung = "Ungültige IBAN des Mitglieds!";
           if (bugs != null)
@@ -666,9 +664,9 @@ public class GutschriftControl extends AbstractAbrechnungControl
       {
         try
         {
-          new BIC(bic);
+          IbanUtil.checkBic(bic);
         }
-        catch (SEPAException e)
+        catch (ApplicationException e)
         {
           meldung = "Ungültige BIC des Mitglieds!";
           if (bugs != null)

@@ -16,8 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
+import de.jost_net.JVerein.util.IbanUtil;
+import de.speedbanking.iban.Iban;
+import de.speedbanking.iban.InvalidIbanException;
 import de.willuhn.jameica.hbci.rmi.Address;
 import de.willuhn.logging.Logger;
 
@@ -31,7 +32,7 @@ public class MitgliedAddress implements Address
 
   private String iban = null;
 
-  private IBAN ib = null;
+  private Iban ib = null;
 
   private String kategorie = null;
 
@@ -49,9 +50,9 @@ public class MitgliedAddress implements Address
     this.iban = iban;
     try
     {
-      ib = new IBAN(iban);
+      ib = IbanUtil.parse(iban);
     }
-    catch (SEPAException e)
+    catch (InvalidIbanException e)
     {
       Logger.error("Fehler: ", e);
     }
@@ -61,13 +62,13 @@ public class MitgliedAddress implements Address
   @Override
   public String getKontonummer()
   {
-    return ib.getKonto();
+    return ib.getAccountNumber();
   }
 
   @Override
   public String getBlz()
   {
-    return ib.getBLZ();
+    return ib.getBankCode();
   }
 
   @Override
