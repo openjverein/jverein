@@ -7267,7 +7267,7 @@ public class JVereinUpdateProvider
   private String alterColumn(String _driver, String table, String column,
       String type)
   {
-    if ((driver.equals(H2) && _driver.equals(H2)))
+    if (driver.equals(H2) && _driver.equals(H2))
     {
       return "ALTER TABLE " + table + " ALTER COLUMN " + column + " " + type
           + ";\n";
