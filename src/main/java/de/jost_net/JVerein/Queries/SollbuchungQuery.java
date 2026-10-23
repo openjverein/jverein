@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.Queries;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
-
-import com.ibm.icu.math.BigDecimal;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Differenz;

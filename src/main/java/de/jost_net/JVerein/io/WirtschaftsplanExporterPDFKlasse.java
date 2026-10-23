@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,7 +29,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.ibm.icu.math.BigDecimal;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import de.jost_net.JVerein.Einstellungen;
