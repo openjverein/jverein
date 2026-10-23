@@ -320,13 +320,6 @@ public class JVereinUpdateProvider
   public void execute(Connection conn, Map<String, String> statements,
       int version) throws ApplicationException
   {
-    String driver = JVereinDBService.SETTINGS.getString("database.driver",
-        DBSupportH2Impl.class.getName());
-    // H14199 wird genauso wie H2 behandelt
-    if (driver.equals(H14199))
-    {
-      driver = H2;
-    }
     String sql = statements.get(driver);
     if (sql != null)
     {
