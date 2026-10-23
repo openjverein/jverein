@@ -18,8 +18,6 @@ package de.jost_net.JVerein.server;
 
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,8 +41,6 @@ import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -278,26 +274,20 @@ public class RechnungImpl extends AbstractJVereinDBObject
     {
       return ist;
     }
-    DBService service = Einstellungen.getDBService();
-    String sql = "select sum(buchung.betrag) from buchung " + "join "
-        + Sollbuchung.TABLE_NAME + " on " + Sollbuchung.TABLE_NAME_ID + " = "
-        + Buchung.SOLLBUCHUNG + " where " + Sollbuchung.T_RECHNUNG + " = "
-        + this.getID();
-
-    ResultSetExtractor rs = new ResultSetExtractor()
+    ist = BigDecimal.ZERO;
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("buchung");
+    it.addColumn("sum(buchung.betrag) as summe");
+    it.join(Sollbuchung.TABLE_NAME,
+        Sollbuchung.TABLE_NAME_ID + " = " + Buchung.SOLLBUCHUNG);
+    it.addFilter(Sollbuchung.T_RECHNUNG + " = ?", getID());
+    if (it.hasNext())
     {
-
-      @Override
-      public Object extract(ResultSet rs) throws SQLException
+      PseudoDBObject o = it.next();
+      if (o != null && o.getAttribute("summe") != null)
       {
-        if (!rs.next())
-        {
-          return BigDecimal.ZERO;
-        }
-        return rs.getBigDecimal(1);
+        ist = o.getBigDecimal("summe");
       }
-    };
-    ist = (BigDecimal) service.execute(sql, new Object[] {}, rs);
+    }
     return ist;
   }
 
