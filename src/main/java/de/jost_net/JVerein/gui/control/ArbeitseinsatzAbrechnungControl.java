@@ -12,6 +12,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -105,7 +106,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
         .createObject(Zusatzbetrag.class, null);
     zusatzb.setStartdatum(new Date());
     zusatzb.setBuchungstext(settings.getString("buchungstext", ""));
-    zusatzb.setBetrag(0.0);
+    zusatzb.setBetrag(BigDecimal.ZERO);
     String zahlungsweg = settings.getString("zahlungsweg", "");
     if (zahlungsweg.length() > 0)
     {
@@ -133,7 +134,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       Mitglied m = (Mitglied) o.getAttribute(MITGLIED);
       Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
           .createObject(Zusatzbetrag.class, null);
-      zb.setBetrag(o.getDouble(GESAMTBETRAG) * -1);
+      zb.setBetrag(o.getBigDecimal(GESAMTBETRAG).negate());
       zb.setBuchungstext((String) part.getBuchungstext().getValue());
       zb.setFaelligkeit((Date) getFaelligkeit().getValue());
       zb.setIntervall(IntervallZusatzzahlung.KEIN);
@@ -168,7 +169,8 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     else
     {
       auswertungPart = new ArbeitseinsatzAuswertungPart(null,
-          ArbeitseinsatzAuswertung.MINDERLEISTUNG, (Integer) getSuchJahr().getValue());
+          ArbeitseinsatzAuswertung.MINDERLEISTUNG,
+          (Integer) getSuchJahr().getValue());
       arbeitseinsatzueberpruefungList = auswertungPart
           .getArbeitseinsatzUeberpruefungList();
       return arbeitseinsatzueberpruefungList;

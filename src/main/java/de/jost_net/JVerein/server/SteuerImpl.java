@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -55,13 +56,13 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   }
 
   @Override
-  public Double getSatz() throws RemoteException
+  public BigDecimal getSatz() throws RemoteException
   {
-    return (Double) getAttribute("satz");
+    return (BigDecimal) getAttribute("satz");
   }
 
   @Override
-  public void setSatz(Double satz) throws RemoteException
+  public void setSatz(BigDecimal satz) throws RemoteException
   {
     setAttribute("satz", satz);
   }
@@ -222,7 +223,7 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
       {
         throw new ApplicationException("Bitte Steuersatz eingeben");
       }
-      if (getSatz() < 0)
+      if (getSatz().signum() < 0)
       {
         throw new ApplicationException("Steuersatz nicht gültig");
       }

@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.ibm.icu.math.BigDecimal;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FilterControl;
@@ -197,7 +198,7 @@ public class MitgliedQuery
             {
               try
               {
-                Number n = Einstellungen.DECIMALFORMAT.parse(val);
+                Number n = Einstellungen.BIGDECIMALFORMAT.parse(val);
                 sql += "join zusatzfelder " + synonym + " on " + synonym
                     + ".mitglied = mitglied.id  and " + synonym
                     + ".FELDWAEHRUNG " + cond + " ? and " + synonym
@@ -337,22 +338,22 @@ public class MitgliedQuery
           bedingungen.add(value);
           break;
         case DIFFERENZ:
-          Double limit = (Double) filter.get(Filter.DIFFERENZ_LIMIT);
+          BigDecimal limit = (BigDecimal) filter.get(Filter.DIFFERENZ_LIMIT);
 
           if (limit == null)
           {
-            limit = 0.005d;
+            limit = BigDecimal.ZERO;
           }
           // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
-          limit = Math.abs(limit);
+          limit = limit.abs();
 
           ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
               Sollbuchung.TABLE_NAME);
           it.addColumn(Sollbuchung.T_MITGLIED + " as mid");
-          it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
-              + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
+          it.addColumn("sum(COALESCE(buchung.ist,0) - COALESCE("
+              + Sollbuchung.T_BETRAG + ",0)) as dif");
           it.leftJoin(
-              "(SELECT sum(COALESCE((betrag),0)) AS ist,"
+              "(SELECT sum(COALESCE((buchung.betrag),0)) AS ist,"
                   + Buchung.T_SOLLBUCHUNG + " FROM buchung GROUP BY "
                   + Buchung.T_SOLLBUCHUNG + ") AS buchung",
               Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
@@ -369,7 +370,7 @@ public class MitgliedQuery
           }
           if (value == Differenz.FEHLBETRAG)
           {
-            it.addHaving("dif < ?", -limit);
+            it.addHaving("dif < ?", limit.negate());
           }
           else
           {
@@ -469,8 +470,9 @@ public class MitgliedQuery
 
     DBIterator<Mitglied> list = Einstellungen.getDBService()
         .createList(Mitglied.class);
-    list.addFilter("id in (" + ids.stream().map(String::valueOf)
-        .collect(Collectors.joining(",")) + ")");
+    list.addFilter("id in ("
+        + ids.stream().map(String::valueOf).collect(Collectors.joining(","))
+        + ")");
     if (sort != null && !sort.isEmpty())
     {
       if (sort.equals("Name, Vorname"))

@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -185,23 +187,23 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    return (Double) getAttribute("betrag");
+    return (BigDecimal) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(Double betrag) throws RemoteException
+  public void setBetrag(BigDecimal betrag) throws RemoteException
   {
     setAttribute("betrag", betrag);
   }
 
   @Override
-  public Double getSteuersatz() throws RemoteException
+  public BigDecimal getSteuersatz() throws RemoteException
   {
     if (getSteuer() == null)
     {
-      return 0d;
+      return BigDecimal.ZERO;
     }
     return getSteuer().getSatz();
   }
@@ -213,27 +215,23 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getNettobetrag() throws RemoteException
+  public BigDecimal getNettobetrag() throws RemoteException
   {
-    Double betrag = (Double) getAttribute("betrag");
-    Double steuersatz = getSteuersatz();
+    BigDecimal betrag = (BigDecimal) getAttribute("betrag");
+    BigDecimal steuersatz = getSteuersatz();
     if (steuersatz == null || betrag == null)
     {
       return betrag;
     }
-    return betrag / (1 + steuersatz / 100);
+    return betrag.multiply(new BigDecimal("100")).divide(
+        (new BigDecimal("100")).add(steuersatz), 2, RoundingMode.HALF_UP);
   }
 
   @Override
-  public Double getSteuerbetrag() throws RemoteException
+  public BigDecimal getSteuerbetrag() throws RemoteException
   {
-    Double betrag = (Double) getAttribute("betrag");
-    Double steuersatz = getSteuersatz();
-    if (steuersatz == null || betrag == null)
-    {
-      return 0d;
-    }
-    return betrag * steuersatz / (100 + steuersatz);
+    BigDecimal betrag = (BigDecimal) getAttribute("betrag");
+    return betrag.subtract(getNettobetrag());
   }
 
   @Override

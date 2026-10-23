@@ -76,28 +76,28 @@ public class BeitragsgruppeControl extends FilterControl
       case GLEICHERTERMINFUERALLE:
       case MONATLICH12631:
         beitragsgruppeList.addColumn("Betrag", "betrag",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+            new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
         break;
       case FLEXIBEL:
         beitragsgruppeList.addColumn("Betrag monatlich", "betragmonatlich",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+            new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
         beitragsgruppeList.addColumn("Betrag viertelj.",
             "betragvierteljaehrlich",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+            new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
         beitragsgruppeList.addColumn("Betrag halbj.", "betraghalbjaehrlich",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+            new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
         beitragsgruppeList.addColumn("Betrag jährlich", "betragjaehrlich",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+            new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
         break;
     }
     if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
     {
       beitragsgruppeList.addColumn("Arbeitseinsatz-Stunden",
           "arbeitseinsatzstunden",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
       beitragsgruppeList.addColumn("Arbeitseinsatz-Stundensatz",
           "arbeitseinsatzbetrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     }
     if ((Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
@@ -173,7 +173,7 @@ public class BeitragsgruppeControl extends FilterControl
               ap.getNext();
               Altersstaffel a = it.next();
               text = text + "|"
-                  + Einstellungen.DECIMALFORMAT.format(a.getBetrag());
+                  + Einstellungen.BIGDECIMALFORMAT.format(a.getBetrag());
             }
             item.setText(1, text.substring(1));
           }

@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Map;
@@ -79,7 +80,8 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
     part = new ZusatzbetragPart(zusatzb, false);
     part.paint(parent);
 
-    final ZusatzbetragDetailControl control = new ZusatzbetragDetailControl(null);
+    final ZusatzbetragDetailControl control = new ZusatzbetragDetailControl(
+        null);
     LabelGroup group = new LabelGroup(parent, "Vorlagen");
     group.addLabelPair("Als Vorlage speichern", control.getVorlage());
 
@@ -102,7 +104,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
           Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
               .createObject(Zusatzbetrag.class, null);
           zb.setAusfuehrung((Date) part.getAusfuehrung().getValue());
-          zb.setBetrag((Double) part.getBetrag().getValue());
+          zb.setBetrag((BigDecimal) part.getBetrag().getValue());
           zb.setBuchungstext((String) part.getBuchungstext().getValue());
           zb.setEndedatum((Date) part.getEndedatum().getValue());
           zb.setFaelligkeit((Date) part.getFaelligkeit().getValue());
@@ -123,7 +125,8 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
           zb.store();
           count++;
         }
-        if (control.getVorlage().getValue().equals(ZusatzbetragDetailControl.MITDATUM)
+        if (control.getVorlage().getValue()
+            .equals(ZusatzbetragDetailControl.MITDATUM)
             || control.getVorlage().getValue()
                 .equals(ZusatzbetragDetailControl.OHNEDATUM))
         {
@@ -133,7 +136,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
               .getIntervall().getValue();
           zv.setIntervall(iz.getKey());
           zv.setBuchungstext((String) part.getBuchungstext().getValue());
-          zv.setBetrag((Double) part.getBetrag().getValue());
+          zv.setBetrag((BigDecimal) part.getBetrag().getValue());
           if (control.getVorlage().getValue()
               .equals(ZusatzbetragDetailControl.MITDATUM))
           {

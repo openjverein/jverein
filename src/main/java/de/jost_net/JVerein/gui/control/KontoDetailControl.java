@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,6 +32,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
@@ -58,7 +61,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
@@ -95,7 +97,7 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
 
   private AbstractInput afaart;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private IntegerNullInput nutzungsdauer;
 
@@ -103,11 +105,11 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
 
   private DateInput anschaffung;
 
-  private DecimalInput afastart;
+  private BigDecimalInput afastart;
 
-  private DecimalInput afadauer;
+  private BigDecimalInput afadauer;
 
-  private DecimalInput afarestwert;
+  private BigDecimalInput afarestwert;
 
   private SelectInput afamode;
 
@@ -284,12 +286,12 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
     k.setAnlagenartId(getSelectedAnlagenartId());
     k.setBuchungsklasseId(getSelectedBuchungsklasseId());
     k.setAfaartId(getSelectedAfaartId());
-    k.setBetrag((Double) getBetrag().getValue());
+    k.setBetrag((BigDecimal) getBetrag().getValue());
     k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
     k.setAnschaffung((Date) getAnschaffung().getValue());
-    k.setAfaStart((Double) getAfaStart().getValue());
-    k.setAfaDauer((Double) getAfaDauer().getValue());
-    k.setAfaRestwert((Double) getAfaRestwert().getValue());
+    k.setAfaStart((BigDecimal) getAfaStart().getValue());
+    k.setAfaDauer((BigDecimal) getAfaDauer().getValue());
+    k.setAfaRestwert((BigDecimal) getAfaRestwert().getValue());
     if (getAfaMode().getValue() == null)
       k.setAfaMode(null);
     else
@@ -700,14 +702,14 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
     }
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
-    betrag = new DecimalInput(getKonto().getBetrag(),
-        Einstellungen.DECIMALFORMAT);
+    betrag = new BigDecimalInput(getKonto().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     betrag.addListener(new Listener()
     {
       @Override
@@ -775,14 +777,14 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
     return kommentar;
   }
 
-  public DecimalInput getAfaStart() throws RemoteException
+  public BigDecimalInput getAfaStart() throws RemoteException
   {
     if (afastart != null)
     {
       return afastart;
     }
-    afastart = new DecimalInput(getKonto().getAfaStart(),
-        Einstellungen.DECIMALFORMAT);
+    afastart = new BigDecimalInput(getKonto().getAfaStart(),
+        Einstellungen.BIGDECIMALFORMAT);
     if (getKontoArt().getValue() != Kontoart.ANLAGE
         || getAfaMode().getValue() == null
         || ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
@@ -798,14 +800,14 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
     return afastart;
   }
 
-  public DecimalInput getAfaDauer() throws RemoteException
+  public BigDecimalInput getAfaDauer() throws RemoteException
   {
     if (afadauer != null)
     {
       return afadauer;
     }
-    afadauer = new DecimalInput(getKonto().getAfaDauer(),
-        Einstellungen.DECIMALFORMAT);
+    afadauer = new BigDecimalInput(getKonto().getAfaDauer(),
+        Einstellungen.BIGDECIMALFORMAT);
     if (getKontoArt().getValue() != Kontoart.ANLAGE
         || getAfaMode().getValue() == null
         || ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
@@ -821,14 +823,14 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
     return afadauer;
   }
 
-  public DecimalInput getAfaRestwert() throws RemoteException
+  public BigDecimalInput getAfaRestwert() throws RemoteException
   {
     if (afarestwert != null)
     {
       return afarestwert;
     }
-    afarestwert = new DecimalInput(getKonto().getAfaRestwert(),
-        Einstellungen.DECIMALFORMAT);
+    afarestwert = new BigDecimalInput(getKonto().getAfaRestwert(),
+        Einstellungen.BIGDECIMALFORMAT);
     if (getKontoArt().getValue() != Kontoart.ANLAGE)
     {
       afarestwert.setValue(null);
@@ -1007,7 +1009,7 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
         getAnschaffung().enable();
         getAfaRestwert().enable();
         getAfaRestwert().setValue(
-            (Double) Einstellungen.getEinstellung(Property.AFARESTWERT));
+            (BigDecimal) Einstellungen.getEinstellung(Property.AFARESTWERT));
         if (getBetrag().getValue() == null)
           getAutobutton().setEnabled(true);
         getAfabutton().setEnabled(false);
@@ -1099,7 +1101,7 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
 
   private void handleAuto()
   {
-    Double betrag = 0d;
+    BigDecimal betrag = BigDecimal.ZERO;
     DBService service;
     try
     {
@@ -1117,7 +1119,7 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
       while (buchungenIt.hasNext())
       {
         b = (Buchung) buchungenIt.next();
-        betrag += b.getBetrag();
+        betrag = betrag.add(b.getBetrag());
         d = b.getDatum();
       }
       getBetrag().setValue(betrag);
@@ -1134,7 +1136,7 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
   {
     try
     {
-      Double betrag = (Double) getBetrag().getValue();
+      BigDecimal betrag = (BigDecimal) getBetrag().getValue();
       if (betrag == null)
       {
         GUI.getStatusBar().setErrorText("Anlagenwert fehlt, bitte eingeben!");
@@ -1153,7 +1155,7 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
         GUI.getStatusBar().setErrorText("Nutzungsdauer fehlt, bitte eingeben!");
         return;
       }
-      Double restwert = (Double) getAfaRestwert().getValue();
+      BigDecimal restwert = (BigDecimal) getAfaRestwert().getValue();
       if (restwert == null)
       {
         GUI.getStatusBar().setErrorText("Restwert fehlt, bitte eingeben!");
@@ -1176,22 +1178,32 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
       if (nutzungsdauer == 0)
       {
         getAfaStart().setValue(betrag);
-        getAfaDauer().setValue(0);
+        getAfaDauer().setValue(BigDecimal.ZERO);
       }
       else if (nutzungsdauer == 1)
       {
-        Double start = ((betrag - restwert) * monate) / 12;
+        BigDecimal start = betrag.subtract(restwert)
+            .multiply(new BigDecimal(monate))
+            .divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP);
         getAfaStart().setValue(start);
-        getAfaDauer().setValue(betrag - start - restwert);
+        getAfaDauer().setValue(betrag.subtract(start).subtract(restwert));
       }
       else
       {
         if (monate == 12)
-          getAfaStart().setValue(((betrag - restwert)) / (nutzungsdauer));
+        {
+          getAfaStart().setValue(betrag.subtract(restwert)
+              .divide(new BigDecimal(nutzungsdauer), 2, RoundingMode.HALF_UP));
+        }
         else
-          getAfaStart()
-              .setValue(((betrag - restwert) * monate) / (nutzungsdauer * 12));
-        getAfaDauer().setValue((betrag - restwert) / nutzungsdauer);
+        {
+          getAfaStart().setValue(
+              betrag.subtract(restwert).multiply(new BigDecimal(monate)).divide(
+                  new BigDecimal(nutzungsdauer).multiply(new BigDecimal("12")),
+                  2, RoundingMode.HALF_UP));
+        }
+        getAfaDauer().setValue(betrag.subtract(restwert)
+            .divide(new BigDecimal(nutzungsdauer), 2, RoundingMode.HALF_UP));
       }
     }
     catch (RemoteException | ParseException e)

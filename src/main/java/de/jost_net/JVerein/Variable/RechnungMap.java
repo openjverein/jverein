@@ -16,8 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +33,7 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.Datum;
+import de.jost_net.JVerein.util.JVBigDecimalFormat;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
@@ -62,27 +63,30 @@ public class RechnungMap extends AbstractMap
     ArrayList<String> steuersatz = new ArrayList<>();
     ArrayList<String> steuerbetrag = new ArrayList<>();
     ArrayList<String> betrag = new ArrayList<>();
-    HashMap<Double, Double> steuerMap = new HashMap<>();
-    HashMap<Double, Double> steuerBetragMap = new HashMap<>();
+    HashMap<BigDecimal, BigDecimal> steuerMap = new HashMap<>();
+    HashMap<BigDecimal, BigDecimal> steuerBetragMap = new HashMap<>();
 
-    DecimalFormat format = new DecimalFormat("0.##");
-    double summe = 0;
+    JVBigDecimalFormat format = Einstellungen.BIGDECIMALFORMAT;
+    BigDecimal summe = BigDecimal.ZERO;
     for (SollbuchungPosition sp : re.getSollbuchungPositionList())
     {
       buchungDatum.add(new JVDateFormatTTMMJJJJ().format(sp.getDatum()));
       zweck.add(sp.getZweck());
-      nettobetrag.add(Einstellungen.DECIMALFORMAT.format(sp.getNettobetrag()));
+      nettobetrag
+          .add(Einstellungen.BIGDECIMALFORMAT.format(sp.getNettobetrag()));
       steuersatz.add("(" + format.format(sp.getSteuersatz()) + "%)");
       steuerbetrag
-          .add(Einstellungen.DECIMALFORMAT.format(sp.getSteuerbetrag()));
-      betrag.add(Einstellungen.DECIMALFORMAT.format(sp.getBetrag()));
-      summe += sp.getBetrag();
-      if (sp.getSteuersatz() > 0)
+          .add(Einstellungen.BIGDECIMALFORMAT.format(sp.getSteuerbetrag()));
+      betrag.add(Einstellungen.BIGDECIMALFORMAT.format(sp.getBetrag()));
+      summe = summe.add(sp.getBetrag());
+      if (sp.getSteuersatz().signum() > 0)
       {
-        Double steuer = steuerMap.getOrDefault(sp.getSteuersatz(), 0d);
-        steuerMap.put(sp.getSteuersatz(), steuer + sp.getSteuerbetrag());
-        Double brutto = steuerBetragMap.getOrDefault(sp.getSteuersatz(), 0d);
-        steuerBetragMap.put(sp.getSteuersatz(), brutto + sp.getBetrag());
+        BigDecimal steuer = steuerMap.getOrDefault(sp.getSteuersatz(),
+            BigDecimal.ZERO);
+        steuerMap.put(sp.getSteuersatz(), steuer.add(sp.getSteuerbetrag()));
+        BigDecimal brutto = steuerBetragMap.getOrDefault(sp.getSteuersatz(),
+            BigDecimal.ZERO);
+        steuerBetragMap.put(sp.getSteuersatz(), brutto.add(sp.getBetrag()));
       }
     }
     if (buchungDatum.size() > 1 || steuerMap.size() > 0)
@@ -92,20 +96,20 @@ public class RechnungMap extends AbstractMap
     }
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
-      for (Double satz : steuerMap.keySet())
+      for (BigDecimal satz : steuerMap.keySet())
       {
         zweck.add("inkl. " + satz + "% USt. von "
-            + Einstellungen.DECIMALFORMAT.format(steuerBetragMap.get(satz)));
-        betrag.add(Einstellungen.DECIMALFORMAT.format(steuerMap.get(satz)));
+            + Einstellungen.BIGDECIMALFORMAT.format(steuerBetragMap.get(satz)));
+        betrag.add(Einstellungen.BIGDECIMALFORMAT.format(steuerMap.get(satz)));
       }
     }
     if (buchungDatum.size() > 1 || steuerMap.size() > 0)
     {
       zweck.add("Summe");
-      betrag.add(Einstellungen.DECIMALFORMAT.format(summe));
+      betrag.add(Einstellungen.BIGDECIMALFORMAT.format(summe));
     }
 
-    Double ist = re.getIstSumme();
+    BigDecimal ist = re.getIstSumme();
     for (RechnungVar var : RechnungVar.values())
     {
       Object value = null;
@@ -146,21 +150,21 @@ public class RechnungMap extends AbstractMap
           value = String.join("\n", betrag);
           break;
         case SUMME:
-          value = Einstellungen.DECIMALFORMAT.format(summe);
+          value = Einstellungen.BIGDECIMALFORMAT.format(summe);
           break;
         case IST:
-          value = Einstellungen.DECIMALFORMAT.format(ist);
+          value = Einstellungen.BIGDECIMALFORMAT.format(ist);
           break;
         case MK_SUMME_OFFEN:
         case SUMME_OFFEN:
-          value = Einstellungen.DECIMALFORMAT.format(summe - ist);
+          value = Einstellungen.BIGDECIMALFORMAT.format(summe.subtract(ist));
           break;
         case QRCODE_SUMME_OFFEN:
-          value = summe - ist;
+          value = summe.subtract(ist);
           break;
         case MK_STAND:
         case STAND:
-          value = Einstellungen.DECIMALFORMAT.format(ist - summe);
+          value = Einstellungen.BIGDECIMALFORMAT.format(ist.subtract(summe));
           // Diese Felder gibt es nicht mehr in der Form, damit bei alten
           // Rechnungs-Formularen nicht der Variablennamen steht hier trotzdem
           // hinzufügen

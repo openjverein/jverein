@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -231,14 +232,9 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    Double ret = (Double) getAttribute("betrag");
-    if (ret == null)
-    {
-      ret = Double.valueOf(0);
-    }
-    return ret;
+    return (BigDecimal) getAttribute("betrag");
   }
 
   @Override
@@ -289,7 +285,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setBetrag(Double betrag) throws RemoteException
+  public void setBetrag(BigDecimal betrag) throws RemoteException
   {
     setAttribute("betrag", betrag);
   }
@@ -430,7 +426,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   {
     if (buchung != null)
     {
-      double betrag = 0.0;
+      BigDecimal betrag = BigDecimal.ZERO;
       if (buchungen == null)
       {
         buchungen = new ArrayList<>();
@@ -438,7 +434,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
       buchungen.add(buchung);
       for (Buchung b : buchungen)
       {
-        betrag += b.getBetrag();
+        betrag = betrag.add(b.getBetrag());
       }
       setBetrag(betrag);
       if (getSpendedatum() != null
@@ -467,7 +463,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
     if (buchungen != null)
     {
       buchungen.clear();
-      setBetrag(0.0);
+      setBetrag(BigDecimal.ZERO);
     }
     if (buchung != null)
     {
@@ -495,12 +491,12 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
           .createList(Buchung.class);
       it.addFilter("spendenbescheinigung = ?", getID());
       it.setOrder("ORDER BY datum asc");
-      double summe = 0.0;
+      BigDecimal summe = BigDecimal.ZERO;
       while (it.hasNext())
       {
         Buchung bu = it.next();
         buchungen.add(bu);
-        summe += bu.getBetrag();
+        summe = summe.add(bu.getBetrag());
       }
       if (!buchungen.isEmpty())
       {

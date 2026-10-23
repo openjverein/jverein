@@ -58,9 +58,9 @@ import de.willuhn.util.ApplicationException;
 
 public class Ueberweisung
 {
-  private Double betrag = null;
+  private BigDecimal betrag = null;
 
-  public Ueberweisung(Double betrag)
+  public Ueberweisung(BigDecimal betrag)
   {
     this.betrag = betrag;
   }
@@ -126,12 +126,12 @@ public class Ueberweisung
       if (betrag != null)
       {
         ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),
-            (BigDecimal.valueOf(betrag)).toString());
+            betrag.toString());
       }
       else
       {
         ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),
-            (BigDecimal.valueOf(ls.getBetrag())).toString());
+            ls.getBetrag().toString());
       }
       ls_properties.setProperty(SepaUtil.insertIndex("btg.curr", counter),
           HBCIProperties.CURRENCY_DEFAULT_DE);
@@ -204,11 +204,11 @@ public class Ueberweisung
             .createObject(AuslandsUeberweisung.class, null);
         if (betrag != null)
         {
-          ue.setBetrag(betrag);
+          ue.setBetrag(betrag.doubleValue());
         }
         else
         {
-          ue.setBetrag(ls.getBetrag());
+          ue.setBetrag(ls.getBetrag().doubleValue());
         }
         HibiscusAddress ad = (HibiscusAddress) service
             .createObject(HibiscusAddress.class, null);

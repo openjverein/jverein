@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,7 +44,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
 
   private static final long serialVersionUID = -1234L;
 
-  private Double ist = null;
+  private BigDecimal ist = null;
 
   public SollbuchungImpl() throws RemoteException
   {
@@ -330,19 +331,19 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    return (Double) super.getAttribute(BETRAG);
+    return (BigDecimal) super.getAttribute(BETRAG);
   }
 
   @Override
-  public void setBetrag(Double d) throws RemoteException
+  public void setBetrag(BigDecimal d) throws RemoteException
   {
-    setAttribute(BETRAG, Math.round(d * 100) / 100d);
+    setAttribute(BETRAG, d);
   }
 
   @Override
-  public Double getIstSumme() throws RemoteException
+  public BigDecimal getIstSumme() throws RemoteException
   {
     if (ist != null)
     {
@@ -360,12 +361,12 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
       {
         if (!rs.next())
         {
-          return Double.valueOf(0.0d);
+          return BigDecimal.ZERO;
         }
-        return Double.valueOf(rs.getDouble(1));
+        return rs.getBigDecimal(1);
       }
     };
-    ist = Double.valueOf((Double) service.execute(sql, new Object[] {}, rs));
+    ist = (BigDecimal) service.execute(sql, new Object[] {}, rs);
     return ist;
   }
 

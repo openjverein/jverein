@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -42,7 +44,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -60,9 +61,9 @@ public class JahresabschlussDetailControl extends KontensaldoControl
 
   private CheckboxInput afaberechnung;
 
-  private DecimalInput verwendungsrueckstand;
+  private BigDecimalInput verwendungsrueckstand;
 
-  private DecimalInput zwanghafteweitergabe;
+  private BigDecimalInput zwanghafteweitergabe;
 
   private DateLabel datumvon;
 
@@ -230,7 +231,7 @@ public class JahresabschlussDetailControl extends KontensaldoControl
     return afaberechnung;
   }
 
-  public DecimalInput getVerwendungsrueckstand()
+  public BigDecimalInput getVerwendungsrueckstand()
       throws RemoteException, ParseException
   {
     if (verwendungsrueckstand != null)
@@ -240,19 +241,20 @@ public class JahresabschlussDetailControl extends KontensaldoControl
 
     if (getJahresabschluss().getVerwendungsrueckstand() == null)
     {
-      verwendungsrueckstand = new DecimalInput(Einstellungen.DECIMALFORMAT);
+      verwendungsrueckstand = new BigDecimalInput(
+          Einstellungen.BIGDECIMALFORMAT);
     }
     else
     {
-      verwendungsrueckstand = new DecimalInput(
+      verwendungsrueckstand = new BigDecimalInput(
           getJahresabschluss().getVerwendungsrueckstand(),
-          Einstellungen.DECIMALFORMAT);
+          Einstellungen.BIGDECIMALFORMAT);
     }
     verwendungsrueckstand.setEnabled(false);
     return verwendungsrueckstand;
   }
 
-  public DecimalInput getZwanghafteWeitergabe()
+  public BigDecimalInput getZwanghafteWeitergabe()
       throws RemoteException, ParseException
   {
     if (zwanghafteweitergabe != null)
@@ -262,13 +264,14 @@ public class JahresabschlussDetailControl extends KontensaldoControl
 
     if (getJahresabschluss().getZwanghafteWeitergabe() == null)
     {
-      zwanghafteweitergabe = new DecimalInput(Einstellungen.DECIMALFORMAT);
+      zwanghafteweitergabe = new BigDecimalInput(
+          Einstellungen.BIGDECIMALFORMAT);
     }
     else
     {
-      zwanghafteweitergabe = new DecimalInput(
+      zwanghafteweitergabe = new BigDecimalInput(
           getJahresabschluss().getZwanghafteWeitergabe(),
-          Einstellungen.DECIMALFORMAT);
+          Einstellungen.BIGDECIMALFORMAT);
     }
     zwanghafteweitergabe.setEnabled(false);
     return zwanghafteweitergabe;
@@ -314,7 +317,7 @@ public class JahresabschlussDetailControl extends KontensaldoControl
           String ktonr = (String) z.getAttribute(KONTO_NUMMER);
           if (ktonr != null && ktonr.length() > 0)
           {
-            Double endbestand = (Double) z.getAttribute(ENDBESTAND);
+            BigDecimal endbestand = (BigDecimal) z.getAttribute(ENDBESTAND);
             Anfangsbestand anf = (Anfangsbestand) Einstellungen.getDBService()
                 .createObject(Anfangsbestand.class, null);
             String konto = z.getInteger(KONTO_ID).toString();
@@ -385,24 +388,24 @@ public class JahresabschlussDetailControl extends KontensaldoControl
         {
           ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
               "buchung");
-          Double betrag = 0d;
+          BigDecimal betrag = BigDecimal.ZERO;
           it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
           it.addFilter("konto = ?", konto.getID());
           it.addFilter("IFNULL(buchungsart.abschreibung, 0) IS FALSE");
           it.addFilter("datum <= ?", bisgj);
           it.addColumn("sum(buchung.betrag) as summe");
           PseudoDBObject o = it.next();
-          if (o != null && o.getDouble("summe") != null)
+          if (o != null && o.getBigDecimal("summe") != null)
           {
-            betrag = o.getDouble("summe");
+            betrag = o.getBigDecimal("summe");
           }
-          if (Math.abs(betrag - konto.getBetrag()) >= 0.01d)
+          if (betrag.compareTo(konto.getBetrag()) != 0)
           {
             text += "Für das Anlagenkonto mit der Nummer " + konto.getNummer()
                 + " stimmt die Summe der Buchungen ("
-                + Einstellungen.DECIMALFORMAT.format(betrag)
+                + Einstellungen.BIGDECIMALFORMAT.format(betrag)
                 + ") nicht mit den Anschaffungskosten ("
-                + Einstellungen.DECIMALFORMAT.format(konto.getBetrag())
+                + Einstellungen.BIGDECIMALFORMAT.format(konto.getBetrag())
                 + ") überein. Bitte auf Plausibilität prüfen!\n";
           }
         }

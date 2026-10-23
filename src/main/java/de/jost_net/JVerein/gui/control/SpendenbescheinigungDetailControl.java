@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
@@ -47,7 +49,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
@@ -81,7 +82,7 @@ public class SpendenbescheinigungDetailControl extends VorZurueckControl
 
   private DateInput bescheinigungsdatum;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private FormularInput formular;
 
@@ -257,14 +258,14 @@ public class SpendenbescheinigungDetailControl extends VorZurueckControl
     return bescheinigungsdatum;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
-    betrag = new DecimalInput(getSpendenbescheinigung().getBetrag(),
-        Einstellungen.DECIMALFORMAT);
+    betrag = new BigDecimalInput(getSpendenbescheinigung().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     betrag.setEnabled(false);
     return betrag;
   }
@@ -417,7 +418,7 @@ public class SpendenbescheinigungDetailControl extends VorZurueckControl
     spb.setZeile7((String) getZeile7().getValue());
     spb.setSpendedatum((Date) getSpendedatum().getValue());
     spb.setBescheinigungsdatum((Date) getBescheinigungsdatum().getValue());
-    spb.setBetrag((Double) getBetrag().getValue());
+    spb.setBetrag((BigDecimal) getBetrag().getValue());
     spb.setBezeichnungSachzuwendung(
         (String) getBezeichnungSachzuwendung().getValue());
     spb.setFormular((Formular) getFormular().getValue());

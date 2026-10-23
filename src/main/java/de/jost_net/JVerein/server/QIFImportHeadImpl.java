@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -71,18 +72,15 @@ public class QIFImportHeadImpl extends AbstractDBObject implements QIFImportHead
   }
 
   @Override
-  public void setStartSaldo(double betrag) throws RemoteException
+  public void setStartSaldo(BigDecimal betrag) throws RemoteException
   {
-    setAttribute(COL_START_SALDO, Double.valueOf(betrag));
+    setAttribute(COL_START_SALDO, betrag);
   }
 
   @Override
-  public double getStartSaldo() throws RemoteException
+  public BigDecimal getStartSaldo() throws RemoteException
   {
-    Double wert = (Double) getAttribute(COL_START_SALDO);
-    if (null == wert)
-      return 0;
-    return wert.doubleValue();
+    return (BigDecimal) getAttribute(COL_START_SALDO);
   }
 
   @Override

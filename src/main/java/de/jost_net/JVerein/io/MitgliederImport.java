@@ -360,8 +360,7 @@ public class MitgliederImport implements Importer
             && m.getBeitragsgruppe()
                 .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
         {
-          String externeZahlerId = ZeilenDurchlauf
-              .getExterneZahlerId(results);
+          String externeZahlerId = ZeilenDurchlauf.getExterneZahlerId(results);
           if (externeZahlerId != null)
           {
             if (!(Boolean) Einstellungen
@@ -443,7 +442,7 @@ public class MitgliederImport implements Importer
                 .getString("individuellerbeitrag");
             if (individuellerBeitrag != null)
             {
-              m.setIndividuellerBeitrag(Double.valueOf(individuellerBeitrag));
+              m.setIndividuellerBeitrag(new BigDecimal(individuellerBeitrag));
             }
             else
             {

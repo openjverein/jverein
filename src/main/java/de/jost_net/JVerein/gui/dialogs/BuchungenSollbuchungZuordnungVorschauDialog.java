@@ -132,7 +132,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog
     buchungList.addColumn("Buchungsnummer", "buchung_id");
     buchungList.addColumn("Name Buchung", "buchung_name");
     buchungList.addColumn("Betrag", "buchung_betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     buchungList.addColumn("Verwendungszweck", "buchung_zweck",
         value -> value == null ? null
             : value.toString().replaceAll("\r\n", " ").replaceAll("\r", " ")

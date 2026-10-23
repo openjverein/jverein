@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.ibm.icu.math.BigDecimal;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import de.jost_net.JVerein.Einstellungen;
@@ -136,8 +137,8 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
       // so ausgewählt.
       if ((params.getWirtschaftsplan_ist_anzeigen()
           || wirtschaftsplaene[i].getDatumBis().before(new Date()))
-          && (Math.abs(wirtschaftsplaene[i].getIstEinnahme()) >= 0.01d
-              || Math.abs(wirtschaftsplaene[i].getIstAusgabe()) >= 0.01d))
+          && (wirtschaftsplaene[i].getIstEinnahme().signum() != 0
+              || wirtschaftsplaene[i].getIstAusgabe().signum() != 0))
       {
         hatIst.add(wirtschaftsplaene[i]);
         reporter.addHeaderColumn("Ist", Element.ALIGN_CENTER, 50,
@@ -299,18 +300,18 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
       throws RemoteException
   {
     int n = 0;
-    Double[][] summen = new Double[wirtschaftsplaene.length][2];
+    BigDecimal[][] summen = new BigDecimal[wirtschaftsplaene.length][2];
     final Boolean ohneBuchungsartUnterdruecken = (Boolean) Einstellungen
         .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG);
 
     // Daten in Map sammeln
     // Map in der Form <Buchungsart, <Node,[Plan Nummer][Soll = 0|Ist = 1]>>
-    HashMap<WirtschaftsplanNode, HashMap<String, Double[][]>> map = new HashMap<>();
+    HashMap<WirtschaftsplanNode, HashMap<String, BigDecimal[][]>> map = new HashMap<>();
 
     for (Wirtschaftsplan plan : wirtschaftsplaene)
     {
-      summen[n][0] = 0d;
-      summen[n][1] = 0d;
+      summen[n][0] = BigDecimal.ZERO;
+      summen[n][1] = BigDecimal.ZERO;
       for (int art : arten)
       {
         WirtschaftsplanNode buchungsklasseNode = new WirtschaftsplanNode(klasse,

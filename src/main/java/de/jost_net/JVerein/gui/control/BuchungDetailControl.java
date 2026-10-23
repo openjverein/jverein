@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +38,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
@@ -78,7 +80,6 @@ import de.willuhn.jameica.gui.formatter.TableFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
@@ -122,7 +123,7 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
 
   private Input name;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private TextAreaInput zweck;
 
@@ -224,7 +225,7 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
       b.setIban(ib.replace(" ", ""));
     if (getBetrag().getValue() != null)
     {
-      b.setBetrag((Double) getBetrag().getValue());
+      b.setBetrag((BigDecimal) getBetrag().getValue());
     }
     else
     {
@@ -313,7 +314,8 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
       if (null != konto)
         return konto.getID();
     }
-    return settings.getString(settingsprefix + BuchungDetailControl.KONTO_ID, "");
+    return settings.getString(settingsprefix + BuchungDetailControl.KONTO_ID,
+        "");
   }
 
   public Input getAuszugsnummer()
@@ -369,7 +371,7 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
     return name;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
@@ -378,12 +380,12 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
 
     if (getBuchung().isNewObject() && getBuchung().isBetragNull())
     {
-      betrag = new DecimalInput(Einstellungen.DECIMALFORMAT);
+      betrag = new BigDecimalInput(Einstellungen.BIGDECIMALFORMAT);
     }
     else
     {
-      betrag = new DecimalInput(getBuchung().getBetrag(),
-          Einstellungen.DECIMALFORMAT);
+      betrag = new BigDecimalInput(getBuchung().getBetrag(),
+          Einstellungen.BIGDECIMALFORMAT);
     }
     betrag.setMandatory(true);
     betrag.setEnabled(editable);
@@ -484,7 +486,7 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
         sollb != null
             ? Adressaufbereitung.getNameVorname(sollb.getMitglied()) + ", "
                 + new JVDateFormatTTMMJJJJ().format(sollb.getDatum()) + ", "
-                + Einstellungen.DECIMALFORMAT.format(sollb.getBetrag())
+                + Einstellungen.BIGDECIMALFORMAT.format(sollb.getBetrag())
             : "",
         sollbuchungDialog);
     sollbuchungInput.disableClientControl();
@@ -541,7 +543,7 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
 
           sollb = (Sollbuchung) Einstellungen.getDBService()
               .createObject(Sollbuchung.class, null);
-          sollb.setBetrag((Double) getBetrag().getValue());
+          sollb.setBetrag((BigDecimal) getBetrag().getValue());
           sollb.setDatum((Date) getDatum().getValue());
           sollb.setMitglied(mitglied);
           sollb.setZahler(mitglied);
@@ -571,7 +573,7 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
           sollb = (Sollbuchung) event.data;
           String name = (String) getName().getValue();
           String zweck1 = (String) getZweck().getValue();
-          Double betrag = (Double) getBetrag().getValue();
+          BigDecimal betrag = (BigDecimal) getBetrag().getValue();
           if ((name == null || name.length() == 0)
               && (zweck1 == null || zweck1.length() == 0) && betrag == null)
           {
@@ -604,7 +606,7 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
         {
           b = Adressaufbereitung.getNameVorname(sollb.getMitglied()) + ", "
               + new JVDateFormatTTMMJJJJ().format(sollb.getDatum()) + ", "
-              + Einstellungen.DECIMALFORMAT.format(sollb.getBetrag());
+              + Einstellungen.BIGDECIMALFORMAT.format(sollb.getBetrag());
         }
         getSollbuchungInput().setText(b);
         DBTransaction.commit();
@@ -783,7 +785,7 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
               Buchung b = (Buchung) Einstellungen.getDBService()
                   .createObject(Buchung.class, null);
               b.setAuszugsnummer(master.getAuszugsnummer());
-              b.setBetrag(ssub.getBetrag() * -1);
+              b.setBetrag(new BigDecimal(ssub.getBetrag()).negate());
               b.setBlattnummer(master.getBlattnummer());
               b.setBuchungsartId(master.getBuchungsartId());
               b.setBuchungsklasseId(master.getBuchungsklasseId());
@@ -994,11 +996,11 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
       splitbuchungsList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
       splitbuchungsList.addColumn("Betrag", "betrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
       if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
         splitbuchungsList.addColumn("Netto", "netto",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+            new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
         if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
         {
           splitbuchungsList.addColumn("Steuer", "steuer", o -> {

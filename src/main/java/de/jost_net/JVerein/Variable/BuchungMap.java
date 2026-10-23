@@ -55,7 +55,7 @@ public class BuchungMap extends AbstractMap
               : "";
           break;
         case BETRAGINWORTEN:
-          Double ganzbetrag = bu.getBetrag() * 100;
+          Double ganzbetrag = bu.getBetrag().doubleValue() * 100;
           long euro = bu.getBetrag().longValue();
           long cent = Math.abs(ganzbetrag.longValue() - 100 * euro);
           try

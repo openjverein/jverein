@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -33,9 +34,9 @@ public interface Anfangsbestand extends JVereinDBObject
 
   public void setDatum(Date datum) throws RemoteException;
 
-  public void setBetrag(Double betrag) throws RemoteException;
+  public void setBetrag(BigDecimal betrag) throws RemoteException;
 
-  public Double getBetrag() throws RemoteException;
+  public BigDecimal getBetrag() throws RemoteException;
 
   public Jahresabschluss getJahresabschluss() throws RemoteException;
 

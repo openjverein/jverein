@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 import de.willuhn.datasource.rmi.DBObject;
@@ -7,9 +8,9 @@ import de.willuhn.datasource.rmi.DBObject;
 public interface Altersstaffel extends DBObject
 {
 
-  public Double getBetrag() throws RemoteException;
+  public BigDecimal getBetrag() throws RemoteException;
 
-  public void setBetrag(Double betrag) throws RemoteException;
+  public void setBetrag(BigDecimal betrag) throws RemoteException;
 
   public Beitragsgruppe getBeitragsgruppe() throws RemoteException;
 

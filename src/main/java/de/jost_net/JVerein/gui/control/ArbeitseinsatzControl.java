@@ -66,7 +66,7 @@ public class ArbeitseinsatzControl extends FilterControl
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     arbeitseinsatzList.addColumn("Stunden", "stunden",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     arbeitseinsatzList.addColumn("Bemerkung", "bemerkung");
     arbeitseinsatzList.setAction(
         new EditAction(ArbeitseinsatzDetailView.class, arbeitseinsatzList));

@@ -298,7 +298,7 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
               Zusatzfelder z = it.next();
               try
               {
-                Number doub = Einstellungen.DECIMALFORMAT.parse(z.getFeld());
+                Number doub = Einstellungen.BIGDECIMALFORMAT.parse(z.getFeld());
                 if (!checkOnly)
                 {
                   Zusatzfelder z1 = (Zusatzfelder) Einstellungen.getDBService()
@@ -391,7 +391,7 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
                 Zusatzfelder z1 = (Zusatzfelder) Einstellungen.getDBService()
                     .createObject(Zusatzfelder.class, z.getID());
                 z1.setFeld(
-                    Einstellungen.DECIMALFORMAT.format(z.getFeldWaehrung()));
+                    Einstellungen.BIGDECIMALFORMAT.format(z.getFeldWaehrung()));
                 z1.setFeldWaehrung(null);
                 z1.store();
               }

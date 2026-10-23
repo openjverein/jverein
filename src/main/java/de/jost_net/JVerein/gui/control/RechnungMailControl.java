@@ -188,9 +188,9 @@ public class RechnungMailControl extends DruckMailControl
       }
       String dokument = "Rechnung " + r.getID() + " vom "
           + Datum.formatDate(r.getDatum()) + " über "
-          + Einstellungen.DECIMALFORMAT.format(r.getBetrag())
-          + "€ und Fehlbetrag " + Einstellungen.DECIMALFORMAT
-              .format((r.getBetrag() - r.getIstSumme()))
+          + Einstellungen.BIGDECIMALFORMAT.format(r.getBetrag())
+          + "€ und Fehlbetrag " + Einstellungen.BIGDECIMALFORMAT
+              .format((r.getBetrag().subtract(r.getIstSumme())))
           + "€";
       liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
           m.getVorname(), m.getMitgliedstyp()));

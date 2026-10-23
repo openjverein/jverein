@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
+import com.ibm.icu.math.BigDecimal;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Differenz;
@@ -186,10 +187,9 @@ public class SollbuchungQuery
         {
           String namenidsJoined = namenids.stream().map(String::valueOf)
               .collect(Collectors.joining(","));
-          sollbuchungen.addFilter("(" + Sollbuchung.T_ZAHLER + " in ("
-              + namenidsJoined + ") OR "
-              + Sollbuchung.T_MITGLIED + " in ("
-              + namenidsJoined + "))");
+          sollbuchungen.addFilter(
+              "(" + Sollbuchung.T_ZAHLER + " in (" + namenidsJoined + ") OR "
+                  + Sollbuchung.T_MITGLIED + " in (" + namenidsJoined + "))");
         }
       }
 
@@ -289,11 +289,9 @@ public class SollbuchungQuery
       {
         String namenidsJoined = namenids.stream().map(String::valueOf)
             .collect(Collectors.joining(","));
-        where.append(where.length() == 0 ? "" : " AND ")
-            .append("(" + Sollbuchung.T_ZAHLER + " in ("
-                + namenidsJoined + ") OR "
-                + Sollbuchung.T_MITGLIED + " in ("
-                + namenidsJoined + "))");
+        where.append(where.length() == 0 ? "" : " AND ").append(
+            "(" + Sollbuchung.T_ZAHLER + " in (" + namenidsJoined + ") OR "
+                + Sollbuchung.T_MITGLIED + " in (" + namenidsJoined + "))");
       }
     }
     if (vd != null)
@@ -337,11 +335,11 @@ public class SollbuchungQuery
     sql.append(
         " GROUP BY " + Sollbuchung.TABLE_NAME_ID + ", " + Sollbuchung.T_BETRAG);
 
-    Double limit = Double.valueOf(0.005d);
+    BigDecimal limit = BigDecimal.ZERO;
     if (filter.get(Filter.DIFFERENZ_LIMIT) != null)
     {
       // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
-      limit = Math.abs((Double) filter.get(Filter.DIFFERENZ_LIMIT));
+      limit = ((BigDecimal) filter.get(Filter.DIFFERENZ_LIMIT)).abs();
     }
     if (Differenz.FEHLBETRAG == diff)
     {
@@ -378,8 +376,9 @@ public class SollbuchungQuery
     }
     DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
         .createList(Sollbuchung.class);
-    sollbIt.addFilter("id in (" + ids.stream().map(String::valueOf)
-        .collect(Collectors.joining(",")) + ")");
+    sollbIt.addFilter("id in ("
+        + ids.stream().map(String::valueOf).collect(Collectors.joining(","))
+        + ")");
     sollbIt.setOrder("ORDER BY " + Sollbuchung.T_DATUM + " desc");
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     return sollbIt;

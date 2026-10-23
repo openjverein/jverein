@@ -54,14 +54,14 @@ public class SollbuchungMap extends AbstractMap
           value = sollb.getZweck1();
           break;
         case BETRAG:
-          value = Einstellungen.DECIMALFORMAT.format(sollb.getBetrag());
+          value = Einstellungen.BIGDECIMALFORMAT.format(sollb.getBetrag());
           break;
         case IST:
-          value = Einstellungen.DECIMALFORMAT.format(sollb.getIstSumme());
+          value = Einstellungen.BIGDECIMALFORMAT.format(sollb.getIstSumme());
           break;
         case DIFFERENZ:
-          value = Einstellungen.DECIMALFORMAT
-              .format(sollb.getBetrag() - sollb.getIstSumme());
+          value = Einstellungen.BIGDECIMALFORMAT
+              .format(sollb.getBetrag().subtract(sollb.getIstSumme()));
           break;
       }
       map.put(var.getName(), value);

@@ -139,8 +139,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     if (params == null)
     {
       ExporterExportDialog d = new ExporterExportDialog(false, "Personalbogen",
-          ExportArt.PDF, "", "", null,
-          AbstractPartExportDialog.OPTION_NONE);
+          ExportArt.PDF, "", "", null, AbstractPartExportDialog.OPTION_NONE);
       try
       {
         if (!d.open())

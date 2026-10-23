@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -53,7 +54,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
 
   private static final long serialVersionUID = -286067581211521888L;
 
-  private Double ist;
+  private BigDecimal ist;
 
   public RechnungImpl() throws RemoteException
   {
@@ -95,17 +96,13 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    if (getAttribute("betrag") == null)
-    {
-      return 0d;
-    }
-    return (Double) getAttribute("betrag");
+    return (BigDecimal) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(double betrag) throws RemoteException
+  public void setBetrag(BigDecimal betrag) throws RemoteException
   {
     setAttribute("betrag", betrag);
   }
@@ -275,7 +272,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getIstSumme() throws RemoteException
+  public BigDecimal getIstSumme() throws RemoteException
   {
     if (ist != null)
     {
@@ -295,12 +292,12 @@ public class RechnungImpl extends AbstractJVereinDBObject
       {
         if (!rs.next())
         {
-          return Double.valueOf(0.0d);
+          return BigDecimal.ZERO;
         }
-        return Double.valueOf(rs.getDouble(1));
+        return rs.getBigDecimal(1);
       }
     };
-    ist = Double.valueOf((Double) service.execute(sql, new Object[] {}, rs));
+    ist = (BigDecimal) service.execute(sql, new Object[] {}, rs);
     return ist;
   }
 
@@ -313,7 +310,15 @@ public class RechnungImpl extends AbstractJVereinDBObject
     }
     if ("differenz".equals(fieldName))
     {
-      return getBetrag() - getIstSumme();
+      if (getIstSumme() != null)
+      {
+        return getBetrag().subtract(getIstSumme());
+      }
+      else
+      {
+        return getBetrag();
+      }
+
     }
     return super.getAttribute(fieldName);
   }
@@ -631,15 +636,15 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setErstattungsbetrag(Double betrag) throws RemoteException
+  public void setErstattungsbetrag(BigDecimal betrag) throws RemoteException
   {
     setAttribute("erstattungsbetrag", betrag);
   }
 
   @Override
-  public Double getErstattungsbetrag() throws RemoteException
+  public BigDecimal getErstattungsbetrag() throws RemoteException
   {
-    return (Double) getAttribute("erstattungsbetrag");
+    return (BigDecimal) getAttribute("erstattungsbetrag");
   }
 
   @Override

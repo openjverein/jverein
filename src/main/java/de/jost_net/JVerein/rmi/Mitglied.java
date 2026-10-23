@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Map;
@@ -136,9 +137,9 @@ public interface Mitglied
   public void setBeitragsgruppe(Beitragsgruppe beitragsgruppe)
       throws RemoteException;
 
-  public Double getIndividuellerBeitrag() throws RemoteException;
+  public BigDecimal getIndividuellerBeitrag() throws RemoteException;
 
-  public void setIndividuellerBeitrag(Double individuellerbeitrag)
+  public void setIndividuellerBeitrag(BigDecimal individuellerbeitrag)
       throws RemoteException;
 
   /**

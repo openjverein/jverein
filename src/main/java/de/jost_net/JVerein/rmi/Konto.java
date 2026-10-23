@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -123,9 +124,9 @@ public interface Konto extends JVereinDBObject
 
   public void setNutzungsdauer(Integer auszugsnummer) throws RemoteException;
 
-  public Double getBetrag() throws RemoteException;
+  public BigDecimal getBetrag() throws RemoteException;
 
-  public void setBetrag(Double betrag) throws RemoteException;
+  public void setBetrag(BigDecimal betrag) throws RemoteException;
 
   public String getKommentar() throws RemoteException;
 
@@ -135,23 +136,23 @@ public interface Konto extends JVereinDBObject
 
   public void setAnschaffung(Date anschaffung) throws RemoteException;
 
-  public Double getAfaStart() throws RemoteException;
+  public BigDecimal getAfaStart() throws RemoteException;
 
-  public void setAfaStart(Double afastart) throws RemoteException;
+  public void setAfaStart(BigDecimal afastart) throws RemoteException;
 
-  public Double getAfaDauer() throws RemoteException;
+  public BigDecimal getAfaDauer() throws RemoteException;
 
-  public void setAfaDauer(Double afadauer) throws RemoteException;
+  public void setAfaDauer(BigDecimal afadauer) throws RemoteException;
 
-  public Double getAfaRestwert() throws RemoteException;
+  public BigDecimal getAfaRestwert() throws RemoteException;
 
-  public void setAfaRestwert(Double afarestwert) throws RemoteException;
+  public void setAfaRestwert(BigDecimal afarestwert) throws RemoteException;
 
   public Integer getAfaMode() throws RemoteException;
 
   public void setAfaMode(Integer afamode) throws RemoteException;
 
-  public Double getSaldo() throws RemoteException;
+  public BigDecimal getSaldo() throws RemoteException;
 
   public DBIterator<Konto> getKontenEinesJahres(Geschaeftsjahr gj)
       throws RemoteException;

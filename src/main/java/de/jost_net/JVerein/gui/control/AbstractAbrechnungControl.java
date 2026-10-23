@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -838,7 +839,7 @@ public abstract class AbstractAbrechnungControl
       case GLEICHERTERMINFUERALLE:
         if (!m.getBeitragsgruppe().getHasAltersstaffel())
         {
-          Double betrag = m.getBeitragsgruppe().getBetrag();
+          BigDecimal betrag = m.getBeitragsgruppe().getBetrag();
           if (betrag == null)
           {
             bugs.add(new Bug(m, "Betrag in Beitragsgruppe ist nicht gesetzt!",
@@ -853,7 +854,7 @@ public abstract class AbstractAbrechnungControl
           while (it.hasNext())
           {
             Altersstaffel as = it.next();
-            Double betrag = as.getBetrag();
+            BigDecimal betrag = as.getBetrag();
             if (betrag == null)
             {
               bugs.add(new Bug(m,

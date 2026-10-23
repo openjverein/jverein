@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein.gui.parts;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -216,6 +217,10 @@ public class EditTreePart extends TreePart
                   if (value instanceof Double)
                   {
                     o = Double.parseDouble(newValue);
+                  }
+                  if (value instanceof BigDecimal)
+                  {
+                    o = new BigDecimal(newValue);
                   }
                   else if (value instanceof Integer)
                   {

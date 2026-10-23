@@ -16,8 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
@@ -43,7 +44,6 @@ import de.jost_net.JVerein.util.VonBis;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
@@ -51,9 +51,10 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BeitragsgruppeDetailControl extends VorZurueckControl implements Savable
+public class BeitragsgruppeDetailControl extends VorZurueckControl
+    implements Savable
 {
-  private Input[] alterstaffel;
+  private BigDecimalInput[] alterstaffel;
 
   private CheckboxInput isAltersstaffel;
 
@@ -61,15 +62,15 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl implements Sa
 
   private CheckboxInput sekundaer;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
-  private DecimalInput betragmonatlich;
+  private BigDecimalInput betragmonatlich;
 
-  private DecimalInput betragvierteljaehrlich;
+  private BigDecimalInput betragvierteljaehrlich;
 
-  private DecimalInput betraghalbjaehrlich;
+  private BigDecimalInput betraghalbjaehrlich;
 
-  private DecimalInput betragjaehrlich;
+  private BigDecimalInput betragjaehrlich;
 
   private SelectInput beitragsart;
 
@@ -77,9 +78,9 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl implements Sa
 
   private Beitragsgruppe beitrag;
 
-  private DecimalInput arbeitseinsatzstunden;
+  private BigDecimalInput arbeitseinsatzstunden;
 
-  private DecimalInput arbeitseinsatzbetrag;
+  private BigDecimalInput arbeitseinsatzbetrag;
 
   private AbstractInput buchungsart;
 
@@ -125,14 +126,14 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl implements Sa
     return sekundaer;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
-    betrag = new DecimalInput(getBeitragsgruppe().getBetrag(),
-        Einstellungen.DECIMALFORMAT);
+    betrag = new BigDecimalInput(getBeitragsgruppe().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     if (getBeitragsgruppe().getID() != null
         && getBeitragsgruppe().getHasAltersstaffel())
       betrag.disable();
@@ -140,58 +141,60 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl implements Sa
     return betrag;
   }
 
-  public DecimalInput getBetragMonatlich() throws RemoteException
+  public BigDecimalInput getBetragMonatlich() throws RemoteException
   {
     if (betragmonatlich != null)
     {
       return betragmonatlich;
     }
-    betragmonatlich = new DecimalInput(getBeitragsgruppe().getBetragMonatlich(),
-        Einstellungen.DECIMALFORMAT);
+    betragmonatlich = new BigDecimalInput(
+        getBeitragsgruppe().getBetragMonatlich(),
+        Einstellungen.BIGDECIMALFORMAT);
     if (getBeitragsgruppe().getHasAltersstaffel())
       betragmonatlich.disable();
     betragmonatlich.setMandatory(true);
     return betragmonatlich;
   }
 
-  public DecimalInput getBetragVierteljaehrlich() throws RemoteException
+  public BigDecimalInput getBetragVierteljaehrlich() throws RemoteException
   {
     if (betragvierteljaehrlich != null)
     {
       return betragvierteljaehrlich;
     }
-    betragvierteljaehrlich = new DecimalInput(
+    betragvierteljaehrlich = new BigDecimalInput(
         getBeitragsgruppe().getBetragVierteljaehrlich(),
-        Einstellungen.DECIMALFORMAT);
+        Einstellungen.BIGDECIMALFORMAT);
     if (getBeitragsgruppe().getHasAltersstaffel())
       betragvierteljaehrlich.disable();
     betragvierteljaehrlich.setMandatory(true);
     return betragvierteljaehrlich;
   }
 
-  public DecimalInput getBetragHalbjaehrlich() throws RemoteException
+  public BigDecimalInput getBetragHalbjaehrlich() throws RemoteException
   {
     if (betraghalbjaehrlich != null)
     {
       return betraghalbjaehrlich;
     }
-    betraghalbjaehrlich = new DecimalInput(
+    betraghalbjaehrlich = new BigDecimalInput(
         getBeitragsgruppe().getBetragHalbjaehrlich(),
-        Einstellungen.DECIMALFORMAT);
+        Einstellungen.BIGDECIMALFORMAT);
     if (getBeitragsgruppe().getHasAltersstaffel())
       betraghalbjaehrlich.disable();
     betraghalbjaehrlich.setMandatory(true);
     return betraghalbjaehrlich;
   }
 
-  public DecimalInput getBetragJaehrlich() throws RemoteException
+  public BigDecimalInput getBetragJaehrlich() throws RemoteException
   {
     if (betragjaehrlich != null)
     {
       return betragjaehrlich;
     }
-    betragjaehrlich = new DecimalInput(getBeitragsgruppe().getBetragJaehrlich(),
-        Einstellungen.DECIMALFORMAT);
+    betragjaehrlich = new BigDecimalInput(
+        getBeitragsgruppe().getBetragJaehrlich(),
+        Einstellungen.BIGDECIMALFORMAT);
     if (getBeitragsgruppe().getHasAltersstaffel())
       betragjaehrlich.disable();
     betragjaehrlich.setMandatory(true);
@@ -256,7 +259,7 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl implements Sa
     return isAltersstaffel;
   }
 
-  public Input[] getAltersstaffel() throws RemoteException
+  public BigDecimalInput[] getAltersstaffel() throws RemoteException
   {
     if (alterstaffel != null)
     {
@@ -269,15 +272,16 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl implements Sa
     AltersgruppenParser ap = new AltersgruppenParser(stufen);
 
     int i = 0;
-    List<Input> list = new ArrayList<Input>();
+    List<BigDecimalInput> list = new ArrayList<BigDecimalInput>();
     while (ap.hasNext())
     {
       VonBis vb = ap.getNext();
-      Double betrag = null;
+      BigDecimal betrag = null;
       Altersstaffel a = beitrag.getAltersstaffel(i);
       if (a != null)
         betrag = a.getBetrag();
-      DecimalInput d = new DecimalInput(betrag, Einstellungen.DECIMALFORMAT);
+      BigDecimalInput d = new BigDecimalInput(betrag,
+          Einstellungen.BIGDECIMALFORMAT);
       if (!getBeitragsgruppe().getHasAltersstaffel())
         d.disable();
       d.setData("nummer", Integer.valueOf(i));
@@ -285,7 +289,7 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl implements Sa
       list.add(d);
       i++;
     }
-    alterstaffel = list.toArray(new Input[0]);
+    alterstaffel = list.toArray(new BigDecimalInput[0]);
     return alterstaffel;
   }
 
@@ -300,27 +304,27 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl implements Sa
     return beitragsart;
   }
 
-  public DecimalInput getArbeitseinsatzStunden() throws RemoteException
+  public BigDecimalInput getArbeitseinsatzStunden() throws RemoteException
   {
     if (arbeitseinsatzstunden != null)
     {
       return arbeitseinsatzstunden;
     }
-    arbeitseinsatzstunden = new DecimalInput(
+    arbeitseinsatzstunden = new BigDecimalInput(
         getBeitragsgruppe().getArbeitseinsatzStunden(),
-        new DecimalFormat("###,###.##"));
+        Einstellungen.BIGDECIMALFORMAT);
     return arbeitseinsatzstunden;
   }
 
-  public DecimalInput getArbeitseinsatzBetrag() throws RemoteException
+  public BigDecimalInput getArbeitseinsatzBetrag() throws RemoteException
   {
     if (arbeitseinsatzbetrag != null)
     {
       return arbeitseinsatzbetrag;
     }
-    arbeitseinsatzbetrag = new DecimalInput(
+    arbeitseinsatzbetrag = new BigDecimalInput(
         getBeitragsgruppe().getArbeitseinsatzBetrag(),
-        new DecimalFormat("###,###.##"));
+        Einstellungen.BIGDECIMALFORMAT);
     return arbeitseinsatzbetrag;
   }
 
@@ -455,8 +459,9 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl implements Sa
     if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
     {
       b.setArbeitseinsatzStunden(
-          (Double) getArbeitseinsatzStunden().getValue());
-      b.setArbeitseinsatzBetrag((Double) getArbeitseinsatzBetrag().getValue());
+          (BigDecimal) getArbeitseinsatzStunden().getValue());
+      b.setArbeitseinsatzBetrag(
+          (BigDecimal) getArbeitseinsatzBetrag().getValue());
     }
     b.setNotiz((String) getNotiz().getValue());
     if (steuer != null)
@@ -476,16 +481,17 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl implements Sa
         }
         else
         {
-          b.setBetrag((Double) getBetrag().getValue());
+          b.setBetrag((BigDecimal) getBetrag().getValue());
           b.setHasAltersstaffel(false);
         }
         break;
       case FLEXIBEL:
-        b.setBetragMonatlich((Double) getBetragMonatlich().getValue());
+        b.setBetragMonatlich((BigDecimal) getBetragMonatlich().getValue());
         b.setBetragVierteljaehrlich(
-            (Double) getBetragVierteljaehrlich().getValue());
-        b.setBetragHalbjaehrlich((Double) getBetragHalbjaehrlich().getValue());
-        b.setBetragJaehrlich((Double) getBetragJaehrlich().getValue());
+            (BigDecimal) getBetragVierteljaehrlich().getValue());
+        b.setBetragHalbjaehrlich(
+            (BigDecimal) getBetragHalbjaehrlich().getValue());
+        b.setBetragJaehrlich((BigDecimal) getBetragJaehrlich().getValue());
         b.setHasAltersstaffel(false);
         break;
     }
@@ -505,10 +511,10 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl implements Sa
         {
           b.store();
         }
-        for (Input i : alterstaffel)
+        for (BigDecimalInput i : alterstaffel)
         {
           Altersstaffel a = null;
-          Double betrag = (Double) i.getValue();
+          BigDecimal betrag = (BigDecimal) i.getValue();
           if (betrag == null)
           {
             throw new ApplicationException(

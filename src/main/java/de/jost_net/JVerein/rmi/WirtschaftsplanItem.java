@@ -13,6 +13,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 public interface WirtschaftsplanItem extends JVereinDBObject
@@ -35,9 +36,9 @@ public interface WirtschaftsplanItem extends JVereinDBObject
 
   void setPosten(String posten) throws RemoteException;
 
-  double getSoll() throws RemoteException;
+  BigDecimal getSoll() throws RemoteException;
 
-  void setSoll(double soll) throws RemoteException;
+  void setSoll(BigDecimal soll) throws RemoteException;
 
   int getArt() throws RemoteException;
 

@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -37,13 +38,14 @@ public interface Jahresabschluss extends JVereinDBObject
 
   public String getName() throws RemoteException;
 
-  public Double getVerwendungsrueckstand() throws RemoteException;
+  public BigDecimal getVerwendungsrueckstand() throws RemoteException;
 
-  public void setVerwendungsrueckstand(Double rueckstand)
+  public void setVerwendungsrueckstand(BigDecimal rueckstand)
       throws RemoteException;
 
-  public Double getZwanghafteWeitergabe() throws RemoteException;
+  public BigDecimal getZwanghafteWeitergabe() throws RemoteException;
 
-  public void setZwanghafteWeitergabe(Double weitergabe) throws RemoteException;
+  public void setZwanghafteWeitergabe(BigDecimal weitergabe)
+      throws RemoteException;
 
 }
