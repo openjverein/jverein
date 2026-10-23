@@ -6,8 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import de.jost_net.JVerein.server.DBSupportH14199Impl;
-import de.jost_net.JVerein.server.DBSupportMySqlImpl;
 import de.willuhn.logging.Logger;
 import de.willuhn.sql.ScriptExecutor;
 import de.willuhn.util.ApplicationException;
@@ -20,10 +18,6 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
   protected Connection conn;
 
   protected ProgressMonitor monitor;
-
-  public static final String MYSQL = DBSupportMySqlImpl.class.getName();
-
-  public static final String H2 = DBSupportH14199Impl.class.getName();
 
   public enum DRIVER
   {

@@ -59,19 +59,16 @@ public class JVereinDBServiceImpl extends DBServiceImpl
   protected JVereinDBServiceImpl(String driverClass) throws RemoteException
   {
     super();
+    this.setClassloader(Application.getClassLoader());
+    this.setClassFinder(Application.getClassLoader().getClassFinder());
 
     if (driverClass == null)
-      throw new RemoteException("driverClass is null");
+      throw new RemoteException("no driver given");
+    Logger.info("loading database driver: " + driverClass);
 
     try
     {
-      this.setClassloader(Application.getClassLoader());
-      this.setClassFinder(Application.getClassLoader().getClassFinder());
-
-      Logger.info("loading database driver: " + driverClass);
-
       Class<?> c = Application.getClassLoader().load(driverClass);
-
       this.driver = (DBSupport) c.getConstructor().newInstance();
     }
     catch (Throwable t)

@@ -64,6 +64,12 @@ public class JVereinUpdateProvider
     this.progressmonitor = progressmonitor;
     driver = JVereinDBService.SETTINGS.getString("database.driver", H2);
 
+    // h14199 wird genauso wie H2 behandelt
+    if (driver.equals(H14199))
+    {
+      driver = H2;
+    }
+
     int cv = getCurrentVersion(conn);
     if (cv == 0)
     {
@@ -316,6 +322,7 @@ public class JVereinUpdateProvider
   {
     String driver = JVereinDBService.SETTINGS.getString("database.driver",
         DBSupportH2Impl.class.getName());
+    // H14199 wird genauso wie H2 behandelt
     if (driver.equals(H14199))
     {
       driver = H2;
@@ -6440,7 +6447,7 @@ public class JVereinUpdateProvider
   @SuppressWarnings("unused")
   private void update0322(Connection conn) throws ApplicationException
   {
-    if (driver.equals(H2) || driver.equals(H14199))
+    if (driver.equals(H2))
     {
       return;
     }
@@ -6615,7 +6622,7 @@ public class JVereinUpdateProvider
   @SuppressWarnings("unused")
   private void update0324(Connection conn) throws ApplicationException
   {
-    if (driver.equals(H2) || driver.equals(H14199))
+    if (driver.equals(H2))
     {
       return;
     }
@@ -7267,8 +7274,7 @@ public class JVereinUpdateProvider
   private String alterColumn(String _driver, String table, String column,
       String type)
   {
-    if ((driver.equals(H2) && _driver.equals(H2))
-        || ((driver.equals(H14199) && _driver.equals(H14199))))
+    if ((driver.equals(H2) && _driver.equals(H2)))
     {
       return "ALTER TABLE " + table + " ALTER COLUMN " + column + " " + type
           + ";\n";
