@@ -18,13 +18,10 @@ package de.jost_net.JVerein.gui.control;
 
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
@@ -298,8 +295,8 @@ public class WirtschaftsplanDetailControl extends VorZurueckControl
           case "soll":
             try
             {
-              NumberFormat nf = NumberFormat.getInstance(Locale.getDefault());
-              item.setSoll((BigDecimal) nf.parse(newValue));
+              item.setSoll(
+                  (BigDecimal) Einstellungen.BIGDECIMALFORMAT.parse(newValue));
             }
             catch (NumberFormatException | ParseException e)
             {
