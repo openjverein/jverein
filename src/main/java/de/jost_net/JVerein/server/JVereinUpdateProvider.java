@@ -54,7 +54,7 @@ public class JVereinUpdateProvider
 
   public static final String MYSQL = DBSupportMySqlImpl.class.getName();
 
-  public static final String H14199 = DBSupportH14199Impl.class.getName();
+  public static final String H2V2 = DBSupportH2v2Impl.class.getName();
 
   public static final String H2 = DBSupportH2Impl.class.getName();
 
@@ -62,10 +62,12 @@ public class JVereinUpdateProvider
       throws ApplicationException
   {
     this.progressmonitor = progressmonitor;
+    // TODO Bei Umstellung von MySQL zu H2 wäre das nicht sinnvoll, da es für
+    // die neue Verbindung H2 leifern müsste, obwohl in den Settings MySQL steht
     driver = JVereinDBService.SETTINGS.getString("database.driver", H2);
 
     // h14199 wird genauso wie H2 behandelt
-    if (driver.equals(H14199))
+    if (driver.equals(H2V2))
     {
       driver = H2;
     }

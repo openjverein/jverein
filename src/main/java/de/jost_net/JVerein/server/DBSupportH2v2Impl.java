@@ -31,12 +31,12 @@ import de.willuhn.util.ApplicationException;
  * Implementierung des Datenbank-Supports fuer H2-Database
  * (http://www.h2database.com).
  */
-public class DBSupportH14199Impl extends AbstractDBSupportImpl
+public class DBSupportH2v2Impl extends AbstractDBSupportImpl
 {
 
   private static final long serialVersionUID = 8429636916402991936L;
 
-  public DBSupportH14199Impl()
+  public DBSupportH2v2Impl()
   {
     // H2-Datenbank verwendet uppercase Identifier
     Logger.info("switching dbservice to uppercase");
@@ -47,7 +47,7 @@ public class DBSupportH14199Impl extends AbstractDBSupportImpl
   @Override
   public String getJdbcDriver()
   {
-    return "org.h14199.Driver";
+    return "org.h2v2.Driver";
   }
 
   @Override
@@ -59,9 +59,9 @@ public class DBSupportH14199Impl extends AbstractDBSupportImpl
   @Override
   public String getJdbcUrl()
   {
-    String url = "jdbc:h14199:" + Application.getPluginLoader()
+    String url = "jdbc:h2v2:" + Application.getPluginLoader()
         .getPlugin(JVereinPlugin.class).getResources().getWorkPath()
-        + "/h2db/jverein";
+        + "/h2db/jverein-new";
 
     if (JVereinDBService.SETTINGS.getBoolean("database.driver.h2.auto_server",
         false))

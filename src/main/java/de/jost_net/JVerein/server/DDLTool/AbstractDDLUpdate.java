@@ -61,8 +61,8 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     }
     nr = Integer.parseInt(name.substring(6));
     this.conn = conn;
-    if (driver.endsWith("DBSupportH2Impl")
-        || driver.endsWith("DBSupportH14199Impl"))
+    if (driver.endsWith("DBSupportH2v2Impl")
+        || driver.endsWith("DBSupportH2Impl"))
     {
       drv = DRIVER.H2;
     }

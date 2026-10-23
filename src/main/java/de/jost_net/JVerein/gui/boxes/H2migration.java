@@ -25,13 +25,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import de.jost_net.JVerein.rmi.JVereinDBService;
-import de.jost_net.JVerein.server.DBSupportH14199Impl;
+import de.jost_net.JVerein.server.DBSupportH2Impl;
 import de.jost_net.JVerein.server.MigratH2Database;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.boxes.AbstractBox;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Font;
 import de.willuhn.jameica.gui.util.SWTUtil;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.Settings;
 
 public class H2migration extends AbstractBox
@@ -54,14 +54,19 @@ public class H2migration extends AbstractBox
   @Override
   public boolean isEnabled()
   {
-    // Muss erst von jameica freigeschaltet sein
-    if (!Application.getConfig().getMigration("migration-h2"))
+    // Prüfen, ob jameica die Migration bereits anbietet
+    try
+    {
+      Class.forName("de.willuhn.jameica.system.MigrateDB");
+    }
+    catch (ClassNotFoundException e)
     {
       return false;
     }
-    String h14199 = DBSupportH14199Impl.class.getName();
-    return h14199.equals(new Settings(JVereinDBService.class)
-        .getString("database.driver", h14199));
+
+    String h2 = DBSupportH2Impl.class.getName();
+    return h2.equals(
+        new Settings(JVereinDBService.class).getString("database.driver", h2));
   }
 
   @Override

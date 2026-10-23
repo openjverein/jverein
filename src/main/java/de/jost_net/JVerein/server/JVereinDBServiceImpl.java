@@ -45,8 +45,10 @@ public class JVereinDBServiceImpl extends DBServiceImpl
    */
   public JVereinDBServiceImpl() throws RemoteException
   {
-    this(SETTINGS.getString("database.driver",
-        DBSupportH14199Impl.class.getName()));
+    // TODO sollte bei noch nicht existierender DB und unterstützung von Jameica
+    // H2v2 sein, als default
+    this(
+        SETTINGS.getString("database.driver", DBSupportH2Impl.class.getName()));
   }
 
   /**
@@ -73,6 +75,27 @@ public class JVereinDBServiceImpl extends DBServiceImpl
     {
       throw new RemoteException("unable to load database driver " + driverClass,
           t);
+    }
+  }
+
+  public void setDriver(String driver) throws RemoteException
+  {
+    if (isStarted())
+    {
+      throw new RemoteException(
+          "Server läuft, es kann kein neuer Treiber gesetzt werden");
+    }
+    if (driver == null)
+      throw new RemoteException("no driver given");
+    Logger.info("loading database driver: " + driver);
+    try
+    {
+      Class<?> c = Application.getClassLoader().load(driver);
+      this.driver = (DBSupport) c.getConstructor().newInstance();
+    }
+    catch (Throwable t)
+    {
+      throw new RemoteException("unable to load database driver " + driver, t);
     }
   }
 
