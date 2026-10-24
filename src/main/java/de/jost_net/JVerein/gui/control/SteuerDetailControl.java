@@ -16,14 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
-
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
@@ -35,7 +35,6 @@ import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -47,7 +46,7 @@ public class SteuerDetailControl extends VorZurueckControl implements Savable
 
   private TextInput name;
 
-  private DecimalInput satz;
+  private BigDecimalInput satz;
 
   private AbstractInput buchungsart;
 
@@ -83,13 +82,14 @@ public class SteuerDetailControl extends VorZurueckControl implements Savable
     return name;
   }
 
-  public DecimalInput getSatz() throws RemoteException
+  public BigDecimalInput getSatz() throws RemoteException
   {
     if (satz != null)
     {
       return satz;
     }
-    satz = new DecimalInput(getSteuer().getSatz(), new DecimalFormat("##.##"));
+    satz = new BigDecimalInput(getSteuer().getSatz(),
+        Einstellungen.BIGDECIMALFORMAT);
     satz.setComment("%");
     satz.setMandatory(true);
     return satz;
@@ -184,7 +184,7 @@ public class SteuerDetailControl extends VorZurueckControl implements Savable
   {
     Steuer s = getSteuer();
     s.setName((String) getName().getValue());
-    s.setSatz((Double) getSatz().getValue());
+    s.setSatz((BigDecimal) getSatz().getValue());
     if (getBuchungsart().getValue() != null)
     {
       s.setBuchungsartId(

@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -391,7 +392,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       }
 
       // Individueller Beitrag darf nicht kleiner als 0 sein
-      if (getIndividuellerBeitrag() != null && getIndividuellerBeitrag() < 0)
+      if (getIndividuellerBeitrag() != null
+          && getIndividuellerBeitrag().signum() < 0)
       {
         throw new ApplicationException(
             "Individueller Beitrag darf nicht negativ sein!");
@@ -1070,13 +1072,13 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public Double getIndividuellerBeitrag() throws RemoteException
+  public BigDecimal getIndividuellerBeitrag() throws RemoteException
   {
-    return (Double) getAttribute("individuellerbeitrag");
+    return (BigDecimal) getAttribute("individuellerbeitrag");
   }
 
   @Override
-  public void setIndividuellerBeitrag(Double d) throws RemoteException
+  public void setIndividuellerBeitrag(BigDecimal d) throws RemoteException
   {
     setAttribute("individuellerbeitrag", d);
   }
@@ -1453,13 +1455,13 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         if (it.hasNext())
         {
           PseudoDBObject o = it.next();
-          return o.getDouble("dif");
+          return o.getBigDecimal("dif");
         }
-        return 0d;
+        return BigDecimal.ZERO;
       }
       catch (Exception e)
       {
-        return 0d;
+        return BigDecimal.ZERO;
       }
     }
     return super.getAttribute(fieldName);
@@ -1622,9 +1624,9 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    return Double.valueOf(0d);
+    return BigDecimal.ZERO;
   }
 
   @Override

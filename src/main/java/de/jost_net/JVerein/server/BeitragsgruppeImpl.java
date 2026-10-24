@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -136,7 +137,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
           {
             throw new ApplicationException("Bitte Betrag eingeben!");
           }
-          if (!getHasAltersstaffel() && getBetrag() < 0)
+          if (!getHasAltersstaffel() && getBetrag().signum() < 0)
           {
             throw new ApplicationException("Betrag nicht gültig!");
           }
@@ -161,8 +162,10 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
           {
             throw new ApplicationException("Bitte Betrag jährlich eingeben!");
           }
-          if (getBetragMonatlich() < 0 || getBetragVierteljaehrlich() < 0
-              || getBetragHalbjaehrlich() < 0 || getBetragJaehrlich() < 0)
+          if (getBetragMonatlich().signum() < 0
+              || getBetragVierteljaehrlich().signum() < 0
+              || getBetragHalbjaehrlich().signum() < 0
+              || getBetragJaehrlich().signum() < 0)
           {
             throw new ApplicationException("Betrag nicht gültig");
           }
@@ -327,61 +330,61 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    return (Double) getAttribute("betrag");
+    return (BigDecimal) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(Double d) throws RemoteException
+  public void setBetrag(BigDecimal d) throws RemoteException
   {
     setAttribute("betrag", d);
   }
 
   @Override
-  public Double getBetragMonatlich() throws RemoteException
+  public BigDecimal getBetragMonatlich() throws RemoteException
   {
-    return (Double) getAttribute("betragmonatlich");
+    return (BigDecimal) getAttribute("betragmonatlich");
   }
 
   @Override
-  public void setBetragMonatlich(Double d) throws RemoteException
+  public void setBetragMonatlich(BigDecimal d) throws RemoteException
   {
     setAttribute("betragmonatlich", d);
   }
 
   @Override
-  public Double getBetragVierteljaehrlich() throws RemoteException
+  public BigDecimal getBetragVierteljaehrlich() throws RemoteException
   {
-    return (Double) getAttribute("betragvierteljaehrlich");
+    return (BigDecimal) getAttribute("betragvierteljaehrlich");
   }
 
   @Override
-  public void setBetragVierteljaehrlich(Double d) throws RemoteException
+  public void setBetragVierteljaehrlich(BigDecimal d) throws RemoteException
   {
     setAttribute("betragvierteljaehrlich", d);
   }
 
   @Override
-  public Double getBetragHalbjaehrlich() throws RemoteException
+  public BigDecimal getBetragHalbjaehrlich() throws RemoteException
   {
-    return (Double) getAttribute("betraghalbjaehrlich");
+    return (BigDecimal) getAttribute("betraghalbjaehrlich");
   }
 
   @Override
-  public void setBetragHalbjaehrlich(Double d) throws RemoteException
+  public void setBetragHalbjaehrlich(BigDecimal d) throws RemoteException
   {
     setAttribute("betraghalbjaehrlich", d);
   }
 
   @Override
-  public Double getBetragJaehrlich() throws RemoteException
+  public BigDecimal getBetragJaehrlich() throws RemoteException
   {
-    return (Double) getAttribute("betragjaehrlich");
+    return (BigDecimal) getAttribute("betragjaehrlich");
   }
 
   @Override
-  public void setBetragJaehrlich(Double d) throws RemoteException
+  public void setBetragJaehrlich(BigDecimal d) throws RemoteException
   {
     setAttribute("betragjaehrlich", d);
   }
@@ -429,22 +432,22 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getArbeitseinsatzStunden() throws RemoteException
+  public BigDecimal getArbeitseinsatzStunden() throws RemoteException
   {
-    return (Double) getAttribute("arbeitseinsatzstunden");
+    return (BigDecimal) getAttribute("arbeitseinsatzstunden");
   }
 
   @Override
-  public void setArbeitseinsatzStunden(Double arbeitseinsatzStunden)
+  public void setArbeitseinsatzStunden(BigDecimal arbeitseinsatzStunden)
       throws RemoteException
   {
     setAttribute("arbeitseinsatzstunden", arbeitseinsatzStunden);
   }
 
   @Override
-  public Double getArbeitseinsatzBetrag() throws RemoteException
+  public BigDecimal getArbeitseinsatzBetrag() throws RemoteException
   {
-    return (Double) getAttribute("arbeitseinsatzbetrag");
+    return (BigDecimal) getAttribute("arbeitseinsatzbetrag");
   }
 
   @Override
@@ -473,7 +476,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setArbeitseinsatzBetrag(Double arbeitseinsatzBetrag)
+  public void setArbeitseinsatzBetrag(BigDecimal arbeitseinsatzBetrag)
       throws RemoteException
   {
     setAttribute("arbeitseinsatzbetrag", arbeitseinsatzBetrag);
@@ -579,7 +582,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
         return false;
       case "arbeitseinsatzstunden":
       case "arbeitseinsatzbetrag":
-        return 0d;
+        return BigDecimal.ZERO;
       case "beitragsart":
         return ArtBeitragsart.NORMAL.getKey();
       default:

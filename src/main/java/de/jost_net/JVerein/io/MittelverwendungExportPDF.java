@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.itextpdf.text.BaseColor;
@@ -83,7 +84,8 @@ public class MittelverwendungExportPDF implements ISaldoExport
                   (String) mvz.getAttribute(MittelverwendungControl.GRUPPE),
                   Element.ALIGN_LEFT, params.getFontNormal());
             }
-            reporter.addColumn(mvz.getDouble(MittelverwendungControl.BETRAG),
+            reporter.addColumn(
+                mvz.getBigDecimal(MittelverwendungControl.BETRAG),
                 params.getFontNormal(), params.getNegativRot());
             reporter.addColumn(" ", Element.ALIGN_LEFT);
             if (tab == MittelverwendungControl.SALDO_REPORT)
@@ -110,7 +112,7 @@ public class MittelverwendungExportPDF implements ISaldoExport
               reporter.addColumn(" ", Element.ALIGN_LEFT);
             }
 
-            Double value = mvz.getDouble(MittelverwendungControl.SUMME);
+            BigDecimal value = mvz.getBigDecimal(MittelverwendungControl.SUMME);
             if (value != null)
             {
               reporter.addColumn(value, params.getFontFett(),

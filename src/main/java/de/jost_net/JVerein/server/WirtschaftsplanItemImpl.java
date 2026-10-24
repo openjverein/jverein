@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -124,13 +125,13 @@ public class WirtschaftsplanItemImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public double getSoll() throws RemoteException
+  public BigDecimal getSoll() throws RemoteException
   {
-    return (double) getAttribute("soll");
+    return (BigDecimal) getAttribute("soll");
   }
 
   @Override
-  public void setSoll(double soll) throws RemoteException
+  public void setSoll(BigDecimal soll) throws RemoteException
   {
     setAttribute("soll", soll);
   }
@@ -157,7 +158,7 @@ public class WirtschaftsplanItemImpl extends AbstractJVereinDBObject
     switch (fieldName)
     {
       case "soll":
-        return 0d;
+        return BigDecimal.ZERO;
       case "art":
         return WirtschaftsplanImpl.EINNAHME;
       default:

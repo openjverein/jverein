@@ -127,11 +127,11 @@ public class MitgliedskontoControl extends AbstractControl
     mitgliedskontoTree.addColumn("Zweck1", "zweck1");
     mitgliedskontoTree.addColumn("Zahlungsweg", "zahlungsweg");
     mitgliedskontoTree.addColumn("Soll", "soll",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     mitgliedskontoTree.addColumn("Ist", "ist",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     mitgliedskontoTree.addColumn("Differenz", "differenz",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
     {
       mitgliedskontoTree.addColumn(new Column("leer", ""));

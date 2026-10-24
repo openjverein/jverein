@@ -139,7 +139,7 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
     {
       throw new ApplicationException("Bitte Datum eingeben");
     }
-    if (isBetragNull())
+    if (getBetrag() == null)
     {
       throw new ApplicationException("Bitte Betrag eingeben");
     }
@@ -402,30 +402,15 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    if (d == null)
-      return 0d;
-    return d.doubleValue();
+    return (BigDecimal) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(double d) throws RemoteException
+  public void setBetrag(BigDecimal d) throws RemoteException
   {
-    setAttribute("betrag", Double.valueOf(d));
-  }
-
-  @Override
-  public boolean isBetragNull() throws RemoteException
-  {
-    return (Double) getAttribute("betrag") == null;
-  }
-
-  @Override
-  public void setBetragNull() throws RemoteException
-  {
-    setAttribute("betrag", null);
+    setAttribute("betrag", d);
   }
 
   @Override
@@ -731,9 +716,9 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
   }
 
   @Override
-  public Double getNetto() throws RemoteException
+  public BigDecimal getNetto() throws RemoteException
   {
-    Double brutto = (Double) getAttribute("betrag");
+    BigDecimal brutto = (BigDecimal) getAttribute("betrag");
     if (!(Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       return brutto;
@@ -769,11 +754,11 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
       return brutto;
     }
 
-    BigDecimal netto = new BigDecimal(brutto).multiply(new BigDecimal(100))
-        .divide(new BigDecimal(100d + steuer.getSatz()), 2,
-            RoundingMode.HALF_UP);
+    BigDecimal netto = brutto.multiply(new BigDecimal("100.00")).divide(
+        (new BigDecimal("100.00")).add(steuer.getSatz()), 2,
+        RoundingMode.HALF_UP);
 
-    return netto.doubleValue();
+    return netto;
   }
 
   @Override

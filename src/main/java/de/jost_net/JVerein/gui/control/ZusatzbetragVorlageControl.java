@@ -73,7 +73,7 @@ public class ZusatzbetragVorlageControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetragVorlageList.addColumn("Buchungstext", "buchungstext");
     zusatzbetragVorlageList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     zusatzbetragVorlageList.addColumn("Zahlungsweg", "zahlungsweg",
         o -> new Zahlungsweg((Integer) o).getText());
     if ((Boolean) Einstellungen

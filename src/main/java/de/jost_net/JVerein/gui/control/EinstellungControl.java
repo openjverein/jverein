@@ -18,8 +18,8 @@ package de.jost_net.JVerein.gui.control;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
@@ -35,6 +35,7 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.MarkOverdueMessageConsumer;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -72,7 +73,6 @@ import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.extension.ExtensionRegistry;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.DirectoryInput;
 import de.willuhn.jameica.gui.input.ImageInput;
@@ -192,7 +192,7 @@ public class EinstellungControl extends AbstractControl
 
   private SelectInput sepamandatidsourcemodel;
 
-  private DecimalInput spendenbescheinigungminbetrag;
+  private BigDecimalInput spendenbescheinigungminbetrag;
 
   private CheckboxInput spendenbescheinigungprintbuchungsart;
 
@@ -354,7 +354,7 @@ public class EinstellungControl extends AbstractControl
 
   private TextInput qrcodeintro;
 
-  private DecimalInput afarestwert;
+  private BigDecimalInput afarestwert;
 
   private SelectInput afaort;
 
@@ -1230,16 +1230,17 @@ public class EinstellungControl extends AbstractControl
     return belegAllgemeinVerzeichnis;
   }
 
-  public DecimalInput getSpendenbescheinigungminbetrag() throws RemoteException
+  public BigDecimalInput getSpendenbescheinigungminbetrag()
+      throws RemoteException
   {
     if (spendenbescheinigungminbetrag != null)
     {
       return spendenbescheinigungminbetrag;
     }
-    spendenbescheinigungminbetrag = new DecimalInput(
-        (Double) Einstellungen
+    spendenbescheinigungminbetrag = new BigDecimalInput(
+        (BigDecimal) Einstellungen
             .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG),
-        new DecimalFormat("###0.00"));
+        Einstellungen.BIGDECIMALFORMAT);
     return spendenbescheinigungminbetrag;
   }
 
@@ -2174,15 +2175,15 @@ public class EinstellungControl extends AbstractControl
     return leerespalte;
   }
 
-  public DecimalInput getAfaRestwert() throws RemoteException
+  public BigDecimalInput getAfaRestwert() throws RemoteException
   {
     if (afarestwert != null)
     {
       return afarestwert;
     }
-    afarestwert = new DecimalInput(
-        (Double) Einstellungen.getEinstellung(Property.AFARESTWERT),
-        new DecimalFormat("###0.00"));
+    afarestwert = new BigDecimalInput(
+        (BigDecimal) Einstellungen.getEinstellung(Property.AFARESTWERT),
+        Einstellungen.BIGDECIMALFORMAT);
     return afarestwert;
   }
 
@@ -2809,7 +2810,7 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.MITGLIEDSBETRAEGE,
           (Boolean) getMitgliedsbetraege().getValue());
       Einstellungen.setEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG,
-          (Double) spendenbescheinigungminbetrag.getValue());
+          (BigDecimal) spendenbescheinigungminbetrag.getValue());
       Einstellungen.setEinstellung(
           Property.SPENDENBESCHEINIGUNGPRINTBUCHUNGSART,
           (Boolean) spendenbescheinigungprintbuchungsart.getValue());
@@ -2904,7 +2905,7 @@ public class EinstellungControl extends AbstractControl
           Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS,
           (Boolean) getAutomatischeBuchungskorrekturHibiscus().getValue());
       Einstellungen.setEinstellung(Property.AFARESTWERT,
-          (Double) afarestwert.getValue());
+          (BigDecimal) afarestwert.getValue());
       Einstellungen.setEinstellung(Property.OPTIERT,
           (Boolean) getOptiert().getValue());
       Einstellungen.setEinstellung(Property.OPTIERTPFLICHT,

@@ -16,12 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -98,9 +98,9 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
   private String vorJaId = null;
 
-  private double rueckstandVorjahrNeu;
+  private BigDecimal rueckstandVorjahrNeu;
 
-  private double zwanghafteWeitergabeNeu;
+  private BigDecimal zwanghafteWeitergabeNeu;
 
   public MittelverwendungControl(AbstractView view) throws RemoteException
   {
@@ -125,8 +125,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
         {
           Jahresabschluss ja = (Jahresabschluss) Einstellungen.getDBService()
               .createObject(Jahresabschluss.class, jaId);
-          Double rueckstand = null;
-          Double weitergabe = null;
+          BigDecimal rueckstand = null;
+          BigDecimal weitergabe = null;
           if (vorJaId != null)
           {
             Jahresabschluss vorJa = (Jahresabschluss) Einstellungen
@@ -315,10 +315,10 @@ public class MittelverwendungControl extends AbstractSaldoControl
     saldoList.addColumn("Art", GRUPPE);
     saldoList.addColumn("Konto", BEZEICHNUNG);
     saldoList.addColumn("Betrag", BETRAG,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Summe", SUMME,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Kommentar", KOMMENTAR);
     saldoList.removeFeature(FeatureSummary.class);
@@ -351,10 +351,10 @@ public class MittelverwendungControl extends AbstractSaldoControl
     zuflussList.addColumn("Nr", NR);
     zuflussList.addColumn("Mittel", GRUPPE);
     zuflussList.addColumn("Betrag", BETRAG,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     zuflussList.addColumn("Summe", SUMME,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     zuflussList.removeFeature(FeatureSummary.class);
     return zuflussList;
@@ -426,13 +426,13 @@ public class MittelverwendungControl extends AbstractSaldoControl
             + aktuellesGJ);
     zeilen.add(anfangsbestand);
 
-    Double vorhandeneMittel = anfangsbestand.getDouble(BETRAG) != null
-        ? anfangsbestand.getDouble(BETRAG)
-        : 0d;
+    BigDecimal vorhandeneMittel = anfangsbestand.getBigDecimal(BETRAG) != null
+        ? anfangsbestand.getBigDecimal(BETRAG)
+        : BigDecimal.ZERO;
 
     // Der in dem Rückstand enthaltene Rückstand aus dem vorletzten Jahr
-    Double rueckstandVorVorjahr = 0d;
-    Double zwanghafteWeitergabeVorjahr = 0d;
+    BigDecimal rueckstandVorVorjahr = BigDecimal.ZERO;
+    BigDecimal zwanghafteWeitergabeVorjahr = BigDecimal.ZERO;
     DBIterator<Jahresabschluss> jahresabschluesse = Einstellungen.getDBService()
         .createList(Jahresabschluss.class);
     jahresabschluesse.addFilter("bis = ?", endeLetztesGJ);
@@ -537,23 +537,23 @@ public class MittelverwendungControl extends AbstractSaldoControl
     flussIt.addFilter("konto.kontoart < ?", Kontoart.LIMIT.getKey());
 
     PseudoDBObject fluss = flussIt.next();
-    Double zufuehrung = fluss.getDouble(EINNAHMEN) != null
-        ? fluss.getDouble(EINNAHMEN)
-        : 0d;
-    Double verwendung = fluss.getDouble(AUSGABEN) != null
-        ? fluss.getDouble(AUSGABEN)
-        : 0d;
+    BigDecimal zufuehrung = fluss.getBigDecimal(EINNAHMEN) != null
+        ? fluss.getBigDecimal(EINNAHMEN)
+        : BigDecimal.ZERO;
+    BigDecimal verwendung = fluss.getBigDecimal(AUSGABEN) != null
+        ? fluss.getBigDecimal(AUSGABEN)
+        : BigDecimal.ZERO;
 
     // ggf. Steuern hinzurechnen
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
-      if (fluss.getDouble("steuereinnahme") != null)
+      if (fluss.getBigDecimal("steuereinnahme") != null)
       {
-        zufuehrung += fluss.getDouble("steuereinnahme");
+        zufuehrung = zufuehrung.add(fluss.getBigDecimal("steuereinnahme"));
       }
-      if (fluss.getDouble("steuerausgabe") != null)
+      if (fluss.getBigDecimal("steuerausgabe") != null)
       {
-        verwendung += fluss.getDouble("steuerausgabe");
+        verwendung = verwendung.add(fluss.getBigDecimal("steuerausgabe"));
       }
     }
 
@@ -570,7 +570,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     zuVerwenden.setAttribute(ART, ART_SALDOFOOTER);
     zuVerwenden.setAttribute(GRUPPE,
         BLANKS + "Zu verwendende Mittel im aktuellen GJ und nächstem GJ");
-    zuVerwenden.setAttribute(SUMME, zufuehrung + vorhandeneMittel);
+    zuVerwenden.setAttribute(SUMME, zufuehrung.add(vorhandeneMittel));
     zeilen.add(zuVerwenden);
 
     PseudoDBObject leerZeile = new PseudoDBObject();
@@ -611,8 +611,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
       ruecklageIt.addHaving("abs(" + BETRAG + ") >= 0.01");
     }
 
-    Double summeZuRuecklagen = 0d;
-    Double summeEntRuecklagen = 0d;
+    BigDecimal summeZuRuecklagen = BigDecimal.ZERO;
+    BigDecimal summeEntRuecklagen = BigDecimal.ZERO;
     while (ruecklageIt.hasNext())
     {
       PseudoDBObject o = ruecklageIt.next();
@@ -620,7 +620,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       switch (o.getInteger(ART))
       {
         case ArtBuchungsart.EINNAHME:
-          summeZuRuecklagen += o.getDouble(BETRAG);
+          summeZuRuecklagen = summeZuRuecklagen.add(o.getBigDecimal(BETRAG));
           o.setAttribute(NR, pos++);
           o.setAttribute(ART, ART_DETAIL);
           o.setAttribute(GRUPPE, "Zuführung "
@@ -628,7 +628,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
           zeilen.add(o);
           break;
         case ArtBuchungsart.AUSGABE:
-          summeEntRuecklagen -= o.getDouble(BETRAG);
+          summeEntRuecklagen = summeEntRuecklagen
+              .subtract(o.getBigDecimal(BETRAG));
           o.setAttribute(NR, pos++);
           o.setAttribute(ART, ART_DETAIL);
           o.setAttribute(GRUPPE, "Entnahme "
@@ -645,7 +646,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     gesamtVerwendet.setAttribute(GRUPPE,
         BLANKS + "Insgesamt im aktuellen GJ verwendete Mittel");
     gesamtVerwendet.setAttribute(SUMME,
-        verwendung + summeZuRuecklagen - summeEntRuecklagen);
+        verwendung.add(summeZuRuecklagen).subtract(summeEntRuecklagen));
     zeilen.add(gesamtVerwendet);
 
     zeilen.add(leerZeile);
@@ -656,40 +657,45 @@ public class MittelverwendungControl extends AbstractSaldoControl
     rueckstand.setAttribute(GRUPPE,
         "Verwendungsrückstand(+)/-überhang(-) zum Ende des aktuellen GJ "
             + aktuellesGJ);
-    rueckstand.setAttribute(SUMME, zufuehrung + vorhandeneMittel - verwendung
-        - summeZuRuecklagen + summeEntRuecklagen);
+    rueckstand.setAttribute(SUMME,
+        zufuehrung.add(vorhandeneMittel).subtract(verwendung)
+            .subtract(summeZuRuecklagen).add(summeEntRuecklagen));
     zeilen.add(rueckstand);
 
     // Berechnung der Mittelverwendung
-    rueckstandVorVorjahr = (rueckstandVorVorjahr == null) ? 0.0
+    rueckstandVorVorjahr = (rueckstandVorVorjahr == null) ? BigDecimal.ZERO
         : rueckstandVorVorjahr;
-    zwanghafteWeitergabeVorjahr = (zwanghafteWeitergabeVorjahr == null) ? 0.0
+    zwanghafteWeitergabeVorjahr = (zwanghafteWeitergabeVorjahr == null)
+        ? BigDecimal.ZERO
         : zwanghafteWeitergabeVorjahr;
 
-    Double ausgaben = Math.max(verwendung - summeEntRuecklagen, 0);
-    Double rueckstandVorjahr = Math.max(
-        vorhandeneMittel - rueckstandVorVorjahr - zwanghafteWeitergabeVorjahr,
-        0);
-    zwanghafteWeitergabeNeu = 0.0;
-    rueckstandVorjahrNeu = 0.0; // Rest aus Rückstand Vorjahr
+    BigDecimal ausgaben = verwendung.subtract(summeEntRuecklagen)
+        .max(BigDecimal.ZERO);
+    BigDecimal rueckstandVorjahr = vorhandeneMittel
+        .subtract(rueckstandVorVorjahr).subtract(zwanghafteWeitergabeVorjahr)
+        .max(BigDecimal.ZERO);
+    zwanghafteWeitergabeNeu = BigDecimal.ZERO;
+    rueckstandVorjahrNeu = BigDecimal.ZERO; // Rest aus Rückstand Vorjahr
     // Der Rückstand aus dem vorletzten Jahr muss ganz aufgebraucht werden,
     // ansonsten unterliegt der Restbetrag der zwanghaften satzungsgemäßen
     // Weitergabe von Mitteln
 
-    if (zwanghafteWeitergabeVorjahr > ausgaben)
+    if (zwanghafteWeitergabeVorjahr.compareTo(ausgaben) > 0)
     {
       zwanghafteWeitergabeNeu = rueckstandVorVorjahr;
       rueckstandVorjahrNeu = rueckstandVorjahr;
     }
-    else if (rueckstandVorVorjahr + zwanghafteWeitergabeVorjahr > ausgaben)
+    else if (rueckstandVorVorjahr.add(zwanghafteWeitergabeVorjahr)
+        .compareTo(ausgaben) > 0)
     {
-      zwanghafteWeitergabeNeu = rueckstandVorVorjahr - ausgaben
-          + zwanghafteWeitergabeVorjahr;
+      zwanghafteWeitergabeNeu = rueckstandVorVorjahr.subtract(ausgaben)
+          .add(zwanghafteWeitergabeVorjahr);
       rueckstandVorjahrNeu = rueckstandVorjahr;
     }
     else
     {
-      rueckstandVorjahrNeu = Math.max(vorhandeneMittel - ausgaben, 0);
+      rueckstandVorjahrNeu = vorhandeneMittel.subtract(ausgaben)
+          .max(BigDecimal.ZERO);
     }
     PseudoDBObject rueckstandLetztesGJ = new PseudoDBObject();
     rueckstandLetztesGJ.setAttribute(NR, pos++);
@@ -775,14 +781,14 @@ public class MittelverwendungControl extends AbstractSaldoControl
     Integer kontoartAlt = null;
     String kontoklasseAlt = null;
 
-    Double summeKontoart = 0d;
-    Double summeAnlageklasse = 0d;
+    BigDecimal summeKontoart = BigDecimal.ZERO;
+    BigDecimal summeAnlageklasse = BigDecimal.ZERO;
 
-    Double summeAnlagenGebunden = 0d;
-    Double summeFremdkapital = 0d;
+    BigDecimal summeAnlagenGebunden = BigDecimal.ZERO;
+    BigDecimal summeFremdkapital = BigDecimal.ZERO;
 
-    Double summeVermoegen = 0d;
-    Double summeFreieMittel = 0d;
+    BigDecimal summeVermoegen = BigDecimal.ZERO;
+    BigDecimal summeFreieMittel = BigDecimal.ZERO;
 
     // Wir fügen dem iterator noch einen Dummy Eintrag eines Kontos über dem
     // Limit hinzu, so wird sichergestellt, dass die Summen auch immer angezeigt
@@ -815,8 +821,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
         saldo.setAttribute(SUMME, summeKontoart);
         zeilen.add(saldo);
 
-        summeVermoegen += summeKontoart;
-        summeKontoart = 0d;
+        summeVermoegen = summeVermoegen.add(summeKontoart);
+        summeKontoart = BigDecimal.ZERO;
       }
 
       // Nach allen Kontoarten unter dem Limit Summe ausgeben
@@ -841,7 +847,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
             "Liste der zeitnahen Verwendung entzogenen Mittel:");
         zeilen.add(headMittel);
 
-        if (Math.abs(summeAnlagenGebunden) >= 0.01d)
+        if (summeAnlagenGebunden.signum() != 0)
         {
           PseudoDBObject mittel = new PseudoDBObject();
           mittel.setAttribute(ART, ART_SALDOFOOTER);
@@ -849,7 +855,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
           mittel.setAttribute(SUMME, summeAnlagenGebunden);
           zeilen.add(mittel);
         }
-        if (Math.abs(summeFremdkapital) >= 0.01d)
+        if (summeFremdkapital.signum() != 0)
         {
           PseudoDBObject mittel = new PseudoDBObject();
           mittel.setAttribute(ART, ART_SALDOFOOTER);
@@ -858,7 +864,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
           zeilen.add(mittel);
         }
         // Diese Summen gehören auch zu den freien Mitteln.
-        summeFreieMittel += summeAnlagenGebunden + summeFremdkapital;
+        summeFreieMittel = summeFreieMittel.add(summeAnlagenGebunden)
+            .add(summeFremdkapital);
       }
 
       // Bei bei Konten über dem Limit vor neuer Anlagenklasse Summe ausgeben.
@@ -871,8 +878,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
         saldo.setAttribute(SUMME, summeAnlageklasse);
         zeilen.add(saldo);
 
-        summeFreieMittel += summeAnlageklasse;
-        summeAnlageklasse = 0d;
+        summeFreieMittel = summeFreieMittel.add(summeAnlageklasse);
+        summeAnlageklasse = BigDecimal.ZERO;
       }
       // Dummy Eintrag ignorieren
       if (o.getInteger(ART) != null && o.getInteger(ART) == ART_LEERZEILE)
@@ -914,7 +921,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         zeilen.add(kontoarthead);
         kontoklasseAlt = kontoklasse;
         kontoartAlt = kontoart;
-        summeAnlageklasse = 0d;
+        summeAnlageklasse = BigDecimal.ZERO;
       }
 
       // Das Konto anzeigen
@@ -932,18 +939,19 @@ public class MittelverwendungControl extends AbstractSaldoControl
         zeilen.add(o);
       }
 
-      summeKontoart += o.getDouble(BETRAG);
-      summeAnlageklasse += o.getDouble(BETRAG);
+      summeKontoart = summeKontoart.add(o.getBigDecimal(BETRAG));
+      summeAnlageklasse = summeAnlageklasse.add(o.getBigDecimal(BETRAG));
 
       // Summen berechnen
       if (kontoart == Kontoart.ANLAGE.getKey() && o.getInteger(ZWECK) != null
           && o.getInteger(ZWECK) == Anlagenzweck.NUTZUNGSGEBUNDEN.getKey())
       {
-        summeAnlagenGebunden += o.getDouble(BETRAG);
+        summeAnlagenGebunden = summeAnlagenGebunden
+            .add(o.getBigDecimal(BETRAG));
       }
       else if (kontoart == Kontoart.SCHULDEN.getKey())
       {
-        summeFremdkapital += o.getDouble(BETRAG);
+        summeFremdkapital = summeFremdkapital.add(o.getBigDecimal(BETRAG));
       }
     }
 
@@ -963,7 +971,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     rueckstand.setAttribute(ART, ART_SALDOFOOTER);
     rueckstand.setAttribute(GRUPPE,
         "Verwendungsrückstand(+)/-überhang(-) zum Ende des GJ");
-    rueckstand.setAttribute(SUMME, summeVermoegen - summeFreieMittel);
+    rueckstand.setAttribute(SUMME, summeVermoegen.add(summeFreieMittel));
     zeilen.add(rueckstand);
 
     return zeilen;
@@ -1131,7 +1139,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
    * 
    * @return
    */
-  public Double getRueckstandVorjahrNeu()
+  public BigDecimal getRueckstandVorjahrNeu()
   {
     return rueckstandVorjahrNeu;
   }
@@ -1141,7 +1149,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
    * 
    * @return
    */
-  public Double getZwanghafteWeitergabeNeu()
+  public BigDecimal getZwanghafteWeitergabeNeu()
   {
     return zwanghafteWeitergabeNeu;
   }

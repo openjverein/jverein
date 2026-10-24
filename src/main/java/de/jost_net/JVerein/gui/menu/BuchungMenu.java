@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -324,10 +325,11 @@ public class BuchungMenu extends ContextMenu
         }
         if (o instanceof Buchung[])
         {
-          double betrag = ((Buchung[]) o)[0].getBetrag();
+          BigDecimal betrag = ((Buchung[]) o)[0].getBetrag();
           for (Buchung bu : ((Buchung[]) o))
           {
-            if (bu.getSplitId() != null || bu.getBetrag() != betrag)
+            if (bu.getSplitId() != null
+                || bu.getBetrag().compareTo(betrag) != 0)
             {
               return false;
             }

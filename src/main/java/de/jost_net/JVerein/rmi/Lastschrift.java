@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -71,7 +72,7 @@ public interface Lastschrift
   public void setVerwendungszweck(String verwendungszweck)
       throws RemoteException;
 
-  public void setBetrag(Double betrag) throws RemoteException;
+  public void setBetrag(BigDecimal betrag) throws RemoteException;
 
   public void setGeschlecht(String geschlecht) throws RemoteException;
 

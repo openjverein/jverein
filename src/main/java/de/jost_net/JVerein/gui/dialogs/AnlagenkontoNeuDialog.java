@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -154,7 +155,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       konto.setBuchungsklasseId(getSelectedBuchungsklasseId());
       konto.setAfaartId(getSelectedAfaartId());
       konto.setAfaRestwert(
-          (Double) Einstellungen.getEinstellung(Property.AFARESTWERT));
+          (BigDecimal) Einstellungen.getEinstellung(Property.AFARESTWERT));
       konto.setAfaMode(AfaMode.AUTO);
       konto.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
       konto.setKommentar(buchung.getKommentar());

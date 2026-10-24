@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,7 +70,6 @@ import de.willuhn.util.ProgressMonitor;
 
 public class Gutschrift extends SEPASupport
 {
-  private final Double LIMIT = 0.005;
 
   private static final String SKIP = "====> Überspringe ";
 
@@ -83,7 +83,7 @@ public class Gutschrift extends SEPASupport
 
   private Konto konto = null;
 
-  private double summe = 0d;
+  private BigDecimal summe = BigDecimal.ZERO;
 
   private Abrechnungslauf abrl = null;
 
@@ -108,7 +108,7 @@ public class Gutschrift extends SEPASupport
         || (params.rechnung && (params.rechnungsformular == null
             || params.rechnungsdatum == null))
         || (params.fixerBetragAbrechnen
-            && (params.betrag == null || params.betrag < LIMIT)))
+            && (params.betrag == null || params.betrag.signum() <= 0)))
     {
       throw new ApplicationException("Eingabeparameter fehlerhaft!");
     }
@@ -193,25 +193,26 @@ public class Gutschrift extends SEPASupport
             // Beträge bestimmen
             // Überweisungsbetrag ist maximal der bereits eingezahlte Betrag
             // bzw. Providerbetrag
-            double ueberweisungsbetrag = Math.min(provider.getBetrag(),
-                provider.getIstSumme());
+            BigDecimal ueberweisungsbetrag = provider.getBetrag()
+                .min(provider.getIstSumme());
             // Offenbetrag ist der Fehlbetrag des aktuellen Providers
-            double offenbetrag = Math
-                .max(provider.getBetrag() - provider.getIstSumme(), 0);
+            BigDecimal offenbetrag = provider.getBetrag()
+                .subtract(provider.getIstSumme()).max(BigDecimal.ZERO);
             // Ausgleichbetrag ist der Betrag der beim Provider mit einer
             // Buchung ausgeglichen werden muss damit dieser dann nicht
             // mehr als Fehlbetrag gelistet wird
-            double ausgleichsbetrag = offenbetrag;
+            BigDecimal ausgleichsbetrag = offenbetrag;
             if (params.fixerBetragAbrechnen)
             {
               // Der Überweisungsbetrag wird mit offenen Beträgen verrechnet. Es
               // wird nur etwas überwiesen wenn der fixe Betrag den offenen
               // Betrag überschreitet
-              ueberweisungsbetrag = Math.max(params.betrag - offenbetrag, 0);
+              ueberweisungsbetrag = params.betrag.subtract(offenbetrag)
+                  .max(BigDecimal.ZERO);
               // Es muss der Betrag beim Provider ausgeglichen werden der mit
               // dem fixen Betrag verrechnet wurde. Dieser gilt ja durch die
               // Gutschrift als bezahlt
-              ausgleichsbetrag = params.betrag - ueberweisungsbetrag;
+              ausgleichsbetrag = params.betrag.subtract(ueberweisungsbetrag);
             }
 
             monitor.setStatusText("Generiere Gutschrift für " + statustext
@@ -220,7 +221,7 @@ public class Gutschrift extends SEPASupport
             // Sollbuchung, Buchungen und Lastschriften erzeugen
             Buchung buchung = generiereGutschrift(provider, ueberweisungsbetrag,
                 ausgleichsbetrag, name, monitor);
-            if (ausgleichsbetrag > LIMIT)
+            if (ausgleichsbetrag.signum() > 0)
             {
               sollbuchungenAusgleich(provider, ausgleichsbetrag,
                   ueberweisungsbetrag, buchung, monitor);
@@ -228,7 +229,7 @@ public class Gutschrift extends SEPASupport
             erstellt++;
           }
 
-          if (summe > LIMIT)
+          if (summe.signum() > 0)
           {
             // Gegenbuchung erstellen
             getBuchung(summe, "JVerein", "Gegenbuchung", "", "").store();
@@ -337,7 +338,7 @@ public class Gutschrift extends SEPASupport
    *          Monitor für die Meldungsausgabe.
    */
   private Buchung generiereGutschrift(IGutschriftProvider prov,
-      double ueberweisungsbetrag, double ausgleichsbetrag, String name,
+      BigDecimal ueberweisungsbetrag, BigDecimal ausgleichsbetrag, String name,
       ProgressMonitor monitor) throws RemoteException, ApplicationException
   {
     String zweck = params.verwendungszweck;
@@ -348,10 +349,10 @@ public class Gutschrift extends SEPASupport
 
     // Überweisungen erzeugen
     ueberweisung = generiereUeberweisung(prov, zweck, ueberweisungsbetrag);
-    if (ueberweisungsbetrag > LIMIT)
+    if (ueberweisungsbetrag.signum() > 0)
     {
       ueberweisungen.add(ueberweisung);
-      summe += ueberweisungsbetrag;
+      summe = summe.add(ueberweisungsbetrag);
       monitor.setStatusText(MARKER + "Überweisung erzeugt");
     }
 
@@ -367,14 +368,14 @@ public class Gutschrift extends SEPASupport
     zweck = VelocityTool.eval(map, params.verwendungszweck, true);
     ueberweisung.setVerwendungszweck(zweck);
 
-    double betrag = 0;
+    BigDecimal betrag = BigDecimal.ZERO;
     if (params.fixerBetragAbrechnen)
     {
-      betrag = -params.betrag;
+      betrag = params.betrag.negate();
     }
     else
     {
-      betrag = -prov.getBetrag();
+      betrag = prov.getBetrag().negate();
     }
     // Sollbuchung nur wenn Mitglied und Zahler vorhanden, z.B. nicht bei
     // Kursteilnehmer
@@ -415,7 +416,7 @@ public class Gutschrift extends SEPASupport
     String art = "";
     // Wenn voll gezahlt ist gibt es keinen Ausgleich, dann ist das hier die
     // Überweisung
-    if (ausgleichsbetrag <= LIMIT)
+    if (ausgleichsbetrag.signum() <= 0)
     {
       art = "Überweisung";
     }
@@ -446,7 +447,8 @@ public class Gutschrift extends SEPASupport
    *          Der Betrag der überwiesen werden soll.
    */
   private Lastschrift generiereUeberweisung(IGutschriftProvider prov,
-      String zweck, double betrag) throws RemoteException, ApplicationException
+      String zweck, BigDecimal betrag)
+      throws RemoteException, ApplicationException
   {
     ILastschrift ila;
     // Überweisungen erstellen
@@ -502,7 +504,8 @@ public class Gutschrift extends SEPASupport
    *          Der Betrag der überwiesen werden soll.
    */
   private Sollbuchung generiereSollbuchung(IGutschriftProvider prov,
-      double betrag, String zweck) throws RemoteException, ApplicationException
+      BigDecimal betrag, String zweck)
+      throws RemoteException, ApplicationException
   {
     Sollbuchung sollbuchung = null;
     // Sollbuchung mit negativem bereits bezahltem Betrag
@@ -543,7 +546,7 @@ public class Gutschrift extends SEPASupport
       {
         SollbuchungPosition sbp = (SollbuchungPosition) service
             .createObject(SollbuchungPosition.class, null);
-        sbp.setBetrag(-sp.getBetrag());
+        sbp.setBetrag(sp.getBetrag().negate());
         sbp.setBuchungsartId(sp.getBuchungsartId());
         sbp.setBuchungsklasseId(sp.getBuchungsklasseId());
         sbp.setSteuer(sp.getSteuer());
@@ -574,7 +577,7 @@ public class Gutschrift extends SEPASupport
    *          Sollbuchung für die eine Rechnung erzeugt werden soll.
    */
   private Rechnung generiereRechnung(IGutschriftProvider prov,
-      double ueberweisungsbetrag, Sollbuchung sollbuchung)
+      BigDecimal ueberweisungsbetrag, Sollbuchung sollbuchung)
       throws RemoteException, ApplicationException
   {
     Rechnung rechnung = null;
@@ -625,7 +628,7 @@ public class Gutschrift extends SEPASupport
    *          Buchunsart für die Buchung. Bei Erstattungsbuchungen wird hier
    *          "Überweisung" eingetragen
    */
-  private Buchung generiereBuchung(IGutschriftProvider prov, double betrag,
+  private Buchung generiereBuchung(IGutschriftProvider prov, BigDecimal betrag,
       String name, String zweck, Sollbuchung sollbuchung, String art)
       throws RemoteException, ApplicationException
   {
@@ -691,8 +694,9 @@ public class Gutschrift extends SEPASupport
    *          Monitor für die Meldungsausgabe.
    */
   private void sollbuchungenAusgleich(IGutschriftProvider provider,
-      double ausgleichsbetrag, double ueberweisungsbetrag, Buchung buchung,
-      ProgressMonitor monitor) throws RemoteException, ApplicationException
+      BigDecimal ausgleichsbetrag, BigDecimal ueberweisungsbetrag,
+      Buchung buchung, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException
   {
     // Bei fixem Betrag mit offenem Betrag verrechnen
     if (params.fixerBetragAbrechnen)
@@ -729,19 +733,20 @@ public class Gutschrift extends SEPASupport
       }
       else if (provider instanceof Rechnung)
       {
-        double ausgleich = 0;
+        BigDecimal ausgleich = BigDecimal.ZERO;
         for (Sollbuchung sollb : ((Rechnung) provider).getSollbuchungList())
         {
           // Auch bei ausgleich == 0 ausgleichen wegen der Erstattungsbuchung
           // die erzeugt werden soll. Ein negativer Ausgleich kann nicht
           // vorkommen weil die Überzahlung in diesem Fall durch die Checks
           // unterbunden wird
-          if (sollb.getIstSumme() - sollb.getBetrag() > LIMIT)
+          if (sollb.getIstSumme().compareTo(sollb.getBetrag()) > 0)
           {
             throw new ApplicationException(
                 "Überzahlung der sollbuchung wird bei Gesamtrechnung nicht unterstützt!");
           }
-          ausgleich = Math.max(sollb.getBetrag() - sollb.getIstSumme(), 0.0);
+          ausgleich = sollb.getBetrag().subtract(sollb.getIstSumme())
+              .max(BigDecimal.ZERO);
           sollbuchungAusgleich(provider, sollb, ausgleich, ueberweisungsbetrag,
               buchung, monitor);
         }
@@ -787,8 +792,9 @@ public class Gutschrift extends SEPASupport
    *          Monitor für die Meldungsausgabe.
    */
   private void sollbuchungAusgleich(IGutschriftProvider prov, Sollbuchung sollb,
-      double ausgleichsbetrag, double ueberweisungsbetrag, Buchung buchung,
-      ProgressMonitor monitor) throws RemoteException, ApplicationException
+      BigDecimal ausgleichsbetrag, BigDecimal ueberweisungsbetrag,
+      Buchung buchung, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException
   {
     boolean steuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
@@ -798,7 +804,7 @@ public class Gutschrift extends SEPASupport
     // Fixer Betrag und Sollbuchung
     if (params.fixerBetragAbrechnen)
     {
-      HashMap<String, Double> posMap = new HashMap<>();
+      HashMap<String, BigDecimal> posMap = new HashMap<>();
       HashMap<String, String> posZweckMap = new HashMap<>();
       SplitbuchungsContainer.positionenAbgleichen(sollb, posMap, posZweckMap,
           false);
@@ -816,9 +822,9 @@ public class Gutschrift extends SEPASupport
       }
 
       // Prüfen ob genügend offener Betrag existiert
-      Double posOffenBetrag = posMap.getOrDefault(key, 0d);
-      if (posOffenBetrag - ausgleichsbetrag > -LIMIT
-          && ueberweisungsbetrag <= LIMIT)
+      BigDecimal posOffenBetrag = posMap.getOrDefault(key, BigDecimal.ZERO);
+      if (posOffenBetrag.compareTo(ausgleichsbetrag) >= 0
+          && ueberweisungsbetrag.signum() <= 0)
       {
         // Ausgleichsbuchung ohne splitten da keine Überweisung vorhanden ist
         generiereBuchung(prov, ausgleichsbetrag, "JVerein",
@@ -829,8 +835,8 @@ public class Gutschrift extends SEPASupport
       {
         // Es ist mehr auszugleichen als die Position hat. Darum verteilen wir
         // den Ausgleichsbetrag auf andere Posten
-        Iterator<Entry<String, Double>> iterator = posMap.entrySet().stream()
-            .sorted(Map.Entry.comparingByValue()).iterator();
+        Iterator<Entry<String, BigDecimal>> iterator = posMap.entrySet()
+            .stream().sorted(Map.Entry.comparingByValue()).iterator();
 
         // Hauptbuchung erzeugen
         Buchung bu = getBuchung(ausgleichsbetrag, "JVerein",
@@ -843,9 +849,9 @@ public class Gutschrift extends SEPASupport
         Long splitId = Long.valueOf(bu.getID());
 
         // Falls etwas erstattet wird, dann Erstattungsbuchung erzeugen
-        if (ueberweisungsbetrag > LIMIT)
+        if (ueberweisungsbetrag.signum() > 0)
         {
-          Buchung buch = getBuchung(-ueberweisungsbetrag, "JVerein",
+          Buchung buch = getBuchung(ueberweisungsbetrag.negate(), "JVerein",
               "Erstattung für Gutschrift Nr. " + buchung.getID(), null,
               "Überweisung");
           buch.setBuchungsartId(params.buchungsart != null
@@ -863,9 +869,9 @@ public class Gutschrift extends SEPASupport
 
         // Der Ausgleichsbetrag wird um den Überweisungsbetrag erhöht wegen der
         // Erstattungsbuchung
-        double ausgleichen = Math.min(posOffenBetrag, ausgleichsbetrag)
-            + ueberweisungsbetrag;
-        if (ausgleichen > LIMIT)
+        BigDecimal ausgleichen = posOffenBetrag.min(ausgleichsbetrag)
+            .add(ueberweisungsbetrag);
+        if (ausgleichen.signum() > 0)
         {
           Buchung buch1 = getBuchung(ausgleichen, "JVerein",
               "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null,
@@ -876,21 +882,21 @@ public class Gutschrift extends SEPASupport
           buch1.setSplitId(splitId);
           SplitbuchungsContainer.add(buch1);
         }
-        double restbetrag = ausgleichsbetrag
-            - Math.min(posOffenBetrag, ausgleichsbetrag);
+        BigDecimal restbetrag = ausgleichsbetrag
+            .subtract(posOffenBetrag.min(ausgleichsbetrag));
 
-        if (restbetrag > LIMIT)
+        if (restbetrag.signum() > 0)
         {
           while (iterator.hasNext())
           {
-            Entry<String, Double> entry = iterator.next();
+            Entry<String, BigDecimal> entry = iterator.next();
             if (entry.getKey().equals(key))
             {
               continue;
             }
-            if (entry.getValue() > LIMIT)
+            if (entry.getValue().signum() > 0)
             {
-              double ausgleich = Math.min(entry.getValue(), restbetrag);
+              BigDecimal ausgleich = entry.getValue().min(restbetrag);
               Buchung rbuch = getBuchung(ausgleich, "JVerein",
                   "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(),
                   null, "");
@@ -899,8 +905,8 @@ public class Gutschrift extends SEPASupport
               rbuch.setSplitTyp(SplitbuchungTyp.SPLIT);
               rbuch.setSplitId(splitId);
               SplitbuchungsContainer.add(rbuch);
-              restbetrag = restbetrag - ausgleich;
-              if (restbetrag <= LIMIT)
+              restbetrag = restbetrag.subtract(ausgleich);
+              if (restbetrag.signum() <= 0)
               {
                 break;
               }
@@ -910,7 +916,7 @@ public class Gutschrift extends SEPASupport
         SplitbuchungsContainer.store();
       }
     }
-    else if (prov.getIstSumme() < LIMIT)
+    else if (prov.getIstSumme().signum() <= 0)
     {
       // Es werden keine Einzahlungen erstattet, da nehmen wir den autosplit
       generiereBuchung(prov, ausgleichsbetrag, "JVerein",
@@ -933,15 +939,15 @@ public class Gutschrift extends SEPASupport
 
       // Sollbuchungsposten ausgleichen und Positionen mit gleicher Buchungsart,
       // Buchungsklasse und Steuer zusammen fassen
-      HashMap<String, Double> posMap = new HashMap<>();
+      HashMap<String, BigDecimal> posMap = new HashMap<>();
       HashMap<String, String> posZweckMap = new HashMap<>();
       SplitbuchungsContainer.positionenZusammenfassen(sollb, posMap,
           posZweckMap);
-      Iterator<Entry<String, Double>> iterator = posMap.entrySet().stream()
+      Iterator<Entry<String, BigDecimal>> iterator = posMap.entrySet().stream()
           .sorted(Map.Entry.comparingByValue()).iterator();
       while (iterator.hasNext())
       {
-        Entry<String, Double> entry = iterator.next();
+        Entry<String, BigDecimal> entry = iterator.next();
         Buchung buch = getBuchung(entry.getValue(), "JVerein",
             "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null,
             "");
@@ -955,7 +961,7 @@ public class Gutschrift extends SEPASupport
       // Einzahlungen erstatten
       for (Buchung b : sollb.getBuchungList())
       {
-        Buchung buch = getBuchung(-b.getBetrag(), "JVerein",
+        Buchung buch = getBuchung(b.getBetrag().negate(), "JVerein",
             "Erstattung für Gutschrift Nr. " + buchung.getID(), null,
             "Überweisung");
         buch.setBuchungsartId(b.getBuchungsartId());
@@ -971,8 +977,8 @@ public class Gutschrift extends SEPASupport
     monitor.setStatusText(MARKER + "Ausgleichsbuchung erzeugt");
   }
 
-  private void initBuchung(Buchung bu, Entry<String, Double> entry, String key)
-      throws NumberFormatException, RemoteException
+  private void initBuchung(Buchung bu, Entry<String, BigDecimal> entry,
+      String key) throws NumberFormatException, RemoteException
   {
     String theKey = key;
     if (key == null)
@@ -1023,7 +1029,7 @@ public class Gutschrift extends SEPASupport
     return file;
   }
 
-  private Buchung getBuchung(double betrag, String name, String zweck,
+  private Buchung getBuchung(BigDecimal betrag, String name, String zweck,
       String iban, String art) throws RemoteException, ApplicationException
   {
     Buchung buchung = (Buchung) service.createObject(Buchung.class, null);

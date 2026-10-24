@@ -18,6 +18,7 @@
 package de.jost_net.JVerein.io;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -117,7 +118,7 @@ public class Migration
       throws SQLException, RemoteException, ApplicationException
   {
 
-    HashMap<String, Double> bestehendeBeitragsgruppen = new HashMap<>();
+    HashMap<String, BigDecimal> bestehendeBeitragsgruppen = new HashMap<>();
 
     try
     {
@@ -126,8 +127,8 @@ public class Migration
       {
         bestehendeBeitragsgruppen.put(
             this.getResultFrom(results, InternalColumns.BEITRAGSART),
-            Double.valueOf(this.getResultFrom(results, InternalColumns.BEITRAG)
-                .replace(',', '.')));
+            new BigDecimal(this.getResultFrom(results, InternalColumns.BEITRAG)
+                .replace(',', '.')).setScale(2, RoundingMode.HALF_UP));
       }
     }
     catch (NumberFormatException e)
@@ -141,7 +142,7 @@ public class Migration
     HashMap<String, Integer> beitragsgruppen = new HashMap<>();
     for (String key : bestehendeBeitragsgruppen.keySet())
     {
-      Double betr = bestehendeBeitragsgruppen.get(key);
+      BigDecimal betr = bestehendeBeitragsgruppen.get(key);
 
       int bid = createBeitragsgruppeAndID(betr, key);
 
@@ -162,8 +163,8 @@ public class Migration
    * @throws RemoteException
    * @throws ApplicationException
    */
-  private int createBeitragsgruppeAndID(Double beitrag, String beitragsgruppe)
-      throws RemoteException, ApplicationException
+  private int createBeitragsgruppeAndID(BigDecimal beitrag,
+      String beitragsgruppe) throws RemoteException, ApplicationException
   {
     Beitragsgruppe b = (Beitragsgruppe) Einstellungen.getDBService()
         .createObject(Beitragsgruppe.class, null);
@@ -823,8 +824,8 @@ public class Migration
       /* Check if remaining string matches the supported format */
       if (individuellerBeitrag.matches("[0-9]+(\\.[0-9]+)?"))
       {
-        Double beitrag = Double.valueOf(individuellerBeitrag);
-        if (beitrag > 0)
+        BigDecimal beitrag = new BigDecimal(individuellerBeitrag);
+        if (beitrag.signum() > 0)
         {
           m.setIndividuellerBeitrag(beitrag);
         }

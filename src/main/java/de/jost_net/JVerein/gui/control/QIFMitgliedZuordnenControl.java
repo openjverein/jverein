@@ -167,7 +167,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       posBeispielListTable.addColumn("Beleg", QIFImportPos.COL_BELEG);
       posBeispielListTable.addColumn("Betrag", QIFImportPos.COL_BETRAG,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
       posBeispielListTable.addColumn("Name", QIFImportPos.COL_NAME);
       posBeispielListTable.addColumn("Zweck", QIFImportPos.COL_ZWECK);

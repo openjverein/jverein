@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import de.jost_net.JVerein.gui.action.BugObjektEditAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.dialogs.GutschriftDialog;
 import de.jost_net.JVerein.gui.dialogs.JVereinYesNoDialog;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
@@ -44,7 +46,6 @@ import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -54,7 +55,6 @@ import de.willuhn.util.ApplicationException;
 
 public class GutschriftControl extends AbstractAbrechnungControl
 {
-  private final Double LIMIT = 0.005;
 
   private boolean isMitglied;
 
@@ -64,7 +64,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
 
   private CheckboxInput fixerBetragAbrechnenInput;
 
-  private DecimalInput fixerBetragInput;
+  private BigDecimalInput fixerBetragInput;
 
   private AbstractInput buchungsartInput;
 
@@ -124,7 +124,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
   }
 
   // Erstattungsbetrag
-  public DecimalInput getFixerBetragInput()
+  public BigDecimalInput getFixerBetragInput()
   {
     if (fixerBetragInput != null)
     {
@@ -133,12 +133,12 @@ public class GutschriftControl extends AbstractAbrechnungControl
     String tmp = settings.getString("fixerBetrag", "");
     if (tmp != null && !tmp.isEmpty())
     {
-      fixerBetragInput = new DecimalInput(Double.parseDouble(tmp),
-          Einstellungen.DECIMALFORMAT);
+      fixerBetragInput = new BigDecimalInput(new BigDecimal((tmp)),
+          Einstellungen.BIGDECIMALFORMAT);
     }
     else
     {
-      fixerBetragInput = new DecimalInput(Einstellungen.DECIMALFORMAT);
+      fixerBetragInput = new BigDecimalInput(Einstellungen.BIGDECIMALFORMAT);
     }
     updateFixerBetragInput();
     return fixerBetragInput;
@@ -164,8 +164,8 @@ public class GutschriftControl extends AbstractAbrechnungControl
         // Dann erste aus der Liste
       }
     }
-    buchungsartInput = new BuchungsartInput().getBuchungsartInput(
-        ba, buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
+    buchungsartInput = new BuchungsartInput().getBuchungsartInput(ba,
+        buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsartInput.addListener(e -> {
       try
@@ -408,10 +408,10 @@ public class GutschriftControl extends AbstractAbrechnungControl
             (boolean) fixerBetragAbrechnenInput.getValue());
       }
 
-      if ((Double) fixerBetragInput.getValue() != null)
+      if ((BigDecimal) fixerBetragInput.getValue() != null)
       {
         settings.setAttribute("fixerBetrag",
-            (Double) fixerBetragInput.getValue());
+            ((BigDecimal) fixerBetragInput.getValue()).toString());
       }
       else
       {
@@ -487,7 +487,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
       if ((boolean) getFixerBetragAbrechnenInput().getValue())
       {
         if (getFixerBetragInput().getValue() == null
-            || ((Double) getFixerBetragInput().getValue()) < LIMIT)
+            || ((BigDecimal) getFixerBetragInput().getValue()).signum() <= 0)
         {
           return ("Bitte positiven Erstattungsbetrag eingeben");
         }
@@ -685,7 +685,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
     }
 
     // Keine Gutschrift bei Erstattungen
-    if (provider.getBetrag() < -LIMIT)
+    if (provider.getBetrag().signum() < 0)
     {
       meldung = "Der Betrag ist negativ!";
       if (bugs != null)
@@ -699,7 +699,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
     }
 
     // Keine Gutschrift bei negativer Einzahlung
-    if (provider.getIstSumme() < -LIMIT)
+    if (provider.getIstSumme().signum() < 0)
     {
       meldung = "Der Zahlungseingang ist negativ, dadurch kann nichts erstattet werden!";
       if (bugs != null)
@@ -751,17 +751,17 @@ public class GutschriftControl extends AbstractAbrechnungControl
     }
 
     boolean fixbetragabrechnen = (Boolean) fixerBetragAbrechnenInput.getValue();
-    Double fixerbetrag = (Double) fixerBetragInput.getValue();
+    BigDecimal fixerbetrag = (BigDecimal) fixerBetragInput.getValue();
     if (provider instanceof Rechnung && fixbetragabrechnen && sollbList != null
         && sollbList.size() > 1
-        && provider.getBetrag() - provider.getIstSumme() > LIMIT)
+        && (provider.getBetrag().compareTo(provider.getIstSumme()) > 0))
     {
       // Bei Gesamtrechnung erlauben wir nicht, dass eine beteiligte Sollbuchung
       // überzahlt ist falls es Ausgleichsbuchungen gibt, also nicht die ganze
       // Rechnung überzahlt ist. Das ist im Code nicht implementiert.
       for (Sollbuchung sollbuchung : sollbList)
       {
-        if (sollbuchung.getIstSumme() - sollbuchung.getBetrag() > LIMIT)
+        if (sollbuchung.getIstSumme().compareTo(sollbuchung.getBetrag()) > 0)
         {
           meldung = "Die Gesamtrechnung enthält eine überzahlte Sollbuchung!";
           if (bugs != null)
@@ -779,12 +779,12 @@ public class GutschriftControl extends AbstractAbrechnungControl
     if (fixbetragabrechnen)
     {
       // Beträge bestimmen
-      double tmp = provider.getBetrag() - provider.getIstSumme();
-      double offenbetrag = tmp > LIMIT ? tmp : 0;
-      tmp = fixerbetrag - offenbetrag;
-      double ueberweisungsbetrag = tmp > LIMIT ? tmp : 0;
-      tmp = fixerbetrag - ueberweisungsbetrag;
-      double ausgleichsbetrag = tmp > LIMIT ? tmp : 0;
+      BigDecimal tmp = provider.getBetrag().subtract(provider.getIstSumme());
+      BigDecimal offenbetrag = tmp.signum() > 0 ? tmp : BigDecimal.ZERO;
+      tmp = fixerbetrag.subtract(offenbetrag);
+      BigDecimal ueberweisungsbetrag = tmp.signum() > 0 ? tmp : BigDecimal.ZERO;
+      tmp = fixerbetrag.subtract(ueberweisungsbetrag);
+      BigDecimal ausgleichsbetrag = tmp.signum() > 0 ? tmp : BigDecimal.ZERO;
 
       Sollbuchung sollbFix = null;
       if (provider instanceof Rechnung)
@@ -830,7 +830,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
         }
       }
 
-      if (ausgleichsbetrag > 0)
+      if (ausgleichsbetrag.signum() > 0)
       {
         meldung = "Der Erstattungsbetrag wird mit offenen Forderungen verrechnet!";
         if (bugs != null)
@@ -901,14 +901,14 @@ public class GutschriftControl extends AbstractAbrechnungControl
   }
 
   private boolean checkVorhandenePosten(Sollbuchung sollb,
-      double ausgleichsbetrag) throws RemoteException
+      BigDecimal ausgleichsbetrag) throws RemoteException
   {
     boolean buchungsklasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
     boolean steuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
 
-    double summe = 0;
+    BigDecimal summe = BigDecimal.ZERO;
     for (SollbuchungPosition pos : sollb.getSollbuchungPositionList())
     {
       if (pos.getBuchungsart() == null
@@ -936,9 +936,9 @@ public class GutschriftControl extends AbstractAbrechnungControl
       {
         continue;
       }
-      summe += pos.getBetrag();
+      summe = summe.add(pos.getBetrag());
     }
-    if (summe - (Double) fixerBetragInput.getValue() < -LIMIT)
+    if (summe.compareTo((BigDecimal) fixerBetragInput.getValue()) < 0)
     {
       // Es gibt nicht genügend Betrag für die Erstattung
       return false;

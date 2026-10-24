@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -71,19 +73,19 @@ public class ArbeitseinsatzAuswertungPart extends JVereinTablePart
       arbeitseinsatzueberpruefungList = new JVereinTablePart(getList(), null);
       arbeitseinsatzueberpruefungList.addColumn("Name", MITGLIED);
       arbeitseinsatzueberpruefungList.addColumn("Sollstunden", SOLLSTUNDEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
       arbeitseinsatzueberpruefungList.addColumn("Iststunden", ISTSTUNDEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
       arbeitseinsatzueberpruefungList.addColumn("Differenz", DIFFERENZ,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
       arbeitseinsatzueberpruefungList.addColumn("Stundensatz", STUNDENSATZ,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
       arbeitseinsatzueberpruefungList.addColumn("Gesamtbetrag", GESAMTBETRAG,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
       return arbeitseinsatzueberpruefungList;
     }
@@ -97,15 +99,18 @@ public class ArbeitseinsatzAuswertungPart extends JVereinTablePart
     while (it.hasNext())
     {
       PseudoDBObject o = it.next();
-      Double soll = o.getAttribute(SOLLSTUNDEN) == null ? 0d
-          : o.getDouble(SOLLSTUNDEN);
-      Double ist = o.getAttribute(ISTSTUNDEN) == null ? 0d
-          : o.getDouble(ISTSTUNDEN);
-      Double satz = o.getDouble(STUNDENSATZ);
+      BigDecimal soll = o.getAttribute(SOLLSTUNDEN) == null ? BigDecimal.ZERO
+          : o.getBigDecimal(SOLLSTUNDEN);
+      BigDecimal ist = o.getAttribute(ISTSTUNDEN) == null ? BigDecimal.ZERO
+          : o.getBigDecimal(ISTSTUNDEN);
+      BigDecimal satz = o.getBigDecimal(STUNDENSATZ);
       Mitglied mitglied = (Mitglied) Einstellungen.getDBService()
           .createObject(Mitglied.class, o.getAttribute(MITGLIED_ID).toString());
-      o.setAttribute(DIFFERENZ, ist - soll);
-      o.setAttribute(GESAMTBETRAG, satz == null ? null : (ist - soll) * satz);
+      o.setAttribute(DIFFERENZ, ist.subtract(soll));
+      o.setAttribute(GESAMTBETRAG,
+          satz == null ? null
+              : ist.subtract(soll).multiply(satz).setScale(2,
+                  RoundingMode.HALF_UP));
       o.setAttribute(MITGLIED, mitglied);
       zeilen.add(o);
     }

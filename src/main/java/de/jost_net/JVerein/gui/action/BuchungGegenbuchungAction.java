@@ -94,11 +94,11 @@ public class BuchungGegenbuchungAction implements Action
           // Bei Anlagenkonto Netto Betrag verwenden
           if (konto.getKontoArt().equals(Kontoart.ANLAGE))
           {
-            bu.setBetrag(-b.getNetto());
+            bu.setBetrag(b.getNetto().negate());
           }
           else
           {
-            bu.setBetrag(-b.getBetrag());
+            bu.setBetrag(b.getBetrag().negate());
           }
           bu.setZweck(b.getZweck());
           bu.setDatum(b.getDatum());

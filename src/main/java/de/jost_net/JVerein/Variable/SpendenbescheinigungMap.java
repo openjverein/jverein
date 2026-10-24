@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.Variable;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
@@ -116,7 +117,8 @@ public class SpendenbescheinigungMap extends AbstractMap
           value = Einstellungen.DECIMALFORMAT.format(spb.getBetrag());
           break;
         case BETRAGINWORTEN:
-          Double ganzbetrag = spb.getBetrag() * 100;
+          BigDecimal ganzbetrag = spb.getBetrag()
+              .multiply(new BigDecimal("100"));
           long euro = spb.getBetrag().longValue();
           long cent = Math.abs(ganzbetrag.longValue() - 100 * euro);
           try

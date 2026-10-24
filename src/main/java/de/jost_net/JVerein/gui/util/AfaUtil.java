@@ -17,6 +17,8 @@
 package de.jost_net.JVerein.gui.util;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -166,45 +168,47 @@ public class AfaUtil
 
     Buchung buchung = (Buchung) Einstellungen.getDBService()
         .createObject(Buchung.class, null);
-    double buchwert = getBuchwert(konto, anschaffungsJahr, aktuellesJahr,
+    BigDecimal buchwert = getBuchwert(konto, anschaffungsJahr, aktuellesJahr,
         aktuellesGJ, monitor);
-    double restbuchwert = konto.getAfaRestwert();
-    double betrag = 0d;
+    BigDecimal restbuchwert = konto.getAfaRestwert();
+    BigDecimal betrag = BigDecimal.ZERO;
 
     // GWGs voll abschreiben
     if (aktuellesJahr == anschaffungsJahr && konto.getNutzungsdauer() == 0)
     {
-      if (buchwert <= 0d)
+      if (buchwert.signum() <= 0)
         return 0; // bereits abgeschrieben
       betrag = konto.getBetrag();
-      if (betrag > buchwert)
+      if (betrag.compareTo(buchwert) > 0)
         betrag = buchwert;
-      buchung.setBetrag(-betrag);
+      buchung.setBetrag(betrag.negate());
       buchung.setZweck("GWG-Abschreibung");
     }
 
     if (konto.getNutzungsdauer() > 0)
     {
-      if (buchwert <= konto.getAfaRestwert())
+      if (buchwert.compareTo(konto.getAfaRestwert()) <= 0)
         return 0; // bereits abgeschrieben
 
       if (aktuellesJahr == anschaffungsJahr)
       {
         betrag = konto.getAfaStart();
-        if ((buchwert - restbuchwert) < betrag)
-          betrag = buchwert - restbuchwert;
+        if (buchwert.subtract(restbuchwert).compareTo(betrag) < 0)
+        {
+          betrag = buchwert.subtract(restbuchwert);
+        }
         buchung.setZweck("Anteilige Abschreibung für " + monate + " Monate");
       }
       else
       {
         betrag = konto.getAfaDauer();
-        if (betrag < buchwert - restbuchwert)
+        if (betrag.compareTo(buchwert.subtract(restbuchwert)) < 0)
         {
           buchung.setZweck("Abschreibung");
         }
         else
         {
-          betrag = buchwert - restbuchwert;
+          betrag = buchwert.subtract(restbuchwert);
           buchung.setZweck("Restwertbuchung");
         }
       }
@@ -212,7 +216,7 @@ public class AfaUtil
     buchung.setKonto(konto);
     buchung.setName((String) Einstellungen.getEinstellung(Property.NAME));
     buchung.setDatum(afaBuchungDatum);
-    buchung.setBetrag(-betrag);
+    buchung.setBetrag(betrag.negate());
     buchung.setBuchungsartId(konto.getAfaartId());
     buchung.setAbschluss(abschluss);
     if (abschluss == null)
@@ -250,10 +254,10 @@ public class AfaUtil
         && konto.getNutzungsdauer() != 0)
       return 0;
 
-    double buchwert = getBuchwert(konto, anschaffungsJahr, aktuellesJahr,
+    BigDecimal buchwert = getBuchwert(konto, anschaffungsJahr, aktuellesJahr,
         aktuellesGJ, monitor);
-    double restbuchswert = konto.getAfaRestwert();
-    double betrag = 0d;
+    BigDecimal restbuchswert = konto.getAfaRestwert();
+    BigDecimal betrag = BigDecimal.ZERO;
     String zweck = "Abschreibung";
 
     // Datum des Nutzungsende ermitteln
@@ -265,16 +269,16 @@ public class AfaUtil
     // GWGs voll abschreiben
     if (konto.getNutzungsdauer() == 0)
     {
-      if (buchwert <= 0d)
+      if (buchwert.signum() <= 0)
         return 0; // bereits abgeschrieben
       zweck = "GWG-Abschreibung";
       betrag = konto.getBetrag();
-      if (betrag > buchwert)
+      if (betrag.compareTo(buchwert) > 0)
         betrag = buchwert;
     }
     else
     {
-      if (buchwert <= restbuchswert)
+      if (buchwert.compareTo(restbuchswert) <= 0)
         return 0; // bereits abgeschrieben
 
       // Im Anschaffungsjahr haben wir die volle Restlaufzeit.
@@ -292,9 +296,9 @@ public class AfaUtil
             0);
         // Ein Monat abziehen, weil der letzte nicht mitzaehlt
       }
-
-      double abbetrag = (buchwert - restbuchswert) / (restnutzungsdauer / 12d);
-      betrag = Math.ceil(abbetrag);
+      double intervall = restnutzungsdauer / 12d;
+      BigDecimal abbetrag = buchwert.subtract(restbuchswert)
+          .divide(new BigDecimal(intervall), 0, RoundingMode.UP);
 
       // Anteilig abschreiben, wenn wir uns im Anschaffungsjahr befinden
       if (aktuellesJahr == anschaffungsJahr)
@@ -302,18 +306,20 @@ public class AfaUtil
         int months = getMonths(konto.getAnschaffung(),
             aktuellesGJ.getEndeGeschaeftsjahr());
         zweck = "Anteilige Abschreibung für " + months + " Monate";
-        betrag = Math.ceil((abbetrag / 12d) * months);
-        double kosten = konto.getBetrag();
+        betrag = abbetrag.multiply(new BigDecimal(months))
+            .divide(new BigDecimal("12"), 0, RoundingMode.UP);
+        BigDecimal kosten = konto.getBetrag();
         // Nachkommastellen der Anschaffungskosten addieren, das ergiebt einen
         // geraden Betrag für den neuen Buchwert
-        betrag = betrag + (kosten - (int) kosten);
+        betrag = betrag.add(kosten.subtract(
+            kosten.divide(new BigDecimal("1"), 0, RoundingMode.DOWN)));
       }
 
       // Abzuschreibender Betrag >= Restwert -> Restwertbuchung
-      if (abbetrag >= buchwert - restbuchswert)
+      if (abbetrag.compareTo(buchwert.subtract(restbuchswert)) >= 0)
       {
         zweck = "Restwertbuchung";
-        betrag = buchwert - restbuchswert;
+        betrag = buchwert.subtract(restbuchswert);
       }
     }
 
@@ -324,7 +330,7 @@ public class AfaUtil
     buchung.setZweck(zweck);
     buchung.setDatum(afaBuchungDatum);
     buchung.setBuchungsartId(konto.getAfaartId());
-    buchung.setBetrag(-betrag);
+    buchung.setBetrag(betrag.negate());
     buchung.setAbschluss(abschluss);
     if (abschluss == null)
       buchung.store();
@@ -335,11 +341,11 @@ public class AfaUtil
     return 1;
   }
 
-  private double getBuchwert(Konto konto, int anschaffungsJahr,
+  private BigDecimal getBuchwert(Konto konto, int anschaffungsJahr,
       int aktuellesJahr, Geschaeftsjahr aktuellesGJ, ProgressMonitor monitor)
       throws RemoteException
   {
-    double buchwert = 0d;
+    BigDecimal buchwert = BigDecimal.ZERO;
 
     if (anschaffungsJahr == aktuellesJahr)
     {
@@ -356,7 +362,7 @@ public class AfaUtil
       {
         monitor.setStatusText("Konto " + konto.getNummer() + ": "
             + "Für das Konto existiert kein Anfangsbestand für das Geschäftsjahr");
-        return 0d;
+        return BigDecimal.ZERO;
       }
       else
       {
@@ -375,7 +381,7 @@ public class AfaUtil
     while (buchungsIt.hasNext())
     {
       Buchung afa = (Buchung) buchungsIt.next();
-      buchwert += afa.getBetrag();
+      buchwert = buchwert.add(afa.getBetrag());
     }
 
     return buchwert;

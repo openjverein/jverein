@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,12 +80,12 @@ public class GesamtrechnungNeuAction implements Action
 
     try
     {
-      double summe = 0d;
+      BigDecimal summe = BigDecimal.ZERO;
       for (Sollbuchung sollb : sollbs)
       {
-        summe += sollb.getBetrag();
+        summe = summe.add(sollb.getBetrag());
       }
-      boolean mitRechnung = summe > -0.005d;
+      boolean mitRechnung = summe.signum() >= 0;
       RechnungDialog dialog = new RechnungDialog(mitRechnung, !mitRechnung);
       if (!dialog.open())
       {

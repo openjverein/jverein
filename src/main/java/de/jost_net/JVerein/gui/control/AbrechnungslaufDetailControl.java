@@ -67,7 +67,8 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AbrechnungslaufDetailControl extends VorZurueckControl implements Savable
+public class AbrechnungslaufDetailControl extends VorZurueckControl
+    implements Savable
 {
 
   private Abrechnungslauf abrl;
@@ -388,11 +389,11 @@ public class AbrechnungslaufDetailControl extends VorZurueckControl implements S
 
     part.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     part.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       part.addColumn("Netto", "netto",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         part.addColumn("Steuer", "steuer", o -> {
@@ -444,11 +445,11 @@ public class AbrechnungslaufDetailControl extends VorZurueckControl implements S
     sollbuchungList.addColumn("Zahler", Sollbuchung.ZAHLER);
     sollbuchungList.addColumn("Zweck", Sollbuchung.ZWECK1);
     sollbuchungList.addColumn("Betrag", Sollbuchung.BETRAG,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     sollbuchungList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
         o -> new Zahlungsweg((Integer) o).getText());
     sollbuchungList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       sollbuchungList.addColumn("Rechnung", "rechnung.nummer");
@@ -483,7 +484,7 @@ public class AbrechnungslaufDetailControl extends VorZurueckControl implements S
     lastschriftList.addColumn("Email", "email");
     lastschriftList.addColumn("Zweck", "verwendungszweck");
     lastschriftList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     lastschriftList.addColumn("Fälligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lastschriftList.addColumn("IBAN", "iban", new IBANFormatter());
@@ -525,7 +526,7 @@ public class AbrechnungslaufDetailControl extends VorZurueckControl implements S
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
     {
       @Override

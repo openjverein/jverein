@@ -16,9 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -35,7 +34,6 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -166,7 +164,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
       }
       if (getKontoArt() == Kontoart.ANLAGE)
       {
-        if (getBetrag() != null && getBetrag() < 0.0)
+        if (getBetrag() != null && getBetrag().signum() < 0)
         {
           throw new ApplicationException(
               "Wert der Anlage darf nicht negativ sein");
@@ -234,7 +232,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
    *         ohne die Buchungen des angegebenen Tages
    * @throws RemoteException
    */
-  public static Double getSaldo(Integer konto, Date datum)
+  public static BigDecimal getSaldo(Integer konto, Date datum)
       throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
@@ -259,17 +257,17 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
       summeIt.addFilter("datum < ?", datum);
       summeIt.addFilter("konto = ?", konto);
 
-      Double summe = 0d;
+      BigDecimal summe = BigDecimal.ZERO;
       if (summeIt.hasNext())
       {
         PseudoDBObject o = summeIt.next();
         if (o.getAttribute("summe") != null)
         {
-          summe = o.getDouble("summe");
+          summe = o.getBigDecimal("summe");
         }
       }
 
-      return a.getBetrag() + summe;
+      return a.getBetrag().add(summe);
     }
 
     // Suchen ob Anfangsstand im Suchbereich enthalten ist.
@@ -294,13 +292,13 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
       summeIt.addFilter("datum <= ?", Datum.addTage(a.getDatum(), -1));
       summeIt.addFilter("konto = ?", konto);
 
-      Double summe = 0d;
+      BigDecimal summe = BigDecimal.ZERO;
       PseudoDBObject o = summeIt.next();
       if (o.getAttribute("summe") != null)
       {
-        summe = o.getDouble("summe");
+        summe = o.getBigDecimal("summe");
       }
-      return a.getBetrag() - summe;
+      return a.getBetrag().add(summe);
     }
     return null;
   }
@@ -414,7 +412,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
             .createObject(Anfangsbestand.class, null);
         ab.setKonto(this);
         ab.setDatum(getEroeffnung());
-        ab.setBetrag(0d);
+        ab.setBetrag(BigDecimal.ZERO);
         ab.store();
         Logger.info("Anfangsbestand für neues Konto " + getBezeichnung()
             + " gespeichert");
@@ -561,13 +559,13 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    return (Double) getAttribute(BETRAG);
+    return (BigDecimal) getAttribute(BETRAG);
   }
 
   @Override
-  public void setBetrag(Double d) throws RemoteException
+  public void setBetrag(BigDecimal d) throws RemoteException
   {
     setAttribute(BETRAG, d);
   }
@@ -597,37 +595,37 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   }
 
   @Override
-  public Double getAfaStart() throws RemoteException
+  public BigDecimal getAfaStart() throws RemoteException
   {
-    return (Double) getAttribute(AFASTART);
+    return (BigDecimal) getAttribute(AFASTART);
   }
 
   @Override
-  public void setAfaStart(Double afastart) throws RemoteException
+  public void setAfaStart(BigDecimal afastart) throws RemoteException
   {
     setAttribute(AFASTART, afastart);
   }
 
   @Override
-  public Double getAfaDauer() throws RemoteException
+  public BigDecimal getAfaDauer() throws RemoteException
   {
-    return (Double) getAttribute(AFADAUER);
+    return (BigDecimal) getAttribute(AFADAUER);
   }
 
   @Override
-  public void setAfaDauer(Double afadauer) throws RemoteException
+  public void setAfaDauer(BigDecimal afadauer) throws RemoteException
   {
     setAttribute(AFADAUER, afadauer);
   }
 
   @Override
-  public Double getAfaRestwert() throws RemoteException
+  public BigDecimal getAfaRestwert() throws RemoteException
   {
-    return (Double) getAttribute(AFARESTWERT);
+    return (BigDecimal) getAttribute(AFARESTWERT);
   }
 
   @Override
-  public void setAfaRestwert(Double afarestwert) throws RemoteException
+  public void setAfaRestwert(BigDecimal afarestwert) throws RemoteException
   {
     setAttribute(AFARESTWERT, afarestwert);
   }
@@ -645,26 +643,14 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   }
 
   @Override
-  public Double getSaldo() throws RemoteException
+  public BigDecimal getSaldo() throws RemoteException
   {
-    ResultSetExtractor rsd = new ResultSetExtractor()
-    {
-      @Override
-      public Object extract(ResultSet rs) throws SQLException
-      {
-        if (!rs.next())
-        {
-          return Double.valueOf(0);
-        }
-        return Double.valueOf(rs.getDouble(1));
-      }
-    };
-    Double saldo = 0.0;
+    BigDecimal saldo = BigDecimal.ZERO;
     Date datum = null;
     // Suchen ob Anfangsstand im Suchbereich enthalten ist
     DBService service = Einstellungen.getDBService();
     DBIterator<Anfangsbestand> anf = service.createList(Anfangsbestand.class);
-    anf.addFilter("konto = ? ", new Object[] { getID() });
+    anf.addFilter("konto = ? ", getID());
     anf.setOrder("ORDER BY datum desc");
     if (anf != null && anf.hasNext())
     {
@@ -672,18 +658,18 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
       saldo = anfang.getBetrag();
       datum = anfang.getDatum();
     }
+
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("buchung");
+    it.addFilter("konto = ?", getID());
     if (datum != null)
     {
-      String sql = "SELECT sum(buchung.betrag) FROM buchung"
-          + " WHERE buchung.konto = ?" + " AND buchung.datum >= ?";
-      saldo += (Double) service.execute(sql, new Object[] { getID(), datum },
-          rsd);
+      it.addFilter("datum >= ?", datum);
     }
-    else
+    it.addColumn("sum(buchung.betrag) as summe");
+    PseudoDBObject o = it.next();
+    if (o != null && o.getBigDecimal("summe") != null)
     {
-      String sql = "SELECT sum(buchung.betrag) FROM buchung"
-          + " WHERE buchung.konto = ?";
-      saldo += (Double) service.execute(sql, new Object[] { getID() }, rsd);
+      saldo = saldo.add(o.getBigDecimal("summe"));
     }
     return saldo;
   }

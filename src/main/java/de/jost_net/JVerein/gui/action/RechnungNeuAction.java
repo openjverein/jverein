@@ -83,7 +83,7 @@ public class RechnungNeuAction implements Action
         {
           continue;
         }
-        if (sollb.getBetrag() > -0.005d)
+        if (sollb.getBetrag().signum() >= 0)
         {
           mitRechnung = true;
         }
@@ -123,7 +123,7 @@ public class RechnungNeuAction implements Action
         }
         Rechnung rechnung = (Rechnung) Einstellungen.getDBService()
             .createObject(Rechnung.class, null);
-        if (sollb.getBetrag() > -0.005d)
+        if (sollb.getBetrag().signum() >= 0)
         {
           rechnung.setFormular(formularRechnung);
         }

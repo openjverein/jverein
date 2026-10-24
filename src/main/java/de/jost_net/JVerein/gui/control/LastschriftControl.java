@@ -72,7 +72,7 @@ public class LastschriftControl extends FilterControl
     lastschriftList.addColumn("Email", "email");
     lastschriftList.addColumn("Zweck", "verwendungszweck");
     lastschriftList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     lastschriftList.addColumn("Fälligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lastschriftList.addColumn("IBAN", "iban", new IBANFormatter());

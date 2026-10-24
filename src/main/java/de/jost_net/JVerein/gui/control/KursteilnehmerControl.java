@@ -69,7 +69,7 @@ public class KursteilnehmerControl extends FilterControl
     kursteilnehmerList.addColumn("IBAN", "iban", new IBANFormatter());
     kursteilnehmerList.addColumn("Kontoinhaber", "kontoinhaber");
     kursteilnehmerList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     kursteilnehmerList.addColumn("Mandats-ID", "mandatid");
     kursteilnehmerList.addColumn("Eingabedatum", "eingabedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

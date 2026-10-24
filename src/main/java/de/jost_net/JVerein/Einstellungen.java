@@ -19,6 +19,7 @@ package de.jost_net.JVerein;
 
 import java.io.File;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -38,6 +39,7 @@ import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.server.EinstellungImpl;
 import de.jost_net.JVerein.server.Util;
+import de.jost_net.JVerein.util.JVBigDecimalFormat;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.JVDecimalFormat;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -70,6 +72,12 @@ public class Einstellungen
    * Our decimal formatter.
    */
   public final static JVDecimalFormat DECIMALFORMAT = new JVDecimalFormat(
+      "###,##0.00");
+
+  /**
+   * Our bigdecimal formatter.
+   */
+  public final static JVBigDecimalFormat BIGDECIMALFORMAT = new JVBigDecimalFormat(
       "###,##0.00");
 
   /**
@@ -292,8 +300,8 @@ public class Einstellungen
     VERANLAGUNGBIS("veranlagungbis", Date.class, ""),
     BEGUENSTIGTERZWECK("beguenstigterzweck", String.class, ""),
     MITGLIEDSBETRAEGE("mitgliedsbeitraege", Boolean.class, "0"),
-    SPENDENBESCHEINIGUNGMINBETRAG("spendenbescheinigungminbetrag", Double.class,
-        "0.01"),
+    SPENDENBESCHEINIGUNGMINBETRAG("spendenbescheinigungminbetrag",
+        BigDecimal.class, "0.01"),
     SPENDENBESCHEINIGUNGPRINTBUCHUNGSART("spendenbescheinigungprintbuchungsart",
         Boolean.class, "0"),
     UNTERSCHRIFTDRUCKEN("unterschriftdrucken", Boolean.class, "0"),
@@ -304,7 +312,7 @@ public class Einstellungen
 
     // Buchführung
     BEGINNGESCHAEFTSJAHR("beginngeschaeftsjahr", String.class, "01.01."),
-    AFARESTWERT("afarestwert", Double.class, "1"),
+    AFARESTWERT("afarestwert", BigDecimal.class, "1"),
     AUTOBUCHUNGUEBERNAHME("autobuchunguebernahme", Boolean.class, "1"),
     AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS("autobuchungskorrekturhibiscus",
         Boolean.class, "1"),
@@ -461,6 +469,12 @@ public class Einstellungen
           return null;
         }
         return Double.valueOf(value);
+      case "BigDecimal":
+        if (value.isBlank())
+        {
+          return null;
+        }
+        return new BigDecimal(value);
       case "String":
         return value;
       case "Boolean":
