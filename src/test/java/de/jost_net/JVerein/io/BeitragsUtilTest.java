@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,8 +33,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import com.ibm.icu.math.BigDecimal;
 
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
@@ -73,12 +73,12 @@ public class BeitragsUtilTest
 
       calendar.set(2026, 01, 01);
       doReturn(calendar.getTime()).when(m).getEintritt();
-      assertEquals(new BigDecimal("10.00"), BeitragsUtil.getBeitrag(
+      assertEquals(new BigDecimal("10"), BeitragsUtil.getBeitrag(
           Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, stichtag, m));
 
       calendar.set(2026, 02, 01);
       doReturn(calendar.getTime()).when(m).getAustritt();
-      assertEquals(new BigDecimal("10.00"), BeitragsUtil.getBeitrag(
+      assertEquals(new BigDecimal("10"), BeitragsUtil.getBeitrag(
           Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, stichtag, m));
 
       calendar.set(2026, 01, 01);
@@ -105,13 +105,13 @@ public class BeitragsUtilTest
 
       Beitragsgruppe bg = mock(Beitragsgruppe.class);
 
-      doReturn(new BigDecimal("10.00")).when(bg).getBetrag();
-      doReturn(new BigDecimal("15.00")).when(bg).getBetragMonatlich();
-      doReturn(new BigDecimal("42.00")).when(bg).getBetragVierteljaehrlich();
-      doReturn(new BigDecimal("85.00")).when(bg).getBetragHalbjaehrlich();
-      doReturn(new BigDecimal("167.00")).when(bg).getBetragJaehrlich();
+      doReturn(new BigDecimal("10")).when(bg).getBetrag();
+      doReturn(new BigDecimal("15")).when(bg).getBetragMonatlich();
+      doReturn(new BigDecimal("42")).when(bg).getBetragVierteljaehrlich();
+      doReturn(new BigDecimal("85")).when(bg).getBetragHalbjaehrlich();
+      doReturn(new BigDecimal("167")).when(bg).getBetragJaehrlich();
 
-      assertEquals(new BigDecimal("10.00"), BeitragsUtil.getBeitrag(
+      assertEquals(new BigDecimal("10"), BeitragsUtil.getBeitrag(
           Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, new Date(), m));
 
       assertEquals(new BigDecimal("10.00"),
@@ -134,19 +134,19 @@ public class BeitragsUtilTest
               new Zahlungsrhythmus(Zahlungsrhythmus.JAEHRLICH), bg, new Date(),
               m));
 
-      assertEquals(new BigDecimal("15.00"),
+      assertEquals(new BigDecimal("15"),
           BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
               Zahlungstermin.MONATLICH, null, bg, new Date(), m));
 
-      assertEquals(new BigDecimal("42.00"),
+      assertEquals(new BigDecimal("42"),
           BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
               Zahlungstermin.VIERTELJAEHRLICH1, null, bg, new Date(), m));
 
-      assertEquals(new BigDecimal("85.00"),
+      assertEquals(new BigDecimal("85"),
           BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
               Zahlungstermin.HALBJAEHRLICH1, null, bg, new Date(), m));
 
-      assertEquals(new BigDecimal("167.00"),
+      assertEquals(new BigDecimal("167"),
           BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
               Zahlungstermin.JAERHLICH01, null, bg, new Date(), m));
     }
@@ -176,13 +176,13 @@ public class BeitragsUtilTest
       doReturn(new Date()).when(m).getEintritt();
 
       Altersstaffel altersstaffel1 = mock(Altersstaffel.class);
-      doReturn(new BigDecimal("5.00")).when(altersstaffel1).getBetrag();
+      doReturn(new BigDecimal("5")).when(altersstaffel1).getBetrag();
 
       Altersstaffel altersstaffel2 = mock(Altersstaffel.class);
-      doReturn(new BigDecimal("7.00")).when(altersstaffel2).getBetrag();
+      doReturn(new BigDecimal("7")).when(altersstaffel2).getBetrag();
 
       Altersstaffel altersstaffel3 = mock(Altersstaffel.class);
-      doReturn(new BigDecimal("9.00")).when(altersstaffel3).getBetrag();
+      doReturn(new BigDecimal("9")).when(altersstaffel3).getBetrag();
 
       doReturn(altersstaffel1).when(bg).getAltersstaffel(0);
       doReturn(altersstaffel2).when(bg).getAltersstaffel(1);
@@ -194,15 +194,15 @@ public class BeitragsUtilTest
               null, null, bg, new Date(), m));
 
       doReturn(6).when(m).getAlter();
-      assertEquals(new BigDecimal("5.00"), BeitragsUtil.getBeitrag(
+      assertEquals(new BigDecimal("5"), BeitragsUtil.getBeitrag(
           Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, new Date(), m));
 
       doReturn(7).when(m).getAlter();
-      assertEquals(new BigDecimal("7.00"), BeitragsUtil.getBeitrag(
+      assertEquals(new BigDecimal("7"), BeitragsUtil.getBeitrag(
           Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, new Date(), m));
 
       doReturn(20).when(m).getAlter();
-      assertEquals(new BigDecimal("9.00"), BeitragsUtil.getBeitrag(
+      assertEquals(new BigDecimal("9"), BeitragsUtil.getBeitrag(
           Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, new Date(), m));
 
       doReturn(110).when(m).getAlter();
