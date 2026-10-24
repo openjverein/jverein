@@ -34,8 +34,8 @@ import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.DBSupport;
 import de.jost_net.JVerein.rmi.Einstellung;
-import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.willuhn.jameica.security.Wallet;
 import de.willuhn.jameica.system.Application;
@@ -58,13 +58,13 @@ public class JVereinUpdateProvider
 
   public static final String H2 = DBSupportH2Impl.class.getName();
 
-  public JVereinUpdateProvider(Connection conn, ProgressMonitor progressmonitor)
-      throws ApplicationException
+  public JVereinUpdateProvider(DBSupport driverClass, Connection conn,
+      ProgressMonitor progressmonitor) throws ApplicationException
   {
     this.progressmonitor = progressmonitor;
     // TODO Bei Umstellung von MySQL zu H2 wäre das nicht sinnvoll, da es für
     // die neue Verbindung H2 leifern müsste, obwohl in den Settings MySQL steht
-    driver = JVereinDBService.SETTINGS.getString("database.driver", H2);
+    driver = driverClass.getClass().getName();
 
     // h14199 wird genauso wie H2 behandelt
     if (driver.equals(H2V2))

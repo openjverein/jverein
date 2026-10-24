@@ -84,7 +84,7 @@ public class DBSupportH2Impl extends AbstractDBSupportImpl
     {
       try
       {
-        new JVereinUpdateProvider(conn,
+        new JVereinUpdateProvider(this, conn,
             Application.getCallback().getStartupMonitor());
       }
       catch (Exception e2)

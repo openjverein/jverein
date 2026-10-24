@@ -61,7 +61,7 @@ public class DBSupportH2v2Impl extends AbstractDBSupportImpl
   {
     String url = "jdbc:h2v2:" + Application.getPluginLoader()
         .getPlugin(JVereinPlugin.class).getResources().getWorkPath()
-        + "/h2db/jverein-new";
+        + "/h2db/jverein-h2v2";
 
     if (JVereinDBService.SETTINGS.getBoolean("database.driver.h2.auto_server",
         false))
@@ -84,7 +84,7 @@ public class DBSupportH2v2Impl extends AbstractDBSupportImpl
     {
       try
       {
-        new JVereinUpdateProvider(conn,
+        new JVereinUpdateProvider(this, conn,
             Application.getCallback().getStartupMonitor());
       }
       catch (Exception e2)

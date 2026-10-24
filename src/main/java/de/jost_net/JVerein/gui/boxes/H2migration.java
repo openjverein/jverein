@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Label;
 import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.server.DBSupportH2Impl;
 import de.jost_net.JVerein.server.MigratH2Database;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.boxes.AbstractBox;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Font;
@@ -114,7 +113,6 @@ public class H2migration extends AbstractBox
     buttons.addButton("Migration starten", e -> MigratH2Database.start(), null,
         false, "go-next.png");
     buttons.paint(parent);
-
   }
 
   @Override
