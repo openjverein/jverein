@@ -129,14 +129,12 @@ public class Suchbetrag
     // jetzt muss ein Decimalwert kommen
     try
     {
-      {
-        NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
-        betrag = new BigDecimal(nf.parse(liste.get(0)).toString());
+      NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
+      betrag = new BigDecimal(nf.parse(liste.get(0)).toString());
 
-        if (suchstrategie == Suchstrategie.BEREICH)
-        {
-          betrag2 = new BigDecimal(nf.parse(liste.get(1)).toString());
-        }
+      if (suchstrategie == Suchstrategie.BEREICH)
+      {
+        betrag2 = new BigDecimal(nf.parse(liste.get(1)).toString());
       }
     }
     catch (ParseException e)
