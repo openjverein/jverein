@@ -35,7 +35,6 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -440,7 +439,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
           settings.setAttribute(zusatzfeld + counter + ".value", "");
           f.setValue(null);
         }
-        else if (f instanceof DecimalInput)
+        else if (f instanceof BigDecimalInput)
         {
           settings.setAttribute(zusatzfeld + counter + ".value", "");
           f.setValue(null);

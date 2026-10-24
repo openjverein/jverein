@@ -18,6 +18,7 @@
 package de.jost_net.JVerein.io;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -126,9 +127,8 @@ public class Migration
       {
         bestehendeBeitragsgruppen.put(
             this.getResultFrom(results, InternalColumns.BEITRAGSART),
-            BigDecimal.valueOf(Double
-                .valueOf(this.getResultFrom(results, InternalColumns.BEITRAG)
-                    .replace(',', '.'))));
+            new BigDecimal(this.getResultFrom(results, InternalColumns.BEITRAG)
+                .replace(',', '.')).setScale(2, RoundingMode.HALF_UP));
       }
     }
     catch (NumberFormatException e)
@@ -824,8 +824,7 @@ public class Migration
       /* Check if remaining string matches the supported format */
       if (individuellerBeitrag.matches("[0-9]+(\\.[0-9]+)?"))
       {
-        BigDecimal beitrag = BigDecimal
-            .valueOf(Double.valueOf(individuellerBeitrag));
+        BigDecimal beitrag = new BigDecimal(individuellerBeitrag);
         if (beitrag.signum() > 0)
         {
           m.setIndividuellerBeitrag(beitrag);

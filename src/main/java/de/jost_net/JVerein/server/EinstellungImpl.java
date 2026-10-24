@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -131,8 +132,9 @@ public class EinstellungImpl extends AbstractJVereinDBObject
 
       // Spendenbescheinigung Mindestbetrag
       if (hasChanged(Property.SPENDENBESCHEINIGUNGMINBETRAG.getKey())
-          && (Double) getAttribute(
-              Property.SPENDENBESCHEINIGUNGMINBETRAG.getKey()) < 0.01d)
+          && ((BigDecimal) getAttribute(
+              Property.SPENDENBESCHEINIGUNGMINBETRAG.getKey()))
+                  .compareTo(new BigDecimal("0.01")) < 0)
       {
         throw new ApplicationException(
             "Mindestbetrag für Spendenbescheinigungen darf nicht kleiner als 0.01 sein");

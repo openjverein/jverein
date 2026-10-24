@@ -85,7 +85,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBetrag().doubleValue() < 0.01)
+      if (getBetrag().signum() <= 0)
       {
         throw new ApplicationException("Betrag muss größer als 0 sein.");
       }

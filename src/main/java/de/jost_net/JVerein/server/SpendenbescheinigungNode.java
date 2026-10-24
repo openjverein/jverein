@@ -76,7 +76,7 @@ public class SpendenbescheinigungNode implements GenericObjectNode
   {
     childrens = new ArrayList<>();
     nodetype = ROOT;
-    double minBetrag = (Double) Einstellungen
+    BigDecimal minBetrag = (BigDecimal) Einstellungen
         .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG);
 
     ResultSetExtractor rse = new ResultSetExtractor()

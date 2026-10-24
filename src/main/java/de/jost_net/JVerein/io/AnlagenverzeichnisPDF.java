@@ -48,12 +48,12 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
       for (PseudoDBObject alz : zeilen)
       {
         if (alz.getAttribute(AnlagenlisteControl.ZUGANG) != null
-            && Math.abs(alz.getDouble(AnlagenlisteControl.ZUGANG)) >= 0.01d)
+            && alz.getBigDecimal(AnlagenlisteControl.ZUGANG).signum() > 0)
         {
           hasZugang = true;
         }
         if (alz.getAttribute(AnlagenlisteControl.ABGANG) != null
-            && Math.abs(alz.getDouble(AnlagenlisteControl.ABGANG)) >= 0.01d)
+            & alz.getBigDecimal(AnlagenlisteControl.ABGANG).signum() > 0)
         {
           hasAbgang = true;
         }

@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.Variable;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,7 +56,8 @@ public class BuchungMap extends AbstractMap
               : "";
           break;
         case BETRAGINWORTEN:
-          Double ganzbetrag = bu.getBetrag().doubleValue() * 100;
+          BigDecimal ganzbetrag = bu.getBetrag()
+              .multiply(new BigDecimal("100"));
           long euro = bu.getBetrag().longValue();
           long cent = Math.abs(ganzbetrag.longValue() - 100 * euro);
           try
