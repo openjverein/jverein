@@ -2,6 +2,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -443,8 +444,8 @@ public class MitgliederImport implements Importer
             if (individuellerBeitrag != null)
             {
               individuellerBeitrag = individuellerBeitrag.replace(",", ".");
-              m.setIndividuellerBeitrag(
-                  new BigDecimal(individuellerBeitrag).setScale(2));
+              m.setIndividuellerBeitrag(new BigDecimal(individuellerBeitrag)
+                  .setScale(2, RoundingMode.HALF_UP));
             }
             else
             {

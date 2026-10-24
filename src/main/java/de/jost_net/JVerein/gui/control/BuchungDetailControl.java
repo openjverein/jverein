@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -778,8 +779,8 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
               Buchung b = (Buchung) Einstellungen.getDBService()
                   .createObject(Buchung.class, null);
               b.setAuszugsnummer(master.getAuszugsnummer());
-              b.setBetrag(
-                  BigDecimal.valueOf(ssub.getBetrag()).negate().setScale(2));
+              b.setBetrag(BigDecimal.valueOf(ssub.getBetrag()).negate()
+                  .setScale(2, RoundingMode.HALF_UP));
               b.setBlattnummer(master.getBlattnummer());
               b.setBuchungsartId(master.getBuchungsartId());
               b.setBuchungsklasseId(master.getBuchungsklasseId());

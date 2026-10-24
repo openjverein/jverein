@@ -18,6 +18,7 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -220,7 +221,8 @@ public class EditTreePart extends TreePart
                   }
                   if (value instanceof BigDecimal)
                   {
-                    o = new BigDecimal(newValue).setScale(2);
+                    o = new BigDecimal(newValue).setScale(2,
+                        RoundingMode.HALF_UP);
                   }
                   else if (value instanceof Integer)
                   {

@@ -189,7 +189,7 @@ public class SplitbuchungsContainer
     }
     BigDecimal differenz = getSumme(SplitbuchungTyp.HAUPT)
         .subtract(getSumme(SplitbuchungTyp.SPLIT));
-    if (!differenz.equals(BigDecimal.valueOf(0).setScale(2)))
+    if (differenz.signum() != 0)
     {
       throw new ApplicationException(
           "Differenz zwischen Hauptbuchung und Splitbuchungen: " + differenz);
