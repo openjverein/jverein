@@ -18,11 +18,11 @@ package de.jost_net.JVerein.io;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.StringTokenizer;
-
-import de.jost_net.JVerein.Einstellungen;
 
 public class Suchbetrag
 {
@@ -129,13 +129,14 @@ public class Suchbetrag
     // jetzt muss ein Decimalwert kommen
     try
     {
-      betrag = new BigDecimal(
-          Einstellungen.BIGDECIMALFORMAT.parse(liste.get(0)).toString());
-
-      if (suchstrategie == Suchstrategie.BEREICH)
       {
-        betrag2 = new BigDecimal(
-            Einstellungen.BIGDECIMALFORMAT.parse(liste.get(1)).toString());
+        NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
+        betrag = new BigDecimal(nf.parse(liste.get(0)).toString());
+
+        if (suchstrategie == Suchstrategie.BEREICH)
+        {
+          betrag2 = new BigDecimal(nf.parse(liste.get(1)).toString());
+        }
       }
     }
     catch (ParseException e)

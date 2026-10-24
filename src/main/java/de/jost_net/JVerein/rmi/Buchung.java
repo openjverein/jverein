@@ -60,10 +60,6 @@ public interface Buchung extends AbstractBelegDBObject
 
   public void setIban(String iban) throws RemoteException;
 
-  public boolean isBetragNull() throws RemoteException;
-
-  public void setBetragNull() throws RemoteException;
-
   public BigDecimal getBetrag() throws RemoteException;
 
   public void setBetrag(BigDecimal betrag) throws RemoteException;

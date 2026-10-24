@@ -139,7 +139,7 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
     {
       throw new ApplicationException("Bitte Datum eingeben");
     }
-    if (isBetragNull())
+    if (getBetrag() == null)
     {
       throw new ApplicationException("Bitte Betrag eingeben");
     }
@@ -411,18 +411,6 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
   public void setBetrag(BigDecimal d) throws RemoteException
   {
     setAttribute("betrag", d);
-  }
-
-  @Override
-  public boolean isBetragNull() throws RemoteException
-  {
-    return (Double) getAttribute("betrag") == null;
-  }
-
-  @Override
-  public void setBetragNull() throws RemoteException
-  {
-    setAttribute("betrag", null);
   }
 
   @Override

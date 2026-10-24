@@ -223,15 +223,8 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
       b.setIban(null);
     else
       b.setIban(ib.replace(" ", ""));
-    if (getBetrag().getValue() != null)
-    {
-      b.setBetrag((BigDecimal) getBetrag().getValue());
-    }
-    else
-    {
-      // Nötig um für den Check den letzten gesetzten Wert zu löschen
-      b.setBetragNull();
-    }
+
+    b.setBetrag((BigDecimal) getBetrag().getValue());
     b.setZweck((String) getZweck().getValue());
     b.setDatum((Date) getDatum().getValue());
     b.setArt((String) getArt().getValue());
@@ -378,7 +371,7 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
       return betrag;
     }
 
-    if (getBuchung().isNewObject() && getBuchung().isBetragNull())
+    if (getBuchung().isNewObject() && getBuchung().getBetrag() == null)
     {
       betrag = new BigDecimalInput(Einstellungen.BIGDECIMALFORMAT);
     }
