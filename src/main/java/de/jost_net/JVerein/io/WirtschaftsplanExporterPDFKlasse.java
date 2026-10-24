@@ -196,7 +196,8 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
       {
         reporter.addColumn(
             plan.getIstEinnahme()
-                + (verbindlichkeitenForderungen ? plan.getIstForderungen() : 0),
+                .add(verbindlichkeitenForderungen ? plan.getIstForderungen()
+                    : BigDecimal.ZERO),
             params.getColorTable2(), params.getFontFett(),
             params.getNegativRot());
       }
@@ -210,10 +211,9 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
           params.getFontFett(), params.getNegativRot());
       if (hatIst.contains(plan))
       {
-        reporter.addColumn(
-            plan.getIstAusgabe()
-                + (verbindlichkeitenForderungen ? plan.getIstVerbindlichkeiten()
-                    : 0),
+        reporter.addColumn(plan.getIstAusgabe()
+            .add(verbindlichkeitenForderungen ? plan.getIstVerbindlichkeiten()
+                : BigDecimal.ZERO),
             params.getColorTable2(), params.getFontFett(),
             params.getNegativRot());
       }
@@ -223,20 +223,20 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
         params.getFontFett());
     for (Wirtschaftsplan plan : wirtschaftsplaene)
     {
-      reporter.addColumn(plan.getPlanEinnahme() + plan.getPlanAusgabe(),
+      reporter.addColumn(plan.getPlanEinnahme().add(plan.getPlanAusgabe()),
           params.getColorTable2(), params.getFontFett(),
           params.getNegativRot());
       if (hatIst.contains(plan))
       {
-        reporter
-            .addColumn(
-                plan.getIstEinnahme() + plan.getIstAusgabe()
-                    + (verbindlichkeitenForderungen
+        reporter.addColumn(
+            plan.getIstEinnahme()
+                .add(plan.getIstAusgabe()
+                    .add(verbindlichkeitenForderungen
                         ? plan.getIstForderungen()
-                            + plan.getIstVerbindlichkeiten()
-                        : 0),
-                params.getColorTable2(), params.getFontFett(),
-                params.getNegativRot());
+                            .add(plan.getIstVerbindlichkeiten())
+                        : BigDecimal.ZERO)),
+            params.getColorTable2(), params.getFontFett(),
+            params.getNegativRot());
       }
     }
 
@@ -332,12 +332,12 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
               key = k;
             }
           }
-          HashMap<String, Double[][]> entryMap = map.getOrDefault(key,
+          HashMap<String, BigDecimal[][]> entryMap = map.getOrDefault(key,
               new HashMap<>());
 
           // Buchungsart in der Map mit Node-Key '-'
-          Double[][] entry = entryMap.getOrDefault("-",
-              new Double[wirtschaftsplaene.length][2]);
+          BigDecimal[][] entry = entryMap.getOrDefault("-",
+              new BigDecimal[wirtschaftsplaene.length][2]);
           entry[n][0] = buchungsartNode.getSoll();
           entry[n][1] = buchungsartNode.getIst();
 
@@ -352,7 +352,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
             String nodekey = (String) posten
                 .getAttribute("buchungsklassebezeichnung");
             entry = entryMap.getOrDefault(nodekey,
-                new Double[wirtschaftsplaene.length][2]);
+                new BigDecimal[wirtschaftsplaene.length][2]);
             entry[n][0] = posten.getSoll();
             entry[n][1] = posten.getIst();
 
@@ -360,8 +360,8 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
           }
           map.put(key, entryMap);
         }
-        summen[n][0] += buchungsklasseNode.getSoll();
-        summen[n][1] += buchungsklasseNode.getIst();
+        summen[n][0] = summen[n][0].add(buchungsklasseNode.getSoll());
+        summen[n][1] = summen[n][1].add(buchungsklasseNode.getIst());
       }
       n++;
     }
@@ -377,20 +377,20 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
     // Spalten füllen
     // Buchungsarten
     map.entrySet().stream().sorted(Map.Entry
-        .<WirtschaftsplanNode, HashMap<String, Double[][]>> comparingByKey())
+        .<WirtschaftsplanNode, HashMap<String, BigDecimal[][]>> comparingByKey())
         .forEach(buchungsartEntry -> {
           // Buchungsarten mit keinen Eintrag (außer Buchungsart) und Ist=0
           // überspringen
           if (ohneBuchungsartUnterdruecken
               && buchungsartEntry.getValue().size() == 1
-              && Math.abs(buchungsartEntry.getKey().getIst()) < 0.01d)
+              && buchungsartEntry.getKey().getIst().signum() == 0)
           {
             return;
           }
 
           // Posten
           buchungsartEntry.getValue().entrySet().stream()
-              .sorted(Map.Entry.<String, Double[][]> comparingByKey())
+              .sorted(Map.Entry.<String, BigDecimal[][]> comparingByKey())
               .forEach(postenEntry -> {
                 try
                 {
@@ -412,22 +412,23 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
                         Element.ALIGN_LEFT, params.getFontNormal());
                   }
 
-                  Double[][] values = postenEntry.getValue();
+                  BigDecimal[][] values = postenEntry.getValue();
                   int i = -1;
-                  for (Double[] betrag : values)
+                  for (BigDecimal[] betrag : values)
                   {
                     i++;
-                    reporter.addColumn(betrag[0] == null ? 0 : betrag[0],
+                    reporter.addColumn(
+                        betrag[0] == null ? BigDecimal.ZERO : betrag[0],
                         params.getColorTable2(), params.getFontNormal(),
                         params.getNegativRot());
 
                     if (hatIst.contains(wirtschaftsplaene[i]))
                     {
-                      Double d = null;
+                      BigDecimal d = null;
                       // Ist nur bei Buchungsart
                       if ("-".equals(postenEntry.getKey()))
                       {
-                        d = betrag[1] == null ? 0 : betrag[1];
+                        d = betrag[1] == null ? BigDecimal.ZERO : betrag[1];
                       }
                       reporter.addColumn(d, params.getFontNormal(),
                           params.getNegativRot());
@@ -445,7 +446,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
     reporter.addColumn("Summe " + new BuchungsklasseFormatter().format(klasse),
         Element.ALIGN_RIGHT, params.getColorTable2(), params.getFontFett());
     int j = -1;
-    for (Double[] sollist : summen)
+    for (BigDecimal[] sollist : summen)
     {
       j++;
       reporter.addColumn(sollist[0], params.getColorTable2(),

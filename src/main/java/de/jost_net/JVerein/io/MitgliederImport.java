@@ -442,7 +442,9 @@ public class MitgliederImport implements Importer
                 .getString("individuellerbeitrag");
             if (individuellerBeitrag != null)
             {
-              m.setIndividuellerBeitrag(new BigDecimal(individuellerBeitrag));
+              individuellerBeitrag = individuellerBeitrag.replace(",", ".");
+              m.setIndividuellerBeitrag(
+                  new BigDecimal(individuellerBeitrag).setScale(2));
             }
             else
             {

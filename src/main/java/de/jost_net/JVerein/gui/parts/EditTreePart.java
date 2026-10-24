@@ -220,7 +220,7 @@ public class EditTreePart extends TreePart
                   }
                   if (value instanceof BigDecimal)
                   {
-                    o = new BigDecimal(newValue);
+                    o = new BigDecimal(newValue).setScale(2);
                   }
                   else if (value instanceof Integer)
                   {

@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Map;
 
@@ -157,10 +158,10 @@ public class BuchungsjournalExportPDF implements Exporter
     FileOutputStream fos = new FileOutputStream(file);
     Reporter reporter = new Reporter(fos, params);
 
-    double einnahmen = 0;
-    double ausgaben = 0;
-    double umbuchungen = 0;
-    double nichtzugeordnet = 0;
+    BigDecimal einnahmen = BigDecimal.ZERO;
+    BigDecimal ausgaben = BigDecimal.ZERO;
+    BigDecimal umbuchungen = BigDecimal.ZERO;
+    BigDecimal nichtzugeordnet = BigDecimal.ZERO;
 
     createTableHeader(reporter);
 
@@ -227,24 +228,24 @@ public class BuchungsjournalExportPDF implements Exporter
         {
           case ArtBuchungsart.EINNAHME:
           {
-            einnahmen += b.getBetrag();
+            einnahmen = einnahmen.add(b.getBetrag());
             break;
           }
           case ArtBuchungsart.AUSGABE:
           {
-            ausgaben += b.getBetrag();
+            ausgaben = ausgaben.add(b.getBetrag());
             break;
           }
           case ArtBuchungsart.UMBUCHUNG:
           {
-            umbuchungen += b.getBetrag();
+            umbuchungen = umbuchungen.add(b.getBetrag());
             break;
           }
         }
       }
       else
       {
-        nichtzugeordnet += b.getBetrag();
+        nichtzugeordnet = nichtzugeordnet.add(b.getBetrag());
       }
     }
 

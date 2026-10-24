@@ -597,14 +597,14 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
           verzicht = "nein";
         }
         rpt.addColumn(verzicht, Element.ALIGN_CENTER);
-        rpt.addColumn(Double.valueOf(buchung.getBetrag()));
+        rpt.addColumn(buchung.getBetrag());
       }
 
       /* Summenzeile */
       rpt.addColumn("Gesamtsumme", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
       rpt.addColumn("", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
       rpt.addColumn("", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
-      rpt.addColumn(Double.valueOf(spb.getBetrag()));
+      rpt.addColumn(spb.getBetrag());
 
       rpt.closeTable();
     }
@@ -680,8 +680,7 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
   }
 
   @Override
-  protected String getDateiname(DBObject object)
-      throws RemoteException
+  protected String getDateiname(DBObject object) throws RemoteException
   {
     if (object != null)
     {

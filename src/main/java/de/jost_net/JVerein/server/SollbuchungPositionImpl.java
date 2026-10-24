@@ -223,8 +223,8 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
     {
       return betrag;
     }
-    return betrag.multiply(new BigDecimal("100")).divide(
-        (new BigDecimal("100")).add(steuersatz), 2, RoundingMode.HALF_UP);
+    return betrag.multiply(new BigDecimal("100.00")).divide(
+        (new BigDecimal("100.00")).add(steuersatz), 2, RoundingMode.HALF_UP);
   }
 
   @Override

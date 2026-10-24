@@ -14,6 +14,7 @@
 
 package de.jost_net.JVerein.io;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,13 @@ import de.willuhn.datasource.rmi.DBIterator;
 
 public abstract class BuchungAuswertungExportPDF implements Exporter
 {
-  protected double summe = 0;
+  protected BigDecimal summe = BigDecimal.ZERO;
 
-  protected double summeeinnahmen = 0;
+  protected BigDecimal summeeinnahmen = BigDecimal.ZERO;
 
-  protected double summeausgaben = 0;
+  protected BigDecimal summeausgaben = BigDecimal.ZERO;
 
-  protected double summeumbuchungen = 0;
+  protected BigDecimal summeumbuchungen = BigDecimal.ZERO;
 
   protected boolean kontonummer_in_buchungsliste = false;
 

@@ -766,8 +766,9 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
       return brutto;
     }
 
-    BigDecimal netto = brutto.multiply(new BigDecimal("100")).divide(
-        (new BigDecimal("100")).add(steuer.getSatz()), 2, RoundingMode.HALF_UP);
+    BigDecimal netto = brutto.multiply(new BigDecimal("100.00")).divide(
+        (new BigDecimal("100.00")).add(steuer.getSatz()), 2,
+        RoundingMode.HALF_UP);
 
     return netto;
   }

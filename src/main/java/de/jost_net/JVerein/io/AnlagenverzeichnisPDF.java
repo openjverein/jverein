@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -99,27 +100,27 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
                 (Date) akz.getAttribute(AnlagenlisteControl.ANSCHAFFUNG_DATUM),
                 Element.ALIGN_RIGHT, params.getFontNormal());
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.BETRAG),
+                (BigDecimal) akz.getAttribute(AnlagenlisteControl.BETRAG),
                 params.getFontNormal(), params.getNegativRot());
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT),
+                (BigDecimal) akz.getAttribute(AnlagenlisteControl.STARTWERT),
                 params.getFontNormal(), params.getNegativRot());
             if (hasZugang)
             {
               reporter.addColumn(
-                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG),
+                  (BigDecimal) akz.getAttribute(AnlagenlisteControl.ZUGANG),
                   params.getFontNormal(), params.getNegativRot());
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG),
+                (BigDecimal) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG),
                 params.getFontNormal(), params.getNegativRot());
             if (hasAbgang)
             {
               reporter.addColumn(
-                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
+                  (BigDecimal) akz.getAttribute(AnlagenlisteControl.ABGANG));
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT),
+                (BigDecimal) akz.getAttribute(AnlagenlisteControl.ENDWERT),
                 params.getFontNormal(), params.getNegativRot());
             break;
           }
@@ -129,25 +130,25 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
                 (String) akz.getAttribute(AnlagenlisteControl.GRUPPE),
                 Element.ALIGN_RIGHT, null, true, params.getFontFett(), 5);
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT),
+                (BigDecimal) akz.getAttribute(AnlagenlisteControl.STARTWERT),
                 params.getFontFett(), params.getNegativRot());
             if (hasZugang)
             {
               reporter.addColumn(
-                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG),
+                  (BigDecimal) akz.getAttribute(AnlagenlisteControl.ZUGANG),
                   params.getFontFett(), params.getNegativRot());
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG),
+                (BigDecimal) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG),
                 params.getFontFett(), params.getNegativRot());
             if (hasAbgang)
             {
               reporter.addColumn(
-                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG),
+                  (BigDecimal) akz.getAttribute(AnlagenlisteControl.ABGANG),
                   params.getFontFett(), params.getNegativRot());
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT),
+                (BigDecimal) akz.getAttribute(AnlagenlisteControl.ENDWERT),
                 params.getFontFett(), params.getNegativRot());
             break;
           }
@@ -160,25 +161,25 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
                 (String) akz.getAttribute(AnlagenlisteControl.GRUPPE),
                 Element.ALIGN_RIGHT, null, true, params.getFontFett(), 5);
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT),
+                (BigDecimal) akz.getAttribute(AnlagenlisteControl.STARTWERT),
                 params.getFontFett(), params.getNegativRot());
             if (hasZugang)
             {
               reporter.addColumn(
-                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG),
+                  (BigDecimal) akz.getAttribute(AnlagenlisteControl.ZUGANG),
                   params.getFontFett(), params.getNegativRot());
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG),
+                (BigDecimal) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG),
                 params.getFontFett(), params.getNegativRot());
             if (hasAbgang)
             {
               reporter.addColumn(
-                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG),
+                  (BigDecimal) akz.getAttribute(AnlagenlisteControl.ABGANG),
                   params.getFontFett(), params.getNegativRot());
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT),
+                (BigDecimal) akz.getAttribute(AnlagenlisteControl.ENDWERT),
                 params.getFontFett(), params.getNegativRot());
             break;
           }

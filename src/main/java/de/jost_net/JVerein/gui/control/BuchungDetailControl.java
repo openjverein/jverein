@@ -785,7 +785,8 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
               Buchung b = (Buchung) Einstellungen.getDBService()
                   .createObject(Buchung.class, null);
               b.setAuszugsnummer(master.getAuszugsnummer());
-              b.setBetrag(new BigDecimal(ssub.getBetrag()).negate());
+              b.setBetrag(
+                  BigDecimal.valueOf(ssub.getBetrag()).negate().setScale(2));
               b.setBlattnummer(master.getBlattnummer());
               b.setBuchungsartId(master.getBuchungsartId());
               b.setBuchungsklasseId(master.getBuchungsklasseId());

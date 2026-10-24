@@ -70,14 +70,15 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.BUCHUNGSART),
                 Element.ALIGN_LEFT, params.getFontNormal());
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN),
+            reporter.addColumn(
+                bkz.getBigDecimal(AbstractSaldoControl.EINNAHMEN),
                 params.getFontNormal(), params.getNegativRot());
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN),
+            reporter.addColumn(bkz.getBigDecimal(AbstractSaldoControl.AUSGABEN),
                 params.getFontNormal(), params.getNegativRot());
             if (umbuchung)
             {
               reporter.addColumn(
-                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN),
+                  bkz.getBigDecimal(AbstractSaldoControl.UMBUCHUNGEN),
                   params.getFontNormal(), params.getNegativRot());
             }
             break;
@@ -87,14 +88,15 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_RIGHT, params.getFontFett());
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN),
+            reporter.addColumn(
+                bkz.getBigDecimal(AbstractSaldoControl.EINNAHMEN),
                 params.getFontFett(), params.getNegativRot());
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN),
+            reporter.addColumn(bkz.getBigDecimal(AbstractSaldoControl.AUSGABEN),
                 params.getFontFett(), params.getNegativRot());
             if (umbuchung)
             {
               reporter.addColumn(
-                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN),
+                  bkz.getBigDecimal(AbstractSaldoControl.UMBUCHUNGEN),
                   params.getFontFett(), params.getNegativRot());
             }
             break;
@@ -106,14 +108,15 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_RIGHT, params.getFontFett());
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN),
+            reporter.addColumn(
+                bkz.getBigDecimal(AbstractSaldoControl.EINNAHMEN),
                 params.getFontFett(), params.getNegativRot());
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN),
+            reporter.addColumn(bkz.getBigDecimal(AbstractSaldoControl.AUSGABEN),
                 params.getFontFett(), params.getNegativRot());
             if (umbuchung)
             {
               reporter.addColumn(
-                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN),
+                  bkz.getBigDecimal(AbstractSaldoControl.UMBUCHUNGEN),
                   params.getFontFett(), params.getNegativRot());
             }
             break;
@@ -124,7 +127,8 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_RIGHT, params.getFontFett());
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN),
+            reporter.addColumn(
+                bkz.getBigDecimal(AbstractSaldoControl.EINNAHMEN),
                 params.getFontFett(), params.getNegativRot());
             reporter.addColumn("", Element.ALIGN_LEFT, 2);
             break;
@@ -135,7 +139,7 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_LEFT, params.getFontItalic());
             reporter.addColumn(
-                bkz.getDouble(BuchungsklasseSaldoControl.EINNAHMEN),
+                bkz.getBigDecimal(BuchungsklasseSaldoControl.EINNAHMEN),
                 params.getFontItalic(), params.getNegativRot());
             reporter.addColumn("", Element.ALIGN_LEFT, 2);
             break;

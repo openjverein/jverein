@@ -140,7 +140,7 @@ public class ForderungControl extends AbstractAbrechnungControl
         .createObject(Zusatzbetrag.class, null);
     zusatzb.setStartdatum(new Date());
     zusatzb.setBuchungstext(settings.getString("buchungstext", ""));
-    zusatzb.setBetrag(new BigDecimal(settings.getString("betrag", "0.0")));
+    zusatzb.setBetrag(new BigDecimal(settings.getString("betrag", "0.00")));
 
     String buchungsart = settings.getString("buchungsart", "");
     if (buchungsart.length() > 0)
