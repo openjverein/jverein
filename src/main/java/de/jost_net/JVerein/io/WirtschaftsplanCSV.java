@@ -99,9 +99,9 @@ public class WirtschaftsplanCSV implements Exporter
             + new JVDateFormatTTMMJJJJ().format(plan.getDatumBis()) + " IST";
 
         cellProcessor[j++] = new ConvertNullTo("",
-            new FmtNumber(Einstellungen.DECIMALFORMAT));
+            new FmtNumber(Einstellungen.BIGDECIMALFORMAT));
         cellProcessor[j++] = new ConvertNullTo("",
-            new FmtNumber(Einstellungen.DECIMALFORMAT));
+            new FmtNumber(Einstellungen.BIGDECIMALFORMAT));
       }
       writer.writeHeader(header);
 
