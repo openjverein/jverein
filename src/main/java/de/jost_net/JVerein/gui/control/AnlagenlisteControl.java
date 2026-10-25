@@ -300,7 +300,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
       if (endwert != null)
       {
         summeEndwert = summeEndwert.add(endwert);
-        gesamtEndwert = summeEndwert.add(endwert);
+        gesamtEndwert = gesamtEndwert.add(endwert);
       }
 
       // Bei neuer Klasse Kopfzeile anzeigen.
