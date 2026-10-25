@@ -70,7 +70,7 @@ public class MitgliedArbeitseinsatzZuordnungDialog
           arbeitseinsatz = (Arbeitseinsatz) Einstellungen.getDBService()
               .createObject(Arbeitseinsatz.class, null);
           arbeitseinsatz.setDatum((Date) part.getDatum().getValue());
-          arbeitseinsatz.setStunden((BigDecimal) part.getStunden().getNumber());
+          arbeitseinsatz.setStunden((BigDecimal) part.getStunden().getValue());
           arbeitseinsatz.setBemerkung((String) part.getBemerkung().getValue());
         }
         catch (RemoteException e)

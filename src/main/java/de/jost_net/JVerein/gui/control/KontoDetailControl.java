@@ -1184,7 +1184,7 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
       {
         BigDecimal start = betrag.subtract(restwert)
             .multiply(new BigDecimal(monate))
-            .divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP);
+            .divide(new BigDecimal("12"), 2, RoundingMode.UP);
         getAfaStart().setValue(start);
         getAfaDauer().setValue(betrag.subtract(start).subtract(restwert));
       }
@@ -1193,17 +1193,17 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
         if (monate == 12)
         {
           getAfaStart().setValue(betrag.subtract(restwert)
-              .divide(new BigDecimal(nutzungsdauer), 2, RoundingMode.HALF_UP));
+              .divide(new BigDecimal(nutzungsdauer), 2, RoundingMode.UP));
         }
         else
         {
           getAfaStart().setValue(
               betrag.subtract(restwert).multiply(new BigDecimal(monate)).divide(
                   new BigDecimal(nutzungsdauer).multiply(new BigDecimal("12")),
-                  2, RoundingMode.HALF_UP));
+                  2, RoundingMode.UP));
         }
         getAfaDauer().setValue(betrag.subtract(restwert)
-            .divide(new BigDecimal(nutzungsdauer), 2, RoundingMode.HALF_UP));
+            .divide(new BigDecimal(nutzungsdauer), 2, RoundingMode.UP));
       }
     }
     catch (RemoteException | ParseException e)

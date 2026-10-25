@@ -89,7 +89,7 @@ public class SteuerDetailControl extends VorZurueckControl implements Savable
       return satz;
     }
     satz = new BigDecimalInput(getSteuer().getSatz(),
-        Einstellungen.BIGDECIMALFORMAT);
+        Einstellungen.BIGDECIMALINTFORMAT);
     satz.setComment("%");
     satz.setMandatory(true);
     return satz;

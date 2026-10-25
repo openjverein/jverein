@@ -75,10 +75,17 @@ public class Einstellungen
       "###,##0.00");
 
   /**
-   * Our bigdecimal formatter.
+   * Our bigdecimal formatter. Er zeigt immer zwei Nachkommastellen an, auch
+   * wenn sie 0 sind
    */
   public final static JVBigDecimalFormat BIGDECIMALFORMAT = new JVBigDecimalFormat(
       "###,##0.00");
+
+  /**
+   * Our bigdecimal formatter. Er zeigt keine Nachkommastellen an, welche 0 sind
+   */
+  public final static JVBigDecimalFormat BIGDECIMALINTFORMAT = new JVBigDecimalFormat(
+      "###,###.##");
 
   /**
    * Int formatter.

@@ -312,7 +312,7 @@ public class BeitragsgruppeDetailControl extends VorZurueckControl
     }
     arbeitseinsatzstunden = new BigDecimalInput(
         getBeitragsgruppe().getArbeitseinsatzStunden(),
-        Einstellungen.BIGDECIMALFORMAT);
+        Einstellungen.BIGDECIMALINTFORMAT);
     return arbeitseinsatzstunden;
   }
 

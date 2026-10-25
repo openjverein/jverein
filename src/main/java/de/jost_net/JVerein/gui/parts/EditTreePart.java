@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.listener.TreeEditListener;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericIterator;
@@ -221,8 +222,8 @@ public class EditTreePart extends TreePart
                   }
                   if (value instanceof BigDecimal)
                   {
-                    o = new BigDecimal(newValue).setScale(2,
-                        RoundingMode.HALF_UP);
+                    o = ((BigDecimal) Einstellungen.BIGDECIMALFORMAT
+                        .parse(newValue)).setScale(2, RoundingMode.HALF_UP);
                   }
                   else if (value instanceof Integer)
                   {

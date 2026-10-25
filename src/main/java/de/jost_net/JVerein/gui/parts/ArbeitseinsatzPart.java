@@ -97,7 +97,7 @@ public class ArbeitseinsatzPart implements Part
       return stunden;
     }
     stunden = new BigDecimalInput(arbeitseinsatz.getStunden(),
-        Einstellungen.BIGDECIMALFORMAT);
+        Einstellungen.BIGDECIMALINTFORMAT);
     stunden.setName("Stunden");
     stunden.setMandatory(true);
     return stunden;

@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -193,7 +194,8 @@ public class Buchungsuebernahme
           gegenkonto = null;
         }
         b.setIban(gegenkonto);
-        b.setBetrag(BigDecimal.valueOf(u.getBetrag()));
+        b.setBetrag(BigDecimal.valueOf(u.getBetrag()).setScale(2,
+            RoundingMode.HALF_UP));
         b.setZweck(u.getZweck());
         String[] moreLines = u.getWeitereVerwendungszwecke();
         String zweck = u.getZweck();

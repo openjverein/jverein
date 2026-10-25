@@ -971,7 +971,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     rueckstand.setAttribute(ART, ART_SALDOFOOTER);
     rueckstand.setAttribute(GRUPPE,
         "Verwendungsrückstand(+)/-überhang(-) zum Ende des GJ");
-    rueckstand.setAttribute(SUMME, summeVermoegen.add(summeFreieMittel));
+    rueckstand.setAttribute(SUMME, summeVermoegen.subtract(summeFreieMittel));
     zeilen.add(rueckstand);
 
     return zeilen;
