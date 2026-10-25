@@ -195,8 +195,12 @@ public class JVereinNavigation implements Extension
       // Buchungen
       buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Buchungen",
           new StartViewAction(BuchungListeView.class), "emblem-documents.png"));
-      buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Belege",
-          new StartViewAction(BelegListeView.class), "emblem-documents.png"));
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+      {
+        buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Belege",
+            new StartViewAction(BelegListeView.class), "emblem-documents.png"));
+      }
       buchfuehrung.addChild(
           new JVereinNavigationItem(buchfuehrung, "Buchungsklassensaldo",
               new StartViewAction(BuchungsklasseSaldoView.class),
