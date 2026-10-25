@@ -371,16 +371,8 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
     {
       return betrag;
     }
-
-    if (getBuchung().isNewObject() && getBuchung().getBetrag() == null)
-    {
-      betrag = new BigDecimalInput(Einstellungen.BIGDECIMALFORMAT);
-    }
-    else
-    {
-      betrag = new BigDecimalInput(getBuchung().getBetrag(),
-          Einstellungen.BIGDECIMALFORMAT);
-    }
+    betrag = new BigDecimalInput(getBuchung().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     betrag.setMandatory(true);
     betrag.setEnabled(editable);
     return betrag;
