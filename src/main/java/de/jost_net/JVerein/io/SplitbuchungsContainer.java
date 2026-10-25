@@ -151,7 +151,7 @@ public class SplitbuchungsContainer
 
   public static String getDifference() throws RemoteException
   {
-    return Einstellungen.DECIMALFORMAT.format(getSumme(SplitbuchungTyp.HAUPT)
+    return Einstellungen.BIGDECIMALFORMAT.format(getSumme(SplitbuchungTyp.HAUPT)
         .subtract(getSumme(SplitbuchungTyp.SPLIT)));
   }
 

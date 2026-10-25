@@ -473,7 +473,7 @@ public class Reporter implements AutoCloseable
     String text = "";
     if (value != null)
     {
-      text = Einstellungen.DECIMALFORMAT.format(value);
+      text = Einstellungen.BIGDECIMALFORMAT.format(value);
       if (value.signum() < 0 && red)
       {
         Font newfont = new Font(font);

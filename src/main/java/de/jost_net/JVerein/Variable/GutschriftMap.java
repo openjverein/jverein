@@ -164,7 +164,7 @@ public class GutschriftMap extends AbstractMap
           break;
         case BETRAG:
           value = ls.getBetrag() != null
-              ? Einstellungen.DECIMALFORMAT.format(ls.getBetrag())
+              ? Einstellungen.BIGDECIMALFORMAT.format(ls.getBetrag())
               : "";
           break;
         case EMPFAENGER:

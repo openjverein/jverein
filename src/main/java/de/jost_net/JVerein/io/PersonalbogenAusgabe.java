@@ -389,7 +389,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         if (m.getIndividuellerBeitrag() != null)
         {
           rpt.addColumn(
-              Einstellungen.DECIMALFORMAT.format(m.getIndividuellerBeitrag())
+              Einstellungen.BIGDECIMALFORMAT.format(m.getIndividuellerBeitrag())
                   + " EUR",
               Element.ALIGN_LEFT, params.getFontNormal());
         }
@@ -517,7 +517,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     rpt.addColumn((sek ? "Sekundäre " : "") + "Beitragsgruppe",
         Element.ALIGN_LEFT, params.getFontNormal());
     String beitragsgruppe = bg.getBezeichnung() + " - "
-        + Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
+        + Einstellungen.BIGDECIMALFORMAT.format(BeitragsUtil.getBeitrag(
             Beitragsmodel.getByKey(
                 (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)),
             m.getZahlungstermin(), m.getZahlungsrhythmus(), bg,
@@ -868,7 +868,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
             Element.ALIGN_LEFT, params.getFontNormal());
         rpt.addColumn(new JVDateFormatTTMMJJJJ().format(spb.getSpendedatum()),
             Element.ALIGN_LEFT, params.getFontNormal());
-        rpt.addColumn(Einstellungen.DECIMALFORMAT.format(spb.getBetrag()),
+        rpt.addColumn(Einstellungen.BIGDECIMALFORMAT.format(spb.getBetrag()),
             Element.ALIGN_RIGHT, params.getFontNormal());
       }
     }

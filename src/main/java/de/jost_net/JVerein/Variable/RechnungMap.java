@@ -262,7 +262,7 @@ public class RechnungMap extends AbstractMap
           break;
         case ERSTATTUNGSBETRAG:
           value = re.getErstattungsbetrag() != null
-              ? Einstellungen.DECIMALFORMAT.format(re.getErstattungsbetrag())
+              ? Einstellungen.BIGDECIMALFORMAT.format(re.getErstattungsbetrag())
               : "";
           break;
         case RECHNUNGSTEXT:

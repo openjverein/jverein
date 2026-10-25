@@ -52,7 +52,7 @@ public class BuchungMap extends AbstractMap
           break;
         case BETRAG:
           value = bu.getBetrag() != null
-              ? Einstellungen.DECIMALFORMAT.format(bu.getBetrag())
+              ? Einstellungen.BIGDECIMALFORMAT.format(bu.getBetrag())
               : "";
           break;
         case BETRAGINWORTEN:
@@ -83,7 +83,7 @@ public class BuchungMap extends AbstractMap
           if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
           {
             value = bu.getNetto() != null
-                ? Einstellungen.DECIMALFORMAT.format(bu.getNetto())
+                ? Einstellungen.BIGDECIMALFORMAT.format(bu.getNetto())
                 : "";
           }
           else
@@ -205,12 +205,13 @@ public class BuchungMap extends AbstractMap
             if ((Boolean) Einstellungen
                 .getEinstellung(Property.STEUERINBUCHUNG))
             {
-              value = bu.getSteuer() == null ? 0d : bu.getSteuer().getSatz();
+              value = bu.getSteuer() == null ? BigDecimal.ZERO
+                  : bu.getSteuer().getSatz();
             }
             else
             {
               value = bu.getBuchungsart() == null
-                  || bu.getBuchungsart().getSteuer() == null ? 0d
+                  || bu.getBuchungsart().getSteuer() == null ? BigDecimal.ZERO
                       : bu.getBuchungsart().getSteuer().getSatz();
             }
           }
