@@ -247,7 +247,7 @@ public class AfaUtil
     if (aktuellesJahr < anschaffungsJahr
         || aktuellesJahr > anschaffungsJahr + konto.getNutzungsdauer())
       return 0;
-    // Check ob Anschaffung im ersten Monaz des GJ, dann keine Restabschreibung
+    // Check ob Anschaffung im ersten Monat des GJ, dann keine Restabschreibung
     // Wenn Nutzungsdauer 0 dann Direktabschreibung
     if ((aktuellesJahr == anschaffungsJahr + konto.getNutzungsdauer()
         && ersterMonatAktuellesGJ == monatAnschaffung)
@@ -282,7 +282,8 @@ public class AfaUtil
         return 0; // bereits abgeschrieben
 
       // Im Anschaffungsjahr haben wir die volle Restlaufzeit.
-      int restnutzungsdauer = 0;
+      // restnutzungsdauer in Monaten
+      long restnutzungsdauer = 0;
       if (aktuellesJahr == anschaffungsJahr)
       {
         restnutzungsdauer = Math
@@ -296,18 +297,18 @@ public class AfaUtil
             0);
         // Ein Monat abziehen, weil der letzte nicht mitzaehlt
       }
-      double intervall = restnutzungsdauer / 12d;
-      BigDecimal abbetrag = buchwert.subtract(restbuchswert)
-          .divide(new BigDecimal(intervall), 0, RoundingMode.UP);
+      BigDecimal restbetrag = buchwert.subtract(restbuchswert);
+      betrag = restbetrag.multiply(new BigDecimal("12"))
+          .divide(BigDecimal.valueOf(restnutzungsdauer), 0, RoundingMode.UP);
 
       // Anteilig abschreiben, wenn wir uns im Anschaffungsjahr befinden
       if (aktuellesJahr == anschaffungsJahr)
       {
-        int months = getMonths(konto.getAnschaffung(),
+        long months = getMonths(konto.getAnschaffung(),
             aktuellesGJ.getEndeGeschaeftsjahr());
         zweck = "Anteilige Abschreibung für " + months + " Monate";
-        betrag = abbetrag.multiply(new BigDecimal(months))
-            .divide(new BigDecimal("12"), 0, RoundingMode.UP);
+        betrag = restbetrag.multiply(new BigDecimal(months))
+            .divide(BigDecimal.valueOf(restnutzungsdauer), 0, RoundingMode.UP);
         BigDecimal kosten = konto.getBetrag();
         // Nachkommastellen der Anschaffungskosten addieren, das ergiebt einen
         // geraden Betrag für den neuen Buchwert
@@ -316,7 +317,7 @@ public class AfaUtil
       }
 
       // Abzuschreibender Betrag >= Restwert -> Restwertbuchung
-      if (abbetrag.compareTo(buchwert.subtract(restbuchswert)) >= 0)
+      if (betrag.compareTo(restbetrag) >= 0)
       {
         zweck = "Restwertbuchung";
         betrag = buchwert.subtract(restbuchswert);
