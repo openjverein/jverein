@@ -92,10 +92,10 @@ public class Update0515 extends AbstractDDLUpdate
 
     execute("ALTER TABLE wirtschaftsplanitem MODIFY COLUMN soll DECIMAL(15,2)");
 
-    execute("ALTER TABLE buchungsart MODIFY COLUMN steuersatz DECIMAL(15,2)");
-
     execute("ALTER TABLE qifimportpos MODIFY COLUMN betrag DECIMAL(15,2)");
 
     execute("ALTER TABLE qifimporthead MODIFY COLUMN startsaldo DECIMAL(15,2)");
+
+    execute(dropColumn("buchungsart", "steuersatz"));
   }
 }
