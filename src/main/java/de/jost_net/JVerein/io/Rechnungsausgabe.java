@@ -26,6 +26,7 @@ import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.Variable.ZahlerMap;
 import de.jost_net.JVerein.gui.control.RechnungDetailControl;
 import de.jost_net.JVerein.gui.control.RechnungDetailControl.TYP;
 import de.jost_net.JVerein.keys.Ausgabeart;
@@ -129,12 +130,12 @@ public class Rechnungsausgabe extends AbstractAusgabe
     Rechnung re = (Rechnung) object;
     Map<String, Object> map = new RechnungMap().getMap(re, null);
     map = new MitgliedMap().getMap(re.getMitglied(), map);
+    map = new ZahlerMap().getMap(re.getZahler(), map);
     return new AllgemeineMap().getMap(map);
   }
 
   @Override
-  protected String getDateiname(DBObject object)
-      throws RemoteException
+  protected String getDateiname(DBObject object) throws RemoteException
   {
     if (object != null)
     {
