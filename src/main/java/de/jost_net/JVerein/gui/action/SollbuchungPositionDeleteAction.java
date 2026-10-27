@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -53,11 +54,11 @@ public class SollbuchungPositionDeleteAction extends DeleteAction
     if (sollb != null)
     {
       // Betrag in Sollbuchung neu berechnen
-      Double betrag = 0.0;
+      BigDecimal betrag = BigDecimal.ZERO;
       List<SollbuchungPosition> sollbpList = sollb.getSollbuchungPositionList();
       for (SollbuchungPosition sollp : sollbpList)
       {
-        betrag += sollp.getBetrag();
+        betrag = betrag.add(sollp.getBetrag());
       }
       sollb.setBetrag(betrag);
       sollb.store();

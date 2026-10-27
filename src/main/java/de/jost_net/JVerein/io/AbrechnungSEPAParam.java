@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -110,7 +111,7 @@ public class AbrechnungSEPAParam
   // Gutschrift
   public final Boolean fixerBetragAbrechnen;
 
-  public final Double betrag;
+  public final BigDecimal betrag;
 
   public final Buchungsart buchungsart;
 
@@ -132,7 +133,7 @@ public class AbrechnungSEPAParam
         .getValue();
     if (fixerBetragAbrechnen)
     {
-      betrag = (Double) gc.getFixerBetragInput().getValue();
+      betrag = (BigDecimal) gc.getFixerBetragInput().getValue();
       buchungsart = (Buchungsart) gc.getBuchungsartInput().getValue();
       buchungsklasse = gc.isBuchungsklasseInputActiv()
           ? (Buchungsklasse) gc.getBuchungsklasseInput().getValue()
@@ -172,7 +173,7 @@ public class AbrechnungSEPAParam
     zusatzbetraege = false;
     kursteilnehmer = false;
     fixerBetragAbrechnen = true;
-    betrag = (Double) fc.getPart().getBetrag().getValue();
+    betrag = (BigDecimal) fc.getPart().getBetrag().getValue();
     buchungsart = (Buchungsart) fc.getPart().getBuchungsart().getValue();
     buchungsklasse = fc.getPart().isBuchungsklasseActive()
         ? (Buchungsklasse) fc.getPart().getBuchungsklasse().getValue()

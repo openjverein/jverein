@@ -102,7 +102,7 @@ public enum Filter
   DIFFERENZ("filter_differenz", "Differenz", "Fehlbetrag", FilterArt.SELECT,
       Differenz.values()),
   DIFFERENZ_LIMIT("filter_differenz_limit", "Differenz Limit", "4.00",
-      FilterArt.DOUBLE),
+      FilterArt.BIGDECIMAL),
   EIGENSCHAFTEN("filter_eigenschaften", "Eigenschaften", "+Eigenschaft",
       FilterArt.EIGENSCHAFTEN),
   EINGABEDATUM_BIS("filter_eingabedatum_bis_f", "Eingabedatum bis", "20241231",
@@ -218,7 +218,7 @@ public enum Filter
     EIGENSCHAFTEN,
     CHECKBOX,
     INTEGER,
-    DOUBLE,
+    BIGDECIMAL,
     KONTO,
     BUCHUNGSART,
     BETRAG

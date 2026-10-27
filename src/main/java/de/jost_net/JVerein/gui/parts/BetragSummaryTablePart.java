@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein.gui.parts;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -66,8 +67,8 @@ public class BetragSummaryTablePart extends AutoUpdateTablePart
     Context ctx = super.createFeatureEventContext(e, data);
     if (this.hasEvent(FeatureSummary.class, e))
     {
-      double sumBetrag = 0d;
-      double sumAuswahl = 0d;
+      BigDecimal sumBetrag = BigDecimal.ZERO;
+      BigDecimal sumAuswahl = BigDecimal.ZERO;
       String summary = (String) ctx.addon.get(FeatureSummary.CTX_KEY_TEXT);
       try
       {
@@ -75,11 +76,11 @@ public class BetragSummaryTablePart extends AutoUpdateTablePart
         {
           if (b.getBetrag() != null)
           {
-            sumBetrag += b.getBetrag();
+            sumBetrag = sumBetrag.add(b.getBetrag());
           }
         }
         summary += " , " + "Gesamtbetrag:" + " "
-            + Einstellungen.DECIMALFORMAT.format(sumBetrag) + " "
+            + Einstellungen.BIGDECIMALFORMAT.format(sumBetrag) + " "
             + Einstellungen.CURRENCY;
 
         Object o = this.getSelection();
@@ -87,10 +88,10 @@ public class BetragSummaryTablePart extends AutoUpdateTablePart
         {
           for (IBetrag i : (IBetrag[]) o)
           {
-            sumAuswahl += i.getBetrag();
+            sumAuswahl = sumAuswahl.add(i.getBetrag());
           }
           summary += " ==> Summe Auswahl:" + " "
-              + Einstellungen.DECIMALFORMAT.format(sumAuswahl) + " "
+              + Einstellungen.BIGDECIMALFORMAT.format(sumAuswahl) + " "
               + Einstellungen.CURRENCY;
         }
       }

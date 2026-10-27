@@ -41,6 +41,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -116,7 +117,6 @@ import de.willuhn.jameica.gui.formatter.TreeFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.ImageInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -205,7 +205,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
 
   private TreePart sekundaerebeitragsgruppe;
 
-  private DecimalInput individuellerbeitrag;
+  private BigDecimalInput individuellerbeitrag;
 
   private Familienverband famverb;
 
@@ -1149,14 +1149,15 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     return sekundaerebeitragsgruppe;
   }
 
-  public DecimalInput getIndividuellerBeitrag() throws RemoteException
+  public BigDecimalInput getIndividuellerBeitrag() throws RemoteException
   {
     if (individuellerbeitrag != null)
     {
       return individuellerbeitrag;
     }
-    individuellerbeitrag = new DecimalInput(
-        getMitglied().getIndividuellerBeitrag(), Einstellungen.DECIMALFORMAT);
+    individuellerbeitrag = new BigDecimalInput(
+        getMitglied().getIndividuellerBeitrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     individuellerbeitrag.setName("Individueller Beitrag");
     return individuellerbeitrag;
   }
@@ -1417,8 +1418,8 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
           }
           break;
         case Datentyp.WAEHRUNG:
-          zusatzfelder[i] = new DecimalInput(zf.getFeldWaehrung(),
-              Einstellungen.DECIMALFORMAT);
+          zusatzfelder[i] = new BigDecimalInput(zf.getFeldWaehrung(),
+              Einstellungen.BIGDECIMALFORMAT);
           break;
         case Datentyp.JANEIN:
           zusatzfelder[i] = new CheckboxInput(zf.getFeldJaNein());
@@ -1544,7 +1545,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg",
         o -> new Zahlungsweg((Integer) o).getText());
     if ((Boolean) Einstellungen
@@ -1648,7 +1649,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     arbeitseinsatzList.addColumn("Stunden", "stunden",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     arbeitseinsatzList.addColumn("Bemerkung", "bemerkung");
     // wiedervorlageList.setContextMenu(new
     // WiedervorlageMenu(wiedervorlageList));
@@ -1977,7 +1978,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
           .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         m.setIndividuellerBeitrag(
-            (Double) getIndividuellerBeitrag().getValue());
+            (BigDecimal) getIndividuellerBeitrag().getValue());
       }
       else
       {
@@ -2192,7 +2193,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
             case Datentyp.WAEHRUNG:
               if (ti.getValue() != null)
               {
-                zf.setFeldWaehrung(BigDecimal.valueOf((Double) ti.getValue()));
+                zf.setFeldWaehrung((BigDecimal) ti.getValue());
               }
               else
               {

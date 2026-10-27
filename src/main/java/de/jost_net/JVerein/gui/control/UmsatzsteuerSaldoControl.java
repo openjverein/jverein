@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -78,10 +79,10 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     saldoList.addColumn("Steuerart", GRUPPE, null, false, Column.ALIGN_RIGHT);
     saldoList.addColumn("Steuer Name", STEUER);
     saldoList.addColumn("Bemessungsgrundlage", BEMESSUNGSGRUNDLAGE,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Steuerbetrag", STEUERBETRAG,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Anzahl", ANZAHL);
     saldoList.setMulti(true);
@@ -100,10 +101,10 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     String artAlt = null;
 
     // Summen der Steuerart
-    Double steuerSumme = 0d;
+    BigDecimal steuerSumme = BigDecimal.ZERO;
 
     // Summen aller Steuern
-    Double steuerGesamt = 0d;
+    BigDecimal steuerGesamt = BigDecimal.ZERO;
 
     while (it.hasNext())
     {
@@ -135,7 +136,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
         summe.setAttribute(STEUERBETRAG, steuerSumme);
         zeilen.add(summe);
 
-        steuerSumme = 0d;
+        steuerSumme = BigDecimal.ZERO;
       }
 
       // Bei neuer Art Kopfzeile anzeigen.
@@ -156,8 +157,8 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       }
 
       zeilen.add(o);
-      steuerSumme += o.getDouble(STEUERBETRAG);
-      steuerGesamt += o.getDouble(STEUERBETRAG);
+      steuerSumme = steuerSumme.add(o.getBigDecimal(STEUERBETRAG));
+      steuerGesamt = steuerGesamt.add(o.getBigDecimal(STEUERBETRAG));
     }
 
     // Am Ende noch Saldo der letzten Art.

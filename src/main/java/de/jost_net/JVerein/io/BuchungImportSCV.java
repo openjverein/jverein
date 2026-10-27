@@ -106,7 +106,7 @@ public class BuchungImportSCV implements Importer
           }
           try
           {
-            bu.setBetrag(results.getDouble(BuchungVar.BETRAG.getName()));
+            bu.setBetrag(results.getBigDecimal(BuchungVar.BETRAG.getName()));
           }
           catch (SQLException e)
           {

@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.io;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -139,13 +138,12 @@ public class SplitbuchungsContainer
 
   public static BigDecimal getSumme(Integer typ) throws RemoteException
   {
-    BigDecimal summe = BigDecimal.valueOf(0).setScale(2);
+    BigDecimal summe = BigDecimal.ZERO;
     for (Buchung b : splitbuchungen)
     {
       if (b.getSplitTyp().equals(typ) && !b.isToDelete())
       {
-        summe = summe.add(BigDecimal.valueOf(b.getBetrag()).setScale(2,
-            RoundingMode.HALF_UP));
+        summe = summe.add(b.getBetrag());
       }
     }
     return summe;
@@ -153,7 +151,7 @@ public class SplitbuchungsContainer
 
   public static String getDifference() throws RemoteException
   {
-    return Einstellungen.DECIMALFORMAT.format(getSumme(SplitbuchungTyp.HAUPT)
+    return Einstellungen.BIGDECIMALFORMAT.format(getSumme(SplitbuchungTyp.HAUPT)
         .subtract(getSumme(SplitbuchungTyp.SPLIT)));
   }
 
@@ -183,8 +181,7 @@ public class SplitbuchungsContainer
     {
       return;
     }
-    BigDecimal gegen = getSumme(SplitbuchungTyp.GEGEN)
-        .multiply(BigDecimal.valueOf(-1));
+    BigDecimal gegen = getSumme(SplitbuchungTyp.GEGEN).negate();
     if (!getSumme(SplitbuchungTyp.HAUPT).equals(gegen))
     {
       throw new ApplicationException(
@@ -192,7 +189,7 @@ public class SplitbuchungsContainer
     }
     BigDecimal differenz = getSumme(SplitbuchungTyp.HAUPT)
         .subtract(getSumme(SplitbuchungTyp.SPLIT));
-    if (!differenz.equals(BigDecimal.valueOf(0).setScale(2)))
+    if (differenz.signum() != 0)
     {
       throw new ApplicationException(
           "Differenz zwischen Hauptbuchung und Splitbuchungen: " + differenz);
@@ -336,7 +333,7 @@ public class SplitbuchungsContainer
     buch.setAbrechnungslauf(b.getAbrechnungslauf());
     buch.setArt(b.getArt());
     buch.setAuszugsnummer(b.getAuszugsnummer());
-    buch.setBetrag(b.getBetrag() * -1);
+    buch.setBetrag(b.getBetrag().negate());
     buch.setBlattnummer(b.getBlattnummer());
     buch.setBuchungsartId(b.getBuchungsartId());
     buch.setBuchungsklasseId(b.getBuchungsklasseId());
@@ -432,7 +429,7 @@ public class SplitbuchungsContainer
       buchung.store();
       return null;
     }
-    HashMap<String, Double> splitMap = new HashMap<>();
+    HashMap<String, BigDecimal> splitMap = new HashMap<>();
     HashMap<String, String> splitZweckMap = new HashMap<>();
     boolean steuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
@@ -451,8 +448,9 @@ public class SplitbuchungsContainer
       // Bei nur einem oder keinem Eintrag (kann bei Überzahlung passieren)
       // und gleichem Betrag ist kein Splitten nötig, wir können also die
       // Daten direkt speichern
-      if (splitMap.size() <= 1 && Math.abs(sollb.getBetrag()
-          - sollb.getIstSumme() - buchung.getBetrag()) < 0.01d)
+      if (splitMap.size() <= 1
+          && sollb.getBetrag().subtract(sollb.getIstSumme())
+              .subtract(buchung.getBetrag()).signum() == 0)
       {
         if (spArray.get(0).getBuchungsartId() != null)
         {
@@ -523,12 +521,12 @@ public class SplitbuchungsContainer
 
       boolean splitPositionZweck = (Boolean) Einstellungen
           .getEinstellung(Property.SPLITPOSITIONZWECK);
-      double zugeordnet = 0d;
+      BigDecimal zugeordnet = BigDecimal.ZERO;
       // Wir nehmen die kleinsten Beträge zuerst, so werden ggf. Guthaben als
       // erstes ausgeglichen. Bei negativem Betrag der Sollbuchung in
       // umgekehrter Reihenfolge
-      Iterator<Entry<String, Double>> iterator;
-      if (buchung.getBetrag() > 0)
+      Iterator<Entry<String, BigDecimal>> iterator;
+      if (buchung.getBetrag().signum() > 0)
       {
         iterator = splitMap.entrySet().stream()
             .sorted(Map.Entry.comparingByValue()).iterator();
@@ -544,20 +542,20 @@ public class SplitbuchungsContainer
       {
         // Wenn der Restbetrag kleiner als der Fehlbetrag ist, nur den Rest
         // zuordnen.
-        Entry<String, Double> entry = iterator.next();
-        double betragZuordnen = entry.getValue();
-        if ((buchung.getBetrag() > 0
-            && betragZuordnen > buchung.getBetrag() - zugeordnet)
-            || (buchung.getBetrag() < 0
-                && betragZuordnen < buchung.getBetrag() - zugeordnet))
+        Entry<String, BigDecimal> entry = iterator.next();
+        BigDecimal betragZuordnen = entry.getValue();
+        if ((buchung.getBetrag().signum() > 0 && betragZuordnen
+            .compareTo((buchung.getBetrag().subtract(zugeordnet))) > 0)
+            || (buchung.getBetrag().signum() < 0 && betragZuordnen
+                .compareTo(buchung.getBetrag().subtract(zugeordnet)) < 0))
         {
-          betragZuordnen = buchung.getBetrag() - zugeordnet;
+          betragZuordnen = buchung.getBetrag().subtract(zugeordnet);
         }
-        if (Math.abs(betragZuordnen) < 0.01d)
+        if (betragZuordnen.signum() == 0)
         {
           continue;
         }
-        zugeordnet += betragZuordnen;
+        zugeordnet = zugeordnet.add(betragZuordnen);
 
         Buchung splitBuchung = createSplitbuchung(buchung);
         splitBuchung.setBetrag(betragZuordnen);
@@ -587,12 +585,12 @@ public class SplitbuchungsContainer
 
         SplitbuchungsContainer.add(splitBuchung);
       }
-      if (zugeordnet != 0d)
+      if (zugeordnet.signum() != 0)
       {
-        if (Math.abs(buchung.getBetrag() - zugeordnet) >= 0.01d)
+        if (buchung.getBetrag().compareTo(zugeordnet) != 0)
         {
           restBuchung = createSplitbuchung(buchung);
-          restBuchung.setBetrag(buchung.getBetrag() - zugeordnet);
+          restBuchung.setBetrag(buchung.getBetrag().subtract(zugeordnet));
           restBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
           restBuchung.setSplitId(Long.parseLong(getMaster().getID()));
 
@@ -699,8 +697,9 @@ public class SplitbuchungsContainer
    *          Ignoriere Überzahlung und Buchungen ohne Match bei den Posten.
    */
   public static void positionenAbgleichen(Sollbuchung sollb,
-      HashMap<String, Double> splitMap, HashMap<String, String> splitZweckMap,
-      boolean ignore) throws RemoteException, ApplicationException
+      HashMap<String, BigDecimal> splitMap,
+      HashMap<String, String> splitZweckMap, boolean ignore)
+      throws RemoteException, ApplicationException
   {
     boolean steuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
@@ -726,7 +725,7 @@ public class SplitbuchungsContainer
         key += (istBuchung.getSteuer() != null ? istBuchung.getSteuer().getID()
             : "");
       }
-      Double sollBetrag = splitMap.get(key);
+      BigDecimal sollBetrag = splitMap.get(key);
       if (ignore)
       {
         if (sollBetrag == null)
@@ -734,8 +733,10 @@ public class SplitbuchungsContainer
           // Diese Buchungsart/Steuer kombination existiert in der Sollbuchung
           // nicht, das ignorieren wir.
         }
-        else if ((sollBetrag > 0 && sollBetrag < istBuchung.getBetrag())
-            || (sollBetrag < 0 && sollBetrag > istBuchung.getBetrag()))
+        else if ((sollBetrag.signum() > 0
+            && sollBetrag.compareTo(istBuchung.getBetrag()) < 0)
+            || (sollBetrag.signum() < 0
+                && sollBetrag.compareTo(istBuchung.getBetrag()) > 0))
         {
           // Der Sollbuchung ist eine Istbuchung zugeordnet, die größer als das
           // Soll dieser Position ist, wir entfernen sie. Es bleibt eine
@@ -745,17 +746,17 @@ public class SplitbuchungsContainer
         else
         {
           // Restbetrag in die Map schreiben
-          splitMap.put(key, sollBetrag - istBuchung.getBetrag());
+          splitMap.put(key, sollBetrag.subtract(istBuchung.getBetrag()));
         }
       }
       else
       {
         if (sollBetrag == null)
         {
-          sollBetrag = 0d;
+          sollBetrag = BigDecimal.ZERO;
           splitZweckMap.put(key, istBuchung.getZweck());
         }
-        splitMap.put(key, sollBetrag - istBuchung.getBetrag());
+        splitMap.put(key, sollBetrag.subtract(istBuchung.getBetrag()));
       }
     }
   }
@@ -776,7 +777,8 @@ public class SplitbuchungsContainer
    *          von der Methode gefüllt.
    */
   public static void positionenZusammenfassen(Sollbuchung sollb,
-      HashMap<String, Double> splitMap, HashMap<String, String> splitZweckMap)
+      HashMap<String, BigDecimal> splitMap,
+      HashMap<String, String> splitZweckMap)
       throws RemoteException, ApplicationException
   {
     boolean steuerInBuchung = (Boolean) Einstellungen
@@ -806,13 +808,13 @@ public class SplitbuchungsContainer
         key += (sp.getSteuer() != null ? sp.getSteuer().getID() : "");
       }
 
-      Double betrag = splitMap.getOrDefault(key, 0d);
-      if (Math.abs(sp.getBetrag()) < 0.01d)
+      BigDecimal betrag = splitMap.getOrDefault(key, BigDecimal.ZERO);
+      if (sp.getBetrag().signum() == 0)
       {
         continue;
       }
 
-      splitMap.put(key, betrag + sp.getBetrag().doubleValue());
+      splitMap.put(key, betrag.add(sp.getBetrag()));
       String zweck = splitZweckMap.get(key);
       if (zweck == null)
       {

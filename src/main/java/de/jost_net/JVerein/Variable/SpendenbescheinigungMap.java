@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.Variable;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
@@ -113,10 +114,11 @@ public class SpendenbescheinigungMap extends AbstractMap
           value = spb.getZeile7();
           break;
         case BETRAG:
-          value = Einstellungen.DECIMALFORMAT.format(spb.getBetrag());
+          value = Einstellungen.BIGDECIMALFORMAT.format(spb.getBetrag());
           break;
         case BETRAGINWORTEN:
-          Double ganzbetrag = spb.getBetrag() * 100;
+          BigDecimal ganzbetrag = spb.getBetrag()
+              .multiply(new BigDecimal("100"));
           long euro = spb.getBetrag().longValue();
           long cent = Math.abs(ganzbetrag.longValue() - 100 * euro);
           try
@@ -279,7 +281,7 @@ public class SpendenbescheinigungMap extends AbstractMap
             for (Buchung b : spb.getBuchungen())
             {
               bl_betrag.append(StringTool.lpad(
-                  Einstellungen.DECIMALFORMAT.format(b.getBetrag()),
+                  Einstellungen.BIGDECIMALFORMAT.format(b.getBetrag()),
                   colBetragLen));
               bl_betrag.append(newLineStr);
             }
@@ -390,7 +392,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     {
       bl.append(new JVDateFormatTTMMJJJJ().format(b.getDatum()));
       bl.append("  ");
-      String str = Einstellungen.DECIMALFORMAT.format(b.getBetrag());
+      String str = Einstellungen.BIGDECIMALFORMAT.format(b.getBetrag());
       bl.append(StringTool.lpad(str, 11));
       bl.append("  ");
       if (printBuchungsart)
@@ -414,7 +416,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     bl.append(newLineStr);
     bl.append(StringTool.rpad("Summe:", 10));
     bl.append("  ");
-    String str = Einstellungen.DECIMALFORMAT.format(spb.getBetrag());
+    String str = Einstellungen.BIGDECIMALFORMAT.format(spb.getBetrag());
     bl.append(StringTool.lpad(str, 11));
     bl.append(newLineStr);
     bl.append(newLineStr);
@@ -506,7 +508,7 @@ public class SpendenbescheinigungMap extends AbstractMap
             StringTool.lpad("nein", colVerzichtLen / 2 - 2), colVerzichtLen));
       }
       bl.append("  ");
-      String str = Einstellungen.DECIMALFORMAT.format(b.getBetrag());
+      String str = Einstellungen.BIGDECIMALFORMAT.format(b.getBetrag());
       bl.append(StringTool.lpad(str, colBetragLen));
       bl.append(newLineStr);
     }
@@ -523,7 +525,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     bl.append(StringTool.rpad("Gesamtsumme:",
         colDatumLen + 2 + colArtLen + 2 + colVerzichtLen));
     bl.append("  ");
-    String str = Einstellungen.DECIMALFORMAT.format(spb.getBetrag());
+    String str = Einstellungen.BIGDECIMALFORMAT.format(spb.getBetrag());
     bl.append(StringTool.lpad(str, colBetragLen));
     bl.append(newLineStr);
 

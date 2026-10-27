@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -139,7 +140,7 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
     {
       throw new ApplicationException(e1.getMessage());
     }
-    if (getBetrag() <= 0)
+    if (getBetrag().signum() <= 0)
     {
       throw new ApplicationException("Bitte Betrag größer als 0 eingeben");
     }
@@ -462,13 +463,13 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    return (Double) getAttribute("betrag");
+    return (BigDecimal) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(Double d) throws RemoteException
+  public void setBetrag(BigDecimal d) throws RemoteException
   {
     setAttribute("betrag", d);
   }

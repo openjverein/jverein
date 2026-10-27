@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein.gui.action;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
@@ -169,10 +170,10 @@ public class BuchungSollbuchungZuordnungAction implements Action
     Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
         .createObject(Sollbuchung.class, null);
 
-    Double betrag = 0d;
+    BigDecimal betrag = BigDecimal.ZERO;
     for (Buchung buchung : buchungen)
     {
-      betrag += buchung.getBetrag();
+      betrag = betrag.add(buchung.getBetrag());
     }
 
     sollb.setBetrag(betrag);
@@ -204,8 +205,8 @@ public class BuchungSollbuchungZuordnungAction implements Action
   private void zuordnungBuchungZuSollbuchung(Buchung buchung, Sollbuchung sollb)
       throws RemoteException, ApplicationException, Exception
   {
-    if (Math.abs(buchung.getBetrag()
-        - (sollb.getBetrag() - sollb.getIstSumme())) >= 0.01d)
+    if (buchung.getBetrag()
+        .compareTo(sollb.getBetrag().subtract(sollb.getIstSumme())) != 0)
     {
       YesNoCancelDialog dialog = new YesNoCancelDialog(
           YesNoDialog.POSITION_CENTER, true);

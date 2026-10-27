@@ -122,7 +122,7 @@ public class KontenrahmenExportXMLv2 extends KontenrahmenExport
     xmlba.setAttribute("spende", buchungsart.getSpende().toString());
     xmlba.setAttribute("buchungsklasse",
         buchungsart.getBuchungsklasse().getNummer() + "");
-    xmlba.setAttribute("steuersatz", buchungsart.getSteuer() == null ? "0"
+    xmlba.setAttribute("steuersatz", buchungsart.getSteuer() == null ? "0.00"
         : buchungsart.getSteuer().getSatz().toString());
     if (buchungsart.getSteuer() != null)
       xmlba.setAttribute("steuer_buchungsart",

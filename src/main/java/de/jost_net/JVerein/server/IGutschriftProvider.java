@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public interface IGutschriftProvider extends IMitglied, IBetrag
     return getMitglied();
   }
 
-  default Double getIstSumme() throws RemoteException
+  default BigDecimal getIstSumme() throws RemoteException
   {
     return getBetrag();
   }

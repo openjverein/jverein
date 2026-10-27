@@ -21,6 +21,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -35,13 +36,13 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LastschriftDetailControl extends VorZurueckControl implements Savable
+public class LastschriftDetailControl extends VorZurueckControl
+    implements Savable
 {
 
   private TextInput personenart;
@@ -72,7 +73,7 @@ public class LastschriftDetailControl extends VorZurueckControl implements Savab
 
   private EmailInput email;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private Input vzweck;
 
@@ -342,14 +343,14 @@ public class LastschriftDetailControl extends VorZurueckControl implements Savab
     return iban;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
-    betrag = new DecimalInput(getLastschrift().getBetrag(),
-        Einstellungen.DECIMALFORMAT);
+    betrag = new BigDecimalInput(getLastschrift().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     betrag.setName("Betrag");
     betrag.setEnabled(false);
     return betrag;

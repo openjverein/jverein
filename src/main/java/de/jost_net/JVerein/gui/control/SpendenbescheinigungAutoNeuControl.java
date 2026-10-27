@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -127,7 +128,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
                 spbescheinigung);
             spbescheinigung.setBescheinigungsdatum(new Date());
             spbescheinigung.setSpendedatum(new Date());
-            spbescheinigung.setBetrag(0.01);
+            spbescheinigung.setBetrag(new BigDecimal("0.01"));
             spbescheinigung.setBezeichnungSachzuwendung("");
             spbescheinigung.setHerkunftSpende(HerkunftSpende.KEINEANGABEN);
             spbescheinigung.setUnterlagenWertermittlung(false);

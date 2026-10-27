@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +27,11 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -50,13 +51,13 @@ public class WirtschaftsplanUebersichtPart implements Part
 
   private SelectInput projekt;
 
-  private DecimalInput sollEinnahme;
+  private BigDecimalInput sollEinnahme;
 
-  private DecimalInput sollAusgaben;
+  private BigDecimalInput sollAusgaben;
 
-  private DecimalInput sollRuecklagenGebildet;
+  private BigDecimalInput sollRuecklagenGebildet;
 
-  private DecimalInput sollRuecklagenAufgeloest;
+  private BigDecimalInput sollRuecklagenAufgeloest;
 
   public WirtschaftsplanUebersichtPart(WirtschaftsplanDetailControl control)
   {
@@ -102,14 +103,14 @@ public class WirtschaftsplanUebersichtPart implements Part
     ColumnLayout finanzData = new ColumnLayout(uebersicht.getComposite(), 6);
 
     SimpleContainer einnahmen = new SimpleContainer(finanzData.getComposite());
-    sollEinnahme = new DecimalInput(
-        (Double) control.getWirtschaftsplan().getAttribute("planEinnahme"),
-        Einstellungen.DECIMALFORMAT);
+    sollEinnahme = new BigDecimalInput(
+        (BigDecimal) control.getWirtschaftsplan().getAttribute("planEinnahme"),
+        Einstellungen.BIGDECIMALFORMAT);
     sollEinnahme.disable();
     einnahmen.addLabelPair("Einnahmen Soll", sollEinnahme);
-    DecimalInput istEinnahme = new DecimalInput(
-        (Double) control.getWirtschaftsplan().getAttribute("istEinnahme"),
-        Einstellungen.DECIMALFORMAT);
+    BigDecimalInput istEinnahme = new BigDecimalInput(
+        (BigDecimal) control.getWirtschaftsplan().getAttribute("istEinnahme"),
+        Einstellungen.BIGDECIMALFORMAT);
     istEinnahme.disable();
     einnahmen.addLabelPair("Einnahmen Ist", istEinnahme);
 
@@ -117,27 +118,27 @@ public class WirtschaftsplanUebersichtPart implements Part
     {
       SimpleContainer forderungen = new SimpleContainer(
           finanzData.getComposite());
-      DecimalInput istForderungen = new DecimalInput(
-          (Double) control.getWirtschaftsplan().getAttribute("istForderungen"),
-          Einstellungen.DECIMALFORMAT);
+      BigDecimalInput istForderungen = new BigDecimalInput((BigDecimal) control
+          .getWirtschaftsplan().getAttribute("istForderungen"),
+          Einstellungen.BIGDECIMALFORMAT);
       istForderungen.disable();
       forderungen.addLabelPair("Forderungen Ist", istForderungen);
-      DecimalInput istPositiv = new DecimalInput(
-          (Double) control.getWirtschaftsplan().getAttribute("istPlus"),
-          Einstellungen.DECIMALFORMAT);
+      BigDecimalInput istPositiv = new BigDecimalInput(
+          (BigDecimal) control.getWirtschaftsplan().getAttribute("istPlus"),
+          Einstellungen.BIGDECIMALFORMAT);
       istPositiv.disable();
       forderungen.addLabelPair("Einnahmen inkl. Ford. Ist", istPositiv);
     }
 
     SimpleContainer ausgaben = new SimpleContainer(finanzData.getComposite());
-    sollAusgaben = new DecimalInput(
-        (Double) control.getWirtschaftsplan().getAttribute("planAusgabe"),
-        Einstellungen.DECIMALFORMAT);
+    sollAusgaben = new BigDecimalInput(
+        (BigDecimal) control.getWirtschaftsplan().getAttribute("planAusgabe"),
+        Einstellungen.BIGDECIMALFORMAT);
     sollAusgaben.disable();
     ausgaben.addLabelPair("Ausgaben Soll", sollAusgaben);
-    DecimalInput istAusgaben = new DecimalInput(
-        (Double) control.getWirtschaftsplan().getAttribute("istAusgabe"),
-        Einstellungen.DECIMALFORMAT);
+    BigDecimalInput istAusgaben = new BigDecimalInput(
+        (BigDecimal) control.getWirtschaftsplan().getAttribute("istAusgabe"),
+        Einstellungen.BIGDECIMALFORMAT);
     istAusgaben.disable();
     ausgaben.addLabelPair("Ausgaben Ist", istAusgaben);
 
@@ -145,16 +146,16 @@ public class WirtschaftsplanUebersichtPart implements Part
     {
       SimpleContainer verbindlichkeitenContainer = new SimpleContainer(
           finanzData.getComposite());
-      DecimalInput istVerbindlichkeiten = new DecimalInput(
-          (Double) control.getWirtschaftsplan()
+      BigDecimalInput istVerbindlichkeiten = new BigDecimalInput(
+          (BigDecimal) control.getWirtschaftsplan()
               .getAttribute("istVerbindlichkeiten"),
-          Einstellungen.DECIMALFORMAT);
+          Einstellungen.BIGDECIMALFORMAT);
       istVerbindlichkeiten.disable();
       verbindlichkeitenContainer.addLabelPair("Verbindlichkeiten Ist",
           istVerbindlichkeiten);
-      DecimalInput istNegativ = new DecimalInput(
-          (Double) control.getWirtschaftsplan().getAttribute("istMinus"),
-          Einstellungen.DECIMALFORMAT);
+      BigDecimalInput istNegativ = new BigDecimalInput(
+          (BigDecimal) control.getWirtschaftsplan().getAttribute("istMinus"),
+          Einstellungen.BIGDECIMALFORMAT);
       istNegativ.disable();
       verbindlichkeitenContainer.addLabelPair("Ausgaben inkl. Verb. Ist",
           istNegativ);
@@ -164,34 +165,34 @@ public class WirtschaftsplanUebersichtPart implements Part
     {
       SimpleContainer ruecklagenGebildetContainer = new SimpleContainer(
           finanzData.getComposite());
-      sollRuecklagenGebildet = new DecimalInput(
-          (Double) control.getWirtschaftsplan()
+      sollRuecklagenGebildet = new BigDecimalInput(
+          (BigDecimal) control.getWirtschaftsplan()
               .getAttribute("planRuecklagenGebildet"),
-          Einstellungen.DECIMALFORMAT);
+          Einstellungen.BIGDECIMALFORMAT);
       sollRuecklagenGebildet.disable();
       ruecklagenGebildetContainer.addLabelPair("Rücklagen gebildet Soll",
           sollRuecklagenGebildet);
-      DecimalInput istRuecklagenGebildet = new DecimalInput(
-          (Double) control.getWirtschaftsplan()
+      BigDecimalInput istRuecklagenGebildet = new BigDecimalInput(
+          (BigDecimal) control.getWirtschaftsplan()
               .getAttribute("istRücklagenGebildet"),
-          Einstellungen.DECIMALFORMAT);
+          Einstellungen.BIGDECIMALFORMAT);
       istRuecklagenGebildet.disable();
       ruecklagenGebildetContainer.addLabelPair("Rücklagen gebildet Ist",
           istRuecklagenGebildet);
 
       SimpleContainer ruecklagenAufgeloestContainer = new SimpleContainer(
           finanzData.getComposite());
-      sollRuecklagenAufgeloest = new DecimalInput(
-          (Double) control.getWirtschaftsplan()
+      sollRuecklagenAufgeloest = new BigDecimalInput(
+          (BigDecimal) control.getWirtschaftsplan()
               .getAttribute("planRuecklagenAufgeloest"),
-          Einstellungen.DECIMALFORMAT);
+          Einstellungen.BIGDECIMALFORMAT);
       sollRuecklagenAufgeloest.disable();
       ruecklagenAufgeloestContainer.addLabelPair("Rücklagen aufgelöst Soll",
           sollRuecklagenAufgeloest);
-      DecimalInput istRuecklagenAufgeloest = new DecimalInput(
-          (Double) control.getWirtschaftsplan()
+      BigDecimalInput istRuecklagenAufgeloest = new BigDecimalInput(
+          (BigDecimal) control.getWirtschaftsplan()
               .getAttribute("istRücklagenAufgelöst"),
-          Einstellungen.DECIMALFORMAT);
+          Einstellungen.BIGDECIMALFORMAT);
       istRuecklagenAufgeloest.disable();
       ruecklagenAufgeloestContainer.addLabelPair("Rücklagen aufgelöst Ist",
           istRuecklagenAufgeloest);
@@ -227,12 +228,18 @@ public class WirtschaftsplanUebersichtPart implements Part
       throw new ApplicationException(
           "Fehler beim Aktualisieren der Übersicht!");
     }
+    BigDecimal sollEinnahmen = BigDecimal.ZERO;
+    for (WirtschaftsplanNode node : einnahmen)
+    {
+      sollEinnahmen = sollEinnahmen.add(node.getSoll());
+    }
 
-    double sollEinnahmen = einnahmen.stream()
-        .mapToDouble(WirtschaftsplanNode::getSoll).sum();
+    BigDecimal sollAusgaben = BigDecimal.ZERO;
 
-    double sollAusgaben = ausgaben.stream()
-        .mapToDouble(WirtschaftsplanNode::getSoll).sum();
+    for (WirtschaftsplanNode node : ausgaben)
+    {
+      sollAusgaben = sollAusgaben.add(node.getSoll());
+    }
 
     this.sollEinnahme.setValue(sollEinnahmen);
     this.sollAusgaben.setValue(sollAusgaben);
@@ -261,11 +268,20 @@ public class WirtschaftsplanUebersichtPart implements Part
             "Fehler beim Aktualisieren der Übersicht!");
       }
 
-      double sollRuecklagenGebildet = ruecklagenItems.stream()
-          .mapToDouble(WirtschaftsplanNode::getSollEinnahmen).sum();
+      BigDecimal sollRuecklagenGebildet = BigDecimal.ZERO;
+      for (WirtschaftsplanNode node : ruecklagenItems)
+      {
+        sollRuecklagenGebildet = sollRuecklagenGebildet
+            .add(node.getSollEinnahmen());
+      }
 
-      double sollRuecklagenAufgeloest = ruecklagenItems.stream()
-          .mapToDouble(WirtschaftsplanNode::getSollAusgaben).sum();
+      BigDecimal sollRuecklagenAufgeloest = BigDecimal.ZERO;
+
+      for (WirtschaftsplanNode node : ruecklagenItems)
+      {
+        sollRuecklagenAufgeloest = sollRuecklagenAufgeloest
+            .add(node.getSollAusgaben());
+      }
 
       this.sollRuecklagenGebildet.setValue(sollRuecklagenGebildet);
       this.sollRuecklagenAufgeloest.setValue(sollRuecklagenAufgeloest);

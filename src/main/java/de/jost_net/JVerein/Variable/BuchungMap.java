@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.Variable;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,11 +52,12 @@ public class BuchungMap extends AbstractMap
           break;
         case BETRAG:
           value = bu.getBetrag() != null
-              ? Einstellungen.DECIMALFORMAT.format(bu.getBetrag())
+              ? Einstellungen.BIGDECIMALFORMAT.format(bu.getBetrag())
               : "";
           break;
         case BETRAGINWORTEN:
-          Double ganzbetrag = bu.getBetrag() * 100;
+          BigDecimal ganzbetrag = bu.getBetrag()
+              .multiply(new BigDecimal("100"));
           long euro = bu.getBetrag().longValue();
           long cent = Math.abs(ganzbetrag.longValue() - 100 * euro);
           try
@@ -81,7 +83,7 @@ public class BuchungMap extends AbstractMap
           if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
           {
             value = bu.getNetto() != null
-                ? Einstellungen.DECIMALFORMAT.format(bu.getNetto())
+                ? Einstellungen.BIGDECIMALFORMAT.format(bu.getNetto())
                 : "";
           }
           else
@@ -203,12 +205,13 @@ public class BuchungMap extends AbstractMap
             if ((Boolean) Einstellungen
                 .getEinstellung(Property.STEUERINBUCHUNG))
             {
-              value = bu.getSteuer() == null ? 0d : bu.getSteuer().getSatz();
+              value = bu.getSteuer() == null ? BigDecimal.ZERO
+                  : bu.getSteuer().getSatz();
             }
             else
             {
               value = bu.getBuchungsart() == null
-                  || bu.getBuchungsart().getSteuer() == null ? 0d
+                  || bu.getBuchungsart().getSteuer() == null ? BigDecimal.ZERO
                       : bu.getBuchungsart().getSteuer().getSatz();
             }
           }

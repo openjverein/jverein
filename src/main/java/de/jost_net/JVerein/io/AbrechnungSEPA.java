@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
@@ -413,11 +412,10 @@ public class AbrechnungSEPA extends SEPASupport
       }
 
       // Gegenbuchung für die Sollbuchungen schreiben
-      if (!summelastschriften.equals(BigDecimal.valueOf(0)))
+      if (summelastschriften.signum() != 0)
       {
         writeSollbuchung(null, Zahlungsweg.BASISLASTSCHRIFT, null, null,
-            param.faelligkeit, abrl, konto, param,
-            -summelastschriften.doubleValue());
+            param.faelligkeit, abrl, konto, param, summelastschriften.negate());
       }
 
       if (param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
@@ -537,7 +535,7 @@ public class AbrechnungSEPA extends SEPASupport
   {
     JVereinZahler zahler = null;
     Mitglied mZahler = m.getZahler();
-    Double betr = getBetrag(m, primaer, bg, param);
+    BigDecimal betr = getBetrag(m, primaer, bg, param);
     if (betr == null)
     {
       return null;
@@ -551,8 +549,7 @@ public class AbrechnungSEPA extends SEPASupport
       zahler = new JVereinZahler();
       zahler.setPersonId(mZahler.getID());
       zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
-      zahler.setBetrag(
-          BigDecimal.valueOf(betr).setScale(2, RoundingMode.HALF_UP));
+      zahler.setBetrag(betr);
       if (mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
       {
         IBAN i = new IBAN(mZahler.getIban()); // Prüfung der IBAN
@@ -674,8 +671,7 @@ public class AbrechnungSEPA extends SEPASupport
           JVereinZahler zahler = new JVereinZahler();
           zahler.setPersonId(mZahler.getID());
           zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
-          zahler.setBetrag(BigDecimal.valueOf(z.getBetrag()).setScale(2,
-              RoundingMode.HALF_UP));
+          zahler.setBetrag(z.getBetrag());
           if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
           {
             new BIC(mZahler.getBic());
@@ -793,8 +789,7 @@ public class AbrechnungSEPA extends SEPASupport
         JVereinZahler zahler = new JVereinZahler();
         zahler.setPersonId(kt.getID());
         zahler.setPersonTyp(JVereinZahlerTyp.KURSTEILNEHMER);
-        zahler.setBetrag(BigDecimal.valueOf(kt.getBetrag()).setScale(2,
-            RoundingMode.HALF_UP));
+        zahler.setBetrag(kt.getBetrag());
         new BIC(kt.getBic());
         new IBAN(kt.getIban());
         zahler.setBic(kt.getBic());
@@ -1020,7 +1015,7 @@ public class AbrechnungSEPA extends SEPASupport
 
     SollbuchungPosition sp = Einstellungen.getDBService()
         .createObject(SollbuchungPosition.class, null);
-    sp.setBetrag(zahler.getBetrag().doubleValue());
+    sp.setBetrag(zahler.getBetrag());
     sp.setBuchungsartId(zahler.getBuchungsartId());
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
@@ -1105,7 +1100,7 @@ public class AbrechnungSEPA extends SEPASupport
       default:
         assert false : "Personentyp ist nicht implementiert";
     }
-    ls.setBetrag(zahler.getBetrag().doubleValue());
+    ls.setBetrag(zahler.getBetrag());
     ls.setBic(zahler.getBic());
     ls.setIban(zahler.getIban());
     ls.setMandatDatum(zahler.getMandatdatum());
@@ -1121,7 +1116,8 @@ public class AbrechnungSEPA extends SEPASupport
   private String writeSollbuchung(Long zahlerId, int zahlungsweg,
       IAdresse adress, ArrayList<SollbuchungPosition> spArray, Date datum,
       Abrechnungslauf abrl, Konto konto, AbrechnungSEPAParam param,
-      Double summe) throws ApplicationException, RemoteException, SEPAException
+      BigDecimal summe)
+      throws ApplicationException, RemoteException, SEPAException
   {
     Sollbuchung sollb = null;
     String zweck = null;
@@ -1139,13 +1135,13 @@ public class AbrechnungSEPA extends SEPASupport
       // Zweck wird später gefüllt, es muss aber schon was drin stehen damit
       // gespeichert werden kann
       sollb.setZweck1(" ");
-      sollb.setBetrag(0d);
+      sollb.setBetrag(BigDecimal.ZERO);
       sollb.store();
 
-      summe = 0d;
+      summe = BigDecimal.ZERO;
       for (SollbuchungPosition sp : spArray)
       {
-        summe += sp.getBetrag();
+        summe = summe.add(sp.getBetrag());
         sp.setSollbuchung(sollb.getID());
         sp.store();
       }
@@ -1383,10 +1379,11 @@ public class AbrechnungSEPA extends SEPASupport
     return list;
   }
 
-  public static Double getBetrag(Mitglied m, boolean primaer, Beitragsgruppe bg,
-      AbrechnungSEPAParam param) throws RemoteException, ApplicationException
+  public static BigDecimal getBetrag(Mitglied m, boolean primaer,
+      Beitragsgruppe bg, AbrechnungSEPAParam param)
+      throws RemoteException, ApplicationException
   {
-    Double betr;
+    BigDecimal betr;
     if (((Integer) Einstellungen.getEinstellung(
         Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
         && (m.getZahlungstermin() != null
@@ -1414,7 +1411,7 @@ public class AbrechnungSEPA extends SEPASupport
     {
       betr = m.getIndividuellerBeitrag();
     }
-    if (betr == 0d)
+    if (betr.signum() == 0)
     {
       return null;
     }

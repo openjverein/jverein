@@ -21,6 +21,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -38,7 +39,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
@@ -53,7 +53,7 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
 
   private TextInput mitglied;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private JVereinTablePart buchungList;
 
@@ -103,7 +103,7 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
 
   private TextInput rechnungstext;
 
-  private DecimalInput erstattungsbetrag;
+  private BigDecimalInput erstattungsbetrag;
 
   public enum TYP
   {
@@ -185,15 +185,15 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
     return nummer;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
 
-    betrag = new DecimalInput(getRechnung().getBetrag(),
-        Einstellungen.DECIMALFORMAT);
+    betrag = new BigDecimalInput(getRechnung().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     betrag.setName("Betrag");
     betrag.disable();
     return betrag;
@@ -488,15 +488,15 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
     return rechnungstext;
   }
 
-  public DecimalInput getErstattungsbetrag() throws RemoteException
+  public BigDecimalInput getErstattungsbetrag() throws RemoteException
   {
     if (erstattungsbetrag != null)
     {
       return erstattungsbetrag;
     }
 
-    erstattungsbetrag = new DecimalInput(getRechnung().getErstattungsbetrag(),
-        Einstellungen.DECIMALFORMAT);
+    erstattungsbetrag = new BigDecimalInput(
+        getRechnung().getErstattungsbetrag(), Einstellungen.BIGDECIMALFORMAT);
     erstattungsbetrag.setName("Erstattungsbetrag");
     erstattungsbetrag.disable();
     return erstattungsbetrag;

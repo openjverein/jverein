@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -193,7 +194,8 @@ public class Buchungsuebernahme
           gegenkonto = null;
         }
         b.setIban(gegenkonto);
-        b.setBetrag(u.getBetrag());
+        b.setBetrag(BigDecimal.valueOf(u.getBetrag()).setScale(2,
+            RoundingMode.HALF_UP));
         b.setZweck(u.getZweck());
         String[] moreLines = u.getWeitereVerwendungszwecke();
         String zweck = u.getZweck();

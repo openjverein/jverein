@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -95,22 +96,22 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Anschaffungskosten", BETRAG,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Buchwert Start GJ", STARTWERT,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Zugang", ZUGANG,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Abschreibung", ABSCHREIBUNG,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Abgang", ABGANG,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Buchwert Ende GJ", ENDWERT,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.setFormatter(new SaldoFormatter());
     saldoList.setMulti(true);
@@ -227,18 +228,18 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     String artAlt = null;
 
     // Summen der Buchungsklasse
-    Double summeStartwert = 0d;
-    Double summeAbschreibung = 0d;
-    Double summeZugang = 0d;
-    Double summeAbgang = 0d;
-    Double summeEndwert = 0d;
+    BigDecimal summeStartwert = BigDecimal.ZERO;
+    BigDecimal summeAbschreibung = BigDecimal.ZERO;
+    BigDecimal summeZugang = BigDecimal.ZERO;
+    BigDecimal summeAbgang = BigDecimal.ZERO;
+    BigDecimal summeEndwert = BigDecimal.ZERO;
 
     // Gesamtsummen
-    Double gesamtStartwert = 0d;
-    Double gesamtAbschreibung = 0d;
-    Double gesamtZugang = 0d;
-    Double gesamtAbgang = 0d;
-    Double gesamtEndwert = 0d;
+    BigDecimal gesamtStartwert = BigDecimal.ZERO;
+    BigDecimal gesamtAbschreibung = BigDecimal.ZERO;
+    BigDecimal gesamtZugang = BigDecimal.ZERO;
+    BigDecimal gesamtAbgang = BigDecimal.ZERO;
+    BigDecimal gesamtEndwert = BigDecimal.ZERO;
 
     while (it.hasNext())
     {
@@ -263,43 +264,43 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         saldo.setAttribute(ENDWERT, summeEndwert);
         zeilen.add(saldo);
 
-        summeStartwert = 0d;
-        summeAbschreibung = 0d;
-        summeZugang = 0d;
-        summeAbgang = 0d;
-        summeEndwert = 0d;
+        summeStartwert = BigDecimal.ZERO;
+        summeAbschreibung = BigDecimal.ZERO;
+        summeZugang = BigDecimal.ZERO;
+        summeAbgang = BigDecimal.ZERO;
+        summeEndwert = BigDecimal.ZERO;
       }
 
       String buchungsart = (String) o.getAttribute(BUCHUNGSART);
       Integer konto = o.getInteger(KONTO_ID);
 
-      Double zugang = o.getDouble(ZUGANG);
-      Double abschreibung = o.getDouble(ABSCHREIBUNG);
-      Double abgang = o.getDouble(ABGANG);
+      BigDecimal zugang = o.getBigDecimal(ZUGANG);
+      BigDecimal abschreibung = o.getBigDecimal(ABSCHREIBUNG);
+      BigDecimal abgang = o.getBigDecimal(ABGANG);
 
-      Double startwert = KontoImpl.getSaldo(konto, getDatumvon().getDate());
-      Double endwert = null;
+      BigDecimal startwert = KontoImpl.getSaldo(konto, getDatumvon().getDate());
+      BigDecimal endwert = null;
 
       // Summen Berechnen
 
       if (startwert != null)
       {
-        gesamtStartwert += startwert;
-        summeStartwert += startwert;
-        endwert = startwert + zugang + abschreibung + abgang;
+        gesamtStartwert = gesamtStartwert.add(startwert);
+        summeStartwert = summeStartwert.add(startwert);
+        endwert = startwert.add(zugang).add(abschreibung).add(abgang);
       }
 
-      summeAbschreibung += abschreibung;
-      gesamtAbschreibung += abschreibung;
-      summeZugang += zugang;
-      gesamtZugang += zugang;
-      summeAbgang += abgang;
-      gesamtAbgang += abgang;
+      summeAbschreibung = summeAbschreibung.add(abschreibung);
+      gesamtAbschreibung = gesamtAbschreibung.add(abschreibung);
+      summeZugang = summeZugang.add(zugang);
+      gesamtZugang = gesamtZugang.add(zugang);
+      summeAbgang = summeAbgang.add(abgang);
+      gesamtAbgang = gesamtAbgang.add(abgang);
 
       if (endwert != null)
       {
-        summeEndwert += endwert;
-        gesamtEndwert += endwert;
+        summeEndwert = summeEndwert.add(endwert);
+        gesamtEndwert = gesamtEndwert.add(endwert);
       }
 
       // Bei neuer Klasse Kopfzeile anzeigen.

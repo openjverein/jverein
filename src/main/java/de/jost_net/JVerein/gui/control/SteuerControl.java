@@ -58,7 +58,7 @@ public class SteuerControl extends FilterControl
     steuerList.addColumn(getGesperrtColumn(), false);
     steuerList.addColumn("Name", "name");
     steuerList.addColumn("Steuersatz", "satz", o -> {
-      return Einstellungen.DECIMALFORMAT.format(o) + "%";
+      return Einstellungen.BIGDECIMALFORMAT.format(o) + "%";
     }, false, Column.ALIGN_RIGHT);
     steuerList.addColumn("Buchungsart", "buchungsart",
         new BuchungsartFormatter());

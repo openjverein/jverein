@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -299,7 +300,7 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
       if ((Integer) getAbbuchungsmodus()
           .getValue() != Abrechnungsmodi.KEINBEITRAG)
       {
-        Double betrag;
+        BigDecimal betrag;
         DBIterator<Mitglied> it2 = AbrechnungSEPA
             .getAbrechnenMitgliederIt(param);
         while (it2.hasNext())

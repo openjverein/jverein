@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,10 +134,10 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
       throws RemoteException, ApplicationException, FileNotFoundException,
       DocumentException, IOException
   {
-    summe = 0;
-    summeeinnahmen = 0;
-    summeausgaben = 0;
-    summeumbuchungen = 0;
+    summe = BigDecimal.ZERO;
+    summeeinnahmen = BigDecimal.ZERO;
+    summeausgaben = BigDecimal.ZERO;
+    summeumbuchungen = BigDecimal.ZERO;
 
     this.params = params;
     // objects[0] = control, objects[1] ist der Filtertext
@@ -320,7 +321,7 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
     Paragraph pBuchungsart = new Paragraph(
         buchungsklasseBezeichnung + " - " + buchungsartBezeichnung, font);
     reporter.add(pBuchungsart);
-    double buchungsartSumme = 0;
+    BigDecimal buchungsartSumme = BigDecimal.ZERO;
 
     createTableHeader(reporter);
 
@@ -357,18 +358,18 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
             b.getSteuer() == null ? null : b.getSteuer().getSatz(),
             params.getFontNormal(), params.getNegativRot());
       }
-      buchungsartSumme += b.getBetrag();
+      buchungsartSumme = buchungsartSumme.add(b.getBetrag());
       if (bua.getArt() == ArtBuchungsart.EINNAHME)
       {
-        summeeinnahmen += b.getBetrag();
+        summeeinnahmen = summeeinnahmen.add(b.getBetrag());
       }
       if (bua.getArt() == ArtBuchungsart.AUSGABE)
       {
-        summeausgaben += b.getBetrag();
+        summeausgaben = summeausgaben.add(b.getBetrag());
       }
       if (bua.getArt() == ArtBuchungsart.UMBUCHUNG)
       {
-        summeumbuchungen += b.getBetrag();
+        summeumbuchungen = summeumbuchungen.add(b.getBetrag());
       }
     }
 
@@ -390,7 +391,7 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
     {
       reporter.addColumn(String.format("Summe %s", bua.getBezeichnung()),
           Element.ALIGN_LEFT, params.getColorTable(), params.getFontFett());
-      summe += buchungsartSumme;
+      summe = summe.add(buchungsartSumme);
       reporter.addColumn(buchungsartSumme, params.getColorTable(),
           params.getFontFett(), params.getNegativRot());
     }

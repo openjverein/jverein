@@ -17,13 +17,13 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -32,7 +32,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -44,7 +43,7 @@ public class ArbeitseinsatzPart implements Part
 
   private DateInput datum = null;
 
-  private DecimalInput stunden = null;
+  private BigDecimalInput stunden = null;
 
   private TextInput bemerkung = null;
 
@@ -91,14 +90,14 @@ public class ArbeitseinsatzPart implements Part
     return datum;
   }
 
-  public DecimalInput getStunden() throws RemoteException
+  public BigDecimalInput getStunden() throws RemoteException
   {
     if (stunden != null)
     {
       return stunden;
     }
-    stunden = new DecimalInput(arbeitseinsatz.getStunden(),
-        new DecimalFormat("###,###.##"));
+    stunden = new BigDecimalInput(arbeitseinsatz.getStunden(),
+        Einstellungen.BIGDECIMALINTFORMAT);
     stunden.setName("Stunden");
     stunden.setMandatory(true);
     return stunden;

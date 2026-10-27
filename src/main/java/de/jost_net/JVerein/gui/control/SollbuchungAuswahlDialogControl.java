@@ -108,7 +108,7 @@ public class SollbuchungAuswahlDialogControl extends FilterControl
     sollbuchungenList.addColumn("Zahler", Sollbuchung.ZAHLER);
     sollbuchungenList.addColumn("Zweck", Sollbuchung.ZWECK1);
     sollbuchungenList.addColumn("Betrag", Sollbuchung.BETRAG,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     sollbuchungenList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
         new Formatter()
         {
@@ -119,7 +119,7 @@ public class SollbuchungAuswahlDialogControl extends FilterControl
           }
         });
     sollbuchungenList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       sollbuchungenList.addColumn("Rechnung", "rechnung.nummer");

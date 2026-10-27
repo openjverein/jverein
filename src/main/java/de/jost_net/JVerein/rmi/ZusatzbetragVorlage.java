@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -32,9 +33,9 @@ public interface ZusatzbetragVorlage extends JVereinDBObject
 
   public void setBuchungstext(String buchungstext) throws RemoteException;
 
-  public Double getBetrag() throws RemoteException;
+  public BigDecimal getBetrag() throws RemoteException;
 
-  public void setBetrag(double betrag) throws RemoteException;
+  public void setBetrag(BigDecimal betrag) throws RemoteException;
 
   public Date getStartdatum() throws RemoteException;
 

@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,6 +29,7 @@ import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartBearbeitenMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
@@ -47,7 +49,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
@@ -69,7 +70,7 @@ public class SollbuchungDetailControl extends VorZurueckControl
 
   private SelectInput zahlungsweg;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private AbstractInput mitglied;
 
@@ -180,18 +181,18 @@ public class SollbuchungDetailControl extends VorZurueckControl
     return zahlungsweg;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
-    Double b = Double.valueOf(0.0d);
+    BigDecimal b = BigDecimal.ZERO;
     if (getSollbuchung() != null)
     {
       b = getSollbuchung().getBetrag();
     }
-    betrag = new DecimalInput(b, Einstellungen.DECIMALFORMAT);
+    betrag = new BigDecimalInput(b, Einstellungen.BIGDECIMALFORMAT);
     betrag.setEnabled(false);
     return betrag;
   }

@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -59,13 +60,9 @@ public interface Buchung extends AbstractBelegDBObject
 
   public void setIban(String iban) throws RemoteException;
 
-  public boolean isBetragNull() throws RemoteException;
+  public BigDecimal getBetrag() throws RemoteException;
 
-  public void setBetragNull() throws RemoteException;
-
-  public Double getBetrag() throws RemoteException;
-
-  public void setBetrag(double betrag) throws RemoteException;
+  public void setBetrag(BigDecimal betrag) throws RemoteException;
 
   public String getZweck() throws RemoteException;
 
@@ -169,7 +166,7 @@ public interface Buchung extends AbstractBelegDBObject
 
   public void setGeprueft(Boolean geprueft) throws RemoteException;
 
-  public Double getNetto() throws RemoteException;
+  public BigDecimal getNetto() throws RemoteException;
 
   public Steuer getSteuer() throws RemoteException;
 

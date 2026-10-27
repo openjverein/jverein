@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
@@ -26,7 +27,8 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ArbeitseinsatzDetailControl extends VorZurueckControl implements Savable
+public class ArbeitseinsatzDetailControl extends VorZurueckControl
+    implements Savable
 {
   private ArbeitseinsatzPart part = null;
 
@@ -75,7 +77,7 @@ public class ArbeitseinsatzDetailControl extends VorZurueckControl implements Sa
       }
     }
     ae.setDatum((Date) part.getDatum().getValue());
-    ae.setStunden((Double) part.getStunden().getValue());
+    ae.setStunden((BigDecimal) part.getStunden().getValue());
     ae.setBemerkung((String) part.getBemerkung().getValue());
     return ae;
   }

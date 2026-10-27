@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import org.eclipse.swt.widgets.Event;
@@ -25,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -37,13 +39,13 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class KursteilnehmerDetailControl extends VorZurueckControl implements Savable
+public class KursteilnehmerDetailControl extends VorZurueckControl
+    implements Savable
 {
 
   private PersonenartInput personenart;
@@ -68,7 +70,7 @@ public class KursteilnehmerDetailControl extends VorZurueckControl implements Sa
 
   private EmailInput email;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private Input vzweck1;
 
@@ -311,14 +313,14 @@ public class KursteilnehmerDetailControl extends VorZurueckControl implements Sa
     return iban;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
-    betrag = new DecimalInput(getKursteilnehmer().getBetrag(),
-        Einstellungen.DECIMALFORMAT);
+    betrag = new BigDecimalInput(getKursteilnehmer().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     betrag.setName("Betrag");
     betrag.setMandatory(true);
     return betrag;
@@ -397,7 +399,7 @@ public class KursteilnehmerDetailControl extends VorZurueckControl implements Sa
     else
       k.setIban(ib.replace(" ", ""));
     k.setBic((String) getBIC().getValue());
-    k.setBetrag((Double) getBetrag().getValue());
+    k.setBetrag((BigDecimal) getBetrag().getValue());
     if (getGeburtsdatum() != null)
     {
       k.setGeburtsdatum((Date) getGeburtsdatum().getValue());

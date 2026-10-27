@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.Date;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
@@ -33,7 +35,6 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -217,7 +218,8 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
         }
         case Datentyp.WAEHRUNG:
         {
-          DecimalInput inputvon = new DecimalInput(Einstellungen.DECIMALFORMAT);
+          BigDecimalInput inputvon = new BigDecimalInput(
+              Einstellungen.BIGDECIMALFORMAT);
           inputvon.setName(fd.getLabel() + " von");
           felder.add(inputvon);
           group.addInput(inputvon);
@@ -236,16 +238,16 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
 
             if (value.length() > 0)
             {
-              Number n = Einstellungen.DECIMALFORMAT.parse(value);
-              inputvon.setValue(n.doubleValue());
+              inputvon.setValue(new BigDecimal(value));
             }
           }
-          catch (ParseException e)
+          catch (NumberFormatException e)
           {
             //
           }
 
-          DecimalInput inputbis = new DecimalInput(Einstellungen.DECIMALFORMAT);
+          BigDecimalInput inputbis = new BigDecimalInput(
+              Einstellungen.BIGDECIMALFORMAT);
           inputbis.setName(fd.getLabel() + " bis");
           felder.add(inputbis);
           group.addInput(inputbis);
@@ -257,8 +259,20 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
               fd.getDatentyp());
           settings.setAttribute(zusatzfeld + counter + ".definition",
               fd.getID());
-          inputbis.setValue(
-              settings.getString(zusatzfeld + counter + ".value", ""));
+          try
+          {
+            String value = settings.getString(zusatzfeld + counter + ".value",
+                "");
+
+            if (value.length() > 0)
+            {
+              inputbis.setValue(new BigDecimal(value));
+            }
+          }
+          catch (NumberFormatException e)
+          {
+            //
+          }
           break;
         }
       }
@@ -333,7 +347,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
               if (inp.getValue() != null)
               {
                 settings.setAttribute(zusatzfeld + counter + ".value",
-                    Einstellungen.DECIMALFORMAT.format(inp.getValue()));
+                    inp.getValue().toString());
                 selcounter++;
               }
               else
@@ -425,7 +439,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
           settings.setAttribute(zusatzfeld + counter + ".value", "");
           f.setValue(null);
         }
-        else if (f instanceof DecimalInput)
+        else if (f instanceof BigDecimalInput)
         {
           settings.setAttribute(zusatzfeld + counter + ".value", "");
           f.setValue(null);

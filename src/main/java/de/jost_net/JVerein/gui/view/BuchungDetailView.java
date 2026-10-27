@@ -96,10 +96,8 @@ public class BuchungDetailView extends AbstractDetailView
         // Bei Splitbuchungen neue Splitbuchung
         if (splitbuchung)
         {
-          if (Math.abs(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT)
-              .doubleValue()
-              - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT)
-                  .doubleValue()) >= .01d)
+          if (SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT).compareTo(
+              SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT)) != 0)
             new SplitbuchungNeuAction().handleAction(context);
           else
             GUI.startPreviousView();

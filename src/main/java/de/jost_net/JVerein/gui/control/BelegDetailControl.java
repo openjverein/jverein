@@ -320,11 +320,11 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     buchungList.addColumn("Buchungsart", "buchungsart",
         new BuchungsartFormatter());
     buchungList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       buchungList.addColumn("Netto", "netto",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         buchungList.addColumn("Steuer", "steuer.name", null, false,

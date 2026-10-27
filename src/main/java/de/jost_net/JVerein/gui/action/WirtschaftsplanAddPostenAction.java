@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.math.BigDecimal;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanDetailControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
@@ -50,7 +52,7 @@ public class WirtschaftsplanAddPostenAction implements Action
       item.setBuchungsartId(node.getBuchungsart().getID());
       item.setBuchungsklasseId(
           ((WirtschaftsplanNode) node.getParent()).getBuchungsklasse().getID());
-      item.setSoll(0);
+      item.setSoll(BigDecimal.ZERO);
       item.setPosten("Neuer Posten");
 
       node.addChild(new WirtschaftsplanNode(node, item));

@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.math.BigDecimal;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.dialogs.AnlagenkontoNeuDialog;
@@ -55,7 +57,7 @@ public class AnlagenkontoNeuAction implements Action
             .createObject(Anfangsbestand.class, null);
         anf.setKonto(konto);
         anf.setDatum(buchung.getDatum());
-        anf.setBetrag(0d);
+        anf.setBetrag(BigDecimal.ZERO);
         anf.store();
 
         // Buchung auf das Anlagenkonto erstellen, betrag = -betrag der
@@ -65,7 +67,7 @@ public class AnlagenkontoNeuAction implements Action
         bu.setKonto(konto);
         bu.setName(buchung.getName());
         // Als Betrag müssen wir den Nettobetrag nehmen.
-        bu.setBetrag(-buchung.getNetto());
+        bu.setBetrag(buchung.getNetto().negate());
         bu.setZweck(buchung.getZweck());
         bu.setDatum(buchung.getDatum());
         if (buchung.getBuchungsart() != null)

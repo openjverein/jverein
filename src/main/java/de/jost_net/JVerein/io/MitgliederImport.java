@@ -2,6 +2,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -360,8 +361,7 @@ public class MitgliederImport implements Importer
             && m.getBeitragsgruppe()
                 .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
         {
-          String externeZahlerId = ZeilenDurchlauf
-              .getExterneZahlerId(results);
+          String externeZahlerId = ZeilenDurchlauf.getExterneZahlerId(results);
           if (externeZahlerId != null)
           {
             if (!(Boolean) Einstellungen
@@ -443,7 +443,9 @@ public class MitgliederImport implements Importer
                 .getString("individuellerbeitrag");
             if (individuellerBeitrag != null)
             {
-              m.setIndividuellerBeitrag(Double.valueOf(individuellerBeitrag));
+              individuellerBeitrag = individuellerBeitrag.replace(",", ".");
+              m.setIndividuellerBeitrag(new BigDecimal(individuellerBeitrag)
+                  .setScale(2, RoundingMode.HALF_UP));
             }
             else
             {

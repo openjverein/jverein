@@ -65,7 +65,7 @@ public class VelocityTool
     VelocityContext context = new VelocityContext(
         new HashMap<String, Object>(map));
     context.put("dateformat", new JVDateFormatTTMMJJJJ());
-    context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+    context.put("decimalformat", Einstellungen.BIGDECIMALFORMAT);
     context.put("udateformat", new UniversalDateFormat());
 
     if (isHtml)

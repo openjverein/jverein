@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.math.BigDecimal;
 import java.util.Enumeration;
 import java.util.HashMap;
 
@@ -81,7 +82,7 @@ public class KontenrahmenImportXML implements Importer
     IXMLElement buchungsklassen = root.getFirstChildNamed("buchungsklassen");
     @SuppressWarnings("rawtypes")
     Enumeration enubu = buchungsklassen.enumerateChildren();
-    HashMap<Double, HashMap<String, Integer>> steuerMap = new HashMap<>();
+    HashMap<BigDecimal, HashMap<String, Integer>> steuerMap = new HashMap<>();
 
     DBTransaction.starten();
     try
@@ -137,9 +138,9 @@ public class KontenrahmenImportXML implements Importer
         {
           IXMLElement buaelement = (IXMLElement) enubua.nextElement();
 
-          Double steuersatz = Double
-              .valueOf(buaelement.getAttribute("steuersatz", "0.00"));
-          if (steuersatz != 0)
+          BigDecimal steuersatz = new BigDecimal(
+              buaelement.getAttribute("steuersatz", "0.00"));
+          if (steuersatz.signum() != 0)
           {
             // Die bereits ertellte Buchungsart zu diesem Eintrag holen
             DBIterator<Buchungsart> buait = Einstellungen.getDBService()

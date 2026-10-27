@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -24,6 +25,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
@@ -40,7 +42,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.hbci.HBCIProperties;
@@ -54,7 +55,7 @@ public class ZusatzbetragVorlageDetailControl extends VorZurueckControl
 
   private TextInput buchungstext;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private ZusatzbetragVorlage zbv;
 
@@ -119,14 +120,14 @@ public class ZusatzbetragVorlageDetailControl extends VorZurueckControl
     return buchungstext;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
-    betrag = new DecimalInput(getZusatzbetragVorlage().getBetrag(),
-        Einstellungen.DECIMALFORMAT);
+    betrag = new BigDecimalInput(getZusatzbetragVorlage().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     betrag.setMandatory(true);
     return betrag;
   }
@@ -321,8 +322,7 @@ public class ZusatzbetragVorlageDetailControl extends VorZurueckControl
     z.setIntervall(iz.getKey());
     z.setEndedatum((Date) getEndedatum().getValue());
     z.setBuchungstext((String) getBuchungstext().getValue());
-    Double d = (Double) getBetrag().getValue();
-    z.setBetrag(d.doubleValue());
+    z.setBetrag((BigDecimal) getBetrag().getValue());
     z.setBuchungsart((Buchungsart) getBuchungsart().getValue());
     z.setBuchungsklasseId(getSelectedBuchungsKlasseId());
     z.setZahlungsweg((Zahlungsweg) getZahlungsweg().getValue());

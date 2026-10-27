@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein.io;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
@@ -42,9 +43,9 @@ public class CellProcessors
     for (String elem : keys)
     {
       Object o = map.get(elem);
-      if (o instanceof Double)
+      if (o instanceof BigDecimal)
       {
-        ret[i] = new FmtNumber(Einstellungen.DECIMALFORMAT);
+        ret[i] = new FmtNumber(Einstellungen.BIGDECIMALFORMAT);
       }
       else if (o instanceof Date)
       {

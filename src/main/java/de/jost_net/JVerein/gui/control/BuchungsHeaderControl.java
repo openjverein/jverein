@@ -107,20 +107,20 @@ public class BuchungsHeaderControl extends AbstractControl
         getKontoNameInput().setValue(o.getAttribute("konto"));
 
         getAktJahrAnfangsSaldoInput()
-            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+            .setValue(new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)
                 .format(o.getAttribute("anfangssaldo")));
         getAktJahrAnfangsSaldoInput()
             .setComment("am: " + new DateFormatter(new JVDateFormatTTMMJJJJ())
                 .format(o.getAttribute("datum")));
 
         getAktJahrEinnahmenInput()
-            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+            .setValue(new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)
                 .format(o.getAttribute("einnahmen")));
         getAktJahrAusgabenInput()
-            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+            .setValue(new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)
                 .format(o.getAttribute("ausgaben")));
         getAktJahrSaldoInput()
-            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+            .setValue(new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)
                 .format(o.getAttribute("saldo")));
         getAktJahrSaldoInput().setComment(
             "letzte Buchung: " + new DateFormatter(new JVDateFormatTTMMJJJJ())
@@ -143,20 +143,20 @@ public class BuchungsHeaderControl extends AbstractControl
       {
         PseudoDBObject o = it.next();
         getVorJahrAnfangsSaldoInput()
-            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+            .setValue(new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)
                 .format(o.getAttribute("anfangssaldo")));
         getVorJahrAnfangsSaldoInput()
             .setComment("am: " + new DateFormatter(new JVDateFormatTTMMJJJJ())
                 .format(o.getAttribute("datum")));
 
         getVorJahrEinnahmenInput()
-            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+            .setValue(new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)
                 .format(o.getAttribute("einnahmen")));
         getVorJahrAusgabenInput()
-            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+            .setValue(new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)
                 .format(o.getAttribute("ausgaben")));
         getVorJahrSaldoInput()
-            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+            .setValue(new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)
                 .format(o.getAttribute("saldo")));
         getVorJahrSaldoInput().setComment(
             "letzte Buchung: " + new DateFormatter(new JVDateFormatTTMMJJJJ())

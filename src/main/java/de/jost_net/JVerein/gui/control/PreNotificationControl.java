@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -261,7 +262,7 @@ public class PreNotificationControl extends DruckMailControl
             UeberweisungAusgabe.SEPA_DATEI.getKey()));
     String verwendungszweck = settings
         .getString(settingsprefix + "verwendungszweck", "");
-    Ueberweisung ct1ueberweisung = new Ueberweisung(0.01d);
+    Ueberweisung ct1ueberweisung = new Ueberweisung(new BigDecimal("0.01"));
     int anzahl = ct1ueberweisung.write(lastschriften, file, faell, ct1ausgabe,
         verwendungszweck);
     GUI.getStatusBar().setSuccessText("Anzahl Überweisungen: " + anzahl);
@@ -439,7 +440,7 @@ public class PreNotificationControl extends DruckMailControl
       }
       Mitglied m = l.getMitglied();
       String dokument = "Lastschrift über "
-          + Einstellungen.DECIMALFORMAT.format(l.getBetrag()) + "€";
+          + Einstellungen.BIGDECIMALFORMAT.format(l.getBetrag()) + "€";
       if (m != null)
       {
         liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),

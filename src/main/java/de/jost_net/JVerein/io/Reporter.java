@@ -19,6 +19,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
@@ -441,39 +442,39 @@ public class Reporter implements AutoCloseable
   /**
    * Fuegt eine neue Zelle zur Tabelle hinzu.
    */
-  public void addColumn(Double value)
+  public void addColumn(BigDecimal value)
   {
     addColumn(value, zellenColor);
   }
 
-  public void addColumn(Double value, BaseColor backgroundcolor)
+  public void addColumn(BigDecimal value, BaseColor backgroundcolor)
   {
     Font font = getFreeSans(8, BaseColor.BLACK);
     String text = "";
     if (value != null)
     {
-      if (value < 0)
+      if (value.signum() < 0)
       {
         font = getFreeSans(8, BaseColor.RED);
       }
-      text = Einstellungen.DECIMALFORMAT.format(value);
+      text = Einstellungen.BIGDECIMALFORMAT.format(value);
     }
     addColumn(text, Element.ALIGN_RIGHT, backgroundcolor, font);
   }
 
-  public void addColumn(Double value, Font font, Boolean red)
+  public void addColumn(BigDecimal value, Font font, Boolean red)
   {
     addColumn(value, zellenColor, font, red);
   }
 
-  public void addColumn(Double value, BaseColor backgroundcolor, Font font,
+  public void addColumn(BigDecimal value, BaseColor backgroundcolor, Font font,
       Boolean red)
   {
     String text = "";
     if (value != null)
     {
-      text = Einstellungen.DECIMALFORMAT.format(value);
-      if (value < 0 && red)
+      text = Einstellungen.BIGDECIMALFORMAT.format(value);
+      if (value.signum() < 0 && red)
       {
         Font newfont = new Font(font);
         newfont.setColor(BaseColor.RED);

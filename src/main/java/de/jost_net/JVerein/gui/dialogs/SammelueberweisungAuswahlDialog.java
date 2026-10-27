@@ -117,7 +117,7 @@ public class SammelueberweisungAuswahlDialog
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     this.sammelueberweisung.addColumn("Bezeichnung", "bezeichnung");
     this.sammelueberweisung.addColumn("Summe", "summe",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     return this.sammelueberweisung;
   }
 }
