@@ -62,11 +62,10 @@ public class JVereinUpdateProvider
       ProgressMonitor progressmonitor) throws ApplicationException
   {
     this.progressmonitor = progressmonitor;
-    // TODO Bei Umstellung von MySQL zu H2 wäre das nicht sinnvoll, da es für
-    // die neue Verbindung H2 leifern müsste, obwohl in den Settings MySQL steht
+
     driver = driverClass.getClass().getName();
 
-    // h14199 wird genauso wie H2 behandelt
+    // h2v2 wird genauso wie H2 behandelt
     if (driver.equals(H2V2))
     {
       driver = H2;
