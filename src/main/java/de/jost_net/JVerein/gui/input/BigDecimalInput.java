@@ -16,8 +16,7 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 
 /**
- * @author Malt ein Eingabefeld, in das nur Bigdezimalzahlen eingegeben werden
- *         koennen.
+ * Malt ein Eingabefeld, in das nur Bigdezimalzahlen eingegeben werden können.
  */
 public class BigDecimalInput extends TextInput
 {

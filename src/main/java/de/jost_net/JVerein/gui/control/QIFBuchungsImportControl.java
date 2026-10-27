@@ -303,7 +303,8 @@ public class QIFBuchungsImportControl extends AbstractControl
         "ORDER BY " + QIFImportPos.COL_DATUM + "," + QIFImportPos.COL_POSID);
 
     qifImportPosList.removeAll();
-    BigDecimal saldo = head.getStartSaldo();
+    BigDecimal saldo = head.getStartSaldo() != null ? head.getStartSaldo()
+        : BigDecimal.ZERO;
     int anzahl = 0;
     while (kontoPosIterator.hasNext())
     {
