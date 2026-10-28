@@ -161,7 +161,7 @@ public class MitgliederImport implements Importer
       DBTransaction.starten();
       int anz = 0;
       int zeilen = results.getFetchSize();
-      // Zeilen mit zahlerid werden erst im zweiten Durchlauf
+      // Zeilen mit voll_zahlerid werden erst im zweiten Durchlauf
       // verarbeitet, damit der Vollzahler unabhängig von der Reihenfolge in der
       // Datei bereits gespeichert ist.
       ZeilenDurchlauf durchlauf = new ZeilenDurchlauf(results);
@@ -1361,7 +1361,7 @@ public class MitgliederImport implements Importer
 
   /**
    * Iteriert in zwei Durchläufen über die Zeilen: zuerst alle Zeilen ohne
-   * zahlerid, danach die Zeilen mit zahlerid.
+   * voll_zahlerid, danach die Zeilen mit voll_zahlerid.
    */
   static class ZeilenDurchlauf
   {
@@ -1395,9 +1395,9 @@ public class MitgliederImport implements Importer
     }
 
     /**
-     * Liefert die zahlerid der aktuellen Zeile oder null, wenn die Spalte fehlt
-     * oder leer ist. Diese Funktion wird beim Sortieren benutzt. Damit das
-     * funktioniert müssen Checks gemacht werden.
+     * Liefert die voll_zahlerid der aktuellen Zeile oder null, wenn die Spalte
+     * fehlt oder leer ist. Diese Funktion wird beim Sortieren benutzt. Damit
+     * das funktioniert müssen Checks gemacht werden.
      * 
      * Es darf keine zahlerid bei gesetzt werden wenn die Beitragsgruppe nicht
      * Familienangehöriger ist. Sonst wird der Eintrag in den zweiten Durchlauf
@@ -1412,7 +1412,7 @@ public class MitgliederImport implements Importer
       try
       {
         int zeile = results.getRow();
-        String zahlerId = results.getString("zahlerid");
+        String zahlerId = results.getString("voll_zahlerid");
         if (zahlerId == null || zahlerId.isBlank())
         {
           return null;
@@ -1438,7 +1438,7 @@ public class MitgliederImport implements Importer
           if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
           {
             throw new ApplicationException("Zeile " + zeile
-                + ": Zahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: "
+                + ": Vollzahler ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: "
                 + zahlerId);
           }
         }
@@ -1466,7 +1466,7 @@ public class MitgliederImport implements Importer
     {
       try
       {
-        String zahlerId = results.getString("zahlerid");
+        String zahlerId = results.getString("voll_zahlerid");
         if (zahlerId == null || zahlerId.isBlank())
         {
           return null;
@@ -1486,7 +1486,7 @@ public class MitgliederImport implements Importer
           catch (NumberFormatException ignore)
           {
             throw new ApplicationException(
-                "Zeile " + results.getRow() + " : Zahlerid " + zahlerId
+                "Zeile " + results.getRow() + " : Vollzahler Id " + zahlerId
                     + " ist keine gültige Integer Zahl.");
           }
           return zahlerId;
