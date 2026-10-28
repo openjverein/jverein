@@ -11,7 +11,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 
 import jakarta.mail.internet.AddressException;
@@ -53,6 +55,10 @@ import de.willuhn.util.ProgressMonitor;
 public class MitgliederImport implements Importer
 {
 
+  static Map<String, String> idMap = new HashMap<>();
+
+  static Map<Integer, String> zeileMap = new HashMap<>();
+
   @Override
   public void doImport(Object context, IOFormat format, File file,
       String encoding, ProgressMonitor monitor) throws Exception
@@ -60,6 +66,8 @@ public class MitgliederImport implements Importer
     ResultSet results;
     try
     {
+      idMap = new HashMap<>();
+      zeileMap = new HashMap<>();
 
       Properties props = new java.util.Properties();
       props.put("separator", ";");
@@ -153,7 +161,7 @@ public class MitgliederImport implements Importer
       DBTransaction.starten();
       int anz = 0;
       int zeilen = results.getFetchSize();
-      // Zeilen mit externezahlerid werden erst im zweiten Durchlauf
+      // Zeilen mit zahlerid werden erst im zweiten Durchlauf
       // verarbeitet, damit der Vollzahler unabhängig von der Reihenfolge in der
       // Datei bereits gespeichert ist.
       ZeilenDurchlauf durchlauf = new ZeilenDurchlauf(results);
@@ -165,15 +173,36 @@ public class MitgliederImport implements Importer
         monitor.setPercentComplete(verarbeitet * 100 / zeilen);
 
         String id = null;
+        String tmpId = null;
+        Integer integerId = null;
         try
         {
-          // Wenn die Spalte id existiert, sollen bestehende Mitglieder
-          // überschrieben werden, dann nehmen wir die ID
-          id = results.getString("id");
+          tmpId = results.getString("id");
         }
         catch (SQLException ignore)
         {
         }
+
+        try
+        {
+          if (tmpId != null && !tmpId.isBlank())
+          {
+            integerId = Integer.parseInt(tmpId);
+            if (integerId > 0)
+            {
+              // Wenn die Spalte id existiert und ein existierendes Mitglied
+              // adressiert, sollen bestehende Mitglieder überschrieben werden,
+              // dann nehmen wir die ID
+              id = tmpId;
+            }
+          }
+        }
+        catch (NumberFormatException ex)
+        {
+          throw new ApplicationException(
+              "Mitglied ID " + id + " ist keine gültige Integer Zahl.");
+        }
+
         Mitglied m = null;
         try
         {
@@ -361,77 +390,44 @@ public class MitgliederImport implements Importer
             && m.getBeitragsgruppe()
                 .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
         {
-          String externeZahlerId = ZeilenDurchlauf.getExterneZahlerId(results);
-          if (externeZahlerId != null)
+          String zahlerId = ZeilenDurchlauf.getMappedZahlerId(results);
+          if (zahlerId != null)
           {
-            if (!(Boolean) Einstellungen
-                .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
-            {
-              throw new ApplicationException("Zeile " + anz
-                  + ": externezahlerid ist nur mit externer Mitgliedsnummer möglich");
-            }
-            String zahlerId = null;
-            try
-            {
-              zahlerId = results.getString("zahlerid");
-            }
-            catch (SQLException e)
-            {
-              // Optionaler parameter, ignorieren wir
-            }
-            if (zahlerId != null && zahlerId.length() != 0)
-            {
-              throw new ApplicationException("Zeile " + anz
-                  + ": zahlerid und externezahlerid dürfen nicht gleichzeitig angegeben werden");
-            }
             DBIterator<Mitglied> it = Einstellungen.getDBService()
                 .createList(Mitglied.class);
-            it.addFilter("externemitgliedsnummer = ?", externeZahlerId);
+            it.addFilter("id = ?", zahlerId);
             if (!it.hasNext())
-              throw new ApplicationException("Zeile " + anz
-                  + ": Vollzahler mit externer Mitgliedsnummer nicht gefunden: "
-                  + externeZahlerId);
+            {
+              throw new ApplicationException(
+                  "Zeile " + anz + ": Vollzahler nicht gefunden: " + zahlerId);
+            }
             Mitglied vollzahler = it.next();
-            if (it.hasNext())
-              throw new ApplicationException("Zeile " + anz
-                  + ": Externe Mitgliedsnummer des Vollzahlers ist mehrfach vorhanden: "
-                  + externeZahlerId);
-            m.setVollZahlerID(Long.parseLong(vollzahler.getID()));
+            if (!vollzahler.getMitgliedstyp().getID()
+                .equals(Mitgliedstyp.MITGLIED))
+            {
+              throw new ApplicationException(
+                  "Zeile " + anz + ": Vollzahler " + vollzahler.getID() + " "
+                      + vollzahler.getName() + ", " + vollzahler.getVorname()
+                      + " darf kein Nicht-Mitglied sein.");
+            }
+            if (vollzahler.getBeitragsgruppe()
+                .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+            {
+              throw new ApplicationException(
+                  "Zeile " + anz + ": Vollzahler " + vollzahler.getID() + " "
+                      + vollzahler.getName() + ", " + vollzahler.getVorname()
+                      + " muss Beitragsgruppe Beitragsart Normal haben.");
+            }
+            m.setVollZahlerID(Long.parseLong(zahlerId));
           }
           else
           {
-            try
+            if (id == null)
             {
-              String zahlerId = results.getString("zahlerid");
-              DBIterator<Mitglied> it = Einstellungen.getDBService()
-                  .createList(Mitglied.class);
-              it.addFilter("id = ?", zahlerId);
-              if (!it.hasNext())
-                throw new ApplicationException("Zeile " + anz
-                    + ": Vollzahler nicht gefunden: " + zahlerId);
-              m.setVollZahlerID(Long.parseLong(zahlerId));
-            }
-            catch (SQLException e)
-            {
-              // Optionaler parameter, ignorieren wir
+              throw new ApplicationException(
+                  "Zeile " + anz + ": Vollzahler nicht gefunden.");
             }
           }
-        }
-
-        try
-        {
-          String alternativeZahler = results.getString("alternativer_zahlerid");
-          DBIterator<Mitglied> it = Einstellungen.getDBService()
-              .createList(Mitglied.class);
-          it.addFilter("id = ?", alternativeZahler);
-          if (!it.hasNext())
-            throw new ApplicationException("Zeile " + anz
-                + ": Alternativen Zahler nicht gefunden: " + alternativeZahler);
-          m.setAbweichenderZahlerID(Long.parseLong(alternativeZahler));
-        }
-        catch (SQLException e)
-        {
-          // Optionaler parameter, ignorieren wir
         }
 
         try
@@ -1094,7 +1090,22 @@ public class MitgliederImport implements Importer
           m.setEingabedatum();
         }
         m.setLetzteAenderung();
-        m.store();
+        try
+        {
+          m.store();
+        }
+        catch (ApplicationException ae)
+        {
+          throw new ApplicationException(
+              "Zeile " + anz + ": " + ae.getMessage());
+        }
+        // Mitglied Id für die negativen Referenzen speichern
+        if (integerId != null && integerId < 0)
+        {
+          idMap.put(tmpId, m.getID());
+        }
+        // Id der Mitglieder der jeweiligen Zeile speichern
+        zeileMap.put(anz, m.getID());
 
         for (Felddefinition f : zusfeldList)
         {
@@ -1280,6 +1291,59 @@ public class MitgliederImport implements Importer
         monitor.setStatusText(
             String.format(text, Adressaufbereitung.getNameVorname(m)));
       }
+
+      // Jetzt werden die alternativen Zahler Referenzen gesetzt
+      results.beforeFirst();
+      while (results.next())
+      {
+        anz = results.getRow();
+        try
+        {
+          String abweichenderZahler = results.getString("abweichende_zahlerid");
+          if (abweichenderZahler == null || abweichenderZahler.isBlank())
+          {
+            continue;
+          }
+          try
+          {
+            if (Integer.parseInt(abweichenderZahler) < 0)
+            {
+              abweichenderZahler = idMap.get(abweichenderZahler);
+            }
+          }
+          catch (NumberFormatException ex)
+          {
+            throw new ApplicationException(
+                "Zeile " + anz + " : Abweichender Zahler Id "
+                    + abweichenderZahler + " ist keine gültige Integer Zahl.");
+          }
+          String id = zeileMap.get(anz);
+          if (id.equals(abweichenderZahler))
+          {
+            throw new ApplicationException("Zeile " + anz
+                + ": Mitglied und Abweichender Zahler können nicht identisch sein: "
+                + abweichenderZahler);
+          }
+          DBIterator<Mitglied> it = Einstellungen.getDBService()
+              .createList(Mitglied.class);
+          it.addFilter("id = ?", abweichenderZahler);
+          if (!it.hasNext())
+          {
+            throw new ApplicationException(
+                "Zeile " + anz + ": Abweichenden Zahler nicht gefunden: "
+                    + abweichenderZahler);
+          }
+          Mitglied m = (Mitglied) Einstellungen.getDBService()
+              .createObject(Mitglied.class, id);
+          m.setAbweichenderZahlerID(Long.parseLong(abweichenderZahler));
+          m.store();
+        }
+        catch (SQLException e)
+        {
+          // Optionaler parameter, ignorieren wir
+        }
+      }
+
       results.close();
       stmt.close();
       conn.close();
@@ -1297,7 +1361,7 @@ public class MitgliederImport implements Importer
 
   /**
    * Iteriert in zwei Durchläufen über die Zeilen: zuerst alle Zeilen ohne
-   * externezahlerid, danach die Zeilen mit externezahlerid.
+   * zahlerid, danach die Zeilen mit zahlerid.
    */
   static class ZeilenDurchlauf
   {
@@ -1310,13 +1374,13 @@ public class MitgliederImport implements Importer
       this.results = results;
     }
 
-    boolean next() throws SQLException
+    boolean next() throws SQLException, ApplicationException, RemoteException
     {
       while (true)
       {
         while (results.next())
         {
-          if ((getExterneZahlerId(results) != null) == zweiterDurchlauf)
+          if ((getZahlerId(results) != null) == zweiterDurchlauf)
           {
             return true;
           }
@@ -1331,22 +1395,109 @@ public class MitgliederImport implements Importer
     }
 
     /**
-     * Liefert die externezahlerid der aktuellen Zeile oder null, wenn die
-     * Spalte fehlt oder leer ist.
+     * Liefert die zahlerid der aktuellen Zeile oder null, wenn die Spalte fehlt
+     * oder leer ist. Diese Funktion wird beim Sortieren benutzt. Damit das
+     * funktioniert müssen Checks gemacht werden.
+     * 
+     * Es darf keine zahlerid bei gesetzt werden wenn die Beitragsgruppe nicht
+     * Familienangehöriger ist. Sonst wird der Eintrag in den zweiten Durchlauf
+     * verschoben, was nicht sein sollte.
+     * 
+     * @throws ApplicationException
+     * @throws RemoteException
      */
-    static String getExterneZahlerId(ResultSet results)
+    static String getZahlerId(ResultSet results)
+        throws ApplicationException, RemoteException
     {
       try
       {
-        String externeZahlerId = results.getString("externezahlerid");
-        return externeZahlerId == null || externeZahlerId.length() == 0 ? null
-            : externeZahlerId;
+        int zeile = results.getRow();
+        String zahlerId = results.getString("zahlerid");
+        if (zahlerId == null || zahlerId.isBlank())
+        {
+          return null;
+        }
+        try
+        {
+          String beitragsgruppe = results.getString("beitragsgruppe");
+          DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
+              .createList(Beitragsgruppe.class);
+          it.addFilter("bezeichnung = ?", beitragsgruppe);
+          it.addFilter("IFNULL(sekundaer, 0) IS FALSE");
+          if (!it.hasNext())
+          {
+            throw new ApplicationException("Zeile " + zeile
+                + ": Beitragsgruppe nicht gefunden: " + beitragsgruppe);
+          }
+          Beitragsgruppe bg = (Beitragsgruppe) it.next();
+          if (it.hasNext())
+          {
+            throw new ApplicationException("Beitragsgruppe mit dem Namen "
+                + beitragsgruppe + " ist mehrfach vorhanden");
+          }
+          if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+          {
+            throw new ApplicationException("Zeile " + zeile
+                + ": Zahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: "
+                + zahlerId);
+          }
+        }
+        catch (SQLException e)
+        {
+        }
+        return zahlerId;
+
       }
       catch (SQLException e)
       {
         return null;
       }
     }
+
+    /**
+     * Liefert die zahlerid der aktuellen Zeile oder null, wenn die Spalte fehlt
+     * oder leer ist. Bei negativer zahlerid ersetzen wir sie durch die aktuelle
+     * id
+     * 
+     * @throws ApplicationException
+     */
+    static String getMappedZahlerId(ResultSet results)
+        throws ApplicationException
+    {
+      try
+      {
+        String zahlerId = results.getString("zahlerid");
+        if (zahlerId == null || zahlerId.isBlank())
+        {
+          return null;
+        }
+        else
+        {
+          try
+          {
+            Integer integerId = Integer.parseInt(zahlerId);
+            if (integerId < 0)
+            {
+              // Es wird ein Eintrag in der Import Datei adressiert. Wir holen
+              // uns die echte id
+              zahlerId = idMap.get(zahlerId);
+            }
+          }
+          catch (NumberFormatException ignore)
+          {
+            throw new ApplicationException(
+                "Zeile " + results.getRow() + " : Zahlerid " + zahlerId
+                    + " ist keine gültige Integer Zahl.");
+          }
+          return zahlerId;
+        }
+      }
+      catch (SQLException e)
+      {
+        return null;
+      }
+    }
+
   }
 
   @Override
