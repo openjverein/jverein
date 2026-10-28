@@ -1292,7 +1292,7 @@ public class MitgliederImport implements Importer
             String.format(text, Adressaufbereitung.getNameVorname(m)));
       }
 
-      // Jetzt werden die alternativen Zahler Referenzen gesetzt
+      // Jetzt werden die abweichenden Zahler Referenzen gesetzt
       results.beforeFirst();
       while (results.next())
       {
