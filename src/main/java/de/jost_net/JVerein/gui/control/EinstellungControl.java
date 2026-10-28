@@ -252,6 +252,8 @@ public class EinstellungControl extends AbstractControl
 
   private SelectInput zahlungsweg;
 
+  private SelectInput nmzahlungsweg;
+
   private SelectInput zahlungsrhytmus;
 
   private SelectInput sepaland;
@@ -1631,6 +1633,18 @@ public class EinstellungControl extends AbstractControl
     return zahlungsweg;
   }
 
+  public SelectInput getNMZahlungsweg() throws RemoteException
+  {
+    if (nmzahlungsweg != null)
+    {
+      return nmzahlungsweg;
+    }
+    nmzahlungsweg = new SelectInput(Zahlungsweg.getArray(), new Zahlungsweg(
+        (Integer) Einstellungen.getEinstellung(Property.NMZAHLUNGSWEG)));
+    nmzahlungsweg.setName("Standard-Zahlungsweg f. neue Nicht-Mitglieder");
+    return nmzahlungsweg;
+  }
+
   public SelectInput getZahlungsrhytmus() throws RemoteException
   {
     if (zahlungsrhytmus != null)
@@ -2664,6 +2678,8 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.ZAHLUNGSRHYTMUS, zr.getKey());
       Zahlungsweg zw = (Zahlungsweg) zahlungsweg.getValue();
       Einstellungen.setEinstellung(Property.ZAHLUNGSWEG, zw.getKey());
+      Zahlungsweg nmzw = (Zahlungsweg) nmzahlungsweg.getValue();
+      Einstellungen.setEinstellung(Property.NMZAHLUNGSWEG, nmzw.getKey());
       SEPALandObject slo = (SEPALandObject) getDefaultSEPALand().getValue();
       Einstellungen.setEinstellung(Property.DEFAULTLAND,
           slo.getLand().getKennzeichen());

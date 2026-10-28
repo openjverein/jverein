@@ -597,8 +597,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     if (!control.getMitglied().isNewObject())
     {
-      Container cont = getTabOrLabelContainer(parentComposite,
-          "Mitgliedskonto");
+      Container cont = getTabOrLabelContainer(parentComposite, "Sollbuchungen");
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));

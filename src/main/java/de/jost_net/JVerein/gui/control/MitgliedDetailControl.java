@@ -614,11 +614,20 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     }
     else
     {
-      zahlungsweg = new SelectNoScrollInput(weg, new Zahlungsweg(
-          (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG)));
+      Property prop = isMitglied ? Property.ZAHLUNGSWEG
+          : Property.NMZAHLUNGSWEG;
+      zahlungsweg = new SelectNoScrollInput(weg,
+          new Zahlungsweg((Integer) Einstellungen.getEinstellung(prop)));
     }
 
-    zahlungsweg.setName("Zahlungsweg des Mitglieds");
+    if (isMitglied)
+    {
+      zahlungsweg.setName("Zahlungsweg des Mitglieds");
+    }
+    else
+    {
+      zahlungsweg.setName("Zahlungsweg des Nicht-Mitglieds");
+    }
     zahlungsweg.addListener(new Listener()
     {
 
