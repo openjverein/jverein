@@ -72,7 +72,8 @@ class MitgliederImportTest
   /** Familien-Testdaten: Mustermann (extern) und Meier (zahlerid). */
   private static final String FAMILIEN = "mitglieder-import.csv";
 
-  private static final String HEADER = "id;name;vorname;beitragsgruppe;zahlerid";
+  private static final String HEADER = "externemitgliedsnummer;name;vorname;beitragsgruppe;zahlerid;externezahlerid";
+
 
   /** Gespeicherte Mitglieder des Imports, in Speicherreihenfolge. */
   private List<Mitglied> gespeichert;
@@ -96,9 +97,7 @@ class MitgliederImportTest
 
   private ProgressMonitor monitor;
 
-  /**
-   * Von oeffnen() angelegte JDBC-Ressourcen, werden in tearDown geschlossen.
-   */
+  /** Von oeffnen() angelegte JDBC-Ressourcen, werden in tearDown geschlossen. */
   private final List<AutoCloseable> offen = new ArrayList<>();
 
   @BeforeEach
@@ -115,12 +114,12 @@ class MitgliederImportTest
 
     List<Beitragsgruppe> beitragsgruppen = List.of(
         beitragsgruppe("1", "Vollzahler", ArtBeitragsart.NORMAL),
-        beitragsgruppe("2", "Angehoeriger",
-            ArtBeitragsart.FAMILIE_ANGEHOERIGER));
+        beitragsgruppe("2", "Angehoeriger", ArtBeitragsart.FAMILIE_ANGEHOERIGER));
 
     // Fake-DBService: Mitglieder werden im Speicher gehalten, andere Listen
     // sind leer.
-    JVereinDBService db = mock(JVereinDBService.class, invocation -> {
+    JVereinDBService db = mock(JVereinDBService.class, invocation ->
+    {
       String name = invocation.getMethod().getName();
       if (name.equals("createObject"))
       {
@@ -219,8 +218,8 @@ class MitgliederImportTest
   }
 
   /**
-   * Mitglied-Mock, der gesetzte Werte über die passenden Getter zurückliefert.
-   * store() vergibt eine ID und merkt das Mitglied.
+   * Mitglied-Mock, der gesetzte Werte über die passenden Getter
+   * zurückliefert. store() vergibt eine ID und merkt das Mitglied.
    */
   private Mitglied neuesMitglied(Mitgliedstyp mitgliedstyp)
   {
@@ -325,16 +324,18 @@ class MitgliederImportTest
   private Object persistiert(String externeMitgliedsnummer, String feld)
       throws Exception
   {
-    return datenbank.get(gespeichert(externeMitgliedsnummer).getID()).get(feld);
+    return datenbank.get(gespeichert(externeMitgliedsnummer).getID())
+        .get(feld);
   }
 
   private boolean nichtPersistiert(String externeMitgliedsnummer)
   {
-    return datenbank.values().stream().noneMatch(werte -> externeMitgliedsnummer
-        .equals(werte.get("ExterneMitgliedsnummer")));
+    return datenbank.values().stream().noneMatch(
+        werte -> externeMitgliedsnummer.equals(werte.get("ExterneMitgliedsnummer")));
   }
 
-  private static String beschreibung(Map<String, Object> werte) throws Exception
+  private static String beschreibung(Map<String, Object> werte)
+      throws Exception
   {
     return werte.get("Name") + ", " + werte.get("Vorname") + " ("
         + werte.get("ExterneMitgliedsnummer") + ", "
@@ -390,9 +391,9 @@ class MitgliederImportTest
   }
 
   /**
-   * Schreibt eine CSV-Datei (Header + Zeilen) in eine temporäre Datei.
-   * Kein @TempDir, weil doImport bei Fehlern die Verbindung offen lässt und
-   * Windows die Datei dann nicht löschen kann.
+   * Schreibt eine CSV-Datei (Header + Zeilen) in eine temporäre Datei. Kein
+   * @TempDir, weil doImport bei Fehlern die Verbindung offen lässt und Windows
+   * die Datei dann nicht löschen kann.
    */
   private File csv(String... zeilen) throws IOException
   {
@@ -429,9 +430,8 @@ class MitgliederImportTest
   }
 
   /**
-   * Öffnet die CSV-Datei so wie MitgliederImport.doImport und liefert pro Zeile
-   * in der Reihenfolge des ZeilenDurchlaufs
-   * "externemitgliedsnummer:Zeilennummer".
+   * Öffnet die CSV-Datei so wie MitgliederImport.doImport und liefert pro
+   * Zeile in der Reihenfolge des ZeilenDurchlaufs "externemitgliedsnummer:Zeilennummer".
    */
   private List<String> durchlaufen(File file) throws Exception
   {
@@ -470,9 +470,9 @@ class MitgliederImportTest
     try (ResultSet results = oeffnen(resource(FAMILIEN)))
     {
       results.next(); // Zeile 1: Anna mit externezahlerid
-      assertEquals("1", ZeilenDurchlauf.getZahlerId(results));
+      assertEquals("1", ZeilenDurchlauf.getExterneZahlerId(results));
       results.next(); // Zeile 2: Max, Zelle leer
-      assertNull(ZeilenDurchlauf.getZahlerId(results));
+      assertNull(ZeilenDurchlauf.getExterneZahlerId(results));
     }
   }
 
@@ -499,8 +499,10 @@ class MitgliederImportTest
     // Familienverbände so, wie sie die GUI aus der DB aufbauen würde
     String baum = familienverbaende();
     System.out.println("Familienverbände nach dem Import:\n" + baum);
-    assertEquals(String.join("\n", "Meier, Hans (3, Vollzahler)",
-        "`-- Meier, Eva (4, Angehoeriger)", "Mustermann, Max (1, Vollzahler)",
+    assertEquals(String.join("\n",
+        "Meier, Hans (3, Vollzahler)",
+        "`-- Meier, Eva (4, Angehoeriger)",
+        "Mustermann, Max (1, Vollzahler)",
         "`-- Mustermann, Anna (2, Angehoeriger)", ""), baum);
   }
 
@@ -510,8 +512,8 @@ class MitgliederImportTest
     importieren(csv(HEADER, "1;Mustermann;Max;Vollzahler;;",
         "2;Mustermann;Anna;Angehoeriger;;99"));
 
-    verify(monitor).log(
-        contains("Vollzahler mit externer Mitgliedsnummer nicht gefunden: 99"));
+    verify(monitor).log(contains(
+        "Vollzahler mit externer Mitgliedsnummer nicht gefunden: 99"));
     assertTrue(nichtPersistiert("2"));
   }
 
