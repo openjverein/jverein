@@ -1399,7 +1399,7 @@ public class MitgliederImport implements Importer
      * fehlt oder leer ist. Diese Funktion wird beim Sortieren benutzt. Damit
      * das funktioniert müssen Checks gemacht werden.
      * 
-     * Es darf keine zahlerid bei gesetzt werden wenn die Beitragsgruppe nicht
+     * Es darf keine voll_zahlerid gesetzt werden wenn die Beitragsgruppe nicht
      * Familienangehöriger ist. Sonst wird der Eintrag in den zweiten Durchlauf
      * verschoben, was nicht sein sollte.
      * 
@@ -1455,9 +1455,9 @@ public class MitgliederImport implements Importer
     }
 
     /**
-     * Liefert die zahlerid der aktuellen Zeile oder null, wenn die Spalte fehlt
-     * oder leer ist. Bei negativer zahlerid ersetzen wir sie durch die aktuelle
-     * id
+     * Liefert die voll_ahlerid der aktuellen Zeile oder null, wenn die Spalte
+     * fehlt oder leer ist. Bei negativer voll_zahlerid ersetzen wir sie durch
+     * die aktuelle id
      * 
      * @throws ApplicationException
      */
