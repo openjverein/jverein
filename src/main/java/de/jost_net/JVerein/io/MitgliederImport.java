@@ -1340,7 +1340,9 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler parameter, ignorieren wir
+          // Wenn es die Spalte nicht gibt, brauchen wir auch die weiteren
+          // Zeilen nicht mehr untersuchen.
+          break;
         }
       }
 
