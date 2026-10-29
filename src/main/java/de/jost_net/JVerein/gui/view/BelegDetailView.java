@@ -7,6 +7,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.control.BelegDetailControl;
+import de.jost_net.JVerein.gui.control.BelegDetailControl.Tab;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
@@ -35,7 +36,7 @@ public class BelegDetailView extends AbstractDetailView
   }
 
   // Statische Variable, die den zuletzt ausgewählten Tab speichert.
-  private static int tabindex = -1;
+  private static Tab tabindex = Tab.BUCHUNG;
 
   private BelegDetailControl control;
 
@@ -68,18 +69,18 @@ public class BelegDetailView extends AbstractDetailView
       TabGroup tabBuchung = new TabGroup(folder, "Buchungen", true, 1);
       control.getBuchungList().paint(tabBuchung.getComposite());
 
+      TabGroup tabMitglieder = new TabGroup(folder, "Mitglieder", true, 1);
+      control.getMitgliederList().paint(tabMitglieder.getComposite());
+
       // Aktiver zuletzt ausgewählter Tab.
-      if (tabindex != -1)
-      {
-        folder.setSelection(tabindex);
-        control.setFolderSelection(tabindex);
-      }
+      folder.setSelection(tabindex.getInt());
+      control.setFolderSelection(tabindex);
       folder.addSelectionListener(new SelectionListener()
       {
         @Override
         public void widgetSelected(SelectionEvent evt)
         {
-          tabindex = folder.getSelectionIndex();
+          tabindex = Tab.getByInt(folder.getSelectionIndex());
           control.setFolderSelection(tabindex);
         }
 
