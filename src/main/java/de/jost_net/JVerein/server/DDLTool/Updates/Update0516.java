@@ -29,6 +29,6 @@ public class Update0516 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(dropTable("einstellungen"));
+    execute(dropTable("einstellung"));
   }
 }
