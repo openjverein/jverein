@@ -33,7 +33,7 @@ import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.ArbeitseinsatzAuswertung;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
-import de.jost_net.JVerein.keys.ArbeitseinsatzJahr;
+import de.jost_net.JVerein.keys.Jahr;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -90,7 +90,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       return suchjahr;
     }
     ArrayList<Integer> jahre = new ArrayList<>();
-    for (ArbeitseinsatzJahr jahr : ArbeitseinsatzJahr.getList())
+    for (Jahr jahr : Jahr.getList())
     {
       jahre.add(jahr.getKey());
     }
