@@ -638,7 +638,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         "Zahlungsweg");
     zahlungsweg.getComposite().setLayout(new GridLayout(1, false));
 
-    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)
+        && (Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
     {
       ButtonArea buttons1 = new ButtonArea();
       buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());
