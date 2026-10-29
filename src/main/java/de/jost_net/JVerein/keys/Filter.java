@@ -43,8 +43,6 @@ public enum Filter
       FilterArt.INTEGER),
   ARBEITSEINSATZ_AUSWERTUNG("filter_auswertung", "Auswertung", "2024",
       FilterArt.SELECT, ArbeitseinsatzAuswertung.values()),
-  ARBEITSEINSATZ_JAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,
-      new ArbeitseinsatzJahr[1]),
   AUSFUEHRUNG("filter_ausfuehrungstag", "Ausführung", FilterControl.ALLE,
       FilterArt.SELECT, Ausfuehrung.values()),
   AUSFUEHRUNG_BIS("filter_ausfuehrungsdatum_bis_f",
@@ -127,6 +125,8 @@ public enum Filter
       FilterArt.DATE),
   GESCHLECHT("filter_geschlecht", "Geschlecht", FilterControl.ALLE,
       FilterArt.SELECT, Geschlecht.values()),
+  JAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,
+      Jahr.getList()),
   KONTO("filter_kontoid", "Konto", "3", FilterArt.KONTO, Konto.class),
   // Die zwei nächsten Filter werden nicht angewendet,sie werden aber bei der
   // Variablen Ersetzung gebraucht
