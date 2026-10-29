@@ -1399,74 +1399,84 @@ public class MitgliederImport implements Importer
      * fehlt oder leer ist. Diese Funktion wird beim Sortieren benutzt. Damit
      * das funktioniert müssen Checks gemacht werden.
      * 
-     * Es darf keine voll_zahlerid gesetzt werden wenn die Beitragsgruppe nicht
-     * Familienangehöriger ist. Sonst wird der Eintrag in den zweiten Durchlauf
-     * verschoben, was nicht sein sollte.
-     * 
      * @throws ApplicationException
      * @throws RemoteException
      */
     static String getZahlerId(ResultSet results)
         throws ApplicationException, RemoteException
     {
+      String zahlerId = null;
+      int zeile = 0;
       try
       {
-        int zeile = results.getRow();
-        String zahlerId = results.getString("voll_zahlerid");
-        if (zahlerId == null || zahlerId.isBlank())
-        {
-          return null;
-        }
-        // Es gibt eine voll_zahlerid. Wir prüfen ob sie auch erlaubt ist.
-        try
-        {
-          // Sie ist nur bei Beitragsgruppe Familienangehöriger erlaubt
-          String beitragsgruppe = results.getString("beitragsgruppe");
-          if (beitragsgruppe != null && !beitragsgruppe.isBlank())
-          {
-            DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
-                .createList(Beitragsgruppe.class);
-            it.addFilter("bezeichnung = ?", beitragsgruppe);
-            it.addFilter("IFNULL(sekundaer, 0) IS FALSE");
-            if (!it.hasNext())
-            {
-              throw new ApplicationException("Zeile " + zeile
-                  + ": Beitragsgruppe nicht gefunden: " + beitragsgruppe);
-            }
-            Beitragsgruppe bg = (Beitragsgruppe) it.next();
-            if (it.hasNext())
-            {
-              throw new ApplicationException("Beitragsgruppe mit dem Namen "
-                  + beitragsgruppe + " ist mehrfach vorhanden");
-            }
-            if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-            {
-              throw new ApplicationException("Zeile " + zeile
-                  + ": Vollzahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: "
-                  + zahlerId);
-            }
-          }
-          // Sie ist nicht bei Nicht-Mitgliedern erlaubt. Bei denen gibt es
-          // keinen Familienverband
-          String mitgliedstyp = results.getString("adresstyp");
-          if (mitgliedstyp != null && !mitgliedstyp.isBlank()
-              && !mitgliedstyp.equals(Mitgliedstyp.MITGLIED))
-          {
-            throw new ApplicationException("Zeile " + zeile
-                + ": Für Nicht-Mitglieder ist keine Vollzahler Id erlaubt: "
-                + zahlerId);
-          }
-        }
-        catch (SQLException e)
-        {
-        }
-        return zahlerId;
-
+        zeile = results.getRow();
+        zahlerId = results.getString("voll_zahlerid");
       }
       catch (SQLException e)
       {
+        // voll_zahlerid kommt nicht als Spalte vor.
         return null;
       }
+      // Die Spalte gibt es, jetzt den Wert prüfen.
+      if (zahlerId == null || zahlerId.isBlank())
+      {
+        return null;
+      }
+      // Es gibt eine voll_zahlerid. Wir prüfen ob sie auch erlaubt ist.
+      try
+      {
+        // Sie ist nicht bei Nicht-Mitgliedern erlaubt. Bei denen gibt es
+        // keinen Familienverband
+        String mitgliedstyp = results.getString("adresstyp");
+        if (mitgliedstyp != null && !mitgliedstyp.isBlank()
+            && !mitgliedstyp.equals(Mitgliedstyp.MITGLIED))
+        {
+          throw new ApplicationException("Zeile " + zeile
+              + ": Für Nicht-Mitglieder ist keine Vollzahler Id erlaubt: "
+              + zahlerId);
+        }
+      }
+      catch (SQLException e)
+      {
+        // Keinen Spalte adresstyp vorhanden. Da ist nichts zu prüfen.
+        // Wenn es ein neues Objekt ist, dann bekommt es automatisch den Typ
+        // Mitglied und da wäre voll_zahlerid erlaubt.
+      }
+      try
+      {
+        // Sie ist nur bei Beitragsgruppe Familienangehöriger erlaubt
+        String beitragsgruppe = results.getString("beitragsgruppe");
+        if (beitragsgruppe != null && !beitragsgruppe.isBlank())
+        {
+          DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
+              .createList(Beitragsgruppe.class);
+          it.addFilter("bezeichnung = ?", beitragsgruppe);
+          it.addFilter("IFNULL(sekundaer, 0) IS FALSE");
+          if (!it.hasNext())
+          {
+            throw new ApplicationException("Zeile " + zeile
+                + ": Beitragsgruppe nicht gefunden: " + beitragsgruppe);
+          }
+          Beitragsgruppe bg = (Beitragsgruppe) it.next();
+          if (it.hasNext())
+          {
+            throw new ApplicationException("Beitragsgruppe mit dem Namen "
+                + beitragsgruppe + " ist mehrfach vorhanden");
+          }
+          if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+          {
+            throw new ApplicationException("Zeile " + zeile
+                + ": Vollzahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: "
+                + zahlerId);
+          }
+        }
+      }
+      catch (SQLException e)
+      {
+        // Es ist keine beitragsgruppe Spalte vorhanden. Dann ist es ein
+        // existirendes Mitglied.
+      }
+      return zahlerId;
     }
 
     /**
