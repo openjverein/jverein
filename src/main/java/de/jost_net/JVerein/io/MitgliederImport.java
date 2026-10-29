@@ -1474,13 +1474,13 @@ public class MitgliederImport implements Importer
       catch (SQLException e)
       {
         // Es ist keine beitragsgruppe Spalte vorhanden. Dann ist es ein
-        // existirendes Mitglied.
+        // existierendes Mitglied.
       }
       return zahlerId;
     }
 
     /**
-     * Liefert die voll_ahlerid der aktuellen Zeile oder null, wenn die Spalte
+     * Liefert die voll_zahlerid der aktuellen Zeile oder null, wenn die Spalte
      * fehlt oder leer ist. Bei negativer voll_zahlerid ersetzen wir sie durch
      * die aktuelle id
      * 
