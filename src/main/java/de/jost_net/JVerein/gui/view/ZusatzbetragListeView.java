@@ -23,11 +23,12 @@ import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
-import de.jost_net.JVerein.keys.Ausfuehrung;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
@@ -42,8 +43,23 @@ public class ZusatzbetragListeView extends AbstractView
     final ZusatzbetragControl control = new ZusatzbetragControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addInput(
-        control.getFilterInput(Filter.AUSFUEHRUNG, Ausfuehrung.getList()));
+    group.addInput(control.getFilterInput(Filter.AUSFUEHRUNG));
+    Input von = control.getFilterInput(Filter.AUSFUEHRUNG_VON);
+    group.addInput(von);
+    Input bis = control.getFilterInput(Filter.AUSFUEHRUNG_BIS);
+    group.addInput(bis);
+
+    ButtonArea fbuttons = new ButtonArea();
+    ToolTipButton zurueck = control.getZurueckButton(von, bis);
+    fbuttons.addButton(zurueck);
+    ToolTipButton vor = control.getVorButton(von, bis);
+    fbuttons.addButton(vor);
+    fbuttons.addButton(control.getProfileButton(this));
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
+    zurueck.setToolTipText("Datumsbereich zurück");
+    vor.setToolTipText("Datumsbereich vowärts");
 
     control.getTablePart().paint(this.getParent());
 

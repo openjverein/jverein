@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -125,8 +124,7 @@ public class ZusatzbetragControl extends FilterControl
         new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
     VorZurueckControl.setObjektListe(null, null);
 
-    if (getFilterValue(Filter.AUSFUEHRUNG).toString()
-        .equals(Ausfuehrung.AKTIVE))
+    if (getFilterValue(Filter.AUSFUEHRUNG) == Ausfuehrung.AKTIVE)
     {
       nichtAktiveEliminieren(zusatzbetraegeList);
     }
@@ -145,8 +143,7 @@ public class ZusatzbetragControl extends FilterControl
         {
           zusatzbetraegeList.addItem(zusatzbetraege.next());
         }
-        if (getFilterValue(Filter.AUSFUEHRUNG).toString()
-            .equals(Ausfuehrung.AKTIVE))
+        if (getFilterValue(Filter.AUSFUEHRUNG) == Ausfuehrung.AKTIVE)
         {
           nichtAktiveEliminieren(zusatzbetraegeList);
         }
@@ -161,35 +158,27 @@ public class ZusatzbetragControl extends FilterControl
 
   private DBIterator<Zusatzbetrag> getIterator() throws RemoteException
   {
-    String ausfuehrung = getFilterValue(Filter.AUSFUEHRUNG).toString();
+    Ausfuehrung ausfuehrung = (Ausfuehrung) getFilterValue(Filter.AUSFUEHRUNG);
     DBIterator<Zusatzbetrag> zusatzbetraege = Einstellungen.getDBService()
         .createList(Zusatzbetrag.class);
     zusatzbetraege.join("mitglied");
     zusatzbetraege.addFilter(Zusatzbetrag.T_MITGLIED + " = mitglied.id");
-    if (ausfuehrung.equals(Ausfuehrung.ALLE))
+    if (ausfuehrung == null || ausfuehrung == Ausfuehrung.AKTIVE)
     {
-      // nichts tun
+      if (getFilterValue(Filter.AUSFUEHRUNG_VON) != null)
+      {
+        zusatzbetraege.addFilter("ausfuehrung >= ?",
+            (Date) getFilterValue(Filter.AUSFUEHRUNG_VON));
+      }
+      if (getFilterValue(Filter.AUSFUEHRUNG_BIS) != null)
+      {
+        zusatzbetraege.addFilter("ausfuehrung <= ?",
+            (Date) getFilterValue(Filter.AUSFUEHRUNG_BIS));
+      }
     }
-    else if (ausfuehrung.equals(Ausfuehrung.AKTIVE))
-    {
-      // zunächst nichts tun
-    }
-    else if (ausfuehrung.equals(Ausfuehrung.NOCH_NICHT))
+    else if (ausfuehrung == Ausfuehrung.NOCH_NICHT)
     {
       zusatzbetraege.addFilter("ausfuehrung is null");
-    }
-    else
-    {
-      try
-      {
-        Date d = new JVDateFormatTTMMJJJJ().parse(ausfuehrung);
-        java.sql.Date sqd = new java.sql.Date(d.getTime());
-        zusatzbetraege.addFilter("ausfuehrung = ?", new Object[] { sqd });
-      }
-      catch (ParseException e)
-      {
-        Logger.error("Fehler", e);
-      }
     }
     zusatzbetraege
         .setOrder("ORDER BY ausfuehrung DESC, faelligkeit DESC, name");
