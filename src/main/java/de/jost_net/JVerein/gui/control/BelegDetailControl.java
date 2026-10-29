@@ -27,12 +27,14 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.DokumentShowAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.menu.BuchungAbrechnugslaufMenu;
+import de.jost_net.JVerein.gui.menu.MitgliedMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
@@ -42,6 +44,7 @@ import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -73,9 +76,35 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
 
   private AutoUpdateTablePart buchungList;
 
-  public final static int TAB_BUCHUNGEN = 0;
+  public enum Tab
+  {
+    BUCHUNG(0),
+    MITGLIEDER(1);
 
-  private int selectedTab = TAB_BUCHUNGEN;
+    private int index;
+
+    Tab(int i)
+    {
+      index = i;
+    }
+
+    public int getInt()
+    {
+      return index;
+    }
+
+    public static Tab getByInt(int i)
+    {
+      for (Tab v : Tab.values())
+      {
+        if (v.getInt() == i)
+          return v;
+      }
+      return BUCHUNG;
+    }
+  }
+
+  private Tab selectedTab = Tab.BUCHUNG;
 
   private AbstractBelegDBObject belegObject;
 
@@ -86,6 +115,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   private TextInput belegnummer;
 
   private SelectInput belegArt;
+
+  private JVereinTablePart mitgliederList;
 
   public BelegDetailControl(AbstractView view,
       AbstractBelegDBObject belegObject)
@@ -340,7 +371,35 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     return buchungList;
   }
 
-  public void setFolderSelection(int selection)
+  public JVereinTablePart getMitgliederList() throws RemoteException
+  {
+    if (mitgliederList != null)
+    {
+      return mitgliederList;
+    }
+    DBIterator<Mitglied> it = Einstellungen.getDBService()
+        .createList(Mitglied.class);
+    it.join("belegmitglied");
+    it.addFilter("belegmitglied.referenz = mitglied.id");
+    it.addFilter("belegmitglied.beleg = ?", getBeleg().getID());
+
+    mitgliederList = new JVereinTablePart(PseudoIterator.asList(it),
+        new MitgliedDetailAction());
+    mitgliederList.setTableName("Mitglieder");
+    mitgliederList.addColumn("Nr", "id-int");
+    mitgliederList.addColumn("Name", "name");
+    mitgliederList.addColumn("Vorname", "vorname");
+    mitgliederList.addColumn("Straße", "strasse");
+    mitgliederList.addColumn("Ort", "ort");
+
+    mitgliederList.setMulti(true);
+
+    mitgliederList.setContextMenu(
+        new MitgliedMenu(new MitgliedDetailAction(), mitgliederList));
+    return mitgliederList;
+  }
+
+  public void setFolderSelection(Tab selection)
   {
     selectedTab = selection;
   }
@@ -351,11 +410,12 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   {
     switch (selectedTab)
     {
-      case TAB_BUCHUNGEN:
+      case BUCHUNG:
         return getBuchungList();
-      default:
-        return null;
+      case MITGLIEDER:
+        return getMitgliederList();
     }
+    return null;
   }
 
   @Override
@@ -363,12 +423,14 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   {
     switch (selectedTab)
     {
-      case TAB_BUCHUNGEN:
+      case BUCHUNG:
         return VorlageUtil.getName(VorlageTyp.BELEG_BUCHUNGEN_TITEL,
             getBeleg());
-      default:
-        return null;
+      case MITGLIEDER:
+        return VorlageUtil.getName(VorlageTyp.BELEG_MITGLIEDER_TITEL,
+            getBeleg());
     }
+    return null;
   }
 
   @Override
@@ -376,12 +438,14 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   {
     switch (selectedTab)
     {
-      case TAB_BUCHUNGEN:
+      case BUCHUNG:
         return VorlageUtil.getName(VorlageTyp.BELEG_BUCHUNGEN_SUBTITEL,
             getBeleg());
-      default:
-        return null;
+      case MITGLIEDER:
+        return VorlageUtil.getName(VorlageTyp.BELEG_MITGLIEDER_SUBTITEL,
+            getBeleg());
     }
+    return null;
   }
 
   @Override
@@ -389,12 +453,15 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   {
     switch (selectedTab)
     {
-      case TAB_BUCHUNGEN:
+      case BUCHUNG:
         return VorlageUtil.getName(VorlageTyp.BELEG_BUCHUNGEN_DATEINAME,
             getBeleg());
-      default:
-        return null;
+      case MITGLIEDER:
+        return VorlageUtil.getName(VorlageTyp.BELEG_MITGLIEDER_DATEINAME,
+            getBeleg());
     }
+    return null;
+
   }
 
   public PanelButton getDetailSpaltenPanelButton()

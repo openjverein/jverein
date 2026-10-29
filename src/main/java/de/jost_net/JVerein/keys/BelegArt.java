@@ -4,7 +4,8 @@ public enum BelegArt implements KeyEnum
 {
 
   SONSTIGES(1, "Allgemein"),
-  BUCHUNG(2, "Buchung");
+  BUCHUNG(2, "Buchung"),
+  MITGLIED(3, "Mitglied");
 
   private final String titel;
 

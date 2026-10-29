@@ -428,6 +428,10 @@ public class EinstellungControl extends AbstractControl
 
   private DirectoryInput belegAllgemeinVerzeichnis;
 
+  private IntegerInput belegZaehlerMitglied;
+
+  private TextInput belegnummerMitglied;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -1204,7 +1208,7 @@ public class EinstellungControl extends AbstractControl
       return mitgliedsDokumentVerzeichnis;
     }
     mitgliedsDokumentVerzeichnis = new DirectoryInput(
-        Einstellungen.getMitgliedDokumentVerzeichnis());
+        Einstellungen.getBelegMitgliedVerzeichnis());
     return mitgliedsDokumentVerzeichnis;
   }
 
@@ -2254,6 +2258,31 @@ public class EinstellungControl extends AbstractControl
     return belegZaehlerSonstiges;
   }
 
+  public TextInput getBelegMitgliedNummer() throws RemoteException
+  {
+    if (belegnummerMitglied != null)
+    {
+      return belegnummerMitglied;
+    }
+    belegnummerMitglied = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.BELEGNUMMER_MITGLIED),
+        500);
+    belegnummerMitglied.setName("Belegnummer Mitglieds-Belege");
+    return belegnummerMitglied;
+  }
+
+  public IntegerInput getBelegMitgliedZaehler() throws RemoteException
+  {
+    if (belegZaehlerMitglied != null)
+    {
+      return belegZaehlerMitglied;
+    }
+    belegZaehlerMitglied = new IntegerInput((Integer) Einstellungen
+        .getEinstellung(Property.BELEG_ZAEHLER_MITGLIED));
+    belegZaehlerMitglied.setName("Zähler Mitglieds-Belege");
+    return belegZaehlerMitglied;
+  }
+
   public CheckboxInput getMitgliedsnummerAnzeigen() throws RemoteException
   {
     if (nummeranzeigen != null)
@@ -2705,7 +2734,7 @@ public class EinstellungControl extends AbstractControl
   {
     try
     {
-      if (!Einstellungen.getMitgliedDokumentVerzeichnis()
+      if (!Einstellungen.getBelegMitgliedVerzeichnis()
           .equals(mitgliedsDokumentVerzeichnis.getValue()))
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
@@ -2713,7 +2742,7 @@ public class EinstellungControl extends AbstractControl
         dialog
             .setText("Das Verzeichnis für Mitglieds-Dokumente wurde geändert.\n"
                 + "Bitte Verschieben sie ggf. vorhandene Dokumente manuell von '"
-                + Einstellungen.getMitgliedDokumentVerzeichnis() + "' nach '"
+                + Einstellungen.getBelegMitgliedVerzeichnis() + "' nach '"
                 + mitgliedsDokumentVerzeichnis.getValue() + "'\n"
                 + "Fortfahren?");
         if (!(Boolean) dialog.open())
@@ -2750,7 +2779,7 @@ public class EinstellungControl extends AbstractControl
         }
       }
 
-      Einstellungen.setMitgliedDokumentVerzeichnis(
+      Einstellungen.setBelegMitgliedVerzeichnis(
           (String) mitgliedsDokumentVerzeichnis.getValue());
 
       Einstellungen.setBelegBuchungVerzeichnis(
@@ -2770,6 +2799,11 @@ public class EinstellungControl extends AbstractControl
           (String) belegnummerSonstiges.getValue());
       Einstellungen.setEinstellung(Property.BELEG_ZAEHLER_SONSTIGES,
           (Integer) belegZaehlerSonstiges.getValue());
+
+      Einstellungen.setEinstellung(Property.BELEGNUMMER_MITGLIED,
+          (String) belegnummerMitglied.getValue());
+      Einstellungen.setEinstellung(Property.BELEG_ZAEHLER_MITGLIED,
+          (Integer) belegZaehlerMitglied.getValue());
 
       DBTransaction.commit();
 

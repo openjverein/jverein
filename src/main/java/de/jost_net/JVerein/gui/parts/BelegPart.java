@@ -41,7 +41,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
@@ -95,7 +94,7 @@ public class BelegPart implements Part
     return currentObject;
   }
 
-  public TablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (docsList != null)
     {

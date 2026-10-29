@@ -45,6 +45,8 @@ public class EinstellungenBelegView extends AbstractView
         "Mitglieds-Belege");
     groupMitglied.addLabelPair("Verzeichnis für Mitglieds-Dokumente *",
         control.getMitgliedsDokumentVerzeichnis());
+    groupMitglied.addInput(control.getBelegMitgliedNummer());
+    groupMitglied.addInput(control.getBelegMitgliedZaehler());
 
     LabelGroup groupBuchung = new LabelGroup(cont.getComposite(),
         "Buchungs-Belege");

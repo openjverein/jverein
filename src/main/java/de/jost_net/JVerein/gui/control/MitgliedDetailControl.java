@@ -59,6 +59,7 @@ import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
+import de.jost_net.JVerein.gui.parts.BelegPart;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.EigenschaftenTree;
 import de.jost_net.JVerein.gui.parts.Familienverband;
@@ -136,8 +137,6 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
 {
   final LesefeldMitgliedControl lesefeldControl = new LesefeldMitgliedControl(
       null);
-
-  private DokumentControl dcontrol;
 
   private SelectNoScrollInput mitgliedstyp;
 
@@ -263,6 +262,8 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
   private JVereinTablePart zahtlFuer;
 
   private TabSelection tabSelection = TabSelection.NO_LIST_TAB;
+
+  private BelegPart belegPart;
 
   public enum TabSelection
   {
@@ -2346,11 +2347,6 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     return lesefeldControl;
   }
 
-  public void setDokumentControl(DokumentControl dcontrol)
-  {
-    this.dcontrol = dcontrol;
-  }
-
   public PanelButton getDetailSpaltenPanelButton()
   {
     return new PanelButton("document-properties.png", context -> {
@@ -2358,7 +2354,8 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
       {
         new TabelleSpaltenAuswahlDialog(zusatzbetraegeList, wiedervorlageList,
             mailList, lehrgaengeList, lesefeldControl.getLesefeldMitgliedList(),
-            arbeitseinsatzList, getDocumentPart()).open();
+            arbeitseinsatzList,
+            belegPart == null ? null : belegPart.getTablePart()).open();
       }
       catch (OperationCanceledException | ApplicationException e)
       {
@@ -2404,7 +2401,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
       case TAB_DOKUMENTE:
         try
         {
-          return dcontrol.getDokumenteList();
+          return belegPart.getTablePart();
         }
         catch (RemoteException e)
         {
@@ -2416,13 +2413,14 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     throw new ObjectNotFoundException();
   }
 
-  private JVereinTablePart getDocumentPart() throws RemoteException
+  public BelegPart getBelegPart() throws RemoteException
   {
-    if (dcontrol == null)
+    if (belegPart != null)
     {
-      return null;
+      return belegPart;
     }
-    return dcontrol.getDokumenteList();
+    belegPart = new BelegPart();
+    return belegPart;
   }
 
   @Override
