@@ -1308,7 +1308,14 @@ public class MitgliederImport implements Importer
           {
             if (Integer.parseInt(abweichenderZahler) < 0)
             {
+              String alteId = abweichenderZahler;
               abweichenderZahler = idMap.get(abweichenderZahler);
+              if (abweichenderZahler == null)
+              {
+                throw new ApplicationException(
+                    "Zeile " + anz + " : Abweichender Zahler für Id " + alteId
+                        + " nicht gefunden.");
+              }
             }
           }
           catch (NumberFormatException ex)
