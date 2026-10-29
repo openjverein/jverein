@@ -19,8 +19,6 @@ package de.jost_net.JVerein.gui.navigation;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AboutAction;
-import de.jost_net.JVerein.gui.action.BackupCreateAction;
-import de.jost_net.JVerein.gui.action.BackupRestoreAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
@@ -447,12 +445,6 @@ public class JVereinNavigation implements Extension
           einstellungenerweitert, "Datenbank-Bereinigung",
           new StartViewAction(DbBereinigenView.class),
           "placeholder-loading.png"));
-      einstellungenerweitert.addChild(new JVereinNavigationItem(
-          einstellungenerweitert, "Diagnose-Backup-Export",
-          new BackupCreateAction(), "document-save.png"));
-      einstellungenerweitert.addChild(new JVereinNavigationItem(
-          einstellungenerweitert, "Diagnose-Backup-Import",
-          new BackupRestoreAction(), "file-import.png"));
       administration.addChild(einstellungenerweitert);
       jverein.addChild(administration);
 
