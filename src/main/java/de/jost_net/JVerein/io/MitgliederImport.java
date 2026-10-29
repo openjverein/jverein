@@ -391,7 +391,7 @@ public class MitgliederImport implements Importer
                 .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
         {
           String zahlerId = ZeilenDurchlauf.getMappedZahlerId(results);
-          if (zahlerId != null)
+          if (zahlerId != null && !zahlerId.isBlank())
           {
             DBIterator<Mitglied> it = Einstellungen.getDBService()
                 .createList(Mitglied.class);
@@ -425,7 +425,7 @@ public class MitgliederImport implements Importer
             if (id == null)
             {
               throw new ApplicationException(
-                  "Zeile " + anz + ": Vollzahler nicht gefunden.");
+                  "Zeile " + anz + ": Vollzahler Id ist nicht gesetzt. ");
             }
           }
         }
@@ -1417,28 +1417,43 @@ public class MitgliederImport implements Importer
         {
           return null;
         }
+        // Es gibt eine voll_zahlerid. Wir prüfen ob sie auch erlaubt ist.
         try
         {
+          // Sie ist nur bei Beitragsgruppe Familienangehöriger erlaubt
           String beitragsgruppe = results.getString("beitragsgruppe");
-          DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
-              .createList(Beitragsgruppe.class);
-          it.addFilter("bezeichnung = ?", beitragsgruppe);
-          it.addFilter("IFNULL(sekundaer, 0) IS FALSE");
-          if (!it.hasNext())
+          if (beitragsgruppe != null && !beitragsgruppe.isBlank())
+          {
+            DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
+                .createList(Beitragsgruppe.class);
+            it.addFilter("bezeichnung = ?", beitragsgruppe);
+            it.addFilter("IFNULL(sekundaer, 0) IS FALSE");
+            if (!it.hasNext())
+            {
+              throw new ApplicationException("Zeile " + zeile
+                  + ": Beitragsgruppe nicht gefunden: " + beitragsgruppe);
+            }
+            Beitragsgruppe bg = (Beitragsgruppe) it.next();
+            if (it.hasNext())
+            {
+              throw new ApplicationException("Beitragsgruppe mit dem Namen "
+                  + beitragsgruppe + " ist mehrfach vorhanden");
+            }
+            if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+            {
+              throw new ApplicationException("Zeile " + zeile
+                  + ": Vollzahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: "
+                  + zahlerId);
+            }
+          }
+          // Sie ist nicht bei Nicht-Mitgliedern erlaubt. Bei denen gibt es
+          // keinen Familienverband
+          String mitgliedstyp = results.getString("adresstyp");
+          if (mitgliedstyp != null && !mitgliedstyp.isBlank()
+              && !mitgliedstyp.equals(Mitgliedstyp.MITGLIED))
           {
             throw new ApplicationException("Zeile " + zeile
-                + ": Beitragsgruppe nicht gefunden: " + beitragsgruppe);
-          }
-          Beitragsgruppe bg = (Beitragsgruppe) it.next();
-          if (it.hasNext())
-          {
-            throw new ApplicationException("Beitragsgruppe mit dem Namen "
-                + beitragsgruppe + " ist mehrfach vorhanden");
-          }
-          if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-          {
-            throw new ApplicationException("Zeile " + zeile
-                + ": Vollzahler ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: "
+                + ": Für Nicht-Mitglieder ist keine Vollzahler Id erlaubt: "
                 + zahlerId);
           }
         }
