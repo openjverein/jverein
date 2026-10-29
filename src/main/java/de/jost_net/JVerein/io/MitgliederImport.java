@@ -1493,6 +1493,7 @@ public class MitgliederImport implements Importer
     {
       try
       {
+        int zeile = results.getRow();
         String zahlerId = results.getString("voll_zahlerid");
         if (zahlerId == null || zahlerId.isBlank())
         {
@@ -1507,13 +1508,19 @@ public class MitgliederImport implements Importer
             {
               // Es wird ein Eintrag in der Import Datei adressiert. Wir holen
               // uns die echte id
+              String alteId = zahlerId;
               zahlerId = idMap.get(zahlerId);
+              if (zahlerId == null)
+              {
+                throw new ApplicationException("Zeile " + zeile
+                    + " : Vollzahler für Id " + alteId + " nicht gefunden.");
+              }
             }
           }
           catch (NumberFormatException ignore)
           {
             throw new ApplicationException(
-                "Zeile " + results.getRow() + " : Vollzahler Id " + zahlerId
+                "Zeile " + zeile + " : Vollzahler Id " + zahlerId
                     + " ist keine gültige Integer Zahl.");
           }
           return zahlerId;
