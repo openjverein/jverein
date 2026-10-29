@@ -275,6 +275,7 @@ public class Einstellungen
         ((Integer) Beitragsmodel.GLEICHERTERMINFUERALLE.getKey()).toString()),
     ZAHLUNGSRHYTMUS("zahlungsrhytmus", Integer.class, "12"),
     ZAHLUNGSWEG("zahlungsweg", Integer.class, "1"),
+    NMZAHLUNGSWEG("nmzahlungsweg", Integer.class, "2"),
     SEPADATUMOFFSET("sepadatumoffset", Integer.class, "0"),
     DEFAULTLAND("defaultland", String.class, "DE"),
     SEPAVERSION("sepaversion", String.class, "pain.008.001.01.xsd"),
