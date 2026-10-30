@@ -46,24 +46,6 @@ public class BelegZuordnenAction implements Action
   {
     try
     {
-      if (!(context instanceof AbstractBelegDBObject)
-          && !(context instanceof AbstractBelegDBObject[]))
-      {
-        throw new ApplicationException(
-            "Keine Objekt ausgewählt welches Belege unterstützt.");
-      }
-
-      AbstractBelegDBObject[] object = null;
-      if (context instanceof AbstractBelegDBObject)
-      {
-        object = new AbstractBelegDBObject[1];
-        object[0] = (AbstractBelegDBObject) context;
-      }
-      if (context instanceof AbstractBelegDBObject[])
-      {
-        object = (AbstractBelegDBObject[]) context;
-      }
-
       BelegAuswahlDialog d = new BelegAuswahlDialog();
       Beleg[] belege = d.open();
       if (belege != null)
@@ -73,10 +55,7 @@ public class BelegZuordnenAction implements Action
           DBTransaction.starten();
           for (Beleg b : belege)
           {
-            for (int i = 0; i < object.length; i++)
-            {
-              ((AbstractBelegDBObject) object[i]).addBeleg(b);
-            }
+            ((AbstractBelegDBObject) context).addBeleg(b);
           }
           DBTransaction.commit();
         }
@@ -87,17 +66,9 @@ public class BelegZuordnenAction implements Action
         }
         // Erst jetzt Dokumente anzeigen, falls bei einem Beleg ein Fehler
         // passiert
-        if (part != null)
+        for (Beleg b : belege)
         {
-          for (Beleg b : belege)
-          {
-            part.addItem(b);
-          }
-        }
-        else
-        {
-          // Dann wurde es über das Menü aufgerufen
-          GUI.getCurrentView().reload();
+          part.addItem(b);
         }
         GUI.getStatusBar().setSuccessText("Beleg(e) erfolgreich zugeordnet");
       }
