@@ -1308,12 +1308,6 @@ public class MitgliederImport implements Importer
                     + abweichenderZahler + " ist keine gültige Integer Zahl.");
           }
           String id = zeileMap.get(anz);
-          if (id.equals(abweichenderZahler))
-          {
-            throw new ApplicationException("Zeile " + anz
-                + ": Mitglied und Abweichender Zahler können nicht identisch sein: "
-                + abweichenderZahler);
-          }
           DBIterator<Mitglied> it = Einstellungen.getDBService()
               .createList(Mitglied.class);
           it.addFilter("id = ?", abweichenderZahler);
@@ -1326,7 +1320,15 @@ public class MitgliederImport implements Importer
           Mitglied m = (Mitglied) Einstellungen.getDBService()
               .createObject(Mitglied.class, id);
           m.setAbweichenderZahlerID(Long.parseLong(abweichenderZahler));
-          m.store();
+          try
+          {
+            m.store();
+          }
+          catch (ApplicationException ae)
+          {
+            throw new ApplicationException(
+                "Zeile " + anz + ": " + ae.getMessage());
+          }
         }
         catch (SQLException e)
         {

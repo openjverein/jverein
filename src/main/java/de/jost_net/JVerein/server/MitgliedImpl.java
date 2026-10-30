@@ -339,6 +339,13 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         }
       }
 
+      if (getAbweichenderZahler() != null
+          && getAbweichenderZahler().getID().equals(getID()))
+      {
+        throw new ApplicationException(
+            "Mitglied und Abweichender Zahler können nicht identisch sein!");
+      }
+
       // Ist das Mitglied Teil eines Familienverbandes?
       if (getBeitragsgruppe() != null
           && getBeitragsgruppe()
