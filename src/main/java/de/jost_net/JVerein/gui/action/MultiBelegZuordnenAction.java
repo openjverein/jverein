@@ -16,8 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.dialogs.BelegAuswahlDialog;
 import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
@@ -99,17 +97,12 @@ public class MultiBelegZuordnenAction implements Action
               monitor.setStatus(ProgressMonitor.STATUS_DONE);
               monitor.setStatusText("Beleg(e) zugeordnet.");
             }
-            catch (ApplicationException e)
-            {
-              DBTransaction.rollback();
-              throw e;
-            }
             catch (OperationCanceledException oce)
             {
               DBTransaction.rollback();
               throw oce;
             }
-            catch (RemoteException oce)
+            catch (Exception oce)
             {
               DBTransaction.rollback();
               throw new ApplicationException(oce.getMessage());
