@@ -156,8 +156,11 @@ public class BuchungMenu extends ContextMenu
       addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
           new BuchungKontoauszugZuordnungAction(), "view-refresh.png"));
     }
-    addItem(new CheckedContextMenuItem("Beleg zuordnen",
-        new MultiBelegZuordnenAction(), "view-refresh.png"));
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+    {
+      addItem(new CheckedContextMenuItem("Beleg zuordnen",
+          new MultiBelegZuordnenAction(), "view-refresh.png"));
+    }
     addItem(new CheckedContextMenuItem("Buchungsreport",
         new BuchungReportAction(), "document-print.png"));
 
