@@ -87,8 +87,9 @@ public class MultiBelegZuordnenAction implements Action
                   }
                   catch (ApplicationException ex)
                   {
-                    monitor.setStatusText(
-                        "Beleg " + b.getBelegnummer() + ": " + ex.getMessage());
+                    monitor.setStatusText("Beleg " + b.getBelegnummer() + ": "
+                        + objects[i].getObjektName() + " " + objects[i].getID()
+                        + ": " + ex.getMessage());
                   }
                 }
               }
