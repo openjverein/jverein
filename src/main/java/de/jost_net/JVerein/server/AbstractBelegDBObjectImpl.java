@@ -40,7 +40,7 @@ public abstract class AbstractBelegDBObjectImpl extends AbstractJVereinDBObject
     if (it.hasNext())
     {
       throw new ApplicationException("Beleg '" + beleg.getBemerkung()
-          + "' bereits bei " + getObjektName() + " hinterlegt");
+          + "' bereits bei " + getObjektName() + " " + getID() + " hinterlegt");
     }
 
     AbstractBelegReferenz budo = Einstellungen.getDBService()
