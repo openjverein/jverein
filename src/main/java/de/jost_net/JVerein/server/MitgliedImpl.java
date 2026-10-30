@@ -338,6 +338,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
           }
         }
       }
+
       // Ist das Mitglied Teil eines Familienverbandes?
       if (getBeitragsgruppe() != null
           && getBeitragsgruppe()
@@ -354,7 +355,21 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
               getAustritt());
         Mitglied z = null;
         if (zahler.hasNext())
+        {
           z = zahler.next();
+        }
+        if (!z.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+        {
+          throw new ApplicationException(
+              "Der ausgewählte Vollzahler darf kein Nicht-Mitglied sein!");
+        }
+        if (z.getBeitragsgruppe() != null
+            && z.getBeitragsgruppe().getBeitragsArt() != ArtBeitragsart.NORMAL)
+        {
+          throw new ApplicationException(
+              "Die Art der Beitragsgruppe des ausgewählten Vollzahler muß Normal sein!");
+        }
+
         if (z != null && ((Mitglied) z).getAustritt() != null)
         {
           throw new ApplicationException(

@@ -401,23 +401,6 @@ public class MitgliederImport implements Importer
               throw new ApplicationException(
                   "Zeile " + anz + ": Vollzahler nicht gefunden: " + zahlerId);
             }
-            Mitglied vollzahler = it.next();
-            if (!vollzahler.getMitgliedstyp().getID()
-                .equals(Mitgliedstyp.MITGLIED))
-            {
-              throw new ApplicationException(
-                  "Zeile " + anz + ": Vollzahler " + vollzahler.getID() + " "
-                      + vollzahler.getName() + ", " + vollzahler.getVorname()
-                      + " darf kein Nicht-Mitglied sein.");
-            }
-            if (vollzahler.getBeitragsgruppe()
-                .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-            {
-              throw new ApplicationException(
-                  "Zeile " + anz + ": Vollzahler " + vollzahler.getID() + " "
-                      + vollzahler.getName() + ", " + vollzahler.getVorname()
-                      + " muss Beitragsgruppe Beitragsart Normal haben.");
-            }
             m.setVollZahlerID(Long.parseLong(zahlerId));
           }
           else
