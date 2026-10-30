@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
+import de.jost_net.JVerein.gui.action.BelegZuordnenAction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
@@ -151,8 +152,12 @@ public class BuchungMenu extends ContextMenu
       // Dann nicht anzeigen
     }
     if (geldkonto)
+    {
       addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
           new BuchungKontoauszugZuordnungAction(), "view-refresh.png"));
+    }
+    addItem(new CheckedContextMenuItem("Beleg zuordnen",
+        new BelegZuordnenAction(null), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Buchungsreport",
         new BuchungReportAction(), "document-print.png"));
 
