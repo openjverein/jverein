@@ -263,18 +263,6 @@ public class AbrechnungslaufImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Boolean getKursteilnehmer() throws RemoteException
-  {
-    return Util.getBoolean(getAttribute("kursteilnehmer"));
-  }
-
-  @Override
-  public void setKursteilnehmer(Boolean kursteilnehmer) throws RemoteException
-  {
-    setAttribute("kursteilnehmer", kursteilnehmer);
-  }
-
-  @Override
   public Boolean getDtausdruck() throws RemoteException
   {
     return Util.getBoolean(getAttribute("dtausdruck"));

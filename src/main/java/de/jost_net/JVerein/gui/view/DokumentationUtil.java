@@ -52,8 +52,6 @@ public class DokumentationUtil
 
   public static final String FAMILIENBEITRAG = MITGLIEDER + "familienbeitrag";
 
-  public static final String KURSTEILNEHMER = MITGLIEDER + "kursteilnehmer";
-
   public static final String LEHRGANG = MITGLIEDER + "lehrgange";
 
   public static final String MITGLIEDSUCHE = MITGLIEDER + "content/mitglieder";

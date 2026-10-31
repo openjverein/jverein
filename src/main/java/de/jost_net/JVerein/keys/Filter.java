@@ -144,7 +144,7 @@ public enum Filter
   MITGLIED("filter_mitglied", "Mitglied", "Meier", FilterArt.TEXT),
   MITGLIED_NAME("filter_mitglied_name", "Mitglied", "Meier", FilterArt.TEXT),
   MITGLIEDART("filter_mitgliedsart", "Mitgliedsart", FilterControl.ALLE,
-      FilterArt.SELECT, MitgliedsArt.getList()),
+      FilterArt.SELECT, MitgliedsArt.values()),
   MITGLIEDSCHAFT_STATUS("filter_mitgliedschaft", "Mitgliedschaft",
       FilterControl.ALLE, FilterArt.SELECT, MitgliedStatus.values()),
   MITGLIEDSNUMMER("filter_mitgliedsnummer", "Mitgliedsnummer", "45",

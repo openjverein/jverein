@@ -131,9 +131,7 @@ public class LastschriftDetailControl extends VorZurueckControl
       return mitgliedstyp;
     }
     String text = "";
-    if (getLastschrift().getKursteilnehmer() != null)
-      text = "Kursteilnehmer";
-    else if (getLastschrift().getMitglied() != null)
+    if (getLastschrift().getMitglied() != null)
     {
       if (getLastschrift().getMitglied().getMitgliedstyp().getID()
           .equals(Mitgliedstyp.MITGLIED))

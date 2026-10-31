@@ -446,11 +446,6 @@ public class PreNotificationControl extends DruckMailControl
         liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
             m.getVorname(), m.getMitgliedstyp()));
       }
-      else
-      {
-        liste.add(new DruckMailEmpfaengerEntry(dokument, mail, l.getName(),
-            l.getVorname(), "Kursteilnehmer"));
-      }
     }
     if (ohneMail == 1)
 
