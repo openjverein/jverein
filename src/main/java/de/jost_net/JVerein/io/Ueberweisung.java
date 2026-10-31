@@ -116,13 +116,6 @@ public class Ueberweisung
                 .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)
                 .toUpperCase()));
       }
-      else if (ls.getKursteilnehmer() != null)
-      {
-        ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),
-            StringTool.trimToEmpty(ls.getKursteilnehmer()
-                .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)
-                .toUpperCase()));
-      }
       if (betrag != null)
       {
         ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),
@@ -221,14 +214,6 @@ public class Ueberweisung
           ue.setGegenkontoName(
               StringTool.getStringWithMaxLength(
                   Zeichen.convert(ls.getMitglied()
-                      .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)),
-                  255));
-        }
-        else if (ls.getKursteilnehmer() != null)
-        {
-          ue.setGegenkontoName(
-              StringTool.getStringWithMaxLength(
-                  Zeichen.convert(ls.getKursteilnehmer()
                       .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)),
                   255));
         }

@@ -71,13 +71,6 @@ public class AbrechnungsParameterMap extends AbstractMap
         case KOMPAKTEABBUCHUNG:
           value = param.kompakteabbuchung ? "J" : "N";
           break;
-        case KURSTEILNEHMER:
-          value = "";
-          if (param.kursteilnehmer != null)
-          {
-            value = param.kursteilnehmer ? "J" : "N";
-          }
-          break;
         case SEPAPRINT:
           value = param.sepaprint ? "J" : "N";
           break;

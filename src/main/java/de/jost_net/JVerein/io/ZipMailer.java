@@ -266,18 +266,9 @@ public class ZipMailer
                         mitgliedMail) + ".pdf";
                     break;
                   case "lastschrift":
-                    if (ls.getMitglied() != null)
-                    {
-                      finaldateiname = VorlageUtil.getName(
-                          VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls)
-                          + ".pdf";
-                    }
-                    else
-                    {
-                      finaldateiname = VorlageUtil.getName(
-                          VorlageTyp.PRENOTIFICATION_KURSTEILNEHMER_DATEINAME,
-                          ls) + ".pdf";
-                    }
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls)
+                        + ".pdf";
                     break;
                   default:
                     finaldateiname = VelocityTool.eval(map, dateiname);

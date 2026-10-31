@@ -28,8 +28,6 @@ public class JVereinZahler extends Zahler
 
   private String personId;
 
-  private JVereinZahlerTyp personTyp;
-
   private Zahlungsweg zahlungsweg;
 
   private Long buchungsart;
@@ -54,16 +52,6 @@ public class JVereinZahler extends Zahler
   public void setPersonId(String personId)
   {
     this.personId = personId;
-  }
-
-  public JVereinZahlerTyp getPersonTyp()
-  {
-    return personTyp;
-  }
-
-  public void setPersonTyp(JVereinZahlerTyp personTyp)
-  {
-    this.personTyp = personTyp;
   }
 
   public Zahlungsweg getZahlungsweg()

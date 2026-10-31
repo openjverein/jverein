@@ -59,20 +59,14 @@ public class EinstellungenAllgemeinView extends AbstractView
 
     LabelGroup pflicht = new LabelGroup(scrolled.getComposite(),
         "Pflichtfelder", false);
-    ColumnLayout cols2 = new ColumnLayout(pflicht.getComposite(), 3);
+    ColumnLayout cols2 = new ColumnLayout(pflicht.getComposite(), 1);
     SimpleContainer left2 = new SimpleContainer(cols2.getComposite());
     left2.addLabelPair("Mitglieder Eintrittsdatum",
         control.getEintrittsdatumPflicht());
     left2.addLabelPair("Mitglieder Geburtsdatum",
         control.getGeburtsdatumPflicht());
-    SimpleContainer middle2 = new SimpleContainer(cols2.getComposite());
-    middle2.addLabelPair("Nicht-Mitglieder Geburtsdatum",
+    left2.addLabelPair("Nicht-Mitglieder Geburtsdatum",
         control.getNichtMitgliedGeburtsdatumPflicht());
-    SimpleContainer right2 = new SimpleContainer(cols2.getComposite());
-    right2.addLabelPair("Kursteilnehmer Geburtsdatum",
-        control.getKursteilnehmerGebPflicht());
-    right2.addLabelPair("Kursteilnehmer Geschlecht",
-        control.getKursteilnehmerGesPflicht());
 
     LabelGroup pflichteigenschaften = new LabelGroup(scrolled.getComposite(),
         "Pflicht Eigenschaften", false);

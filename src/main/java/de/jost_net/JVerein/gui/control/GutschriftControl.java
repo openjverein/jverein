@@ -601,10 +601,9 @@ public class GutschriftControl extends AbstractAbrechnungControl
     }
 
     if (provider instanceof Lastschrift
-        && provider.getGutschriftZahler() == null
-        && ((Lastschrift) provider).getKursteilnehmer() == null)
+        && provider.getGutschriftZahler() == null)
     {
-      meldung = "Es ist weder ein Mitglied noch ein Kursteilnehmer konfiguriert!";
+      meldung = "Es ist kein Mitglied konfiguriert!";
       if (bugs != null)
       {
         bugs.add(new Bug(provider, meldung, Bug.WARNING));

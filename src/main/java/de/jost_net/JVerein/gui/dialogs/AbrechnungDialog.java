@@ -79,10 +79,6 @@ public class AbrechnungDialog extends AbstractDialog<Boolean>
     {
       left.addLabelPair("Zusatzbeträge", control.getZusatzbetrag());
     }
-    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
-    {
-      left.addLabelPair("Kursteilnehmer", control.getKursteilnehmer());
-    }
     left.addLabelPair("Sollbuchungen zusammenfassen",
         control.getSollbuchungenZusammenfassen());
 
