@@ -69,7 +69,7 @@ public class BelegZuordnenAction implements Action
         {
           ((AbstractBelegDBObject) objects[0]).addBeleg(belege[0]);
           GUI.getCurrentView().reload();
-          GUI.getStatusBar().setSuccessText("Beleg(e) zugeordnet");
+          GUI.getStatusBar().setSuccessText("Beleg zugeordnet");
         }
         else
         {
@@ -107,7 +107,7 @@ public class BelegZuordnenAction implements Action
                 DBTransaction.commit();
                 monitor.setPercentComplete(100);
                 monitor.setStatus(ProgressMonitor.STATUS_DONE);
-                monitor.setStatusText(anzahl + " Beleg(e) zugeordnet.");
+                monitor.setStatusText(anzahl + " Belege zugeordnet.");
               }
               catch (OperationCanceledException oce)
               {
