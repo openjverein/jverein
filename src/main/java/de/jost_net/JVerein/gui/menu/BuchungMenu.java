@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
+import de.jost_net.JVerein.gui.action.BelegZuordnenAction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
@@ -33,7 +34,6 @@ import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungReportAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.MultiBelegZuordnenAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAnzeigenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
@@ -159,7 +159,7 @@ public class BuchungMenu extends ContextMenu
     if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
       addItem(new CheckedContextMenuItem("Beleg zuordnen",
-          new MultiBelegZuordnenAction(), "view-refresh.png"));
+          new BelegZuordnenAction(), "view-refresh.png"));
     }
     addItem(new CheckedContextMenuItem("Buchungsreport",
         new BuchungReportAction(), "document-print.png"));
