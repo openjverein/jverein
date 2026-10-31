@@ -16,36 +16,25 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.SplitbuchungAufloesenAction;
-import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
-import de.jost_net.JVerein.gui.control.BuchungDetailControl;
+import de.jost_net.JVerein.gui.control.BuchungSplitDetailControl;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.HelpButton;
-import de.jost_net.JVerein.gui.parts.NewButton;
-import de.jost_net.JVerein.gui.parts.SaveButton;
-import de.jost_net.JVerein.keys.Kontenfilter;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.InfoPanel;
-import de.willuhn.jameica.system.OperationCanceledException;
-import de.willuhn.util.ApplicationException;
 
-public class SplitbuchungDetailView extends AbstractView
+public class SplitbuchungDetailView extends AbstractDetailView
 {
-  private BuchungDetailControl control;
+  private BuchungSplitDetailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Splitbuchungen");
 
-    control = new BuchungDetailControl(this, Kontenfilter.GELDKONTO);
+    control = new BuchungSplitDetailControl(this);
 
-    final boolean editable = control.isSplitBuchungEditable();
-
-    int anzahl = SplitbuchungsContainer.getAnzahl();
+    int anzahl = control.getSplitBuchung().getAnzahl();
     if (anzahl > 1)
     {
       InfoPanel info = new InfoPanel();
@@ -59,47 +48,18 @@ public class SplitbuchungDetailView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(new HelpButton(DokumentationUtil.SPLITBUCHUNG));
-    Button neu = new NewButton(new SplitbuchungNeuAction());
-    neu.setEnabled(editable);
-    buttons.addButton(neu);
-    Button aufloesen = new Button("Auflösen",
-        new SplitbuchungAufloesenAction(control), control.getCurrentObject(),
-        false, "unlocked.png");
-    aufloesen.setEnabled(editable);
-    buttons.addButton(aufloesen);
-    Button sammel = control.getSammelueberweisungButton();
-    sammel.setEnabled(editable);
-    buttons.addButton(sammel);
-    Button speichern = new SaveButton(o -> {
-      try
-      {
-        if (SplitbuchungsContainer.get().size() != 0)
-        {
-          SplitbuchungsContainer.store();
-          GUI.getStatusBar()
-              .setSuccessText(String.format("%s Splitbuchungen gespeichert",
-                  SplitbuchungsContainer.getAnzahl()));
-        }
-        else
-        {
-          GUI.getStatusBar().setErrorText("Hauptbuchung fehlt");
-        }
-        control.refreshSplitbuchungen();
-      }
-      catch (Exception e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
-    });
-    buttons.addButton(speichern);
-    speichern.setEnabled(editable);
+
+    buttons.addButton(control.getNewButton());
+    buttons.addButton(control.getAufloesenButton());
+    buttons.addButton(control.getSammelueberweisungButton());
+    buttons.addButton(control.getSaveButton());
+
     buttons.paint(getParent());
   }
 
   @Override
-  public void unbind() throws OperationCanceledException, ApplicationException
+  protected Savable getControl()
   {
-    control.deregisterSplitbuchungConsumer();
-    super.unbind();
+    return control;
   }
 }

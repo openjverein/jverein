@@ -52,7 +52,7 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
 {
   private static final long serialVersionUID = 1L;
 
-  private transient boolean splittbuchung = false;
+  private transient SplitBuchung splittbuchung;
 
   private transient boolean delete = false;
 
@@ -195,7 +195,7 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
       }
     }
 
-    if (isSplitbuchung() && getBuchungsart() == null)
+    if (getSplitbuchung() != null && getBuchungsart() == null)
     {
       throw new ApplicationException("Buchungsart fehlt bei Splitbuchung!");
     }
@@ -918,13 +918,13 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
   }
 
   @Override
-  public void setSplitbuchung(boolean splitbuchung)
+  public void setSplitbuchung(SplitBuchung splitbuchung)
   {
     this.splittbuchung = splitbuchung;
   }
 
   @Override
-  public boolean isSplitbuchung()
+  public SplitBuchung getSplitbuchung()
   {
     return splittbuchung;
   }

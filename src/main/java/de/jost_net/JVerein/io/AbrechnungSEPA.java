@@ -78,6 +78,7 @@ import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
+import de.jost_net.JVerein.util.SplitbuchungUtil;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.jost_net.OBanToo.SEPA.BIC;
@@ -1239,7 +1240,7 @@ public class AbrechnungSEPA extends SEPASupport
       if (sollb != null)
       {
         // Buchungen automatisch splitten
-        SplitbuchungsContainer.autoSplit(buchung, sollb, true);
+        SplitbuchungUtil.autoSplit(buchung, sollb, true);
       }
     }
     return zweck;

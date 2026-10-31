@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.control.BuchungDetailControl;
+import de.jost_net.JVerein.gui.control.BuchungSplitDetailControl;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -30,11 +30,12 @@ import de.willuhn.util.ApplicationException;
  */
 public class SplitBuchungWiederherstellenAction implements Action
 {
-  private BuchungDetailControl control;
+  private BuchungSplitDetailControl control;
 
-  public SplitBuchungWiederherstellenAction(BuchungDetailControl control)
+  public SplitBuchungWiederherstellenAction(
+      BuchungSplitDetailControl buchungSplitDetailControl)
   {
-    this.control = control;
+    this.control = buchungSplitDetailControl;
   }
 
   @Override

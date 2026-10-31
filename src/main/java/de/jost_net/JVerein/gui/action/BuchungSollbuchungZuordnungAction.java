@@ -26,13 +26,13 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.util.SplitbuchungUtil;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -218,8 +218,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
       int ret = dialog.open();
       if (ret == YesNoCancelDialog.YES)
       {
-        Buchung restbuchung = SplitbuchungsContainer.autoSplit(buchung, sollb,
-            false);
+        Buchung restbuchung = SplitbuchungUtil.autoSplit(buchung, sollb, false);
         if (restbuchung != null)
         {
           YesNoDialog restbuchungDialog = new YesNoDialog(
@@ -255,7 +254,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
     else
     {
       // Fehlbetrag und Buchungs-Betrag stimmen überein
-      SplitbuchungsContainer.autoSplit(buchung, sollb, true);
+      SplitbuchungUtil.autoSplit(buchung, sollb, true);
     }
   }
 
@@ -304,7 +303,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
         // es ist nichts mehr für die restlichen Sollbuchungen übrig.
         break;
       }
-      buchung = SplitbuchungsContainer.autoSplit(buchung, s, false);
+      buchung = SplitbuchungUtil.autoSplit(buchung, s, false);
     }
     if (buchung != null)
     {
