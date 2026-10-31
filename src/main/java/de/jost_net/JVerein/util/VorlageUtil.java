@@ -48,6 +48,7 @@ import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -206,6 +207,8 @@ public class VorlageUtil
           map = new RechnungMap().getMap((Rechnung) obj, map);
           break;
         case PRENOTIFICATION_MITGLIED_DATEINAME:
+          map = new LastschriftMap().getMap((Lastschrift) obj, map);
+          break;
         case PERSONALBOGEN_MITGLIED_DATEINAME:
         case PERSONALBOGEN_TITEL:
         case PERSONALBOGEN_SUBTITEL:
