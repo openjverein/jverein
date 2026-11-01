@@ -582,8 +582,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     if (!control.getMitglied().isNewObject())
     {
-      Container cont = getTabOrLabelContainer(parentComposite,
-          "Mitgliedskonto");
+      Container cont = getTabOrLabelContainer(parentComposite, "Sollbuchungen");
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
@@ -624,7 +623,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         "Zahlungsweg");
     zahlungsweg.getComposite().setLayout(new GridLayout(1, false));
 
-    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)
+        && (Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
     {
       ButtonArea buttons1 = new ButtonArea();
       buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());
