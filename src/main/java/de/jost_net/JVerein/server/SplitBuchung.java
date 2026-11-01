@@ -70,7 +70,7 @@ public class SplitBuchung
     {
       // Wenn keine Buchung gefunden wurde, gibt es auch keine Gegenbuchung.
       // Dann wird die jetzt erstellt.
-      addBuchung(createGegenbuchung(b));
+      createGegenbuchung();
     }
     while (it.hasNext())
     {
@@ -153,7 +153,8 @@ public class SplitBuchung
     BigDecimal summe = BigDecimal.ZERO;
     for (Buchung b : splitbuchungen)
     {
-      if (typ.equals(b.getSplitTyp()) && !b.isToDelete())
+      if (typ.equals(b.getSplitTyp()) && !b.isToDelete()
+          && b.getBetrag() != null)
       {
         summe = summe.add(b.getBetrag());
       }
@@ -328,7 +329,7 @@ public class SplitBuchung
           }
         }
 
-        // Diese Plittung auf alle andern Buchungen übertragen
+        // Diese Splittung auf alle andern Buchungen übertragen
         Buchung split = null;
         for (Buchung master : hauptBuchungen)
         {
@@ -336,7 +337,7 @@ public class SplitBuchung
           master.setSplitId(Long.valueOf(master.getID()));
           master.store();
 
-          createGegenbuchung(master).store();
+          createGegenbuchung().store();
 
           for (Buchung b : getBuchungen())
           {
@@ -361,20 +362,21 @@ public class SplitBuchung
   }
 
   /**
-   * Erstellt eine Gegenbuchung zur Hauptbuchung
+   * Erstellt eine neue Splitbuchung zur Hauptbuchung und fügt sie der
+   * Splibuchung hinzu
    * 
-   * @param hauptbuchung
-   *          die zu kopierende Buchung
    * @return die neue erstellt (Split-) Buchung
    * @throws RemoteException
+   * @throws ApplicationException
    */
-  public Buchung createGegenbuchung(Buchung hauptbuchung) throws RemoteException
+  public Buchung createSplitBuchung()
+      throws RemoteException, ApplicationException
   {
+    Buchung hauptbuchung = getMaster();
     Buchung buch = createNewBuchung(null);
     buch.setAbrechnungslauf(hauptbuchung.getAbrechnungslauf());
     buch.setArt(hauptbuchung.getArt());
     buch.setAuszugsnummer(hauptbuchung.getAuszugsnummer());
-    buch.setBetrag(hauptbuchung.getBetrag().negate());
     buch.setBlattnummer(hauptbuchung.getBlattnummer());
     buch.setBuchungsartId(hauptbuchung.getBuchungsartId());
     buch.setBuchungsklasseId(hauptbuchung.getBuchungsklasseId());
@@ -389,12 +391,16 @@ public class SplitBuchung
     buch.setZweck(hauptbuchung.getZweck());
     buch.setIban(hauptbuchung.getIban());
     buch.setSteuer(hauptbuchung.getSteuer());
-    buch.setSplitTyp(SplitbuchungTyp.GEGEN);
+
+    buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+    buch.setSplitbuchung(this);
+
+    addBuchung(buch);
 
     // Folgende Spalten werden nicht übertragen (Stand 4.1.4):
+    // Betrag
+
     // sollbuchung
-    // splitid
-    // splittyp
     // spendenbescheinigung
     // verzicht
     // abschluss
@@ -403,6 +409,22 @@ public class SplitBuchung
     // herkunftspende
     // bezeichnungsachzuwendung
 
+    return buch;
+  }
+
+  /**
+   * Erstellt eine Gegenbuchung zur Hauptbuchung
+   * 
+   * @return die neue erstellt Gegen-Buchung
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
+  private Buchung createGegenbuchung()
+      throws RemoteException, ApplicationException
+  {
+    Buchung buch = createSplitBuchung();
+    buch.setBetrag(getMaster().getBetrag().negate());
+    buch.setSplitTyp(SplitbuchungTyp.GEGEN);
     return buch;
   }
 

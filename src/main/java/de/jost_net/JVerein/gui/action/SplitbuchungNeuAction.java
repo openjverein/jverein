@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -37,34 +36,11 @@ public class SplitbuchungNeuAction implements Action
     {
       SplitBuchung splitBuchung = (SplitBuchung) context;
 
-      Buchung buch = (Buchung) Einstellungen.getDBService()
-          .createObject(Buchung.class, null);
-
-      Buchung master = splitBuchung.getMaster();
-      buch.setAuszugsnummer(master.getAuszugsnummer());
-      buch.setBlattnummer(master.getBlattnummer());
-      buch.setDatum(master.getDatum());
-      buch.setKommentar(master.getKommentar());
-      buch.setKonto(master.getKonto());
-      buch.setSollbuchung(master.getSollbuchung());
-      buch.setName(master.getName());
-      buch.setProjekt(master.getProjekt());
-      buch.setSplitId(Long.valueOf(master.getID()));
-      buch.setUmsatzid(master.getUmsatzid());
-      buch.setZweck(master.getZweck());
-      buch.setBuchungsartId(master.getBuchungsartId());
-      buch.setBuchungsklasseId(master.getBuchungsklasseId());
-      buch.setIban(master.getIban());
-      buch.setSteuer(master.getSteuer());
-
-      buch.setSplitbuchung(splitBuchung);
-      buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+      Buchung buch = splitBuchung.createSplitBuchung();
 
       // Fehlbetrag der Splitbuchung berechnen
       buch.setBetrag(splitBuchung.getSumme(SplitbuchungTyp.HAUPT)
           .subtract(splitBuchung.getSumme(SplitbuchungTyp.SPLIT)));
-
-      splitBuchung.addBuchung(buch);
 
       // Wenn CurrentObject und View von aktueller und nächster View gleich
       // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch

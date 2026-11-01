@@ -173,7 +173,7 @@ public class SplitbuchungUtil
         }
         zugeordnet = zugeordnet.add(betragZuordnen);
 
-        Buchung splitBuchung = splitBuchungSplit.createGegenbuchung(buchung);
+        Buchung splitBuchung = splitBuchungSplit.createSplitBuchung();
         splitBuchung.setBetrag(betragZuordnen);
         if (splitPositionZweck)
         {
@@ -196,23 +196,13 @@ public class SplitbuchungUtil
         {
           splitBuchung.setSteuerId(Long.parseLong(steuer));
         }
-        splitBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
-        splitBuchung
-            .setSplitId(Long.parseLong(splitBuchungSplit.getMaster().getID()));
-
-        splitBuchungSplit.addBuchung(splitBuchung);
       }
       if (zugeordnet.signum() != 0)
       {
         if (buchung.getBetrag().compareTo(zugeordnet) != 0)
         {
-          restBuchung = splitBuchungSplit.createGegenbuchung(buchung);
+          restBuchung = splitBuchungSplit.createSplitBuchung();
           restBuchung.setBetrag(buchung.getBetrag().subtract(zugeordnet));
-          restBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
-          restBuchung.setSplitId(
-              Long.parseLong(splitBuchungSplit.getMaster().getID()));
-
-          splitBuchungSplit.addBuchung(restBuchung);
         }
         // Wenn es nur eine Splitposition gibt, die Splitbuchung auflösen.
         // (Haupt- und Gegen-Buchung gibt es immer, daher müssen es 3 sein)
