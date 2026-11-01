@@ -94,7 +94,7 @@ public class Basislastschrift2Pdf
         reporter.addColumn(z.getMandatid() + " " + z.getMandatsequence().getTxt()
             + "\n" + new JVDateFormatTTMMJJJJ().format(z.getMandatdatum()),
             Element.ALIGN_LEFT);
-        reporter.addColumn(z.getBetrag().doubleValue());
+        reporter.addColumn(z.getBetrag());
       }
       reporter.closeTable();
     }
