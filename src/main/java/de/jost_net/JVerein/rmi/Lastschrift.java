@@ -32,10 +32,6 @@ public interface Lastschrift
 
   public void setAbrechnungslauf(int abrechnungslauf) throws RemoteException;
 
-  public Kursteilnehmer getKursteilnehmer() throws RemoteException;
-
-  public void setKursteilnehmer(int kursteilnehmer) throws RemoteException;
-
   public void setPersonenart(String personenart) throws RemoteException;
 
   public void setAnrede(String anrede) throws RemoteException;

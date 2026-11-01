@@ -106,8 +106,6 @@ public class AbrechnungSEPAParam
 
   public final Boolean zusatzbetraege;
 
-  public final Boolean kursteilnehmer;
-
   // Gutschrift
   public final Boolean fixerBetragAbrechnen;
 
@@ -154,7 +152,6 @@ public class AbrechnungSEPAParam
     voneingabedatum = null;
     bisdatum = null;
     zusatzbetraege = false;
-    kursteilnehmer = false;
   }
 
   public AbrechnungSEPAParam(ForderungControl fc, SepaVersion sepaVersion)
@@ -171,7 +168,6 @@ public class AbrechnungSEPAParam
     voneingabedatum = null;
     bisdatum = null;
     zusatzbetraege = false;
-    kursteilnehmer = false;
     fixerBetragAbrechnen = true;
     betrag = (BigDecimal) fc.getPart().getBetrag().getValue();
     buchungsart = (Buchungsart) fc.getPart().getBuchungsart().getValue();
@@ -197,7 +193,6 @@ public class AbrechnungSEPAParam
     voneingabedatum = null;
     bisdatum = null;
     zusatzbetraege = false;
-    kursteilnehmer = false;
     fixerBetragAbrechnen = false;
     betrag = null;
     buchungsart = null;
@@ -232,9 +227,6 @@ public class AbrechnungSEPAParam
         : null;
     zusatzbetraege = ac.isZusatzbetragSupported()
         ? (Boolean) ac.getZusatzbetrag().getValue()
-        : false;
-    kursteilnehmer = ac.isKursteilnehmerSupported()
-        ? (Boolean) ac.getKursteilnehmer().getValue()
         : false;
     fixerBetragAbrechnen = false;
     betrag = null;
