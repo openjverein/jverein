@@ -39,10 +39,9 @@ import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.Datum;
+import de.jost_net.JVerein.util.IbanUtil;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.jost_net.JVerein.util.StringTool;
-import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
-import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -204,14 +203,10 @@ public class ZahlerMap extends AbstractMap
           String bic = mitglied.getBic();
           if (bic != null)
           {
-            Bank bank = Banken.getBankByBIC(bic);
-            if (bank != null)
+            String name = IbanUtil.getBankname(bic);
+            if (name != null)
             {
-              String name = bank.getBezeichnung();
-              if (name != null)
-              {
-                value = name.trim();
-              }
+              value = name.trim();
             }
           }
           break;
