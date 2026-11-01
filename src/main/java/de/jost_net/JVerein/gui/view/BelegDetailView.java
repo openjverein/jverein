@@ -36,7 +36,7 @@ public class BelegDetailView extends AbstractDetailView
   }
 
   // Statische Variable, die den zuletzt ausgewählten Tab speichert.
-  private static Tab tabindex = Tab.BUCHUNG;
+  private static Tab tabindex = Tab.BUCHUNGEN;
 
   private BelegDetailControl control;
 

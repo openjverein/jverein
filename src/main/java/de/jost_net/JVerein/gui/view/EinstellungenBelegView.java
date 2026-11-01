@@ -43,7 +43,7 @@ public class EinstellungenBelegView extends AbstractView
 
     LabelGroup groupMitglied = new LabelGroup(cont.getComposite(),
         "Mitglieds-Belege");
-    groupMitglied.addLabelPair("Verzeichnis für Mitglieds-Dokumente *",
+    groupMitglied.addLabelPair("Verzeichnis für Mitglieds-Belege *",
         control.getMitgliedsDokumentVerzeichnis());
     groupMitglied.addInput(control.getBelegMitgliedNummer());
     groupMitglied.addInput(control.getBelegMitgliedZaehler());
@@ -63,7 +63,7 @@ public class EinstellungenBelegView extends AbstractView
     groupAllgemein.addInput(control.getBelegSonstigesZaehler());
 
     cont.addText(
-        "* Die Unterordner unter dem die Dokumente angelegt werden,"
+        "* Die Unterordner unter dem die Belege angelegt werden,"
             + " können unter Vorlagen (Vorlageart: Pfad) eingestellt werden.",
         false);
 

@@ -2739,12 +2739,10 @@ public class EinstellungControl extends AbstractControl
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
         dialog.setTitle("Verzeichnis geändert");
-        dialog
-            .setText("Das Verzeichnis für Mitglieds-Dokumente wurde geändert.\n"
-                + "Bitte Verschieben sie ggf. vorhandene Dokumente manuell von '"
-                + Einstellungen.getBelegMitgliedVerzeichnis() + "' nach '"
-                + mitgliedsDokumentVerzeichnis.getValue() + "'\n"
-                + "Fortfahren?");
+        dialog.setText("Das Verzeichnis für Mitglieds-Belege wurde geändert.\n"
+            + "Bitte Verschieben sie ggf. vorhandene Be	lege manuell von '"
+            + Einstellungen.getBelegMitgliedVerzeichnis() + "' nach '"
+            + mitgliedsDokumentVerzeichnis.getValue() + "'\n" + "Fortfahren?");
         if (!(Boolean) dialog.open())
         {
           throw new OperationCanceledException();

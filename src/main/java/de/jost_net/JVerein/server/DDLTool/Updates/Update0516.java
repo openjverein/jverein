@@ -76,7 +76,7 @@ public class Update0516 extends AbstractDDLUpdate
     execute(createForeignKey("fkBelegMitgliedMitglied", "belegmitglied",
         "referenz", "mitglied", "id", "CASCADE", "RESTRICT"));
 
-    execute(createForeignKey("fkBelegMitglied", "belegmitglied", "beleg",
+    execute(createForeignKey("fkBelegMitgliedBeleg", "belegmitglied", "beleg",
         "beleg", "id", "CASCADE", "RESTRICT"));
 
     execute(dropTable("mitglieddokument"));

@@ -78,7 +78,7 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
 
   public enum Tab
   {
-    BUCHUNG(0),
+    BUCHUNGEN(0),
     MITGLIEDER(1);
 
     private int index;
@@ -100,11 +100,11 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
         if (v.getInt() == i)
           return v;
       }
-      return BUCHUNG;
+      return BUCHUNGEN;
     }
   }
 
-  private Tab selectedTab = Tab.BUCHUNG;
+  private Tab selectedTab = Tab.BUCHUNGEN;
 
   private AbstractBelegDBObject belegObject;
 
@@ -410,7 +410,7 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   {
     switch (selectedTab)
     {
-      case BUCHUNG:
+      case BUCHUNGEN:
         return getBuchungList();
       case MITGLIEDER:
         return getMitgliederList();
@@ -423,7 +423,7 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   {
     switch (selectedTab)
     {
-      case BUCHUNG:
+      case BUCHUNGEN:
         return VorlageUtil.getName(VorlageTyp.BELEG_BUCHUNGEN_TITEL,
             getBeleg());
       case MITGLIEDER:
@@ -438,7 +438,7 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   {
     switch (selectedTab)
     {
-      case BUCHUNG:
+      case BUCHUNGEN:
         return VorlageUtil.getName(VorlageTyp.BELEG_BUCHUNGEN_SUBTITEL,
             getBeleg());
       case MITGLIEDER:
@@ -453,7 +453,7 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   {
     switch (selectedTab)
     {
-      case BUCHUNG:
+      case BUCHUNGEN:
         return VorlageUtil.getName(VorlageTyp.BELEG_BUCHUNGEN_DATEINAME,
             getBeleg());
       case MITGLIEDER:
@@ -469,7 +469,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     return new PanelButton("document-properties.png", context -> {
       try
       {
-        new TabelleSpaltenAuswahlDialog(getBuchungList()).open();
+        new TabelleSpaltenAuswahlDialog(getBuchungList(), getMitgliederList())
+            .open();
       }
       catch (OperationCanceledException | ApplicationException e)
       {
