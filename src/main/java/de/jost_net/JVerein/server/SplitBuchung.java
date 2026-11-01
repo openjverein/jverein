@@ -343,7 +343,7 @@ public class SplitBuchung
           {
             if (!b.isToDelete() && (b.getSplitTyp() == SplitbuchungTyp.SPLIT))
             {
-              split = getSplitbuchung(master, b, zweckeVonHauptbuchung,
+              split = createSplitbuchung(master, b, zweckeVonHauptbuchung,
                   kommentareVonHauptbuchung);
               split.store();
             }
@@ -372,42 +372,8 @@ public class SplitBuchung
   public Buchung createSplitBuchung()
       throws RemoteException, ApplicationException
   {
-    Buchung hauptbuchung = getMaster();
-    Buchung buch = createNewBuchung(null);
-    buch.setAbrechnungslauf(hauptbuchung.getAbrechnungslauf());
-    buch.setArt(hauptbuchung.getArt());
-    buch.setAuszugsnummer(hauptbuchung.getAuszugsnummer());
-    buch.setBlattnummer(hauptbuchung.getBlattnummer());
-    buch.setBuchungsartId(hauptbuchung.getBuchungsartId());
-    buch.setBuchungsklasseId(hauptbuchung.getBuchungsklasseId());
-    buch.setDatum(hauptbuchung.getDatum());
-    buch.setKommentar(hauptbuchung.getKommentar());
-    buch.setKonto(hauptbuchung.getKonto());
-    buch.setSollbuchungID(hauptbuchung.getSollbuchungID());
-    buch.setName(hauptbuchung.getName());
-    buch.setProjekt(hauptbuchung.getProjekt());
-    buch.setSplitId(Long.valueOf(hauptbuchung.getID()));
-    buch.setUmsatzid(hauptbuchung.getUmsatzid());
-    buch.setZweck(hauptbuchung.getZweck());
-    buch.setIban(hauptbuchung.getIban());
-    buch.setSteuer(hauptbuchung.getSteuer());
-
-    buch.setSplitTyp(SplitbuchungTyp.SPLIT);
-    buch.setSplitbuchung(this);
-
+    Buchung buch = createSplitbuchung(getMaster(), getMaster(), null, null);
     addBuchung(buch);
-
-    // Folgende Spalten werden nicht übertragen (Stand 4.1.4):
-    // Betrag
-
-    // sollbuchung
-    // spendenbescheinigung
-    // verzicht
-    // abschluss
-    // geprueft
-    // unterlagenwertermittlung
-    // herkunftspende
-    // bezeichnungsachzuwendung
 
     return buch;
   }
@@ -440,7 +406,7 @@ public class SplitBuchung
    * @return
    * @throws RemoteException
    */
-  private Buchung getSplitbuchung(Buchung master, Buchung origin,
+  private Buchung createSplitbuchung(Buchung master, Buchung origin,
       HashMap<Buchung, Boolean> zweckeVonHauptbuchung,
       HashMap<Buchung, Boolean> kommentareVonHauptbuchung)
       throws RemoteException
@@ -452,7 +418,7 @@ public class SplitBuchung
     buch.setBuchungsartId(origin.getBuchungsartId());
     buch.setBuchungsklasseId(origin.getBuchungsklasseId());
     buch.setDatum(master.getDatum());
-    if (kommentareVonHauptbuchung.get(origin))
+    if (zweckeVonHauptbuchung != null && kommentareVonHauptbuchung.get(origin))
     {
       buch.setKommentar(master.getKommentar());
     }
@@ -466,7 +432,7 @@ public class SplitBuchung
     buch.setProjekt(master.getProjekt());
     buch.setSplitId(Long.valueOf(master.getID()));
     buch.setUmsatzid(master.getUmsatzid());
-    if (zweckeVonHauptbuchung.get(origin))
+    if (zweckeVonHauptbuchung != null && zweckeVonHauptbuchung.get(origin))
     {
       buch.setZweck(master.getZweck());
     }
@@ -477,6 +443,20 @@ public class SplitBuchung
     buch.setSteuer(origin.getSteuer());
     buch.setIban(master.getIban());
     buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+    buch.setAbrechnungslauf(master.getAbrechnungslauf());
+    buch.setArt(master.getArt());
+
+    // Folgende Spalten werden nicht übertragen (Stand 4.1.4):
+    // sollbuchung
+    // spendenbescheinigung
+    // verzicht
+    // abschluss
+    // geprueft
+    // unterlagenwertermittlung
+    // herkunftspende
+    // bezeichnungsachzuwendung
+
+    buch.setSplitbuchung(this);
     return buch;
   }
 
