@@ -45,7 +45,6 @@ import de.jost_net.JVerein.server.FormularImpl;
 import de.jost_net.JVerein.server.FormularfeldImpl;
 import de.jost_net.JVerein.server.JahresabschlussImpl;
 import de.jost_net.JVerein.server.KontoImpl;
-import de.jost_net.JVerein.server.KursteilnehmerImpl;
 import de.jost_net.JVerein.server.LastschriftImpl;
 import de.jost_net.JVerein.server.LehrgangsteilnehmerImpl;
 import de.jost_net.JVerein.server.LehrgangsartImpl;
@@ -54,7 +53,7 @@ import de.jost_net.JVerein.server.MailAnhangImpl;
 import de.jost_net.JVerein.server.MailEmpfaengerImpl;
 import de.jost_net.JVerein.server.MailImpl;
 import de.jost_net.JVerein.server.MailVorlageImpl;
-import de.jost_net.JVerein.server.MitgliedDokumentImpl;
+import de.jost_net.JVerein.server.BelegMitgliedImpl;
 import de.jost_net.JVerein.server.MitgliedImpl;
 import de.jost_net.JVerein.server.MitgliedNextBGruppeImpl;
 import de.jost_net.JVerein.server.MitgliedfotoImpl;
@@ -206,10 +205,6 @@ public class BackupCreateAction implements Action
           backup(KontoImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Kursteilnehmer");
-          backup(KursteilnehmerImpl.class, writer, monitor);
-          monitor.addPercentComplete(1);
-
           monitor.setStatusText("Speichere Lehrgangsarten");
           backup(LehrgangsartImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
@@ -263,7 +258,7 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Dokumente der Mitglieder");
-          backup(MitgliedDokumentImpl.class, writer, monitor);
+          backup(BelegMitgliedImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Fotos der Mitglieder");

@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
-public interface MitgliedDokument extends AbstractDokument
+public interface BelegMitglied extends AbstractBelegReferenz
 {
-  //
 }

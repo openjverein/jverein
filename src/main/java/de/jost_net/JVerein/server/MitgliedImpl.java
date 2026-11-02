@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
@@ -43,13 +44,14 @@ import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.MitgliedDokument;
+import de.jost_net.JVerein.rmi.BelegMitglied;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.Datum;
@@ -64,7 +66,7 @@ import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
+public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
 {
 
   private static String FEHLER_ZAHLUNGSWEG = ": Der Zahlungsweg ist nicht Basislastschrift.";
@@ -1412,8 +1414,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     }
     else if ("document".equals(fieldName))
     {
-      DBIterator<MitgliedDokument> list = Einstellungen.getDBService()
-          .createList(MitgliedDokument.class);
+      DBIterator<BelegMitglied> list = Einstellungen.getDBService()
+          .createList(BelegMitglied.class);
       list.addFilter("referenz = ?", Long.valueOf(getID()));
       if (list.size() > 0)
         return list.size();
@@ -1497,8 +1499,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public void delete() throws RemoteException, ApplicationException
   {
-    DBIterator<MitgliedDokument> it = Einstellungen.getDBService()
-        .createList(MitgliedDokument.class);
+    DBIterator<BelegMitglied> it = Einstellungen.getDBService()
+        .createList(BelegMitglied.class);
     it.addFilter("referenz = ?", new Object[] { this.getID() });
     while (it.hasNext())
     {
@@ -1633,6 +1635,24 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   public void setMitglied(Integer mitglied) throws RemoteException
   {
     // Hier sinnlos aber wegen IMitglied aus IGutschriftprovider nötig
+  }
+
+  @Override
+  public BelegArt getBelegArt() throws RemoteException
+  {
+    return BelegArt.MITGLIED;
+  }
+
+  @Override
+  protected Class<? extends AbstractBelegReferenz> getBelegReferenzClass()
+  {
+    return BelegMitglied.class;
+  }
+
+  @Override
+  protected String getBelegReferenzTableName() throws RemoteException
+  {
+    return "belegmitglied";
   }
 
 }

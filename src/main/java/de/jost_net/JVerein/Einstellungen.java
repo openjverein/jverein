@@ -204,8 +204,6 @@ public class Einstellungen
     NICHTMITGLIEDGEBURTSDATUMPFLICHT("nichtmitgliedgeburtsdatumpflicht",
         Boolean.class, "0"),
     EINTRITTSDATUMPFLICHT("eintrittsdatumpflicht", Boolean.class, "1"),
-    KURSTEILNEHMERGEBPFLICHT("kursteilnehmergebpflicht", Boolean.class, "0"),
-    KURSTEILNEHMERGESPFLICHT("kursteilnehmergespflicht", Boolean.class, "0"),
     NICHTMITGLIEDPFLICHTEIGENSCHAFTEN("nichtmitgliedpflichteigenschaften",
         Boolean.class, "1"),
     JMITGLIEDPFLICHTEIGENSCHAFTEN("jmitgliedpflichteigenschaften",
@@ -223,7 +221,6 @@ public class Einstellungen
     ZUSATZBETRAG("zusatzabbuchung", Boolean.class, "0"),
     VERMERKE("vermerke", Boolean.class, "1"),
     WIEDERVORLAGE("wiedervorlage", Boolean.class, "0"),
-    KURSTEILNEHMER("kursteilnehmer", Boolean.class, "0"),
     LEHRGAENGE("lehrgaenge", Boolean.class, "0"),
     JURISTISCHEPERSONEN("juristischepersonen", Boolean.class, "0"),
     MITGLIEDFOTO("mitgliedfoto", Boolean.class, "0"),
@@ -298,6 +295,9 @@ public class Einstellungen
     BELEG_ZAEHLER_SONSTIGES("beleg_zaehler_sonstiges", Integer.class, "1"),
     BELEGNUMMER_SONSTIGES("belegnummer_sonstiges", String.class,
         "S-$beleg_zaehler"),
+    BELEG_ZAEHLER_MITGLIED("beleg_zaehler_mitglied", Integer.class, "1"),
+    BELEGNUMMER_MITGLIED("belegnummer_mitglied", String.class,
+        "M-$beleg_zaehler"),
 
     // Spendenbescheinigung
     FINANZAMT("finanzamt", String.class, ""),
@@ -811,14 +811,14 @@ public class Einstellungen
     return false;
   }
 
-  public static String getMitgliedDokumentVerzeichnis()
+  public static String getBelegMitgliedVerzeichnis()
   {
     loadSettings();
     return settings.getString("mitgliedDokumentVerzeichnis",
         Einstellungen.getWorkPath() + File.separator + "Mitglieder");
   }
 
-  public static void setMitgliedDokumentVerzeichnis(String value)
+  public static void setBelegMitgliedVerzeichnis(String value)
   {
     loadSettings();
     settings.setAttribute("mitgliedDokumentVerzeichnis", value);
