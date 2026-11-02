@@ -418,6 +418,7 @@ public class VorlageUtil
           set.add(Filter.NUMMER);
           set.add(Filter.BEZEICHNUNG);
           set.add(Filter.NICHT_ZUGEORDNET);
+          set.add(Filter.BELEG_ART);
           map = new FilterMap().getDummyMap(set, map);
           break;
         case ABRECHNUNGSLAEUFE_DATEINAME:
