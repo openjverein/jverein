@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.dialogs.BelegAuswahlDialog;
+import de.jost_net.JVerein.gui.parts.BelegPart;
 import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.jameica.gui.Action;
@@ -31,6 +32,12 @@ import de.willuhn.util.ProgressMonitor;
 
 public class BelegZuordnenAction implements Action
 {
+  private BelegPart belegPart;
+
+  public BelegZuordnenAction(BelegPart belegPart)
+  {
+    this.belegPart = belegPart;
+  }
 
   /**
    * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
@@ -68,7 +75,14 @@ public class BelegZuordnenAction implements Action
         if (objects.length == 1 && belege.length == 1)
         {
           ((AbstractBelegDBObject) objects[0]).addBeleg(belege[0]);
-          GUI.getCurrentView().reload();
+          if (belegPart != null)
+          {
+            belegPart.refreshDocsList();
+          }
+          else
+          {
+            GUI.getCurrentView().reload();
+          }
           GUI.getStatusBar().setSuccessText("Beleg zugeordnet");
         }
         else
@@ -82,25 +96,25 @@ public class BelegZuordnenAction implements Action
               {
                 DBTransaction.starten();
                 monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
-                monitor.setStatusText("Starte Beleg(e) zugeordnen.");
+                monitor.setStatusText("Starte Beleg(e) zuordnen.");
                 int anzahl = 0;
                 for (Beleg b : belege)
                 {
-                  for (int i = 0; i < objects.length; i++)
+                  for (AbstractBelegDBObject ob : objects)
                   {
                     try
                     {
-                      ((AbstractBelegDBObject) objects[i]).addBeleg(b);
+                      ob.addBeleg(b);
                       monitor.setStatusText("Beleg " + b.getBelegnummer()
-                          + ": Bei " + objects[i].getObjektName() + " "
-                          + objects[i].getID() + " zugeordnet.");
+                          + ": Bei " + ob.getObjektName() + " " + ob.getID()
+                          + " zugeordnet.");
                       anzahl++;
                     }
                     catch (ApplicationException ex)
                     {
                       monitor.setStatusText("Beleg " + b.getBelegnummer() + ": "
-                          + objects[i].getObjektName() + " "
-                          + objects[i].getID() + ": " + ex.getMessage());
+                          + ob.getObjektName() + " " + ob.getID() + ": "
+                          + ex.getMessage());
                     }
                   }
                 }
@@ -119,8 +133,16 @@ public class BelegZuordnenAction implements Action
                 DBTransaction.rollback();
                 throw new ApplicationException(oce.getMessage());
               }
-
-              GUI.getCurrentView().reload();
+              if (belegPart != null)
+              {
+                GUI.getDisplay().syncExec(() -> {
+                  belegPart.refreshDocsList();
+                });
+              }
+              else
+              {
+                GUI.getCurrentView().reload();
+              }
               GUI.getStatusBar().setSuccessText("Beleg(e) zugeordnet");
             }
 

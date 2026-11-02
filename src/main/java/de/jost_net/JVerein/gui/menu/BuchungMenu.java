@@ -159,7 +159,7 @@ public class BuchungMenu extends ContextMenu
     if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
       addItem(new CheckedContextMenuItem("Beleg zuordnen",
-          new BelegZuordnenAction(), "view-refresh.png"));
+          new BelegZuordnenAction(null), "view-refresh.png"));
     }
     addItem(new CheckedContextMenuItem("Buchungsreport",
         new BuchungReportAction(), "document-print.png"));
