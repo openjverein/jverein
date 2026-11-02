@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.dialogs.BelegAuswahlDialog;
 import de.jost_net.JVerein.gui.parts.BelegPart;
 import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
@@ -34,9 +35,12 @@ public class BelegZuordnenAction implements Action
 {
   private BelegPart belegPart;
 
-  public BelegZuordnenAction(BelegPart belegPart)
+  private FilterControl control;
+
+  public BelegZuordnenAction(BelegPart belegPart, FilterControl control)
   {
     this.belegPart = belegPart;
+    this.control = control;
   }
 
   /**
@@ -79,9 +83,9 @@ public class BelegZuordnenAction implements Action
           {
             belegPart.refreshDocsList();
           }
-          else
+          else if (control != null)
           {
-            GUI.getCurrentView().reload();
+            control.refresh();
           }
           GUI.getStatusBar().setSuccessText("Beleg zugeordnet");
         }
@@ -133,16 +137,17 @@ public class BelegZuordnenAction implements Action
                 DBTransaction.rollback();
                 throw new ApplicationException(oce.getMessage());
               }
-              if (belegPart != null)
-              {
-                GUI.getDisplay().syncExec(() -> {
+              GUI.getDisplay().syncExec(() -> {
+                if (belegPart != null)
+                {
                   belegPart.refreshDocsList();
-                });
-              }
-              else
-              {
-                GUI.getCurrentView().reload();
-              }
+                }
+                else if (control != null)
+                {
+                  control.refresh();
+                }
+              });
+
               GUI.getStatusBar().setSuccessText("Beleg(e) zugeordnet");
             }
 

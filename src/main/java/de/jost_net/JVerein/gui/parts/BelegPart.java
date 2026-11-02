@@ -65,7 +65,7 @@ public class BelegPart implements Part
     grDokument.getComposite().setLayout(new GridLayout(1, false));
 
     ButtonArea butts = new ButtonArea();
-    butts.addButton("Beleg zuordnen", new BelegZuordnenAction(this),
+    butts.addButton("Beleg zuordnen", new BelegZuordnenAction(this, null),
         getCurrentObject(), false, "document-new.png");
     butts.addButton("Neu", new BelegNewAction(), getCurrentObject(), false,
         "document-new.png");
