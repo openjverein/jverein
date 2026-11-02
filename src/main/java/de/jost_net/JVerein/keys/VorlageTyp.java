@@ -165,7 +165,7 @@ public enum VorlageTyp
       "Anfangsbestände-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
   KONTENSALDO_DATEINAME("kontensaldo-dateiname", "Kontensaldo Dateiname",
-      "Kontensdaldo-$zeitraum_von_f-$zeitraum_bis_f-$aktuellesdatum-$aktuellezeit",
+      "Kontensaldo-$zeitraum_von_f-$zeitraum_bis_f-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
   BUCHUNGSJOURNAL_DATEINAME("buchungsjournal-dateiname",
       "Buchungsjournal Dateiname",
