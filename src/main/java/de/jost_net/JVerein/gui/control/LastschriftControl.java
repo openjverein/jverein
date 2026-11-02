@@ -125,24 +125,17 @@ public class LastschriftControl extends FilterControl
       switch (entry.getKey())
       {
         case MITGLIEDART:
-          if (((MitgliedsArt) value).equals(MitgliedsArt.KURSTEILNEHMER))
+          lastschriften.join("mitglied");
+          lastschriften.addFilter("mitglied.id = lastschrift.mitglied");
+          if (((MitgliedsArt) value).equals(MitgliedsArt.MITGLIED))
           {
-            lastschriften.addFilter("(lastschrift.kursteilnehmer IS NOT NULL)");
+            lastschriften.addFilter(
+                Mitglied.MITGLIEDSTYP + " = " + Mitgliedstyp.MITGLIED);
           }
-          else
+          else if (((MitgliedsArt) value).equals(MitgliedsArt.NICHT_MITGLIED))
           {
-            lastschriften.join("mitglied");
-            lastschriften.addFilter("mitglied.id = lastschrift.mitglied");
-            if (((MitgliedsArt) value).equals(MitgliedsArt.MITGLIED))
-            {
-              lastschriften.addFilter(
-                  Mitglied.MITGLIEDSTYP + " = " + Mitgliedstyp.MITGLIED);
-            }
-            else if (((MitgliedsArt) value).equals(MitgliedsArt.NICHT_MITGLIED))
-            {
-              lastschriften.addFilter(
-                  Mitglied.MITGLIEDSTYP + " > " + Mitgliedstyp.MITGLIED);
-            }
+            lastschriften.addFilter(
+                Mitglied.MITGLIEDSTYP + " > " + Mitgliedstyp.MITGLIED);
           }
           break;
         case NAME:
