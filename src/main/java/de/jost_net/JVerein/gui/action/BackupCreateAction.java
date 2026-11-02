@@ -53,7 +53,7 @@ import de.jost_net.JVerein.server.MailAnhangImpl;
 import de.jost_net.JVerein.server.MailEmpfaengerImpl;
 import de.jost_net.JVerein.server.MailImpl;
 import de.jost_net.JVerein.server.MailVorlageImpl;
-import de.jost_net.JVerein.server.MitgliedDokumentImpl;
+import de.jost_net.JVerein.server.BelegMitgliedImpl;
 import de.jost_net.JVerein.server.MitgliedImpl;
 import de.jost_net.JVerein.server.MitgliedNextBGruppeImpl;
 import de.jost_net.JVerein.server.MitgliedfotoImpl;
@@ -258,7 +258,7 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Dokumente der Mitglieder");
-          backup(MitgliedDokumentImpl.class, writer, monitor);
+          backup(BelegMitgliedImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Fotos der Mitglieder");

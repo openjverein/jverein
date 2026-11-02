@@ -16,6 +16,7 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 import java.sql.Connection;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
+
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
