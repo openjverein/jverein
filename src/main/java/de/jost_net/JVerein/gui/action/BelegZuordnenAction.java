@@ -16,26 +16,31 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.dialogs.BelegAuswahlDialog;
+import de.jost_net.JVerein.gui.parts.BelegPart;
 import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
 public class BelegZuordnenAction implements Action
 {
-  private TablePart part;
+  private BelegPart belegPart;
 
-  public BelegZuordnenAction(TablePart tablePart)
+  private FilterControl control;
+
+  public BelegZuordnenAction(BelegPart belegPart, FilterControl control)
   {
-    this.part = tablePart;
+    this.belegPart = belegPart;
+    this.control = control;
   }
 
   /**
@@ -46,31 +51,120 @@ public class BelegZuordnenAction implements Action
   {
     try
     {
+      if (!(context instanceof AbstractBelegDBObject)
+          && !(context instanceof AbstractBelegDBObject[]))
+      {
+        throw new ApplicationException(
+            "Keine Objekt ausgewählt welches Belege unterstützt.");
+      }
+
+      AbstractBelegDBObject[] object = null;
+      if (context instanceof AbstractBelegDBObject)
+      {
+        object = new AbstractBelegDBObject[1];
+        object[0] = (AbstractBelegDBObject) context;
+      }
+      if (context instanceof AbstractBelegDBObject[])
+      {
+        object = (AbstractBelegDBObject[]) context;
+      }
+
+      final AbstractBelegDBObject[] objects = object;
+
       BelegAuswahlDialog d = new BelegAuswahlDialog();
       Beleg[] belege = d.open();
       if (belege != null)
       {
-        try
+        // Bei nur einem Beleg und einem Objekt ohne BackgroundTask
+        if (objects.length == 1 && belege.length == 1)
         {
-          DBTransaction.starten();
-          for (Beleg b : belege)
+          ((AbstractBelegDBObject) objects[0]).addBeleg(belege[0]);
+          if (belegPart != null)
           {
-            ((AbstractBelegDBObject) context).addBeleg(b);
+            belegPart.refreshDocsList();
           }
-          DBTransaction.commit();
+          else if (control != null)
+          {
+            control.refresh();
+          }
+          GUI.getStatusBar().setSuccessText("Beleg zugeordnet");
         }
-        catch (RemoteException | ApplicationException e)
+        else
         {
-          DBTransaction.rollback();
-          throw e;
+          BackgroundTask t = new BackgroundTask()
+          {
+            @Override
+            public void run(ProgressMonitor monitor) throws ApplicationException
+            {
+              try
+              {
+                DBTransaction.starten();
+                monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
+                monitor.setStatusText("Starte Beleg(e) zuordnen.");
+                int anzahl = 0;
+                for (Beleg b : belege)
+                {
+                  for (AbstractBelegDBObject ob : objects)
+                  {
+                    try
+                    {
+                      ob.addBeleg(b);
+                      monitor.setStatusText("Beleg " + b.getBelegnummer()
+                          + ": Bei " + ob.getObjektName() + " " + ob.getID()
+                          + " zugeordnet.");
+                      anzahl++;
+                    }
+                    catch (ApplicationException ex)
+                    {
+                      monitor.setStatusText("Beleg " + b.getBelegnummer() + ": "
+                          + ob.getObjektName() + " " + ob.getID() + ": "
+                          + ex.getMessage());
+                    }
+                  }
+                }
+                DBTransaction.commit();
+                monitor.setPercentComplete(100);
+                monitor.setStatus(ProgressMonitor.STATUS_DONE);
+                monitor.setStatusText(anzahl + " Belege zugeordnet.");
+              }
+              catch (OperationCanceledException oce)
+              {
+                DBTransaction.rollback();
+                throw oce;
+              }
+              catch (Exception oce)
+              {
+                DBTransaction.rollback();
+                throw new ApplicationException(oce.getMessage());
+              }
+              GUI.getDisplay().syncExec(() -> {
+                if (belegPart != null)
+                {
+                  belegPart.refreshDocsList();
+                }
+                else if (control != null)
+                {
+                  control.refresh();
+                }
+              });
+
+              GUI.getStatusBar().setSuccessText("Beleg(e) zugeordnet");
+            }
+
+            @Override
+            public void interrupt()
+            {
+              //
+            }
+
+            @Override
+            public boolean isInterrupted()
+            {
+              return false;
+            }
+          };
+          Application.getController().start(t);
         }
-        // Erst jetzt Dokumente anzeigen, falls bei einem Beleg ein Fehler
-        // passiert
-        for (Beleg b : belege)
-        {
-          part.addItem(b);
-        }
-        GUI.getStatusBar().setSuccessText("Beleg(e) erfolgreich zugeordnet");
       }
     }
     catch (OperationCanceledException oce)
