@@ -56,7 +56,7 @@ public class DbBereinigenControl extends AbstractControl
 
   Date defaultDate = null;
 
-  private double anzahl = 7.0d;
+  private double anzahl = 8.0d;
 
   // Rechnungen loeschen
   private CheckboxInput rLoeschenInput = null;
