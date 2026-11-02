@@ -67,7 +67,7 @@ import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
 import de.jost_net.JVerein.gui.parts.MitgliedSekundaereBeitragsgruppePart;
 import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
-import de.jost_net.JVerein.gui.view.LehrgangDetailView;
+import de.jost_net.JVerein.gui.view.LehrgangsteilnehmerDetailView;
 import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
 import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
@@ -85,7 +85,7 @@ import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
@@ -1672,10 +1672,10 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
       return lehrgaengeList;
     }
     DBService service = Einstellungen.getDBService();
-    DBIterator<Lehrgang> lehrgaenge = service.createList(Lehrgang.class);
+    DBIterator<Lehrgangsteilnehmer> lehrgaenge = service.createList(Lehrgangsteilnehmer.class);
     lehrgaenge.addFilter("mitglied = " + getMitglied().getID());
     lehrgaengeList = new JVereinTablePart(lehrgaenge,
-        new EditAction(LehrgangDetailView.class));
+        new EditAction(LehrgangsteilnehmerDetailView.class));
     lehrgaengeList.setTableName("Lehrgänge");
     lehrgaengeList.setMulti(true);
     lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
@@ -1898,7 +1898,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
   public Button getLehrgangNeu()
   {
     return new Button("Neuer Lehrgang",
-        new NewAction(LehrgangDetailView.class, Lehrgang.class, getMitglied()),
+        new NewAction(LehrgangsteilnehmerDetailView.class, Lehrgangsteilnehmer.class, getMitglied()),
         null, false, "document-new.png");
   }
 

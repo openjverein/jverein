@@ -42,7 +42,7 @@ import de.willuhn.util.ApplicationException;
 public class AbrechnungslaufDeleteAction extends DeleteAction
 {
   @Override
-  protected String getText(JVereinDBObject object[])
+  protected String getText(Object object[])
       throws RemoteException, ApplicationException
   {
     if (object == null || object.length == 0

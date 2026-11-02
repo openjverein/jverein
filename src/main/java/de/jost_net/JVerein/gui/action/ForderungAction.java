@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import de.jost_net.JVerein.gui.dialogs.ForderungDialog;
 import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -56,15 +57,16 @@ public class ForderungAction implements Action
       {
         mitglieder = (Mitglied[]) context;
       }
-      else if (context instanceof Lehrgang)
+      else if (context instanceof Lehrgangsteilnehmer)
       {
-        mitglieder = new Mitglied[] { ((Lehrgang) context).getMitglied() };
+        mitglieder = new Mitglied[] {
+            ((Lehrgangsteilnehmer) context).getMitglied() };
       }
-      else if (context instanceof Lehrgang[])
+      else if (context instanceof Lehrgangsteilnehmer[])
       {
-        Lehrgang[] lge = (Lehrgang[]) context;
+        Lehrgangsteilnehmer[] lge = (Lehrgangsteilnehmer[]) context;
         ArrayList<Mitglied> list = new ArrayList<>();
-        for (Lehrgang lg : lge)
+        for (Lehrgangsteilnehmer lg : lge)
         {
           list.add(lg.getMitglied());
         }
@@ -78,6 +80,36 @@ public class ForderungAction implements Action
           throw new ApplicationException("Keine Lehrgänge ausgewählt!");
         }
       }
+      else if (context instanceof Lehrgang)
+      {
+        mitglieder = ((Lehrgang) context).getMitglieder();
+        if (mitglieder == null || mitglieder.length == 0)
+        {
+          throw new ApplicationException("Der Lehrgang hat keine Teilnehmer!");
+        }
+      }
+      else if (context instanceof Lehrgang[])
+      {
+        Lehrgang[] lge = (Lehrgang[]) context;
+        ArrayList<Mitglied> list = new ArrayList<>();
+        for (Lehrgang lg : lge)
+        {
+          for (Mitglied m : lg.getMitglieder())
+          {
+            list.add(m);
+          }
+        }
+        if (list.size() > 0)
+        {
+          mitglieder = new Mitglied[list.size()];
+          list.toArray(mitglieder);
+        }
+        else
+        {
+          throw new ApplicationException(
+              "Die Lehrgänge haben keine Teilnehmer!");
+        }
+      }
       else
       {
         throw new ApplicationException("Keine Mitglieder ausgewählt!");
@@ -87,7 +119,7 @@ public class ForderungAction implements Action
           AbstractDialog.POSITION_CENTER, mitglieder);
       dialog.open();
     }
-    catch (OperationCanceledException oce)
+    catch (OperationCanceledException | ApplicationException oce)
     {
       throw oce;
     }

@@ -23,7 +23,9 @@ import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.LehrgangDetailControl;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class LehrgangDetailView extends AbstractDetailView
 {
@@ -36,13 +38,17 @@ public class LehrgangDetailView extends AbstractDetailView
     control = new LehrgangDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Lehrgang");
-    group.addLabelPair("Mitglied", control.getMitglied());
-    group.addLabelPair("Lehrgangsart", control.getLehrgangsart());
-    group.addLabelPair("Bezeichnung", control.getBezeichnung());
-    group.addLabelPair("Am/von", control.getVon());
-    group.addLabelPair("Bis", control.getBis());
-    group.addLabelPair("Veranstalter", control.getVeranstalter());
-    group.addLabelPair("Ergebnis", control.getErgebnis());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Lehrgangsart", control.getLehrgangsart());
+    left.addLabelPair("Bezeichnung", control.getBezeichnung());
+    left.addLabelPair("Veranstalter", control.getVeranstalter());
+
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addLabelPair("Am/von", control.getVon());
+    right.addLabelPair("Bis", control.getBis());
+    right.addLabelPair("Betrag", control.getBetrag());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.LEHRGANG));
@@ -50,8 +56,7 @@ public class LehrgangDetailView extends AbstractDetailView
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
-    buttons.addButton(
-        new SaveNeuButton(control, control.getLehrgang().getMitglied()));
+    buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
   }
 

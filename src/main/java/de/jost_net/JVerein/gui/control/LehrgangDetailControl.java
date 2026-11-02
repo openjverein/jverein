@@ -16,23 +16,19 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.input.MitgliedInput;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
-import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -51,13 +47,11 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
 
   private TextInput veranstalter = null;
 
-  private TextInput ergebnis = null;
-
-  private Lehrgang lehrg = null;
-
-  private AbstractInput mitglied;
+  private Lehrgang lehrgang = null;
 
   private TextInput bezeichnung;
+
+  private BigDecimalInput betrag;
 
   public LehrgangDetailControl(AbstractView view)
   {
@@ -66,12 +60,12 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
 
   public Lehrgang getLehrgang()
   {
-    if (lehrg != null)
+    if (lehrgang != null)
     {
-      return lehrg;
+      return lehrgang;
     }
-    lehrg = (Lehrgang) getCurrentObject();
-    return lehrg;
+    lehrgang = (Lehrgang) getCurrentObject();
+    return lehrgang;
   }
 
   public SelectInput getLehrgangsart() throws RemoteException
@@ -87,28 +81,6 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
         it != null ? PseudoIterator.asList(it) : null,
         getLehrgang().getLehrgangsart());
     lehrgangsart.setPleaseChoose("Bitte auswählen");
-    lehrgangsart.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Lehrgangsart la = (Lehrgangsart) lehrgangsart.getValue();
-        try
-        {
-          if (la != null)
-          {
-            getVon().setValue(la.getVon());
-            getBis().setValue(la.getBis());
-            getVeranstalter().setValue(la.getVeranstalter());
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-    });
     lehrgangsart.setMandatory(true);
     return lehrgangsart;
   }
@@ -154,16 +126,6 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
     return veranstalter;
   }
 
-  public Input getErgebnis() throws RemoteException
-  {
-    if (ergebnis != null)
-    {
-      return ergebnis;
-    }
-    ergebnis = new TextInput(getLehrgang().getErgebnis(), 50);
-    return ergebnis;
-  }
-
   public TextInput getBezeichnung() throws RemoteException
   {
     if (bezeichnung != null)
@@ -171,7 +133,19 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
       return bezeichnung;
     }
     bezeichnung = new TextInput(getLehrgang().getBezeichnung(), 30);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
+  }
+
+  public BigDecimalInput getBetrag() throws RemoteException
+  {
+    if (betrag != null)
+    {
+      return betrag;
+    }
+    betrag = new BigDecimalInput(getLehrgang().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
+    return betrag;
   }
 
   @Override
@@ -192,19 +166,7 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
     l.setVon((Date) getVon().getValue());
     l.setBis((Date) getBis().getValue());
     l.setVeranstalter((String) getVeranstalter().getValue());
-    l.setErgebnis((String) getErgebnis().getValue());
-    if (l.isNewObject())
-    {
-      if (getMitglied().getValue() != null)
-      {
-        l.setMitglied(
-            Integer.valueOf(((Mitglied) getMitglied().getValue()).getID()));
-      }
-      else
-      {
-        l.setMitglied(null);
-      }
-    }
+    l.setBetrag((BigDecimal) getBetrag().getValue());
     return l;
   }
 
@@ -214,6 +176,22 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
     try
     {
       prepareStore().store();
+      Lehrgangsart la = (Lehrgangsart) getLehrgangsart().getValue();
+      if (la != null)
+      {
+        DBIterator<Lehrgangsteilnehmer> teilnehmer = Einstellungen
+            .getDBService().createList(Lehrgangsteilnehmer.class);
+        teilnehmer.addFilter("lehrgang = ?", getLehrgang().getID());
+        while (teilnehmer.hasNext())
+        {
+          Lehrgangsteilnehmer t = teilnehmer.next();
+          t.setVon((Date) getVon().getValue());
+          t.setBis((Date) getBis().getValue());
+          t.setVeranstalter((String) getVeranstalter().getValue());
+          t.setLehrgangsart(Long.valueOf(la.getID()));
+          t.store();
+        }
+      }
     }
     catch (RemoteException e)
     {
@@ -221,28 +199,6 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
       Logger.error(fehler, e);
       throw new ApplicationException(fehler, e);
     }
-  }
-
-  public Input getMitglied() throws RemoteException
-  {
-    if (mitglied != null)
-    {
-      return mitglied;
-    }
-
-    if (getLehrgang().getMitglied() != null)
-    {
-      Mitglied[] mitgliedArray = { getLehrgang().getMitglied() };
-      mitglied = new SelectInput(mitgliedArray, getLehrgang().getMitglied());
-      mitglied.setEnabled(false);
-    }
-    else
-    {
-      mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
-          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
-    }
-    mitglied.setMandatory(true);
-    return mitglied;
   }
 
 }

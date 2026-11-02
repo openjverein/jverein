@@ -36,7 +36,7 @@ public class FelddefinitionDeleteAction extends DeleteAction
   private boolean verwendung = false;
 
   @Override
-  protected String getText(JVereinDBObject object[])
+  protected String getText(Object object[])
       throws RemoteException, ApplicationException
   {
     if (object == null || object.length == 0
@@ -46,7 +46,7 @@ public class FelddefinitionDeleteAction extends DeleteAction
     }
 
     // Check ob eine Felddefinition bei Mitgliedern verwendet wird
-    for (JVereinDBObject o : object)
+    for (Object o : object)
     {
       if (isZusatzfeldUsed((Felddefinition) o))
       {
@@ -103,7 +103,7 @@ public class FelddefinitionDeleteAction extends DeleteAction
   }
 
   @Override
-  protected boolean getMitNo(JVereinDBObject object[])
+  protected boolean getMitNo(Object object[])
   {
     return verwendung && object.length > 1;
   }

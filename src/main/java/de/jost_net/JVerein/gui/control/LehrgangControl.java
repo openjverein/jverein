@@ -26,6 +26,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -46,25 +47,17 @@ public class LehrgangControl extends FilterControl
     super(view);
   }
 
-  private DBIterator<Lehrgang> getIterator()
+  private DBIterator<Lehrgangsteilnehmer> getIterator()
       throws RemoteException, ApplicationException
   {
-    DBIterator<Lehrgang> lehrgaenge = Einstellungen.getDBService()
+    DBIterator<Lehrgangsteilnehmer> lehrgaenge = Einstellungen.getDBService()
         .createList(Lehrgang.class);
-    lehrgaenge.join("mitglied");
-    lehrgaenge.addFilter("mitglied.id = lehrgang.mitglied");
 
     for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
       Object value = entry.getValue();
       switch (entry.getKey())
       {
-        case NAME:
-          String suchName = "%" + value.toString().toLowerCase() + "%";
-          lehrgaenge.addFilter(
-              "(lower(name) like ? " + "or lower(vorname) like ?)", suchName,
-              suchName);
-          break;
         case VERANSTALTER:
           lehrgaenge.addFilter("lower(veranstalter) like ? ",
               "%" + value.toString().toLowerCase() + "%");
@@ -99,18 +92,18 @@ public class LehrgangControl extends FilterControl
     {
       return lehrgaengeList;
     }
-    DBIterator<Lehrgang> lehrgaenge = getIterator();
+    DBIterator<Lehrgangsteilnehmer> lehrgaenge = getIterator();
     lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
     lehrgaengeList.addColumn("Nr", "id-int");
-    lehrgaengeList.addColumn("Name", "mitglied");
-    lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
+    lehrgaengeList.addColumn(getGesperrtColumn(), false);
     lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
+    lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
     lehrgaengeList.addColumn("Von/am", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgaengeList.addColumn("Bis", "bis",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgaengeList.addColumn("Veranstalter", "veranstalter");
-    lehrgaengeList.addColumn("Ergebnis", "ergebnis");
+    lehrgaengeList.addColumn("Betrag", "betrag");
     lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
     lehrgaengeList.setMulti(true);
     lehrgaengeList
@@ -130,7 +123,7 @@ public class LehrgangControl extends FilterControl
         return;
       }
       lehrgaengeList.removeAll();
-      DBIterator<Lehrgang> lehrgaenge = getIterator();
+      DBIterator<Lehrgangsteilnehmer> lehrgaenge = getIterator();
       while (lehrgaenge.hasNext())
       {
         lehrgaengeList.addItem(lehrgaenge.next());

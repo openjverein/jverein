@@ -46,7 +46,6 @@ public class LehrgangListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getFilterInput(Filter.NAME));
     left.addInput(control.getFilterInput(Filter.LEHRGANGSART));
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());

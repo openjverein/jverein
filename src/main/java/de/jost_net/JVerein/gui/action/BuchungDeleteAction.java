@@ -32,7 +32,7 @@ public class BuchungDeleteAction extends DeleteAction
   private boolean spendenbescheinigung = false;
 
   @Override
-  protected String getText(JVereinDBObject object[])
+  protected String getText(Object object[])
       throws RemoteException, ApplicationException
   {
     if (object == null || object.length == 0 || !(object[0] instanceof Buchung))
@@ -42,7 +42,7 @@ public class BuchungDeleteAction extends DeleteAction
 
     // Check ob einer der Buchungen
     // eine Spendenbescheinigung zugeordnet ist
-    for (JVereinDBObject o : object)
+    for (Object o : object)
     {
       Buchung bu = (Buchung) o;
       if (bu.getSpendenbescheinigung() != null)
@@ -103,7 +103,7 @@ public class BuchungDeleteAction extends DeleteAction
   }
 
   @Override
-  protected boolean getMitNo(JVereinDBObject object[])
+  protected boolean getMitNo(Object object[])
   {
     return spendenbescheinigung && object.length > 1;
   }

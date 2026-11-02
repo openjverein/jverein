@@ -44,7 +44,7 @@ import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Lastschrift;
-import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
@@ -1066,11 +1066,11 @@ public class Migration
         l.delete();
       }
       // Lehrgänge
-      DBIterator<Lehrgang> listlehrgaenge = Einstellungen.getDBService()
-          .createList(Lehrgang.class);
+      DBIterator<Lehrgangsteilnehmer> listlehrgaenge = Einstellungen.getDBService()
+          .createList(Lehrgangsteilnehmer.class);
       while (listlehrgaenge.hasNext())
       {
-        Lehrgang l = listlehrgaenge.next();
+        Lehrgangsteilnehmer l = listlehrgaenge.next();
         l.delete();
       }
       // Mailempfänger
