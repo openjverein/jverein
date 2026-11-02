@@ -148,8 +148,6 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput wiedervorlage;
 
-  private CheckboxInput kursteilnehmer;
-
   private CheckboxInput lehrgaenge;
 
   private CheckboxInput juristischepersonen;
@@ -169,10 +167,6 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput dokumentenspeicherung;
 
   private CheckboxInput individuellebeitraege;
-
-  private CheckboxInput kursteilnehmergebpflicht;
-
-  private CheckboxInput kursteilnehmergespflicht;
 
   private TextInput rechnungtextabbuchung;
 
@@ -796,17 +790,6 @@ public class EinstellungControl extends AbstractControl
     return wiedervorlage;
   }
 
-  public CheckboxInput getKursteilnehmer() throws RemoteException
-  {
-    if (kursteilnehmer != null)
-    {
-      return kursteilnehmer;
-    }
-    kursteilnehmer = new CheckboxInput(
-        (Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER));
-    return kursteilnehmer;
-  }
-
   public CheckboxInput getLehrgaenge() throws RemoteException
   {
     if (lehrgaenge != null)
@@ -838,28 +821,6 @@ public class EinstellungControl extends AbstractControl
     mitgliedfoto = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO));
     return mitgliedfoto;
-  }
-
-  public CheckboxInput getKursteilnehmerGebPflicht() throws RemoteException
-  {
-    if (kursteilnehmergebpflicht != null)
-    {
-      return kursteilnehmergebpflicht;
-    }
-    kursteilnehmergebpflicht = new CheckboxInput((Boolean) Einstellungen
-        .getEinstellung(Property.KURSTEILNEHMERGEBPFLICHT));
-    return kursteilnehmergebpflicht;
-  }
-
-  public CheckboxInput getKursteilnehmerGesPflicht() throws RemoteException
-  {
-    if (kursteilnehmergespflicht != null)
-    {
-      return kursteilnehmergespflicht;
-    }
-    kursteilnehmergespflicht = new CheckboxInput((Boolean) Einstellungen
-        .getEinstellung(Property.KURSTEILNEHMERGESPFLICHT));
-    return kursteilnehmergespflicht;
   }
 
   public CheckboxInput getUseZusatzfelder() throws RemoteException
@@ -2523,10 +2484,6 @@ public class EinstellungControl extends AbstractControl
           (Boolean) nichtmitgliedgeburtsdatumpflicht.getValue());
       Einstellungen.setEinstellung(Property.EINTRITTSDATUMPFLICHT,
           (Boolean) eintrittsdatumpflicht.getValue());
-      Einstellungen.setEinstellung(Property.KURSTEILNEHMERGEBPFLICHT,
-          (Boolean) kursteilnehmergebpflicht.getValue());
-      Einstellungen.setEinstellung(Property.KURSTEILNEHMERGESPFLICHT,
-          (Boolean) kursteilnehmergespflicht.getValue());
       Einstellungen.setEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN,
           (Boolean) jmitgliedpflichteigenschaften.getValue());
       Einstellungen.setEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN,
@@ -2564,8 +2521,6 @@ public class EinstellungControl extends AbstractControl
           (Boolean) vermerke.getValue());
       Einstellungen.setEinstellung(Property.WIEDERVORLAGE,
           (Boolean) wiedervorlage.getValue());
-      Einstellungen.setEinstellung(Property.KURSTEILNEHMER,
-          (Boolean) kursteilnehmer.getValue());
       Einstellungen.setEinstellung(Property.LEHRGAENGE,
           (Boolean) lehrgaenge.getValue());
       Einstellungen.setEinstellung(Property.JURISTISCHEPERSONEN,

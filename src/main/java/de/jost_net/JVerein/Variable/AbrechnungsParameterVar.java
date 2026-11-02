@@ -31,7 +31,6 @@ public enum AbrechnungsParameterVar
   STICHTAG_JAHR("abrechnungsparameter_stichtag_jahr"), //
   VERWENDUNGSZWECK("abrechnungsparameter_verwendungszweck"), //
   ZUSATZBETRAEGE("abrechnungsparameter_zusatzbetraege"), //
-  KURSTEILNEHMER("abrechnungsparameter_kursteilnehmer"), //
   KOMPAKTEABBUCHUNG("abrechnungsparameter_kompakteabbuchung"), //
   SEPAPRINT("abrechnungsparameter_sepaprint");
 

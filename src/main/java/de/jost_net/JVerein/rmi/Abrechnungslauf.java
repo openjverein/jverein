@@ -58,10 +58,6 @@ public interface Abrechnungslauf extends JVereinDBObject
 
   public void setZusatzbetraege(Boolean zusatzbetraege) throws RemoteException;
 
-  public Boolean getKursteilnehmer() throws RemoteException;
-
-  public void setKursteilnehmer(Boolean kursteilnehmer) throws RemoteException;
-
   public Boolean getDtausdruck() throws RemoteException;
 
   public void setDtausdruck(Boolean dtausdruck) throws RemoteException;
