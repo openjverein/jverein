@@ -62,4 +62,13 @@ public interface Beleg extends JVereinDBObject
 
   void setPfad(String pfad) throws RemoteException;
 
+  /**
+   * Prüft die Checksum der Datei
+   * 
+   * @throws IOException
+   * @throws ApplicationException
+   * @return true wenn korrekt, false wenn Falsch, null wenn nicht vorhanden
+   */
+  Boolean checkChecksum() throws IOException, ApplicationException;
+
 }

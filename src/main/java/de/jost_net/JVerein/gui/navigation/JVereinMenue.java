@@ -2,8 +2,11 @@ package de.jost_net.JVerein.gui.navigation;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AboutAction;
 import de.jost_net.JVerein.gui.action.AbrechnungAction;
+import de.jost_net.JVerein.gui.action.BelegCheckAction;
 import de.jost_net.JVerein.gui.action.LizenzAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.NewAction;
@@ -37,6 +40,17 @@ public class JVereinMenue implements Extension
           "emblem-documents.png", "ALT+B"));
       jverein.addChild(new JVereinMenueItem(jverein, "Neuer Abrechnungslauf",
           new AbrechnungAction(), "calculator.png", "ALT+A"));
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+      {
+        JVereinMenueItem erweitert = new JVereinMenueItem(jverein, "Erweitert",
+            null, "wrench.png");
+
+        erweitert.addChild(new JVereinMenueItem(erweitert, "Belege prüfen",
+            new BelegCheckAction(), "emblem-documents.png"));
+
+        jverein.addChild(erweitert);
+      }
     }
     catch (RemoteException e)
     {
