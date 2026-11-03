@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,15 +128,15 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     }
     saldoList.addColumn("Buchungsart", BUCHUNGSART_TEXT);
     saldoList.addColumn("Einnahmen", EINNAHMEN,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Ausgaben", AUSGABEN,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     if (mitUmbuchung)
     {
       saldoList.addColumn("Umbuchungen", UMBUCHUNGEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
     }
     saldoList.addColumn("Anzahl", ANZAHL);
@@ -178,20 +179,20 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
               && Objects.equals(projekt, projektSteuer))
           {
             o.setAttribute(SUMME,
-                o.getDouble(SUMME) + steuerObject.getDouble(SUMME));
+                o.getBigDecimal(SUMME).add(steuerObject.getBigDecimal(SUMME)));
 
             if (o.getAttribute(EINNAHMEN) != null
                 && steuerObject.getAttribute(EINNAHMEN) != null)
             {
-              o.setAttribute(EINNAHMEN,
-                  o.getDouble(EINNAHMEN) + steuerObject.getDouble(EINNAHMEN));
+              o.setAttribute(EINNAHMEN, o.getBigDecimal(EINNAHMEN)
+                  .add(steuerObject.getBigDecimal(EINNAHMEN)));
             }
 
             if (o.getAttribute(AUSGABEN) != null
                 && steuerObject.getAttribute(AUSGABEN) != null)
             {
-              o.setAttribute(AUSGABEN,
-                  o.getDouble(AUSGABEN) + steuerObject.getDouble(AUSGABEN));
+              o.setAttribute(AUSGABEN, o.getBigDecimal(AUSGABEN)
+                  .add(steuerObject.getBigDecimal(AUSGABEN)));
             }
             steuerObject.setAttribute("gefunden", true);
             break;
@@ -216,14 +217,14 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     String klasseAlt = null;
 
     // Summen der Buchungsklasse/Projekt
-    Double einnahmenSumme = 0d;
-    Double ausgabenSumme = 0d;
-    Double umbuchungenSumme = 0d;
+    BigDecimal einnahmenSumme = BigDecimal.ZERO;
+    BigDecimal ausgabenSumme = BigDecimal.ZERO;
+    BigDecimal umbuchungenSumme = BigDecimal.ZERO;
 
     // Summen aller Buchungsklassen/Projekte
-    Double einnahmenGesamt = 0d;
-    Double ausgabenGesamt = 0d;
-    Double umbuchungenGesamt = 0d;
+    BigDecimal einnahmenGesamt = BigDecimal.ZERO;
+    BigDecimal ausgabenGesamt = BigDecimal.ZERO;
+    BigDecimal umbuchungenGesamt = BigDecimal.ZERO;
 
     for (PseudoDBObject o : list)
     {
@@ -266,12 +267,12 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       }
       // Die Art der Buchungsart: Einnahme, Ausgabe, Umbuchung
       Integer art = o.getInteger(ARTBUCHUNGSART);
-      Double summe = o.getDouble(SUMME);
+      BigDecimal summe = o.getBigDecimal(SUMME);
 
       // Wenn es "einnahmen" oder "ausgaben" spalten gibt, nehmen wir die Werte
       // direkt.
-      Double einnahmen = o.getDouble(EINNAHMEN);
-      Double ausgaben = o.getDouble(AUSGABEN);
+      BigDecimal einnahmen = o.getBigDecimal(EINNAHMEN);
+      BigDecimal ausgaben = o.getBigDecimal(AUSGABEN);
 
       // Vor neuer Klasse Saldo der letzten anzeigen.
       if (!klasse.equals(klasseAlt) && klasseAlt != null)
@@ -279,15 +280,15 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         PseudoDBObject saldo = new PseudoDBObject();
         saldo.setAttribute(ART, ART_SALDOFOOTER);
         saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
-        if (Math.abs(einnahmenSumme) >= 0.01d)
+        if (einnahmenSumme.signum() != 0)
         {
           saldo.setAttribute(EINNAHMEN, einnahmenSumme);
         }
-        if (Math.abs(ausgabenSumme) >= 0.01d)
+        if (ausgabenSumme.signum() != 0)
         {
           saldo.setAttribute(AUSGABEN, ausgabenSumme);
         }
-        if (Math.abs(umbuchungenSumme) >= 0.01d)
+        if (umbuchungenSumme.signum() != 0)
         {
           saldo.setAttribute(UMBUCHUNGEN, umbuchungenSumme);
         }
@@ -297,15 +298,15 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         saldogv.setAttribute(ART, ART_SALDOGEWINNVERLUST);
         saldogv.setAttribute(GRUPPE, "Gewinn/Verlust " + klasseAlt);
         saldogv.setAttribute(EINNAHMEN,
-            einnahmenSumme + ausgabenSumme + umbuchungenSumme);
+            einnahmenSumme.add(ausgabenSumme).add(umbuchungenSumme));
         zeilen.add(saldogv);
 
-        einnahmenSumme = 0d;
-        ausgabenSumme = 0d;
-        umbuchungenSumme = 0d;
+        einnahmenSumme = BigDecimal.ZERO;
+        ausgabenSumme = BigDecimal.ZERO;
+        umbuchungenSumme = BigDecimal.ZERO;
       }
 
-      Double umbuchungen = 0d;
+      BigDecimal umbuchungen = BigDecimal.ZERO;
       switch (art)
       {
         case ArtBuchungsart.EINNAHME:
@@ -314,8 +315,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
             einnahmen = summe;
             o.setAttribute(EINNAHMEN, einnahmen);
           }
-          einnahmenSumme += einnahmen;
-          einnahmenGesamt += einnahmen;
+          einnahmenSumme = einnahmenSumme.add(einnahmen);
+          einnahmenGesamt = einnahmenGesamt.add(einnahmen);
           break;
         case ArtBuchungsart.AUSGABE:
           if (ausgaben == null)
@@ -323,23 +324,23 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
             ausgaben = summe;
             o.setAttribute(AUSGABEN, ausgaben);
           }
-          ausgabenSumme += ausgaben;
-          ausgabenGesamt += ausgaben;
+          ausgabenSumme = ausgabenSumme.add(ausgaben);
+          ausgabenGesamt = ausgabenGesamt.add(ausgaben);
           break;
         case ArtBuchungsart.UMBUCHUNG:
           if (einnahmen == null && ausgaben == null)
           {
             umbuchungen = summe;
-            umbuchungenSumme += umbuchungen;
-            umbuchungenGesamt += umbuchungen;
+            umbuchungenSumme = umbuchungenSumme.add(umbuchungen);
+            umbuchungenGesamt = umbuchungenGesamt.add(umbuchungen);
             o.setAttribute(UMBUCHUNGEN, umbuchungen);
           }
           else
           {
-            einnahmenSumme += einnahmen;
-            einnahmenGesamt += einnahmen;
-            ausgabenSumme += ausgaben;
-            ausgabenGesamt += ausgaben;
+            einnahmenSumme = einnahmenSumme.add(einnahmen);
+            einnahmenGesamt = einnahmenGesamt.add(einnahmen);
+            ausgabenSumme = ausgabenSumme.add(ausgaben);
+            ausgabenGesamt = ausgabenGesamt.add(ausgaben);
           }
           break;
       }
@@ -374,15 +375,15 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       PseudoDBObject saldo = new PseudoDBObject();
       saldo.setAttribute(ART, ART_SALDOFOOTER);
       saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
-      if (Math.abs(einnahmenSumme) >= 0.01d)
+      if (einnahmenSumme.signum() != 0)
       {
         saldo.setAttribute(EINNAHMEN, einnahmenSumme);
       }
-      if (Math.abs(ausgabenSumme) >= 0.01d)
+      if (ausgabenSumme.signum() != 0)
       {
         saldo.setAttribute(AUSGABEN, ausgabenSumme);
       }
-      if (Math.abs(umbuchungenSumme) >= 0.01d)
+      if (umbuchungenSumme.signum() != 0)
       {
         saldo.setAttribute(UMBUCHUNGEN, umbuchungenSumme);
       }
@@ -392,7 +393,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       saldogv.setAttribute(ART, ART_SALDOGEWINNVERLUST);
       saldogv.setAttribute(GRUPPE, "Gewinn/Verlust " + klasseAlt);
       saldogv.setAttribute(EINNAHMEN,
-          einnahmenSumme + ausgabenSumme + umbuchungenSumme);
+          einnahmenSumme.add(ausgabenSumme).add(umbuchungenSumme));
       zeilen.add(saldogv);
     }
 
@@ -411,7 +412,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       zeilen.add(saldo);
     }
 
-    Double summeOhneBuchungsart = 0d;
+    BigDecimal summeOhneBuchungsart = BigDecimal.ZERO;
     if (mitOhneBuchungsart)
     {
       // Ggf. die Anzahl und Summe nicht zugeordneter Buchungen anzeigen.
@@ -428,8 +429,9 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       PseudoDBObject oAnz = ohneBaIt.next();
       Integer anzahl = oAnz.getAttribute("anzahl") == null ? 0
           : oAnz.getInteger("anzahl");
-      summeOhneBuchungsart = oAnz.getAttribute("summe") == null ? 0
-          : oAnz.getDouble("summe");
+      summeOhneBuchungsart = oAnz.getAttribute("summe") == null
+          ? BigDecimal.ZERO
+          : oAnz.getBigDecimal("summe");
       if (anzahl > 0)
       {
         PseudoDBObject ohneBuchungsart = new PseudoDBObject();
@@ -450,8 +452,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       PseudoDBObject saldogv = new PseudoDBObject();
       saldogv.setAttribute(ART, ART_GESAMTGEWINNVERLUST);
       saldogv.setAttribute(GRUPPE, "Gesamt Gewinn/Verlust");
-      saldogv.setAttribute(EINNAHMEN, einnahmenGesamt + ausgabenGesamt
-          + umbuchungenGesamt + summeOhneBuchungsart);
+      saldogv.setAttribute(EINNAHMEN, einnahmenGesamt.add(ausgabenGesamt)
+          .add(umbuchungenGesamt).add(summeOhneBuchungsart));
       zeilen.add(saldogv);
     }
 

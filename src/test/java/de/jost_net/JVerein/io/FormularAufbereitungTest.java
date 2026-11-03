@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -111,9 +112,9 @@ public class FormularAufbereitungTest
     doReturn(new Date()).when(sollbuchung).getDatum();
 
     SollbuchungPosition sbp = mock(SollbuchungPosition.class);
-    doReturn(100d).when(sbp).getNettobetrag();
+    doReturn(new BigDecimal("100.00")).when(sbp).getNettobetrag();
     doReturn("Mitgliedsbeitrag").when(sbp).getZweck();
-    doReturn(7d).when(sbp).getSteuersatz();
+    doReturn(new BigDecimal("7.00")).when(sbp).getSteuersatz();
 
     Mitglied mitglied = mock(Mitglied.class);
     doReturn("0100").when(mitglied).getTelefonprivat();
@@ -135,7 +136,7 @@ public class FormularAufbereitungTest
     doReturn("Testhausen").when(rechnung).getOrt();
     doReturn("").when(rechnung).getAdressierungszusatz();
     doReturn(Arrays.asList(sbp)).when(rechnung).getSollbuchungPositionList();
-    doReturn(107d).when(rechnung).getBetrag();
+    doReturn(new BigDecimal("107.00")).when(rechnung).getBetrag();
 
     File file = File.createTempFile("formular", ".pdf");
 

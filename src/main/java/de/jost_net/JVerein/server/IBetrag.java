@@ -16,9 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 public interface IBetrag
 {
-  public Double getBetrag() throws RemoteException;
+  public BigDecimal getBetrag() throws RemoteException;
 }

@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein.gui.parts;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -32,7 +33,7 @@ import de.willuhn.jameica.gui.parts.table.Feature.Context;
 public class BuchungListTablePart extends AutoUpdateTablePart
 {
 
-  private Double saldo = null;
+  private BigDecimal saldo = null;
 
   private Context ctx;
 
@@ -61,8 +62,8 @@ public class BuchungListTablePart extends AutoUpdateTablePart
     ctx = super.createFeatureEventContext(e, data);
     if (this.hasEvent(FeatureSummary.class, e))
     {
-      double sumBetrag = 0.0;
-      double sumNetto = 0d;
+      BigDecimal sumBetrag = BigDecimal.ZERO;
+      BigDecimal sumNetto = BigDecimal.ZERO;
       String summary = (String) ctx.addon.get(FeatureSummary.CTX_KEY_TEXT);
       try
       {
@@ -71,41 +72,41 @@ public class BuchungListTablePart extends AutoUpdateTablePart
         for (int i = 0; i < l.size(); i++)
         {
           Buchung b = (Buchung) l.get(i);
-          sumBetrag += b.getBetrag();
-          sumNetto += b.getNetto();
+          sumBetrag = sumBetrag.add(b.getBetrag());
+          sumNetto = sumNetto.add(b.getNetto());
         }
         summary += ", Gesamtbetrag: "
-            + Einstellungen.DECIMALFORMAT.format(sumBetrag) + " "
+            + Einstellungen.BIGDECIMALFORMAT.format(sumBetrag) + " "
             + Einstellungen.CURRENCY;
         if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
         {
           summary += " , Gesamtnetto: "
-              + Einstellungen.DECIMALFORMAT.format(sumNetto) + " "
+              + Einstellungen.BIGDECIMALFORMAT.format(sumNetto) + " "
               + Einstellungen.CURRENCY;
         }
         if (saldo != null)
         {
           summary += " , Kontosaldo: "
-              + Einstellungen.DECIMALFORMAT.format(saldo) + " "
+              + Einstellungen.BIGDECIMALFORMAT.format(saldo) + " "
               + Einstellungen.CURRENCY;
         }
         Object o = getSelection();
         if (o != null && o instanceof Buchung[])
         {
-          double summe = 0d;
-          double netto = 0d;
+          BigDecimal summe = BigDecimal.ZERO;
+          BigDecimal netto = BigDecimal.ZERO;
           for (Buchung b : (Buchung[]) o)
           {
-            summe += b.getBetrag();
-            netto += b.getNetto();
+            summe = summe.add(b.getBetrag());
+            netto = netto.add(b.getNetto());
           }
           summary += " ==> Summe Auswahl: "
-              + Einstellungen.DECIMALFORMAT.format(summe) + " "
+              + Einstellungen.BIGDECIMALFORMAT.format(summe) + " "
               + Einstellungen.CURRENCY;
           if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
           {
             summary += " , Auswahl Netto: "
-                + Einstellungen.DECIMALFORMAT.format(netto) + " "
+                + Einstellungen.BIGDECIMALFORMAT.format(netto) + " "
                 + Einstellungen.CURRENCY;
           }
         }

@@ -14,6 +14,7 @@
 
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -891,8 +892,8 @@ public class AbstractPartExportDialogControl
     try
     {
       String text2 = text.replaceAll("\\.", "").replaceAll("\\,", "\\.");
-      Double value = Double.valueOf(text2);
-      if (value < 0)
+      BigDecimal value = new BigDecimal(text2);
+      if (value.signum() < 0)
       {
         color = BaseColor.RED;
       }

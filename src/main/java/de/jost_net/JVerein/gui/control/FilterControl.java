@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,6 +24,7 @@ import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.gui.dialogs.FilterProfilAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
@@ -49,7 +51,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -234,6 +235,23 @@ public abstract class FilterControl extends AbstractListeControl
    * Erstellt den Filter-Input
    * 
    * @param filter
+   * @param array
+   *          Liste der Elemente
+   * @return
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
+  public Input getFilterInput(Filter filter, KeyEnum[] array)
+      throws RemoteException, ApplicationException
+  {
+    filter.setArray(array);
+    return getFilterInput(filter);
+  }
+
+  /**
+   * Erstellt den Filter-Input
+   * 
+   * @param filter
    * @return
    * @throws RemoteException
    * @throws ApplicationException
@@ -281,12 +299,12 @@ public abstract class FilterControl extends AbstractListeControl
                 : null);
         input.setName(filter.getAnzeigeText());
         break;
-      case DOUBLE:
-        input = new DecimalInput(
+      case BIGDECIMAL:
+        input = new BigDecimalInput(
             (settingValue != null && !settingValue.isEmpty())
-                ? Double.parseDouble(settingValue)
+                ? new BigDecimal(settingValue)
                 : null,
-            Einstellungen.DECIMALFORMAT);
+            Einstellungen.BIGDECIMALFORMAT);
         input.setName(filter.getAnzeigeText());
 
         if (filter.equals(Filter.DIFFERENZ_LIMIT))
@@ -707,13 +725,13 @@ public abstract class FilterControl extends AbstractListeControl
         return;
       }
       Differenz diff = (Differenz) getFilter().get(Filter.DIFFERENZ);
-      Input doubleInput = filterMap.get(Filter.DIFFERENZ_LIMIT);
-      if (doubleInput != null)
+      Input bigDecimalInput = filterMap.get(Filter.DIFFERENZ_LIMIT);
+      if (bigDecimalInput != null)
       {
-        doubleInput.setEnabled(diff != null);
+        bigDecimalInput.setEnabled(diff != null);
         if (diff == null)
         {
-          doubleInput.setValue(null);
+          bigDecimalInput.setValue(null);
         }
       }
       refresh();
@@ -899,7 +917,7 @@ public abstract class FilterControl extends AbstractListeControl
         {
           input.setValue(null);
         }
-        else if (input instanceof DecimalInput)
+        else if (input instanceof BigDecimalInput)
         {
           input.setValue(null);
         }

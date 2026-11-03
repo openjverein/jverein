@@ -63,17 +63,17 @@ public class RechnungControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     rechnungList.addColumn("Mitglied", "mitglied");
     rechnungList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     rechnungList.addColumn("Ist", "ist",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     rechnungList.addColumn("Differenz", "differenz",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     rechnungList.addColumn("Zahlungsweg", "zahlungsweg",
         new ZahlungswegFormatter());
     rechnungList.addColumn("Rechnungstext", "rechnungstext");
     rechnungList.addColumn("Referenz Rechnung", "refrechnung");
     rechnungList.addColumn("Erstattungsbetrag", "erstattungsbetrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
 
     rechnungList.setContextMenu(new RechnungMenu(rechnungList));
     rechnungList.setMulti(true);

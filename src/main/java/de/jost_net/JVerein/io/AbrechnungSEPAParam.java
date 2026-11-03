@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -105,12 +106,10 @@ public class AbrechnungSEPAParam
 
   public final Boolean zusatzbetraege;
 
-  public final Boolean kursteilnehmer;
-
   // Gutschrift
   public final Boolean fixerBetragAbrechnen;
 
-  public final Double betrag;
+  public final BigDecimal betrag;
 
   public final Buchungsart buchungsart;
 
@@ -132,7 +131,7 @@ public class AbrechnungSEPAParam
         .getValue();
     if (fixerBetragAbrechnen)
     {
-      betrag = (Double) gc.getFixerBetragInput().getValue();
+      betrag = (BigDecimal) gc.getFixerBetragInput().getValue();
       buchungsart = (Buchungsart) gc.getBuchungsartInput().getValue();
       buchungsklasse = gc.isBuchungsklasseInputActiv()
           ? (Buchungsklasse) gc.getBuchungsklasseInput().getValue()
@@ -153,7 +152,6 @@ public class AbrechnungSEPAParam
     voneingabedatum = null;
     bisdatum = null;
     zusatzbetraege = false;
-    kursteilnehmer = false;
   }
 
   public AbrechnungSEPAParam(ForderungControl fc, SepaVersion sepaVersion)
@@ -170,9 +168,8 @@ public class AbrechnungSEPAParam
     voneingabedatum = null;
     bisdatum = null;
     zusatzbetraege = false;
-    kursteilnehmer = false;
     fixerBetragAbrechnen = true;
-    betrag = (Double) fc.getPart().getBetrag().getValue();
+    betrag = (BigDecimal) fc.getPart().getBetrag().getValue();
     buchungsart = (Buchungsart) fc.getPart().getBuchungsart().getValue();
     buchungsklasse = fc.getPart().isBuchungsklasseActive()
         ? (Buchungsklasse) fc.getPart().getBuchungsklasse().getValue()
@@ -196,7 +193,6 @@ public class AbrechnungSEPAParam
     voneingabedatum = null;
     bisdatum = null;
     zusatzbetraege = false;
-    kursteilnehmer = false;
     fixerBetragAbrechnen = false;
     betrag = null;
     buchungsart = null;
@@ -231,9 +227,6 @@ public class AbrechnungSEPAParam
         : null;
     zusatzbetraege = ac.isZusatzbetragSupported()
         ? (Boolean) ac.getZusatzbetrag().getValue()
-        : false;
-    kursteilnehmer = ac.isKursteilnehmerSupported()
-        ? (Boolean) ac.getKursteilnehmer().getValue()
         : false;
     fixerBetragAbrechnen = false;
     betrag = null;

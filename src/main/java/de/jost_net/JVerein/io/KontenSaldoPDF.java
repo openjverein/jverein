@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.itextpdf.text.Element;
@@ -70,19 +71,19 @@ public class KontenSaldoPDF implements ISaldoExport
         reporter.addColumn((String) sz.getAttribute(KontensaldoControl.GRUPPE),
             Element.ALIGN_LEFT, params.getFontNormal());
         reporter.addColumn(
-            (Double) sz.getAttribute(KontensaldoControl.ANFANGSBESTAND),
+            (BigDecimal) sz.getAttribute(KontensaldoControl.ANFANGSBESTAND),
             params.getFontNormal(), params.getNegativRot());
         reporter.addColumn(
-            (Double) sz.getAttribute(KontensaldoControl.EINNAHMEN),
+            (BigDecimal) sz.getAttribute(KontensaldoControl.EINNAHMEN),
             params.getFontNormal(), params.getNegativRot());
         reporter.addColumn(
-            (Double) sz.getAttribute(KontensaldoControl.AUSGABEN),
+            (BigDecimal) sz.getAttribute(KontensaldoControl.AUSGABEN),
             params.getFontNormal(), params.getNegativRot());
         reporter.addColumn(
-            (Double) sz.getAttribute(KontensaldoControl.UMBUCHUNGEN),
+            (BigDecimal) sz.getAttribute(KontensaldoControl.UMBUCHUNGEN),
             params.getFontNormal(), params.getNegativRot());
         reporter.addColumn(
-            (Double) sz.getAttribute(KontensaldoControl.ENDBESTAND),
+            (BigDecimal) sz.getAttribute(KontensaldoControl.ENDBESTAND),
             params.getFontNormal(), params.getNegativRot());
         reporter.addColumn(
             (String) sz.getAttribute(KontensaldoControl.BEMERKUNG),

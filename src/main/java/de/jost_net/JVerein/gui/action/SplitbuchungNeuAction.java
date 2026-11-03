@@ -54,10 +54,8 @@ public class SplitbuchungNeuAction implements Action
       buch.setSplitbuchung(true);
       buch.setSplitTyp(SplitbuchungTyp.SPLIT);
       buch.setSteuer(master.getSteuer());
-      buch.setBetrag(
-          SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT).doubleValue()
-              - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT)
-                  .doubleValue());
+      buch.setBetrag(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT)
+          .subtract(SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT)));
 
       // Wenn CurrentObject und View von aktueller und nächster View gleich
       // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch

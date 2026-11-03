@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.Altersstaffel;
@@ -17,13 +18,13 @@ public class AltersstaffelImpl extends AbstractDBObject implements Altersstaffel
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    return (Double) getAttribute("betrag");
+    return (BigDecimal) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(Double betrag) throws RemoteException
+  public void setBetrag(BigDecimal betrag) throws RemoteException
   {
     setAttribute("betrag", betrag);
   }

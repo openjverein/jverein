@@ -90,7 +90,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
       }
     });
     bu.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     bu.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     bu.paint(parent);
 
@@ -104,7 +104,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
         lbFehler.addInput(new LabelInput(fehlerbuchung.getName()));
         lbFehler.addInput(new LabelInput(fehlerbuchung.getZweck()));
         lbFehler.addInput(new LabelInput(
-            Einstellungen.DECIMALFORMAT.format(fehlerbuchung.getBetrag())));
+            Einstellungen.BIGDECIMALFORMAT.format(fehlerbuchung.getBetrag())));
         lbFehler.addText(exception.getMessage(), true);
       }
     }

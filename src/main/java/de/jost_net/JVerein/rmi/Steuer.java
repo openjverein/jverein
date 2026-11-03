@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 public interface Steuer extends JVereinDBObject
@@ -24,9 +25,9 @@ public interface Steuer extends JVereinDBObject
 
   public void setName(String name) throws RemoteException;
 
-  public Double getSatz() throws RemoteException;
+  public BigDecimal getSatz() throws RemoteException;
 
-  public void setSatz(Double satz) throws RemoteException;
+  public void setSatz(BigDecimal satz) throws RemoteException;
 
   public Buchungsart getBuchungsart() throws RemoteException;
 

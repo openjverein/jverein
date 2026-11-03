@@ -17,6 +17,8 @@
 
 package de.jost_net.JVerein.gui.parts;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +39,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.listener.TreeEditListener;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericIterator;
@@ -216,6 +219,11 @@ public class EditTreePart extends TreePart
                   if (value instanceof Double)
                   {
                     o = Double.parseDouble(newValue);
+                  }
+                  if (value instanceof BigDecimal)
+                  {
+                    o = ((BigDecimal) Einstellungen.BIGDECIMALFORMAT
+                        .parse(newValue)).setScale(2, RoundingMode.HALF_UP);
                   }
                   else if (value instanceof Integer)
                   {

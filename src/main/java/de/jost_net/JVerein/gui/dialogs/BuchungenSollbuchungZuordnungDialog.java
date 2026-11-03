@@ -388,8 +388,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
                   SplitbuchungTyp.GEGEN);
               buchungIt.addFilter("sollbuchung is null");
 
-              buchungIt.addFilter("CAST(betrag AS DECIMAL(10,2)) = ?",
-                  Math.round(o.getDouble("fehlbetrag") * 100) / 100d);
+              buchungIt.addFilter("betrag = ?", o.getBigDecimal("fehlbetrag"));
 
               // Buchungen, die diesem Mitglied schon zugeordnet wurden,
               // rausfiltern. (Es dürfen mehrere Sollbuchungen zu einer Buchung

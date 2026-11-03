@@ -63,10 +63,10 @@ public class UmsatzsteuerSaldoPDF implements ISaldoExport
                 (String) bkz.getAttribute(UmsatzsteuerSaldoControl.STEUER),
                 Element.ALIGN_LEFT, params.getFontNormal());
             reporter.addColumn(
-                bkz.getDouble(UmsatzsteuerSaldoControl.BEMESSUNGSGRUNDLAGE),
+                bkz.getBigDecimal(UmsatzsteuerSaldoControl.BEMESSUNGSGRUNDLAGE),
                 params.getFontNormal(), params.getNegativRot());
             reporter.addColumn(
-                bkz.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG),
+                bkz.getBigDecimal(UmsatzsteuerSaldoControl.STEUERBETRAG),
                 params.getFontNormal(), params.getNegativRot());
             break;
           }
@@ -77,7 +77,7 @@ public class UmsatzsteuerSaldoPDF implements ISaldoExport
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_RIGHT, null, true, params.getFontFett(), 2);
             reporter.addColumn(
-                bkz.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG),
+                bkz.getBigDecimal(UmsatzsteuerSaldoControl.STEUERBETRAG),
                 params.getFontFett(), params.getNegativRot());
             break;
           }

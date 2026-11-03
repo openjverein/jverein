@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -31,7 +32,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
 {
   private static final long serialVersionUID = -371377436256187302L;
 
-  private transient double saldo;
+  private transient BigDecimal saldo;
 
   public QIFImportPosImpl() throws RemoteException
   {
@@ -89,15 +90,15 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
   }
 
   @Override
-  public void setBetrag(Double betrag) throws RemoteException
+  public void setBetrag(BigDecimal betrag) throws RemoteException
   {
     setAttribute(COL_BETRAG, betrag);
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    return (Double) getAttribute(COL_BETRAG);
+    return (BigDecimal) getAttribute(COL_BETRAG);
   }
 
   @Override
@@ -295,14 +296,14 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
     }
   }
 
-  public void setSaldo(double wert)
+  public void setSaldo(BigDecimal wert)
   {
     saldo = wert;
   }
 
-  public Double getSaldo()
+  public BigDecimal getSaldo()
   {
-    return Double.valueOf(saldo);
+    return saldo;
   }
 
 }

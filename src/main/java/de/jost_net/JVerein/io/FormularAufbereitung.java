@@ -24,7 +24,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
@@ -649,6 +648,10 @@ public class FormularAufbereitung
 
   private String getString(Object val)
   {
+    if (val instanceof BigDecimal)
+    {
+      return Einstellungen.BIGDECIMALFORMAT.format(val);
+    }
     if (val instanceof Double)
     {
       return Einstellungen.DECIMALFORMAT.format(val);
@@ -791,7 +794,7 @@ public class FormularAufbereitung
     if (mahnung)
     {
       // Bereits gezahlt
-      invoice.setTotalPrepaidAmount(new BigDecimal(re.getIstSumme()));
+      invoice.setTotalPrepaidAmount(re.getIstSumme());
     }
 
     String id = re.getMitglied().getID();
@@ -830,13 +833,11 @@ public class FormularAufbereitung
     // Sollbuchungspositionen
     for (SollbuchungPosition sp : re.getSollbuchungPositionList())
     {
-      BigDecimal betrag = new BigDecimal(sp.getNettobetrag());
+      BigDecimal betrag = sp.getNettobetrag();
 
       invoice.addItem(new Item(new Product(sp.getZweck(), "", "LS", // LS =
                                                                     // pauschal
-          new BigDecimal(sp.getSteuersatz()).setScale(2, RoundingMode.HALF_UP)),
-          betrag.abs().setScale(4, RoundingMode.HALF_UP),
-          new BigDecimal(betrag.signum())));
+          sp.getSteuersatz()), betrag.abs(), new BigDecimal(betrag.signum())));
     }
     // Summe der Rechnung mit der ZUGFeRD Summe vergleichen. Da wir für die
     // Rechnung Brutto Beträge addieren, ZUGFeRD jedoch die Nettobeträge addiert
@@ -844,12 +845,11 @@ public class FormularAufbereitung
     // Diese fügen wir als Rundungsbetrag hinzu.
     TransactionCalculator tc = new TransactionCalculator(invoice);
 
-    BigDecimal diff = new BigDecimal(re.getBetrag())
-        .subtract(tc.getGrandTotal());
-    if (diff.abs().doubleValue() >= .01d)
+    BigDecimal diff = re.getBetrag().subtract(tc.getGrandTotal());
+    if (diff.signum() != 0)
     {
       invoice.setRoundingAmount(diff);
-      if (diff.abs().doubleValue() > 0.1d)
+      if (diff.abs().compareTo(new BigDecimal("0.10")) > 0)
         Logger.warn(
             "Differenz zwischen ZUGFeRD Summe (Netto-Berechnung) und Rechnungssumme (Brutto-Berechnung) größer als 10ct."
                 + " Füge Rundungsbetrag hinzu");

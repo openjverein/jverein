@@ -76,11 +76,11 @@ public class BuchungListPart extends BuchungListTablePart
       }
     });
     addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       addColumn("Nettobetrag", "netto",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         addColumn("Steuer", "steuer", o -> {

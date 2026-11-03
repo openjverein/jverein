@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein.gui.parts;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -75,20 +76,20 @@ public class SaldoListTablePart extends JVereinTablePart
         Object o = getSelection();
         if (o != null && o instanceof PseudoDBObject[])
         {
-          Double anfangsbestand = null;
-          Double einnahmen = null;
-          Double ausgaben = null;
-          Double umbuchungen = null;
-          Double endbestand = null;
-          Double steuer = null;
-          Double steuerSumme = null;
+          BigDecimal anfangsbestand = null;
+          BigDecimal einnahmen = null;
+          BigDecimal ausgaben = null;
+          BigDecimal umbuchungen = null;
+          BigDecimal endbestand = null;
+          BigDecimal steuer = null;
+          BigDecimal steuerSumme = null;
 
-          Double anschaffung = null;
-          Double startwert = null;
-          Double zugang = null;
-          Double afa = null;
-          Double abgang = null;
-          Double endwert = null;
+          BigDecimal anschaffung = null;
+          BigDecimal startwert = null;
+          BigDecimal zugang = null;
+          BigDecimal afa = null;
+          BigDecimal abgang = null;
+          BigDecimal endwert = null;
 
           Integer anzahl = null;
 
@@ -115,56 +116,60 @@ public class SaldoListTablePart extends JVereinTablePart
             }
             try
             {
-              anfangsbestand = (anfangsbestand == null ? 0d : anfangsbestand)
-                  + zeile.getDouble(AbstractSaldoControl.ANFANGSBESTAND);
+              anfangsbestand = (anfangsbestand == null ? BigDecimal.ZERO
+                  : anfangsbestand).add(
+                      zeile.getBigDecimal(AbstractSaldoControl.ANFANGSBESTAND));
             }
             catch (NullPointerException ignore)
             {
             }
             try
             {
-              einnahmen = (einnahmen == null ? 0d : einnahmen)
-                  + zeile.getDouble(AbstractSaldoControl.EINNAHMEN);
+              einnahmen = (einnahmen == null ? BigDecimal.ZERO : einnahmen)
+                  .add(zeile.getBigDecimal(AbstractSaldoControl.EINNAHMEN));
             }
             catch (NullPointerException ignore)
             {
             }
             try
             {
-              ausgaben = (ausgaben == null ? 0d : ausgaben)
-                  + zeile.getDouble(AbstractSaldoControl.AUSGABEN);
+              ausgaben = (ausgaben == null ? BigDecimal.ZERO : ausgaben)
+                  .add(zeile.getBigDecimal(AbstractSaldoControl.AUSGABEN));
             }
             catch (NullPointerException ignore)
             {
             }
             try
             {
-              umbuchungen = (umbuchungen == null ? 0d : umbuchungen)
-                  + zeile.getDouble(AbstractSaldoControl.UMBUCHUNGEN);
+              umbuchungen = (umbuchungen == null ? BigDecimal.ZERO
+                  : umbuchungen).add(
+                      zeile.getBigDecimal(AbstractSaldoControl.UMBUCHUNGEN));
             }
             catch (NullPointerException ignore)
             {
             }
             try
             {
-              endbestand = (endbestand == null ? 0d : endbestand)
-                  + zeile.getDouble(AbstractSaldoControl.ENDBESTAND);
+              endbestand = (endbestand == null ? BigDecimal.ZERO : endbestand)
+                  .add(zeile.getBigDecimal(AbstractSaldoControl.ENDBESTAND));
             }
             catch (NullPointerException ignore)
             {
             }
             try
             {
-              steuer = (steuer == null ? 0d : steuer)
-                  + zeile.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG);
+              steuer = (steuer == null ? BigDecimal.ZERO : steuer).add(
+                  zeile.getBigDecimal(UmsatzsteuerSaldoControl.STEUERBETRAG));
             }
             catch (NullPointerException ignore)
             {
             }
             try
             {
-              steuerSumme = (steuerSumme == null ? 0d : steuerSumme) + zeile
-                  .getDouble(UmsatzsteuerSaldoControl.BEMESSUNGSGRUNDLAGE);
+              steuerSumme = (steuerSumme == null ? BigDecimal.ZERO
+                  : steuerSumme)
+                      .add(zeile.getBigDecimal(
+                          UmsatzsteuerSaldoControl.BEMESSUNGSGRUNDLAGE));
             }
             catch (NullPointerException ignore)
             {
@@ -172,48 +177,49 @@ public class SaldoListTablePart extends JVereinTablePart
 
             try
             {
-              anschaffung = (anschaffung == null ? 0d : anschaffung)
-                  + zeile.getDouble(AnlagenlisteControl.BETRAG);
+              anschaffung = (anschaffung == null ? BigDecimal.ZERO
+                  : anschaffung)
+                      .add(zeile.getBigDecimal(AnlagenlisteControl.BETRAG));
             }
             catch (NullPointerException ignore)
             {
             }
             try
             {
-              startwert = (startwert == null ? 0d : startwert)
-                  + zeile.getDouble(AnlagenlisteControl.STARTWERT);
+              startwert = (startwert == null ? BigDecimal.ZERO : startwert)
+                  .add(zeile.getBigDecimal(AnlagenlisteControl.STARTWERT));
             }
             catch (NullPointerException ignore)
             {
             }
             try
             {
-              zugang = (zugang == null ? 0d : zugang)
-                  + zeile.getDouble(AnlagenlisteControl.ZUGANG);
+              zugang = (zugang == null ? BigDecimal.ZERO : zugang)
+                  .add(zeile.getBigDecimal(AnlagenlisteControl.ZUGANG));
             }
             catch (NullPointerException ignore)
             {
             }
             try
             {
-              afa = (afa == null ? 0d : afa)
-                  + zeile.getDouble(AnlagenlisteControl.ABSCHREIBUNG);
+              afa = (afa == null ? BigDecimal.ZERO : afa)
+                  .add(zeile.getBigDecimal(AnlagenlisteControl.ABSCHREIBUNG));
             }
             catch (NullPointerException ignore)
             {
             }
             try
             {
-              abgang = (abgang == null ? 0d : abgang)
-                  + zeile.getDouble(AnlagenlisteControl.ABGANG);
+              abgang = (abgang == null ? BigDecimal.ZERO : abgang)
+                  .add(zeile.getBigDecimal(AnlagenlisteControl.ABGANG));
             }
             catch (NullPointerException ignore)
             {
             }
             try
             {
-              endwert = (endwert == null ? 0d : endwert)
-                  + zeile.getDouble(AnlagenlisteControl.ENDWERT);
+              endwert = (endwert == null ? BigDecimal.ZERO : endwert)
+                  .add(zeile.getBigDecimal(AnlagenlisteControl.ENDWERT));
             }
             catch (NullPointerException ignore)
             {
@@ -236,81 +242,81 @@ public class SaldoListTablePart extends JVereinTablePart
           if (anfangsbestand != null)
           {
             summary.append(" Anfangsbestand: "
-                + Einstellungen.DECIMALFORMAT.format(anfangsbestand) + " "
+                + Einstellungen.BIGDECIMALFORMAT.format(anfangsbestand) + " "
                 + Einstellungen.CURRENCY + ",");
           }
           if (einnahmen != null)
           {
-            summary.append(
-                " Einnahmen: " + Einstellungen.DECIMALFORMAT.format(einnahmen)
-                    + " " + Einstellungen.CURRENCY + ",");
+            summary.append(" Einnahmen: "
+                + Einstellungen.BIGDECIMALFORMAT.format(einnahmen) + " "
+                + Einstellungen.CURRENCY + ",");
           }
           if (ausgaben != null)
           {
             summary.append(
-                " Ausgaben: " + Einstellungen.DECIMALFORMAT.format(ausgaben)
+                " Ausgaben: " + Einstellungen.BIGDECIMALFORMAT.format(ausgaben)
                     + " " + Einstellungen.CURRENCY + ",");
           }
           if (umbuchungen != null)
           {
             summary.append(" Umbuchungen: "
-                + Einstellungen.DECIMALFORMAT.format(umbuchungen) + " "
+                + Einstellungen.BIGDECIMALFORMAT.format(umbuchungen) + " "
                 + Einstellungen.CURRENCY + ",");
           }
           if (endbestand != null)
           {
-            summary.append(
-                " Endbestand: " + Einstellungen.DECIMALFORMAT.format(endbestand)
-                    + " " + Einstellungen.CURRENCY + ",");
+            summary.append(" Endbestand: "
+                + Einstellungen.BIGDECIMALFORMAT.format(endbestand) + " "
+                + Einstellungen.CURRENCY + ",");
           }
           if (steuerSumme != null)
           {
             summary.append(" Bemessungsgrundlage: "
-                + Einstellungen.DECIMALFORMAT.format(steuerSumme) + " "
+                + Einstellungen.BIGDECIMALFORMAT.format(steuerSumme) + " "
                 + Einstellungen.CURRENCY + ",");
           }
           if (steuer != null)
           {
-            summary
-                .append(" Steuer: " + Einstellungen.DECIMALFORMAT.format(steuer)
+            summary.append(
+                " Steuer: " + Einstellungen.BIGDECIMALFORMAT.format(steuer)
                     + " " + Einstellungen.CURRENCY + ",");
           }
 
           if (anschaffung != null)
           {
             summary.append(" Anschaffung: "
-                + Einstellungen.DECIMALFORMAT.format(anschaffung) + " "
+                + Einstellungen.BIGDECIMALFORMAT.format(anschaffung) + " "
                 + Einstellungen.CURRENCY + ",");
           }
           if (startwert != null)
           {
-            summary.append(
-                " Startwert: " + Einstellungen.DECIMALFORMAT.format(startwert)
-                    + " " + Einstellungen.CURRENCY + ",");
+            summary.append(" Startwert: "
+                + Einstellungen.BIGDECIMALFORMAT.format(startwert) + " "
+                + Einstellungen.CURRENCY + ",");
           }
           if (zugang != null)
           {
-            summary
-                .append(" Zugang: " + Einstellungen.DECIMALFORMAT.format(zugang)
+            summary.append(
+                " Zugang: " + Einstellungen.BIGDECIMALFORMAT.format(zugang)
                     + " " + Einstellungen.CURRENCY + ",");
           }
           if (afa != null)
           {
             summary.append(
-                " Abschreibung: " + Einstellungen.DECIMALFORMAT.format(afa)
+                " Abschreibung: " + Einstellungen.BIGDECIMALFORMAT.format(afa)
                     + " " + Einstellungen.CURRENCY + ",");
           }
           if (abgang != null)
           {
-            summary
-                .append(" Abgang: " + Einstellungen.DECIMALFORMAT.format(abgang)
+            summary.append(
+                " Abgang: " + Einstellungen.BIGDECIMALFORMAT.format(abgang)
                     + " " + Einstellungen.CURRENCY + ",");
           }
           if (endwert != null)
           {
             summary.append(
-                " Endwert: " + Einstellungen.DECIMALFORMAT.format(endwert) + " "
-                    + Einstellungen.CURRENCY + ",");
+                " Endwert: " + Einstellungen.BIGDECIMALFORMAT.format(endwert)
+                    + " " + Einstellungen.CURRENCY + ",");
           }
 
           if (anzahl != null)

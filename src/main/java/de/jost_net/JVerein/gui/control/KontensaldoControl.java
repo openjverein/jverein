@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -82,19 +83,19 @@ public class KontensaldoControl extends AbstractSaldoControl
         null, false, Column.ALIGN_RIGHT));
     saldoList.addColumn("Bezeichnung", GRUPPE);
     saldoList.addColumn("Anfangsbestand", ANFANGSBESTAND,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Einnahmen", EINNAHMEN,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Ausgaben", AUSGABEN,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Umbuchungen", UMBUCHUNGEN,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Endbestand", ENDBESTAND,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Bemerkung", BEMERKUNG);
     saldoList.setMulti(true);
@@ -208,19 +209,19 @@ public class KontensaldoControl extends AbstractSaldoControl
     ArrayList<PseudoDBObject> zeilenUeberLimit = new ArrayList<>();
 
     // Die Summen aller Konten
-    double summeAnfangsbestand = 0;
-    double summeEinnahmen = 0;
-    double summeAusgaben = 0;
-    double summeUmbuchungen = 0;
-    double summeEndbestand = 0;
-    double jahressaldo = 0;
+    BigDecimal summeAnfangsbestand = BigDecimal.ZERO;
+    BigDecimal summeEinnahmen = BigDecimal.ZERO;
+    BigDecimal summeAusgaben = BigDecimal.ZERO;
+    BigDecimal summeUmbuchungen = BigDecimal.ZERO;
+    BigDecimal summeEndbestand = BigDecimal.ZERO;
+    BigDecimal jahressaldo = BigDecimal.ZERO;
 
     // Summen der Anlagenkonten, falls sie gesammelt ausgegeben werden sollen.
-    double summenAnlageAnfangsbestand = 0;
-    double summenAnlageEinnahmen = 0;
-    double summenAnlageAusgaben = 0;
-    double summenAnlageUmbuchungen = 0;
-    double summenAnlageEndbestand = 0;
+    BigDecimal summenAnlageAnfangsbestand = BigDecimal.ZERO;
+    BigDecimal summenAnlageEinnahmen = BigDecimal.ZERO;
+    BigDecimal summenAnlageAusgaben = BigDecimal.ZERO;
+    BigDecimal summenAnlageUmbuchungen = BigDecimal.ZERO;
+    BigDecimal summenAnlageEndbestand = BigDecimal.ZERO;
 
     while (it.hasNext())
     {
@@ -228,7 +229,7 @@ public class KontensaldoControl extends AbstractSaldoControl
       Integer kontoart = o.getInteger(KONTOART);
       Integer konto = o.getInteger(KONTO_ID);
 
-      Double anfangsbestand = KontoImpl.getSaldo(konto,
+      BigDecimal anfangsbestand = KontoImpl.getSaldo(konto,
           getDatumvon().getDate());
 
       // Wenn kein Anfangsbestand vorhanden ist, geben wir nur die Bemerkung aus
@@ -244,21 +245,22 @@ public class KontensaldoControl extends AbstractSaldoControl
       {
         o.setAttribute(ANFANGSBESTAND, anfangsbestand);
 
-        Double einnahmen = o.getDouble(EINNAHMEN);
-        Double ausgaben = o.getDouble(AUSGABEN);
-        Double umbuchungen = o.getDouble(UMBUCHUNGEN);
-        Double ohneBuchungsart = o.getDouble(OHNE_BUCHUNGSART);
-        if (ohneBuchungsart != null && Math.abs(ohneBuchungsart) >= 0.01d
+        BigDecimal einnahmen = o.getBigDecimal(EINNAHMEN);
+        BigDecimal ausgaben = o.getBigDecimal(AUSGABEN);
+        BigDecimal umbuchungen = o.getBigDecimal(UMBUCHUNGEN);
+        BigDecimal ohneBuchungsart = o.getBigDecimal(OHNE_BUCHUNGSART);
+        if (ohneBuchungsart != null && ohneBuchungsart.signum() != 0
             && anfangsbestand != null)
         {
           o.setAttribute(BEMERKUNG,
               "Summe Buchungen ohne Buchungsart: "
-                  + new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+                  + new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)
                       .format(ohneBuchungsart)
                   + " ");
         }
-        Double endbestand = anfangsbestand + einnahmen + ausgaben + umbuchungen
-            + (ohneBuchungsart == null ? 0 : ohneBuchungsart);
+        BigDecimal endbestand = anfangsbestand.add(einnahmen).add(ausgaben)
+            .add(umbuchungen)
+            .add(ohneBuchungsart == null ? BigDecimal.ZERO : ohneBuchungsart);
         o.setAttribute(ENDBESTAND, endbestand);
 
         // Die Art des Eintrags ist hier immer "Detail" (Wird für die Summen in
@@ -269,22 +271,23 @@ public class KontensaldoControl extends AbstractSaldoControl
         // Konten über dem Limit nicht mitzählen.
         if (kontoart < Kontoart.LIMIT.getKey())
         {
-          summeAnfangsbestand += anfangsbestand;
-          summeEinnahmen += einnahmen;
-          summeAusgaben += ausgaben;
-          summeUmbuchungen += umbuchungen;
-          summeEndbestand += endbestand;
-          jahressaldo += endbestand - anfangsbestand;
+          summeAnfangsbestand = summeAnfangsbestand.add(anfangsbestand);
+          summeEinnahmen = summeEinnahmen.add(einnahmen);
+          summeAusgaben = summeAusgaben.add(ausgaben);
+          summeUmbuchungen = summeUmbuchungen.add(umbuchungen);
+          summeEndbestand = summeEndbestand.add(endbestand);
+          jahressaldo = jahressaldo.add(endbestand.subtract(anfangsbestand));
         }
 
         // Die Summen für das Summen Anlagenkonto bestimmen
         if (summensaldo && kontoart == Kontoart.ANLAGE.getKey())
         {
-          summenAnlageAnfangsbestand += anfangsbestand;
-          summenAnlageEinnahmen += einnahmen;
-          summenAnlageAusgaben += ausgaben;
-          summenAnlageUmbuchungen += umbuchungen;
-          summenAnlageEndbestand += endbestand;
+          summenAnlageAnfangsbestand = summenAnlageAnfangsbestand
+              .add(anfangsbestand);
+          summenAnlageEinnahmen = summenAnlageEinnahmen.add(einnahmen);
+          summenAnlageAusgaben = summenAnlageAusgaben.add(ausgaben);
+          summenAnlageUmbuchungen = summenAnlageUmbuchungen.add(umbuchungen);
+          summenAnlageEndbestand = summenAnlageEndbestand.add(endbestand);
         }
         // Die Konten über dem Limit gesondert ausgeben
         else if (kontoart > Kontoart.LIMIT.getKey())

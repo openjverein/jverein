@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -73,7 +74,7 @@ public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Bitte Buchungstext eingeben");
       }
-      if (getBetrag() <= 0)
+      if (getBetrag().signum() <= 0)
       {
         throw new ApplicationException("Betrag nicht gültig");
       }
@@ -160,20 +161,15 @@ public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    if (d == null)
-    {
-      return 0d;
-    }
-    return d.doubleValue();
+    return (BigDecimal) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(double d) throws RemoteException
+  public void setBetrag(BigDecimal d) throws RemoteException
   {
-    setAttribute("betrag", Double.valueOf(d));
+    setAttribute("betrag", d);
   }
 
   @Override

@@ -34,18 +34,18 @@ import de.willuhn.util.ApplicationException;
 
 public class BeitragsUtil
 {
-  public static double getBeitrag(Beitragsmodel bm, Zahlungstermin zt,
+  public static BigDecimal getBeitrag(Beitragsmodel bm, Zahlungstermin zt,
       Zahlungsrhythmus zr, Beitragsgruppe bg, Date stichtag, Mitglied m)
       throws RemoteException, ApplicationException
   {
-    Double betr = Double.valueOf(0);
+    BigDecimal betr = BigDecimal.ZERO;
     if (m.getEintritt() != null && m.getEintritt().after(stichtag))
     {
-      return 0;
+      return BigDecimal.ZERO;
     }
     if (m.getAustritt() != null && m.getAustritt().before(stichtag))
     {
-      return 0;
+      return BigDecimal.ZERO;
     }
     switch (bm)
     {
@@ -143,17 +143,17 @@ public class BeitragsUtil
             }
           }
           else
+          {
             betr = bg.getBetrag();
+          }
         }
         else
         {
           betr = bg.getBetrag();
         }
-        BigDecimal bbetr = BigDecimal.valueOf(betr);
-        bbetr = bbetr.setScale(2, RoundingMode.HALF_UP);
+
         BigDecimal bmonate = BigDecimal.valueOf(zr.getKey());
-        bbetr = bbetr.multiply(bmonate);
-        betr = bbetr.doubleValue();
+        betr = betr.multiply(bmonate).setScale(2, RoundingMode.HALF_UP);
         break;
       case FLEXIBEL:
         if (zt == null)

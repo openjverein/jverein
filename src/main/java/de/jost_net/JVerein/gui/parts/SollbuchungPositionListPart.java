@@ -51,11 +51,11 @@ public class SollbuchungPositionListPart extends BetragSummaryTablePart
     addColumn("Datum", "datum", new DateFormatter(new JVDateFormatTTMMJJJJ()));
     addColumn("Zweck", "zweck");
     addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       addColumn("Nettobetrag", "nettobetrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         addColumn("Steuer", "steuer", o -> {

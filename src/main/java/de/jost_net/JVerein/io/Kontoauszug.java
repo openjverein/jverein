@@ -19,6 +19,7 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Map;
@@ -148,11 +149,11 @@ public class Kontoauszug extends AbstractAusgabe
           params.getFontNormal());
       rpt.addColumn((String) node.getAttribute("zahlungsweg"),
           Element.ALIGN_LEFT, params.getFontNormal());
-      rpt.addColumn((Double) node.getAttribute("soll"), params.getFontNormal(),
-          params.getNegativRot());
-      rpt.addColumn((Double) node.getAttribute("ist"), params.getFontNormal(),
-          params.getNegativRot());
-      rpt.addColumn((Double) node.getAttribute("differenz"),
+      rpt.addColumn((BigDecimal) node.getAttribute("soll"),
+          params.getFontNormal(), params.getNegativRot());
+      rpt.addColumn((BigDecimal) node.getAttribute("ist"),
+          params.getFontNormal(), params.getNegativRot());
+      rpt.addColumn((BigDecimal) node.getAttribute("differenz"),
           params.getFontNormal(), params.getNegativRot());
     }
     else
@@ -163,10 +164,11 @@ public class Kontoauszug extends AbstractAusgabe
           params.getColorTable(), params.getFontNormal());
       rpt.addColumn((String) node.getAttribute("zahlungsweg"),
           Element.ALIGN_LEFT, params.getColorTable(), params.getFontNormal());
-      rpt.addColumn((Double) node.getAttribute("soll"), params.getColorTable(),
-          params.getFontNormal(), params.getNegativRot());
-      rpt.addColumn((Double) null, params.getColorTable());
-      rpt.addColumn((Double) node.getAttribute("differenz"),
+      rpt.addColumn((BigDecimal) node.getAttribute("soll"),
+          params.getColorTable(), params.getFontNormal(),
+          params.getNegativRot());
+      rpt.addColumn((BigDecimal) null, params.getColorTable());
+      rpt.addColumn((BigDecimal) node.getAttribute("differenz"),
           params.getColorTable(), params.getFontNormal(),
           params.getNegativRot());
     }
@@ -181,8 +183,7 @@ public class Kontoauszug extends AbstractAusgabe
     if (params == null)
     {
       ExporterExportDialog d = new ExporterExportDialog(false, "Kontoauszug",
-          ExportArt.PDF, "", "", null,
-          AbstractPartExportDialog.OPTION_NONE);
+          ExportArt.PDF, "", "", null, AbstractPartExportDialog.OPTION_NONE);
       try
       {
         if (!d.open())

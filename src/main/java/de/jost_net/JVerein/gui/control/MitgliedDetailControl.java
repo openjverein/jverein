@@ -41,6 +41,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -58,6 +59,7 @@ import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
+import de.jost_net.JVerein.gui.parts.BelegPart;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.EigenschaftenTree;
 import de.jost_net.JVerein.gui.parts.Familienverband;
@@ -116,7 +118,6 @@ import de.willuhn.jameica.gui.formatter.TreeFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.ImageInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -136,8 +137,6 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
 {
   final LesefeldMitgliedControl lesefeldControl = new LesefeldMitgliedControl(
       null);
-
-  private DokumentControl dcontrol;
 
   private SelectNoScrollInput mitgliedstyp;
 
@@ -205,7 +204,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
 
   private TreePart sekundaerebeitragsgruppe;
 
-  private DecimalInput individuellerbeitrag;
+  private BigDecimalInput individuellerbeitrag;
 
   private Familienverband famverb;
 
@@ -263,6 +262,8 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
   private JVereinTablePart zahtlFuer;
 
   private TabSelection tabSelection = TabSelection.NO_LIST_TAB;
+
+  private BelegPart belegPart;
 
   public enum TabSelection
   {
@@ -614,11 +615,20 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     }
     else
     {
-      zahlungsweg = new SelectNoScrollInput(weg, new Zahlungsweg(
-          (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG)));
+      Property prop = isMitglied ? Property.ZAHLUNGSWEG
+          : Property.NMZAHLUNGSWEG;
+      zahlungsweg = new SelectNoScrollInput(weg,
+          new Zahlungsweg((Integer) Einstellungen.getEinstellung(prop)));
     }
 
-    zahlungsweg.setName("Zahlungsweg des Mitglieds");
+    if (isMitglied)
+    {
+      zahlungsweg.setName("Zahlungsweg des Mitglieds");
+    }
+    else
+    {
+      zahlungsweg.setName("Zahlungsweg des Nicht-Mitglieds");
+    }
     zahlungsweg.addListener(new Listener()
     {
 
@@ -1149,14 +1159,15 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     return sekundaerebeitragsgruppe;
   }
 
-  public DecimalInput getIndividuellerBeitrag() throws RemoteException
+  public BigDecimalInput getIndividuellerBeitrag() throws RemoteException
   {
     if (individuellerbeitrag != null)
     {
       return individuellerbeitrag;
     }
-    individuellerbeitrag = new DecimalInput(
-        getMitglied().getIndividuellerBeitrag(), Einstellungen.DECIMALFORMAT);
+    individuellerbeitrag = new BigDecimalInput(
+        getMitglied().getIndividuellerBeitrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     individuellerbeitrag.setName("Individueller Beitrag");
     return individuellerbeitrag;
   }
@@ -1417,8 +1428,8 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
           }
           break;
         case Datentyp.WAEHRUNG:
-          zusatzfelder[i] = new DecimalInput(zf.getFeldWaehrung(),
-              Einstellungen.DECIMALFORMAT);
+          zusatzfelder[i] = new BigDecimalInput(zf.getFeldWaehrung(),
+              Einstellungen.BIGDECIMALFORMAT);
           break;
         case Datentyp.JANEIN:
           zusatzfelder[i] = new CheckboxInput(zf.getFeldJaNein());
@@ -1544,7 +1555,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg",
         o -> new Zahlungsweg((Integer) o).getText());
     if ((Boolean) Einstellungen
@@ -1648,7 +1659,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     arbeitseinsatzList.addColumn("Stunden", "stunden",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     arbeitseinsatzList.addColumn("Bemerkung", "bemerkung");
     // wiedervorlageList.setContextMenu(new
     // WiedervorlageMenu(wiedervorlageList));
@@ -1977,7 +1988,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
           .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         m.setIndividuellerBeitrag(
-            (Double) getIndividuellerBeitrag().getValue());
+            (BigDecimal) getIndividuellerBeitrag().getValue());
       }
       else
       {
@@ -2192,7 +2203,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
             case Datentyp.WAEHRUNG:
               if (ti.getValue() != null)
               {
-                zf.setFeldWaehrung(BigDecimal.valueOf((Double) ti.getValue()));
+                zf.setFeldWaehrung((BigDecimal) ti.getValue());
               }
               else
               {
@@ -2345,11 +2356,6 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     return lesefeldControl;
   }
 
-  public void setDokumentControl(DokumentControl dcontrol)
-  {
-    this.dcontrol = dcontrol;
-  }
-
   public PanelButton getDetailSpaltenPanelButton()
   {
     return new PanelButton("document-properties.png", context -> {
@@ -2357,7 +2363,8 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
       {
         new TabelleSpaltenAuswahlDialog(zusatzbetraegeList, wiedervorlageList,
             mailList, lehrgaengeList, lesefeldControl.getLesefeldMitgliedList(),
-            arbeitseinsatzList, getDocumentPart()).open();
+            arbeitseinsatzList,
+            belegPart == null ? null : belegPart.getTablePart()).open();
       }
       catch (OperationCanceledException | ApplicationException e)
       {
@@ -2403,7 +2410,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
       case TAB_DOKUMENTE:
         try
         {
-          return dcontrol.getDokumenteList();
+          return belegPart.getTablePart();
         }
         catch (RemoteException e)
         {
@@ -2415,13 +2422,14 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     throw new ObjectNotFoundException();
   }
 
-  private JVereinTablePart getDocumentPart() throws RemoteException
+  public BelegPart getBelegPart() throws RemoteException
   {
-    if (dcontrol == null)
+    if (belegPart != null)
     {
-      return null;
+      return belegPart;
     }
-    return dcontrol.getDokumenteList();
+    belegPart = new BelegPart();
+    return belegPart;
   }
 
   @Override

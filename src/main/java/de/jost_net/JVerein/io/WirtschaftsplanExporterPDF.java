@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
@@ -136,8 +137,8 @@ public class WirtschaftsplanExporterPDF implements Exporter
       // so ausgewählt.
       if ((params.getWirtschaftsplan_ist_anzeigen()
           || wirtschaftsplaene[i].getDatumBis().before(new Date()))
-          && (Math.abs(wirtschaftsplaene[i].getIstEinnahme()) >= 0.01d
-              || Math.abs(wirtschaftsplaene[i].getIstAusgabe()) >= 0.01d))
+          && (wirtschaftsplaene[i].getIstEinnahme().signum() != 0
+              || wirtschaftsplaene[i].getIstAusgabe().signum() != 0))
       {
         hatIst.add(wirtschaftsplaene[i]);
         reporter.addHeaderColumn("Ist", Element.ALIGN_CENTER, 50,
@@ -175,10 +176,10 @@ public class WirtschaftsplanExporterPDF implements Exporter
     // Einnahmen
     reporter.addColumn("Einnahmen", Element.ALIGN_LEFT, params.getColorTable(),
         true, params.getFontNormal(), wirtschaftsplaene.length * 2 + 1);
-    Double[][] summenEinnahmen = new Double[wirtschaftsplaene.length][2];
+    BigDecimal[][] summenEinnahmen = new BigDecimal[wirtschaftsplaene.length][2];
     while (buchungsklasseIterator.hasNext())
     {
-      Double[][] s = addColumns(wirtschaftsplaene,
+      BigDecimal[][] s = addColumns(wirtschaftsplaene,
           buchungsklasseIterator.next(), reporter,
           WirtschaftsplanImpl.EINNAHME);
       // Gesamtsumme addieren
@@ -188,12 +189,13 @@ public class WirtschaftsplanExporterPDF implements Exporter
       }
       for (int i = 0; i < wirtschaftsplaene.length; i++)
       {
-        summenEinnahmen[i][0] = (summenEinnahmen[i][0] == null ? 0
-            : summenEinnahmen[i][0]) + s[i][0];
+        summenEinnahmen[i][0] = (summenEinnahmen[i][0] == null ? BigDecimal.ZERO
+            : summenEinnahmen[i][0]).add(s[i][0]);
         if (hatIst.contains(wirtschaftsplaene[i]))
         {
-          summenEinnahmen[i][1] = (summenEinnahmen[i][1] == null ? 0
-              : summenEinnahmen[i][1]) + s[i][1];
+          summenEinnahmen[i][1] = (summenEinnahmen[i][1] == null
+              ? BigDecimal.ZERO
+              : summenEinnahmen[i][1]).add(s[i][1]);
         }
       }
     }
@@ -201,7 +203,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
     reporter.addColumn("Summe Einnahmen", Element.ALIGN_LEFT,
         params.getColorTable2(), params.getFontFett());
     int j = -1;
-    for (Double[] sollist : summenEinnahmen)
+    for (BigDecimal[] sollist : summenEinnahmen)
     {
       j++;
       reporter.addColumn(sollist[0], params.getColorTable2(),
@@ -219,10 +221,10 @@ public class WirtschaftsplanExporterPDF implements Exporter
     reporter.addColumn("Ausgaben", Element.ALIGN_LEFT, params.getColorTable(),
         true, params.getFontNormal(), wirtschaftsplaene.length * 2 + 1);
     buchungsklasseIterator.begin();
-    Double[][] summenAusgaben = new Double[wirtschaftsplaene.length][2];
+    BigDecimal[][] summenAusgaben = new BigDecimal[wirtschaftsplaene.length][2];
     while (buchungsklasseIterator.hasNext())
     {
-      Double[][] s = addColumns(wirtschaftsplaene,
+      BigDecimal[][] s = addColumns(wirtschaftsplaene,
           buchungsklasseIterator.next(), reporter, WirtschaftsplanImpl.AUSGABE);
       // Gesamtsumme addieren
       if (s == null)
@@ -231,12 +233,12 @@ public class WirtschaftsplanExporterPDF implements Exporter
       }
       for (int i = 0; i < wirtschaftsplaene.length; i++)
       {
-        summenAusgaben[i][0] = (summenAusgaben[i][0] == null ? 0
-            : summenAusgaben[i][0]) + s[i][0];
+        summenAusgaben[i][0] = (summenAusgaben[i][0] == null ? BigDecimal.ZERO
+            : summenAusgaben[i][0]).add(s[i][0]);
         if (hatIst.contains(wirtschaftsplaene[i]))
         {
-          summenAusgaben[i][1] = (summenAusgaben[i][1] == null ? 0
-              : summenAusgaben[i][1]) + s[i][1];
+          summenAusgaben[i][1] = (summenAusgaben[i][1] == null ? BigDecimal.ZERO
+              : summenAusgaben[i][1]).add(s[i][1]);
         }
       }
     }
@@ -244,7 +246,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
     reporter.addColumn("Summe Ausgaben", Element.ALIGN_LEFT,
         params.getColorTable2(), params.getFontFett());
     int k = -1;
-    for (Double[] sollist : summenAusgaben)
+    for (BigDecimal[] sollist : summenAusgaben)
     {
       k++;
       reporter.addColumn(sollist[0], params.getColorTable2(),
@@ -263,12 +265,12 @@ public class WirtschaftsplanExporterPDF implements Exporter
         params.getFontFett());
     for (int i = 0; i < summenAusgaben.length; i++)
     {
-      reporter.addColumn(summenEinnahmen[i][0] + summenAusgaben[i][0],
+      reporter.addColumn(summenEinnahmen[i][0].add(summenAusgaben[i][0]),
           params.getColorTable2(), params.getFontFett(),
           params.getNegativRot());
       if (hatIst.contains(wirtschaftsplaene[i]))
       {
-        reporter.addColumn(summenEinnahmen[i][1] + summenAusgaben[i][1],
+        reporter.addColumn(summenEinnahmen[i][1].add(summenAusgaben[i][1]),
             params.getColorTable2(), params.getFontFett(),
             params.getNegativRot());
       }
@@ -284,10 +286,10 @@ public class WirtschaftsplanExporterPDF implements Exporter
           params.getColorTable(), true, params.getFontNormal(),
           wirtschaftsplaene.length * 2 + 1);
       buchungsklasseIterator.begin();
-      Double[][] summenRuecklagen = new Double[wirtschaftsplaene.length][2];
+      BigDecimal[][] summenRuecklagen = new BigDecimal[wirtschaftsplaene.length][2];
       while (buchungsklasseIterator.hasNext())
       {
-        Double[][] s = addColumns(wirtschaftsplaene,
+        BigDecimal[][] s = addColumns(wirtschaftsplaene,
             buchungsklasseIterator.next(), reporter,
             WirtschaftsplanImpl.RUECKLAGE);
         // Gesamtsumme addieren
@@ -297,12 +299,14 @@ public class WirtschaftsplanExporterPDF implements Exporter
         }
         for (int i = 0; i < wirtschaftsplaene.length; i++)
         {
-          summenRuecklagen[i][0] = (summenRuecklagen[i][0] == null ? 0
-              : summenRuecklagen[i][0]) + s[i][0];
+          summenRuecklagen[i][0] = (summenRuecklagen[i][0] == null
+              ? BigDecimal.ZERO
+              : summenRuecklagen[i][0]).add(s[i][0]);
           if (hatIst.contains(wirtschaftsplaene[i]))
           {
-            summenRuecklagen[i][1] = (summenRuecklagen[i][1] == null ? 0
-                : summenRuecklagen[i][1]) + s[i][1];
+            summenRuecklagen[i][1] = (summenRuecklagen[i][1] == null
+                ? BigDecimal.ZERO
+                : summenRuecklagen[i][1]).add(s[i][1]);
           }
         }
       }
@@ -310,7 +314,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
       reporter.addColumn("Summe Rücklagen", Element.ALIGN_LEFT,
           params.getColorTable2(), params.getFontFett());
       int l = -1;
-      for (Double[] sollist : summenRuecklagen)
+      for (BigDecimal[] sollist : summenRuecklagen)
       {
         if (sollist[0] == null)
         {
@@ -333,17 +337,17 @@ public class WirtschaftsplanExporterPDF implements Exporter
   }
 
   @SuppressWarnings("unchecked")
-  private Double[][] addColumns(Wirtschaftsplan[] wirtschaftsplaene,
+  private BigDecimal[][] addColumns(Wirtschaftsplan[] wirtschaftsplaene,
       Buchungsklasse klasse, Reporter reporter, int art) throws RemoteException
   {
     int n = 0;
-    Double[][] summen = new Double[wirtschaftsplaene.length][2];
+    BigDecimal[][] summen = new BigDecimal[wirtschaftsplaene.length][2];
     final Boolean ohneBuchungsartUnterdruecken = (Boolean) Einstellungen
         .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG);
 
     // Daten in Map sammeln
     // Map in der Form <Buchungsart, <Node,[Plan Nummer][Soll = 0|Ist = 1]>>
-    HashMap<WirtschaftsplanNode, HashMap<String, Double[][]>> map = new HashMap<>();
+    HashMap<WirtschaftsplanNode, HashMap<String, BigDecimal[][]>> map = new HashMap<>();
 
     for (Wirtschaftsplan plan : wirtschaftsplaene)
     {
@@ -365,12 +369,12 @@ public class WirtschaftsplanExporterPDF implements Exporter
             key = k;
           }
         }
-        HashMap<String, Double[][]> entryMap = map.getOrDefault(key,
+        HashMap<String, BigDecimal[][]> entryMap = map.getOrDefault(key,
             new HashMap<>());
 
         // Buchungsart in der Map mit Node-Key '-'
-        Double[][] entry = entryMap.getOrDefault("-",
-            new Double[wirtschaftsplaene.length][2]);
+        BigDecimal[][] entry = entryMap.getOrDefault("-",
+            new BigDecimal[wirtschaftsplaene.length][2]);
         entry[n][0] = buchungsartNode.getSoll();
         entry[n][1] = buchungsartNode.getIst();
 
@@ -385,7 +389,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
           String nodekey = (String) posten
               .getAttribute("buchungsklassebezeichnung");
           entry = entryMap.getOrDefault(nodekey,
-              new Double[wirtschaftsplaene.length][2]);
+              new BigDecimal[wirtschaftsplaene.length][2]);
           entry[n][0] = posten.getSoll();
           entry[n][1] = posten.getIst();
 
@@ -409,20 +413,20 @@ public class WirtschaftsplanExporterPDF implements Exporter
     // Spalten füllen
     // Buchungsarten
     map.entrySet().stream().sorted(Map.Entry
-        .<WirtschaftsplanNode, HashMap<String, Double[][]>> comparingByKey())
+        .<WirtschaftsplanNode, HashMap<String, BigDecimal[][]>> comparingByKey())
         .forEach(buchungsartEntry -> {
           // Buchungsarten mit keinen Eintrag (außer Buchungsart) und Ist=0
           // überspringen
           if (ohneBuchungsartUnterdruecken
               && buchungsartEntry.getValue().size() == 1
-              && Math.abs(buchungsartEntry.getKey().getIst()) < 0.01d)
+              && buchungsartEntry.getKey().getIst().signum() == 0)
           {
             return;
           }
 
           // Posten
           buchungsartEntry.getValue().entrySet().stream()
-              .sorted(Map.Entry.<String, Double[][]> comparingByKey())
+              .sorted(Map.Entry.<String, BigDecimal[][]> comparingByKey())
               .forEach(postenEntry -> {
                 try
                 {
@@ -444,22 +448,23 @@ public class WirtschaftsplanExporterPDF implements Exporter
                         Element.ALIGN_LEFT, params.getFontNormal());
                   }
 
-                  Double[][] values = postenEntry.getValue();
+                  BigDecimal[][] values = postenEntry.getValue();
                   int i = -1;
-                  for (Double[] betrag : values)
+                  for (BigDecimal[] betrag : values)
                   {
                     i++;
-                    reporter.addColumn(betrag[0] == null ? 0 : betrag[0],
+                    reporter.addColumn(
+                        betrag[0] == null ? BigDecimal.ZERO : betrag[0],
                         params.getColorTable2(), params.getFontNormal(),
                         params.getNegativRot());
 
                     if (hatIst.contains(wirtschaftsplaene[i]))
                     {
-                      Double wert = null;
+                      BigDecimal wert = null;
                       // Ist nur bei Buchungsart
                       if ("-".equals(postenEntry.getKey()))
                       {
-                        wert = betrag[1] == null ? 0 : betrag[1];
+                        wert = betrag[1] == null ? BigDecimal.ZERO : betrag[1];
                       }
                       reporter.addColumn(wert, params.getFontNormal(),
                           params.getNegativRot());
@@ -477,7 +482,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
     reporter.addColumn("Summe " + new BuchungsklasseFormatter().format(klasse),
         Element.ALIGN_RIGHT, params.getColorTable2(), params.getFontFett());
     int j = -1;
-    for (Double[] sollist : summen)
+    for (BigDecimal[] sollist : summen)
     {
       j++;
       reporter.addColumn(sollist[0], params.getColorTable2(),

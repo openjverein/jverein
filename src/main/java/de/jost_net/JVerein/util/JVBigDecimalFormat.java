@@ -14,31 +14,29 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.menu;
+package de.jost_net.JVerein.util;
 
-import de.jost_net.JVerein.gui.action.DokumentInfoBearbeitenAction;
-import de.jost_net.JVerein.gui.action.DokumentShowAction;
-import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
-import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.ContextMenuItem;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 /**
- * Kontext-Menu zu den Dokumenten.
+ * Decimal Format, bei dem auch ein String übergeben werden kann. Dieser wird
+ * direkt wieder zurückgegeben. So kann der Formatter aufgerufen werden, auch
+ * wenn die Zahl bereits formatiert ist.
  */
-public class DokumentMenu extends ContextMenu
+public class JVBigDecimalFormat extends DecimalFormat
 {
+  private static final long serialVersionUID = 5948836553985834880L;
 
-  public DokumentMenu(boolean enabled)
+  public JVBigDecimalFormat(String pattern)
   {
-    new ContextMenuItem();
-    addItem(new CheckedSingleContextMenuItem("Anzeigen",
-        new DokumentShowAction(), "eye.png"));
-    addItem(new CheckedSingleContextMenuItem("Infos bearbeiten",
-        new DokumentInfoBearbeitenAction(), "text-x-generic.png"));
-    if (enabled)
-    {
-      addItem(ContextMenuItem.SEPARATOR);
-      addItem(new DeleteMenueItem());
-    }
+    super(pattern);
+    setParseBigDecimal(true);
+    setRoundingMode(RoundingMode.HALF_UP);
+  }
+
+  public String format(String str)
+  {
+    return str;
   }
 }

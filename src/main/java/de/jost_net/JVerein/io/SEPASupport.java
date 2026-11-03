@@ -13,6 +13,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Beleg;
@@ -66,10 +67,11 @@ public class SEPASupport
         formular.store();
         aufbereitung.closeFormular();
 
-        Beleg doc = Einstellungen.getDBService()
-            .createObject(Beleg.class, null);
+        Beleg doc = Einstellungen.getDBService().createObject(Beleg.class,
+            null);
         doc.setBemerkung(file.getName());
         doc.setDatum(new Date());
+        doc.setBelegArt(BelegArt.BUCHUNG);
         doc.setFile(file);
         doc.store();
         file.delete();

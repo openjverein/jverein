@@ -119,7 +119,7 @@ public class ZusatzbetragVorlageDialog
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     tab.addColumn("Buchungstext", "buchungstext");
     tab.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     tab.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
     {
       @Override

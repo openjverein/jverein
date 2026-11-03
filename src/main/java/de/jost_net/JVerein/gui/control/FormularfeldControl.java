@@ -28,6 +28,7 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
+import de.jost_net.JVerein.Variable.ZahlerMap;
 import de.jost_net.JVerein.gui.input.FontInput;
 import de.jost_net.JVerein.keys.Ausrichtung;
 import de.jost_net.JVerein.rmi.Formular;
@@ -232,6 +233,7 @@ public class FormularfeldControl extends AbstractControl implements Savable
       case MAHNUNG:
         map = MitgliedMap.getDummyMap(map);
         map = RechnungMap.getDummyMap(map);
+        map = ZahlerMap.getDummyMap(map);
 
         // Dieser Eintrag ist nur in Formularen möglich, daher wird er hier
         // extra hinzugefügt und ist nicht in der DummyMap.

@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.math.BigDecimal;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -233,7 +235,8 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
       DBTransaction.starten();
       // Betrag hier direkt setzen weil er nicht in prepareStore() gesetzt wird
       // Er ist ja nicht editierbar sondern wird aus den Positionen berechnet
-      sollbuchung.setBetrag((Double) sollbPosControl.getBetrag().getValue());
+      sollbuchung
+          .setBetrag((BigDecimal) sollbPosControl.getBetrag().getValue());
       if (sollbPosControl.getDatum().getValue() == null)
       {
         sollbPosControl.getDatum().setValue(sollbControl.getDatum().getValue());

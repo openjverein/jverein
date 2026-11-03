@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.keys.ArtBeitragsart;
@@ -31,38 +32,39 @@ public interface Beitragsgruppe extends JVereinDBObject
 
   public void setSekundaer(Boolean sekundaer) throws RemoteException;
 
-  public Double getBetrag() throws RemoteException;
+  public BigDecimal getBetrag() throws RemoteException;
 
-  public void setBetrag(Double betrag) throws RemoteException;
+  public void setBetrag(BigDecimal betrag) throws RemoteException;
 
-  public Double getBetragMonatlich() throws RemoteException;
+  public BigDecimal getBetragMonatlich() throws RemoteException;
 
-  public void setBetragMonatlich(Double betrag) throws RemoteException;
+  public void setBetragMonatlich(BigDecimal betrag) throws RemoteException;
 
-  public Double getBetragVierteljaehrlich() throws RemoteException;
+  public BigDecimal getBetragVierteljaehrlich() throws RemoteException;
 
-  public void setBetragVierteljaehrlich(Double betrag) throws RemoteException;
+  public void setBetragVierteljaehrlich(BigDecimal betrag)
+      throws RemoteException;
 
-  public Double getBetragHalbjaehrlich() throws RemoteException;
+  public BigDecimal getBetragHalbjaehrlich() throws RemoteException;
 
-  public void setBetragHalbjaehrlich(Double betrag) throws RemoteException;
+  public void setBetragHalbjaehrlich(BigDecimal betrag) throws RemoteException;
 
-  public Double getBetragJaehrlich() throws RemoteException;
+  public BigDecimal getBetragJaehrlich() throws RemoteException;
 
-  public void setBetragJaehrlich(Double betrag) throws RemoteException;
+  public void setBetragJaehrlich(BigDecimal betrag) throws RemoteException;
 
   public ArtBeitragsart getBeitragsArt() throws RemoteException;
 
   public void setBeitragsArt(int art) throws RemoteException;
 
-  public Double getArbeitseinsatzStunden() throws RemoteException;
+  public BigDecimal getArbeitseinsatzStunden() throws RemoteException;
 
-  public void setArbeitseinsatzStunden(Double arbeitseinsatzStunden)
+  public void setArbeitseinsatzStunden(BigDecimal arbeitseinsatzStunden)
       throws RemoteException;
 
-  public Double getArbeitseinsatzBetrag() throws RemoteException;
+  public BigDecimal getArbeitseinsatzBetrag() throws RemoteException;
 
-  public void setArbeitseinsatzBetrag(Double arbeitseinsatzBetrag)
+  public void setArbeitseinsatzBetrag(BigDecimal arbeitseinsatzBetrag)
       throws RemoteException;
 
   public Buchungsart getBuchungsart() throws RemoteException;

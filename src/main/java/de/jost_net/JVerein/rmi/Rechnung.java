@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +40,7 @@ public interface Rechnung extends JVereinDBObject, IAdresse, IGutschriftProvider
   public void fill(Sollbuchung sollb)
       throws RemoteException, ApplicationException;
 
-  void setBetrag(double betrag) throws RemoteException;
+  void setBetrag(BigDecimal betrag) throws RemoteException;
 
   public void setDatum(Date date) throws RemoteException;
 
@@ -117,7 +118,7 @@ public interface Rechnung extends JVereinDBObject, IAdresse, IGutschriftProvider
   public void setIBAN(String iban) throws RemoteException;
 
   @Override
-  public Double getIstSumme() throws RemoteException;
+  public BigDecimal getIstSumme() throws RemoteException;
 
   public Zahlungsweg getZahlungsweg() throws RemoteException;
 
@@ -145,9 +146,9 @@ public interface Rechnung extends JVereinDBObject, IAdresse, IGutschriftProvider
 
   public String getRechnungstext() throws RemoteException;
 
-  public void setErstattungsbetrag(Double betrag) throws RemoteException;
+  public void setErstattungsbetrag(BigDecimal betrag) throws RemoteException;
 
-  public Double getErstattungsbetrag() throws RemoteException;
+  public BigDecimal getErstattungsbetrag() throws RemoteException;
 
   public Long getReferenzrechnungID() throws RemoteException;
 

@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -139,7 +140,7 @@ public class ForderungControl extends AbstractAbrechnungControl
         .createObject(Zusatzbetrag.class, null);
     zusatzb.setStartdatum(new Date());
     zusatzb.setBuchungstext(settings.getString("buchungstext", ""));
-    zusatzb.setBetrag(settings.getDouble("betrag", 0.0));
+    zusatzb.setBetrag(new BigDecimal(settings.getString("betrag", "0.00")));
 
     String buchungsart = settings.getString("buchungsart", "");
     if (buchungsart.length() > 0)
@@ -219,7 +220,7 @@ public class ForderungControl extends AbstractAbrechnungControl
     {
       Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
           .createObject(Zusatzbetrag.class, null);
-      zb.setBetrag((Double) part.getBetrag().getValue());
+      zb.setBetrag((BigDecimal) part.getBetrag().getValue());
       zb.setBuchungstext((String) part.getBuchungstext().getValue());
       zb.setFaelligkeit((Date) getFaelligkeit().getValue());
       zb.setIntervall(IntervallZusatzzahlung.KEIN);
@@ -242,7 +243,7 @@ public class ForderungControl extends AbstractAbrechnungControl
           .getDBService().createObject(ZusatzbetragVorlage.class, null);
       zv.setIntervall(IntervallZusatzzahlung.KEIN);
       zv.setBuchungstext((String) part.getBuchungstext().getValue());
-      zv.setBetrag((Double) part.getBetrag().getValue());
+      zv.setBetrag((BigDecimal) part.getBetrag().getValue());
       zv.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
       zv.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
       if (part.isSteuerActive())
@@ -282,7 +283,7 @@ public class ForderungControl extends AbstractAbrechnungControl
         return ("Bitte Zahlungsgrund eingeben");
       }
       if (part.getBetrag().getValue() == null
-          || ((Double) part.getBetrag().getValue()) < 0.005d)
+          || ((BigDecimal) part.getBetrag().getValue()).signum() <= 0)
       {
         return ("Bitte positiven Betrag eingeben");
       }
@@ -344,7 +345,8 @@ public class ForderungControl extends AbstractAbrechnungControl
     {
       settings.setAttribute("buchungstext",
           (String) part.getBuchungstext().getValue());
-      settings.setAttribute("betrag", (Double) part.getBetrag().getValue());
+      settings.setAttribute("betrag",
+          ((BigDecimal) part.getBetrag().getValue()).toString());
       Buchungsart tmpba = (Buchungsart) part.getBuchungsart().getValue();
       if (tmpba != null)
       {

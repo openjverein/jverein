@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -29,9 +30,9 @@ public interface Arbeitseinsatz extends JVereinDBObject
 
   public void setDatum(Date datum) throws RemoteException;
 
-  public Double getStunden() throws RemoteException;
+  public BigDecimal getStunden() throws RemoteException;
 
-  public void setStunden(Double stunden) throws RemoteException;
+  public void setStunden(BigDecimal stunden) throws RemoteException;
 
   public String getBemerkung() throws RemoteException;
 

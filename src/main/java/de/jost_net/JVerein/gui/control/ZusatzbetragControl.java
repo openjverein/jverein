@@ -17,17 +17,9 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
-
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -38,6 +30,8 @@ import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
+import de.jost_net.JVerein.keys.Ausfuehrung;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Steuer;
@@ -45,72 +39,21 @@ import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
 
 public class ZusatzbetragControl extends FilterControl
 {
 
-  private SelectInput ausfuehrungSuch = null;
-
   private BetragSummaryTablePart zusatzbetraegeList;
 
   public ZusatzbetragControl(AbstractView view)
   {
     super(view);
-  }
-
-  public SelectInput getAusfuehrungSuch() throws RemoteException
-  {
-    if (ausfuehrungSuch != null)
-    {
-      return ausfuehrungSuch;
-    }
-
-    final Vector<String> werte = new Vector<>();
-    werte.addElement("Alle");
-    werte.addElement("Aktive");
-    werte.addElement("Noch nicht ausgeführt");
-
-    String sql = "select ausfuehrung from " + Zusatzbetrag.TABLE_NAME
-        + " where ausfuehrung is not null "
-        + "group by ausfuehrung order by ausfuehrung desc";
-    DBService service = Einstellungen.getDBService();
-
-    ResultSetExtractor rs = new ResultSetExtractor()
-    {
-
-      @Override
-      public Object extract(ResultSet rs) throws SQLException
-      {
-        while (rs.next())
-        {
-          werte.addElement(new JVDateFormatTTMMJJJJ().format(rs.getDate(1)));
-        }
-        return null;
-      }
-    };
-    service.execute(sql, new Object[] {}, rs);
-
-    ausfuehrungSuch = new SelectInput(werte, werte.elementAt(1));
-    ausfuehrungSuch.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        TabRefresh();
-      }
-    });
-
-    return ausfuehrungSuch;
   }
 
   @Override
@@ -137,7 +80,7 @@ public class ZusatzbetragControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
     {
       @Override
@@ -181,7 +124,7 @@ public class ZusatzbetragControl extends FilterControl
         new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
     VorZurueckControl.setObjektListe(null, null);
 
-    if (this.ausfuehrungSuch.getText().equals("Aktive"))
+    if (getFilterValue(Filter.AUSFUEHRUNG) == Ausfuehrung.AKTIVE)
     {
       nichtAktiveEliminieren(zusatzbetraegeList);
     }
@@ -200,7 +143,7 @@ public class ZusatzbetragControl extends FilterControl
         {
           zusatzbetraegeList.addItem(zusatzbetraege.next());
         }
-        if (this.ausfuehrungSuch.getText().equals("Aktive"))
+        if (getFilterValue(Filter.AUSFUEHRUNG) == Ausfuehrung.AKTIVE)
         {
           nichtAktiveEliminieren(zusatzbetraegeList);
         }
@@ -215,35 +158,27 @@ public class ZusatzbetragControl extends FilterControl
 
   private DBIterator<Zusatzbetrag> getIterator() throws RemoteException
   {
+    Ausfuehrung ausfuehrung = (Ausfuehrung) getFilterValue(Filter.AUSFUEHRUNG);
     DBIterator<Zusatzbetrag> zusatzbetraege = Einstellungen.getDBService()
         .createList(Zusatzbetrag.class);
     zusatzbetraege.join("mitglied");
     zusatzbetraege.addFilter(Zusatzbetrag.T_MITGLIED + " = mitglied.id");
-    if (this.ausfuehrungSuch.getText().equals("Alle"))
+    if (ausfuehrung == null || ausfuehrung == Ausfuehrung.AKTIVE)
     {
-      // nichts tun
+      if (getFilterValue(Filter.AUSFUEHRUNG_VON) != null)
+      {
+        zusatzbetraege.addFilter("ausfuehrung >= ?",
+            (Date) getFilterValue(Filter.AUSFUEHRUNG_VON));
+      }
+      if (getFilterValue(Filter.AUSFUEHRUNG_BIS) != null)
+      {
+        zusatzbetraege.addFilter("ausfuehrung <= ?",
+            (Date) getFilterValue(Filter.AUSFUEHRUNG_BIS));
+      }
     }
-    else if (this.ausfuehrungSuch.getText().equals("Aktive"))
-    {
-      // zunächst nichts tun
-    }
-    else if (this.ausfuehrungSuch.getText().equals("Noch nicht ausgeführt"))
+    else if (ausfuehrung == Ausfuehrung.NOCH_NICHT)
     {
       zusatzbetraege.addFilter("ausfuehrung is null");
-    }
-    else
-    {
-      try
-      {
-        Date d = new JVDateFormatTTMMJJJJ()
-            .parse(this.ausfuehrungSuch.getText());
-        java.sql.Date sqd = new java.sql.Date(d.getTime());
-        zusatzbetraege.addFilter("ausfuehrung = ?", new Object[] { sqd });
-      }
-      catch (ParseException e)
-      {
-        Logger.error("Fehler", e);
-      }
     }
     zusatzbetraege
         .setOrder("ORDER BY ausfuehrung DESC, faelligkeit DESC, name");

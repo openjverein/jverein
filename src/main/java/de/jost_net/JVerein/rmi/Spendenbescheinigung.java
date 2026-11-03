@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -62,9 +63,9 @@ public interface Spendenbescheinigung extends JVereinDBObject
 
   public void setBescheinigungsdatum(Date datum) throws RemoteException;
 
-  public Double getBetrag() throws RemoteException;
+  public BigDecimal getBetrag() throws RemoteException;
 
-  public void setBetrag(Double betrag) throws RemoteException;
+  public void setBetrag(BigDecimal betrag) throws RemoteException;
 
   public Formular getFormular() throws RemoteException;
 

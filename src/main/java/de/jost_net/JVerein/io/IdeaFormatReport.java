@@ -30,7 +30,7 @@ import de.jost_net.JVerein.io.idea.IDEATable;
 import de.jost_net.JVerein.io.idea.KontoIDEATable;
 import de.jost_net.JVerein.io.idea.SteuerIDEATable;
 import de.jost_net.JVerein.keys.Filter;
-import de.jost_net.JVerein.keys.GeschaeftsJahrList;
+import de.jost_net.JVerein.keys.Jahr;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -57,7 +57,7 @@ public class IdeaFormatReport implements Exporter
     {
       @SuppressWarnings("unchecked")
       Map<Filter, Object> filter = (Map<Filter, Object>) objects[0];
-      int j = ((GeschaeftsJahrList) filter.get(Filter.GESCHAEFTSJAHR)).getKey();
+      int j = ((Jahr) filter.get(Filter.JAHR)).getKey();
       Geschaeftsjahr jahr = new Geschaeftsjahr(j);
 
       monitor.setStatusText("Erstelle Datenabzug");
@@ -405,7 +405,7 @@ public class IdeaFormatReport implements Exporter
   @Override
   public Filter[] getAusgabeParameter(Object object)
   {
-    return new Filter[] { Filter.GESCHAEFTSJAHR };
+    return new Filter[] { Filter.JAHR };
   }
 
   @Override

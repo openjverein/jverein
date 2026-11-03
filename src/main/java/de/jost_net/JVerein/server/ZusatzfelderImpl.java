@@ -224,7 +224,7 @@ public class ZusatzfelderImpl extends AbstractDBObject implements Zusatzfelder
         case Datentyp.WAEHRUNG:
           if (getFeldWaehrung() != null)
           {
-            return Einstellungen.DECIMALFORMAT.format(getFeldWaehrung());
+            return Einstellungen.BIGDECIMALFORMAT.format(getFeldWaehrung());
           }
           else
           {

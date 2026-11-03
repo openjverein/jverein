@@ -16,17 +16,18 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
 public interface SollbuchungPosition extends JVereinDBObject
 {
 
-  public Double getBetrag() throws RemoteException;
+  public BigDecimal getBetrag() throws RemoteException;
 
-  public void setBetrag(Double betrag) throws RemoteException;
+  public void setBetrag(BigDecimal betrag) throws RemoteException;
 
-  public Double getSteuersatz() throws RemoteException;
+  public BigDecimal getSteuersatz() throws RemoteException;
 
   public void setSteuer(Steuer steuer) throws RemoteException;
 
@@ -54,9 +55,9 @@ public interface SollbuchungPosition extends JVereinDBObject
 
   public String getZweck() throws RemoteException;
 
-  public Double getNettobetrag() throws RemoteException;
+  public BigDecimal getNettobetrag() throws RemoteException;
 
   public Steuer getSteuer() throws RemoteException;
 
-  public Double getSteuerbetrag() throws RemoteException;
+  public BigDecimal getSteuerbetrag() throws RemoteException;
 }

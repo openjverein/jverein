@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -194,8 +195,9 @@ public class MitgliedControl extends FilterControl
       @Override
       public String format(Object o)
       {
-        String anzeige = Einstellungen.DECIMALFORMAT.format((Double) o) + " ";
-        anzeige += ((Double) o) > -0.0049 ? "\u2705" : "\u2757";
+        String anzeige = Einstellungen.BIGDECIMALFORMAT.format((BigDecimal) o)
+            + " ";
+        anzeige += ((BigDecimal) o).signum() >= 0 ? "\u2705" : "\u2757";
         return anzeige;
       }
     }, Column.ALIGN_RIGHT, true);
@@ -301,7 +303,7 @@ public class MitgliedControl extends FilterControl
             break;
           case Datentyp.WAEHRUNG:
             add(fd.getLabel(), "zusatzfelder_" + fd.getName(), false,
-                new CurrencyFormatter("", Einstellungen.DECIMALFORMAT),
+                new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT),
                 Column.ALIGN_AUTO, true);
             break;
           case Datentyp.JANEIN:

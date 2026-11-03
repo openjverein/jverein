@@ -24,7 +24,7 @@ public class DokumentationUtil
 
   // private static final String ALLGEMEIN = "allgemein/";
 
-  private static final String FUNKTIONEN = PRE + "v/4.3/";
+  private static final String FUNKTIONEN = PRE + "v/5.0/";
 
   private static final String ABRECH = FUNKTIONEN + "abrech/";
 
@@ -51,8 +51,6 @@ public class DokumentationUtil
   public static final String ARBEITSEINSATZ = MITGLIEDER + "arbeitseinsatz";
 
   public static final String FAMILIENBEITRAG = MITGLIEDER + "familienbeitrag";
-
-  public static final String KURSTEILNEHMER = MITGLIEDER + "kursteilnehmer";
 
   public static final String LEHRGANG = MITGLIEDER + "lehrgange";
 

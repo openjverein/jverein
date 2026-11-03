@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.QIFImportHeaderMessage;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.JVereinKontoInput;
 import de.jost_net.JVerein.gui.input.QIFExternKontenInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -61,7 +63,6 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.formatter.TableFormatter;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -93,9 +94,9 @@ public class QIFBuchungsImportControl extends AbstractControl
 
   private TextInput eroffnungsDatum;
 
-  private DecimalInput startSaldo;
+  private BigDecimalInput startSaldo;
 
-  private DecimalInput endSaldo;
+  private BigDecimalInput endSaldo;
 
   private IntegerInput anzahlBuchungen;
 
@@ -172,22 +173,22 @@ public class QIFBuchungsImportControl extends AbstractControl
     return eroffnungsDatum;
   }
 
-  public DecimalInput getInputStartSaldo()
+  public BigDecimalInput getInputStartSaldo()
   {
     if (null == startSaldo)
     {
-      startSaldo = new DecimalInput(Einstellungen.DECIMALFORMAT);
+      startSaldo = new BigDecimalInput(Einstellungen.BIGDECIMALFORMAT);
       startSaldo.setComment("Euro");
       startSaldo.disable();
     }
     return startSaldo;
   }
 
-  public DecimalInput getInputEndSaldo()
+  public BigDecimalInput getInputEndSaldo()
   {
     if (null == endSaldo)
     {
-      endSaldo = new DecimalInput(Einstellungen.DECIMALFORMAT);
+      endSaldo = new BigDecimalInput(Einstellungen.BIGDECIMALFORMAT);
       endSaldo.setComment("Euro");
       endSaldo.disable();
     }
@@ -272,10 +273,10 @@ public class QIFBuchungsImportControl extends AbstractControl
     qifImportPosList.addColumn("Datum", QIFImportPos.COL_DATUM,
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     qifImportPosList.addColumn("Betrag", QIFImportPos.COL_BETRAG,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     qifImportPosList.addColumn("Stand", QIFImportPos.VIEW_SALDO,
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     qifImportPosList.addColumn("Buchungsart", QIFImportPos.COL_QIF_BUCHART);
     qifImportPosList.addColumn("JV Buchart",
@@ -302,19 +303,20 @@ public class QIFBuchungsImportControl extends AbstractControl
         "ORDER BY " + QIFImportPos.COL_DATUM + "," + QIFImportPos.COL_POSID);
 
     qifImportPosList.removeAll();
-    double saldo = head.getStartSaldo();
+    BigDecimal saldo = head.getStartSaldo() != null ? head.getStartSaldo()
+        : BigDecimal.ZERO;
     int anzahl = 0;
     while (kontoPosIterator.hasNext())
     {
       QIFImportPosImpl importPos = (QIFImportPosImpl) kontoPosIterator.next();
       ++anzahl;
-      saldo += importPos.getBetrag().doubleValue();
+      saldo = saldo.add(importPos.getBetrag());
       importPos.setSaldo(saldo);
       qifImportPosList.addItem(importPos);
     }
 
     anzahlBuchungen.setValue(Integer.valueOf(anzahl));
-    endSaldo.setValue(Double.valueOf(saldo));
+    endSaldo.setValue(saldo);
   }
 
   @SuppressWarnings("rawtypes")
@@ -585,7 +587,7 @@ public class QIFBuchungsImportControl extends AbstractControl
 
     private ArrayList<QIFImportHead> importHeadList;
 
-    private double aktSaldo;
+    private BigDecimal aktSaldo;
 
     private int saldoJahr;
 
@@ -749,7 +751,7 @@ public class QIFBuchungsImportControl extends AbstractControl
       return calenderItem.get(Calendar.YEAR);
     }
 
-    private void speichernAnfangsbestand(double anfangWert, Konto konto,
+    private void speichernAnfangsbestand(BigDecimal anfangWert, Konto konto,
         QIFImportPos importPos) throws RemoteException, ApplicationException
     {
       Date datum = gibDatumAnfangsSaldo(importPos);
@@ -786,7 +788,7 @@ public class QIFBuchungsImportControl extends AbstractControl
     {
       Buchung buchung = BuchungNoCheck.getNewInstanze();
       buchung.setArt(importPos.getBeleg());
-      buchung.setBetrag(importPos.getBetrag().doubleValue());
+      buchung.setBetrag(importPos.getBetrag());
       buchung.setBuchungsartId(importPos.getBuchungsartId());
       buchung.setDatum(importPos.getDatum());
       buchung.setKommentar("Importiert von externen Programm");
@@ -795,7 +797,7 @@ public class QIFBuchungsImportControl extends AbstractControl
       buchung.setZweck(importPos.getZweck());
       buchung.store();
 
-      aktSaldo += buchung.getBetrag();
+      aktSaldo = aktSaldo.add(buchung.getBetrag());
 
       return buchung;
     }
@@ -805,10 +807,10 @@ public class QIFBuchungsImportControl extends AbstractControl
     {
       if (importPos.getGesperrt().booleanValue())
         return false;
-      Double betrag = importPos.getBetrag();
+      BigDecimal betrag = importPos.getBetrag();
       if (null == betrag)
         return false;
-      if (betrag.doubleValue() == 0d)
+      if (betrag.signum() == 0)
         return false;
       return true;
     }
@@ -1048,7 +1050,7 @@ public class QIFBuchungsImportControl extends AbstractControl
         throw new ApplicationException(
             "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
       }
-      if (getBetrag() == 0.0d)
+      if (getBetrag().signum() == 0)
       {
         throw new ApplicationException("Betrag fehlt!");
       }

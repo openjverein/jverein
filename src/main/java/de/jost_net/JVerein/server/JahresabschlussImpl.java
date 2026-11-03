@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.Date;
@@ -195,25 +196,27 @@ public class JahresabschlussImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getVerwendungsrueckstand() throws RemoteException
+  public BigDecimal getVerwendungsrueckstand() throws RemoteException
   {
-    return (Double) getAttribute("verwendungsrueckstand");
+    return (BigDecimal) getAttribute("verwendungsrueckstand");
   }
 
   @Override
-  public void setVerwendungsrueckstand(Double rueckstand) throws RemoteException
+  public void setVerwendungsrueckstand(BigDecimal rueckstand)
+      throws RemoteException
   {
     setAttribute("verwendungsrueckstand", rueckstand);
   }
 
   @Override
-  public Double getZwanghafteWeitergabe() throws RemoteException
+  public BigDecimal getZwanghafteWeitergabe() throws RemoteException
   {
-    return (Double) getAttribute("zwanghafteweitergabe");
+    return (BigDecimal) getAttribute("zwanghafteweitergabe");
   }
 
   @Override
-  public void setZwanghafteWeitergabe(Double weitergabe) throws RemoteException
+  public void setZwanghafteWeitergabe(BigDecimal weitergabe)
+      throws RemoteException
   {
     setAttribute("zwanghafteweitergabe", weitergabe);
   }

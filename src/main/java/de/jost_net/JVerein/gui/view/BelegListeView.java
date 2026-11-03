@@ -44,6 +44,7 @@ public class BelegListeView extends AbstractView
     group.addInput(control.getFilterInput(Filter.BEMERKUNG));
     group.addLabelPair("Nicht zugeordnet",
         control.getFilterInput(Filter.NICHT_ZUGEORDNET));
+    group.addInput(control.getFilterInput(Filter.BELEG_ART));
 
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getProfileButton(this));

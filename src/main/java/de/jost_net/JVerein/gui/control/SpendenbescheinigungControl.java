@@ -69,7 +69,7 @@ public class SpendenbescheinigungControl extends FilterControl
     spbList.addColumn("Spendedatum", "spendedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     spbList.addColumn("Zeile 1", "zeile1");
     spbList.addColumn("Zeile 2", "zeile2");
     spbList.addColumn("Zeile 3", "zeile3");

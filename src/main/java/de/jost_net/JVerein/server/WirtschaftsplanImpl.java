@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -46,25 +47,25 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
 
   private static final String KONTOART_GRUPPE = "kontoart_gruppe";
 
-  private Double planEinnahme;
+  private BigDecimal planEinnahme;
 
-  private Double planAusgabe;
+  private BigDecimal planAusgabe;
 
-  private Double planRuecklageGebildet;
+  private BigDecimal planRuecklageGebildet;
 
-  private Double planRuecklageAufgeloest;
+  private BigDecimal planRuecklageAufgeloest;
 
-  private Double istEinnahme;
+  private BigDecimal istEinnahme;
 
-  private Double istRuecklagenGebildet;
+  private BigDecimal istRuecklagenGebildet;
 
-  private Double istForderungen;
+  private BigDecimal istForderungen;
 
-  private Double istAusgabe;
+  private BigDecimal istAusgabe;
 
-  private Double istRuecklagenAufgeloest;
+  private BigDecimal istRuecklagenAufgeloest;
 
-  private Double istVerbindlichkeiten;
+  private BigDecimal istVerbindlichkeiten;
 
   public WirtschaftsplanImpl() throws RemoteException
   {
@@ -152,51 +153,53 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public double getPlanEinnahme() throws RemoteException
+  public BigDecimal getPlanEinnahme() throws RemoteException
   {
     if (planEinnahme == null)
     {
       loadSoll();
     }
-    return planEinnahme == null ? 0d : planEinnahme;
+    return planEinnahme == null ? BigDecimal.ZERO : planEinnahme;
   }
 
   @Override
-  public double getPlanAusgabe() throws RemoteException
+  public BigDecimal getPlanAusgabe() throws RemoteException
   {
     if (planAusgabe == null)
     {
       loadSoll();
     }
-    return planAusgabe == null ? 0d : planAusgabe;
+    return planAusgabe == null ? BigDecimal.ZERO : planAusgabe;
   }
 
   @Override
-  public double getPlanRuecklagenGebildet() throws RemoteException
+  public BigDecimal getPlanRuecklagenGebildet() throws RemoteException
   {
     if (planRuecklageGebildet == null)
     {
       loadSoll();
     }
-    return planRuecklageGebildet == null ? 0d : planRuecklageGebildet;
+    return planRuecklageGebildet == null ? BigDecimal.ZERO
+        : planRuecklageGebildet;
   }
 
   @Override
-  public double getPlanRuecklagenAufgeloest() throws RemoteException
+  public BigDecimal getPlanRuecklagenAufgeloest() throws RemoteException
   {
     if (planRuecklageAufgeloest == null)
     {
       loadSoll();
     }
-    return planRuecklageAufgeloest == null ? 0d : planRuecklageAufgeloest;
+    return planRuecklageAufgeloest == null ? BigDecimal.ZERO
+        : planRuecklageAufgeloest;
   }
 
   private void loadSoll() throws RemoteException
   {
-    planAusgabe = 0d;
-    planEinnahme = 0d;
-    planRuecklageGebildet = 0d;
-    planRuecklageAufgeloest = 0d;
+    planAusgabe = BigDecimal.ZERO;
+    planEinnahme = BigDecimal.ZERO;
+    planRuecklageGebildet = BigDecimal.ZERO;
+    planRuecklageAufgeloest = BigDecimal.ZERO;
 
     ExtendedDBIterator<PseudoDBObject> sollIterator = new ExtendedDBIterator<>(
         "wirtschaftsplan, wirtschaftsplanitem, buchungsart");
@@ -217,10 +220,10 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
       switch ((Integer) o.getAttribute(BUCHUNGSART_ART))
       {
         case ArtBuchungsart.AUSGABE:
-          planAusgabe = o.getDouble(BETRAG_ALIAS);
+          planAusgabe = o.getBigDecimal(BETRAG_ALIAS);
           break;
         case ArtBuchungsart.EINNAHME:
-          planEinnahme = o.getDouble(BETRAG_ALIAS);
+          planEinnahme = o.getBigDecimal(BETRAG_ALIAS);
           break;
         default:
       }
@@ -249,10 +252,10 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
         switch ((Integer) o.getAttribute(BUCHUNGSART_ART))
         {
           case ArtBuchungsart.AUSGABE:
-            planRuecklageAufgeloest = o.getDouble(BETRAG_ALIAS);
+            planRuecklageAufgeloest = o.getBigDecimal(BETRAG_ALIAS);
             break;
           case ArtBuchungsart.EINNAHME:
-            planRuecklageGebildet = o.getDouble(BETRAG_ALIAS);
+            planRuecklageGebildet = o.getBigDecimal(BETRAG_ALIAS);
             break;
           default:
         }
@@ -261,73 +264,76 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public double getIstEinnahme() throws RemoteException
+  public BigDecimal getIstEinnahme() throws RemoteException
   {
     if (istEinnahme == null)
     {
       loadIst();
     }
-    return istEinnahme == null ? 0d : istEinnahme;
+    return istEinnahme == null ? BigDecimal.ZERO : istEinnahme;
   }
 
   @Override
-  public double getIstRuecklagenGebildet() throws RemoteException
+  public BigDecimal getIstRuecklagenGebildet() throws RemoteException
   {
     if (istRuecklagenGebildet == null)
     {
       loadIst();
     }
-    return istRuecklagenGebildet == null ? 0d : istRuecklagenGebildet;
+    return istRuecklagenGebildet == null ? BigDecimal.ZERO
+        : istRuecklagenGebildet;
   }
 
   @Override
-  public double getIstForderungen() throws RemoteException
+  public BigDecimal getIstForderungen() throws RemoteException
   {
     if (istForderungen == null)
     {
       loadIst();
     }
-    return istForderungen == null ? 0d : istForderungen;
+    return istForderungen == null ? BigDecimal.ZERO : istForderungen;
   }
 
   @Override
-  public double getIstAusgabe() throws RemoteException
+  public BigDecimal getIstAusgabe() throws RemoteException
   {
     if (istAusgabe == null)
     {
       loadIst();
     }
-    return istAusgabe == null ? 0d : istAusgabe;
+    return istAusgabe == null ? BigDecimal.ZERO : istAusgabe;
   }
 
   @Override
-  public double getIstRuecklagenAufgeloest() throws RemoteException
+  public BigDecimal getIstRuecklagenAufgeloest() throws RemoteException
   {
     if (istRuecklagenAufgeloest == null)
     {
       loadIst();
     }
-    return istRuecklagenAufgeloest == null ? 0d : istRuecklagenAufgeloest;
+    return istRuecklagenAufgeloest == null ? BigDecimal.ZERO
+        : istRuecklagenAufgeloest;
   }
 
   @Override
-  public double getIstVerbindlichkeiten() throws RemoteException
+  public BigDecimal getIstVerbindlichkeiten() throws RemoteException
   {
     if (istVerbindlichkeiten == null)
     {
       loadIst();
     }
-    return istVerbindlichkeiten == null ? 0d : istVerbindlichkeiten;
+    return istVerbindlichkeiten == null ? BigDecimal.ZERO
+        : istVerbindlichkeiten;
   }
 
   private void loadIst() throws RemoteException
   {
-    istEinnahme = 0d;
-    istRuecklagenGebildet = 0d;
-    istForderungen = 0d;
-    istAusgabe = 0d;
-    istRuecklagenAufgeloest = 0d;
-    istVerbindlichkeiten = 0d;
+    istEinnahme = BigDecimal.ZERO;
+    istRuecklagenGebildet = BigDecimal.ZERO;
+    istForderungen = BigDecimal.ZERO;
+    istAusgabe = BigDecimal.ZERO;
+    istRuecklagenAufgeloest = BigDecimal.ZERO;
+    istVerbindlichkeiten = BigDecimal.ZERO;
 
     ExtendedDBIterator<PseudoDBObject> istIterator = new ExtendedDBIterator<>(
         "wirtschaftsplan, buchungsart, buchung, konto");
@@ -362,15 +368,15 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
           {
             // Unter LIMIT
             case 1:
-              istEinnahme = o.getDouble(BETRAG_ALIAS);
+              istEinnahme = o.getBigDecimal(BETRAG_ALIAS);
               break;
             // Zwischen LIMIT und LIMIT_RUECKLAGE
             case 2:
-              istRuecklagenGebildet = o.getDouble(BETRAG_ALIAS);
+              istRuecklagenGebildet = o.getBigDecimal(BETRAG_ALIAS);
               break;
             // Über LIMIT_Rücklage
             case 3:
-              istForderungen = o.getDouble(BETRAG_ALIAS);
+              istForderungen = o.getBigDecimal(BETRAG_ALIAS);
               break;
             default:
           }
@@ -380,15 +386,15 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
           {
             // Unter LIMIT
             case 1:
-              istAusgabe = o.getDouble(BETRAG_ALIAS);
+              istAusgabe = o.getBigDecimal(BETRAG_ALIAS);
               break;
             // Zwischen LIMIT und LIMIT_RUECKLAGE
             case 2:
-              istRuecklagenAufgeloest = o.getDouble(BETRAG_ALIAS);
+              istRuecklagenAufgeloest = o.getBigDecimal(BETRAG_ALIAS);
               break;
             // Über LIMIT_Rücklage
             case 3:
-              istVerbindlichkeiten = o.getDouble(BETRAG_ALIAS);
+              istVerbindlichkeiten = o.getBigDecimal(BETRAG_ALIAS);
               break;
             default:
           }
@@ -424,17 +430,17 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
       case "istVerbindlichkeiten":
         return getIstVerbindlichkeiten();
       case "istPlus":
-        return getIstEinnahme() + getIstForderungen();
+        return getIstEinnahme().add(getIstForderungen());
       case "istMinus":
-        return getIstAusgabe() + getIstVerbindlichkeiten();
+        return getIstAusgabe().add(getIstVerbindlichkeiten());
       case "planSaldo":
-        return getPlanEinnahme() + getPlanAusgabe();
+        return getPlanEinnahme().add(getPlanAusgabe());
       case "istSaldo":
-        return getIstEinnahme() + (getIstAusgabe() + getIstForderungen())
-            + getIstVerbindlichkeiten();
+        return getIstEinnahme().add(getIstAusgabe()).add(getIstForderungen())
+            .add(getIstVerbindlichkeiten());
       case "differenz":
-        return (Double) getAttribute("istSaldo")
-            - (Double) getAttribute("planSaldo");
+        return ((BigDecimal) getAttribute("istSaldo"))
+            .subtract((BigDecimal) getAttribute("planSaldo"));
       default:
         return super.getAttribute(s);
     }

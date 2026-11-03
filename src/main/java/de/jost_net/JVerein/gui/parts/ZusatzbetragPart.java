@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
@@ -41,7 +42,6 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -57,7 +57,7 @@ public class ZusatzbetragPart implements Part
 
   private TextInput buchungstext;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private DateInput startdatum;
 
@@ -153,14 +153,14 @@ public class ZusatzbetragPart implements Part
     return buchungstext;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
-    betrag = new DecimalInput(zusatzbetrag.getBetrag(),
-        Einstellungen.DECIMALFORMAT);
+    betrag = new BigDecimalInput(zusatzbetrag.getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     betrag.setMandatory(true);
     return betrag;
   }

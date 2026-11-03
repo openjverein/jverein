@@ -16,11 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
+import de.jost_net.JVerein.gui.action.BelegZuordnenAction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
@@ -150,8 +152,15 @@ public class BuchungMenu extends ContextMenu
       // Dann nicht anzeigen
     }
     if (geldkonto)
+    {
       addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
           new BuchungKontoauszugZuordnungAction(), "view-refresh.png"));
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+    {
+      addItem(new CheckedContextMenuItem("Beleg zuordnen",
+          new BelegZuordnenAction(null, control), "view-refresh.png"));
+    }
     addItem(new CheckedContextMenuItem("Buchungsreport",
         new BuchungReportAction(), "document-print.png"));
 
@@ -324,10 +333,11 @@ public class BuchungMenu extends ContextMenu
         }
         if (o instanceof Buchung[])
         {
-          double betrag = ((Buchung[]) o)[0].getBetrag();
+          BigDecimal betrag = ((Buchung[]) o)[0].getBetrag();
           for (Buchung bu : ((Buchung[]) o))
           {
-            if (bu.getSplitId() != null || bu.getBetrag() != betrag)
+            if (bu.getSplitId() != null
+                || bu.getBetrag().compareTo(betrag) != 0)
             {
               return false;
             }

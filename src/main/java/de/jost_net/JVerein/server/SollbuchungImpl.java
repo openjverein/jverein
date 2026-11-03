@@ -16,9 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,9 +30,7 @@ import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -43,7 +40,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
 
   private static final long serialVersionUID = -1234L;
 
-  private Double ist = null;
+  private BigDecimal ist = null;
 
   public SollbuchungImpl() throws RemoteException
   {
@@ -330,42 +327,38 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    return (Double) super.getAttribute(BETRAG);
+    return (BigDecimal) super.getAttribute(BETRAG);
   }
 
   @Override
-  public void setBetrag(Double d) throws RemoteException
+  public void setBetrag(BigDecimal d) throws RemoteException
   {
-    setAttribute(BETRAG, Math.round(d * 100) / 100d);
+    setAttribute(BETRAG, d);
   }
 
   @Override
-  public Double getIstSumme() throws RemoteException
+  public BigDecimal getIstSumme() throws RemoteException
   {
     if (ist != null)
     {
       return ist;
     }
-    DBService service = Einstellungen.getDBService();
-    String sql = "select sum(betrag) from buchung where " + Buchung.SOLLBUCHUNG
-        + " = " + this.getID();
+    ExtendedDBIterator<PseudoDBObject> summeIt = new ExtendedDBIterator<>(
+        "buchung");
+    summeIt.addColumn("sum(betrag) as summe");
+    summeIt.addFilter(Buchung.SOLLBUCHUNG + "= ?", getID());
 
-    ResultSetExtractor rs = new ResultSetExtractor()
+    ist = BigDecimal.ZERO;
+    if (summeIt.hasNext())
     {
-
-      @Override
-      public Object extract(ResultSet rs) throws SQLException
+      PseudoDBObject o = summeIt.next();
+      if (o != null && o.getAttribute("summe") != null)
       {
-        if (!rs.next())
-        {
-          return Double.valueOf(0.0d);
-        }
-        return Double.valueOf(rs.getDouble(1));
+        ist = o.getBigDecimal("summe");
       }
-    };
-    ist = Double.valueOf((Double) service.execute(sql, new Object[] {}, rs));
+    }
     return ist;
   }
 

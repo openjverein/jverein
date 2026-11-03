@@ -100,14 +100,14 @@ public class MitgliedMap extends AbstractMap
         case BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG:
           value = mitglied.getBeitragsgruppe() != null
               && mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag() != null
-                  ? Einstellungen.DECIMALFORMAT.format(
+                  ? Einstellungen.BIGDECIMALFORMAT.format(
                       mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag())
                   : "";
           break;
         case BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN:
           value = mitglied.getBeitragsgruppe() != null
               && mitglied.getBeitragsgruppe().getArbeitseinsatzStunden() != null
-                  ? Einstellungen.DECIMALFORMAT.format(
+                  ? Einstellungen.BIGDECIMALINTFORMAT.format(
                       mitglied.getBeitragsgruppe().getArbeitseinsatzStunden())
                   : "";
           break;
@@ -115,7 +115,7 @@ public class MitgliedMap extends AbstractMap
           try
           {
             value = mitglied.getBeitragsgruppe() != null
-                ? Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
+                ? Einstellungen.BIGDECIMALFORMAT.format(BeitragsUtil.getBeitrag(
                     Beitragsmodel.getByKey((Integer) Einstellungen
                         .getEinstellung(Property.BEITRAGSMODEL)),
                     mitglied.getZahlungstermin(),
@@ -198,7 +198,7 @@ public class MitgliedMap extends AbstractMap
         case INDIVIDUELLERBEITRAG:
           if (mitglied.getIndividuellerBeitrag() != null)
           {
-            value = Einstellungen.DECIMALFORMAT
+            value = Einstellungen.BIGDECIMALFORMAT
                 .format(mitglied.getIndividuellerBeitrag());
           }
           break;
@@ -350,7 +350,7 @@ public class MitgliedMap extends AbstractMap
           if (z.getFeldWaehrung() != null)
           {
             map.put(name,
-                Einstellungen.DECIMALFORMAT.format(z.getFeldWaehrung()));
+                Einstellungen.BIGDECIMALFORMAT.format(z.getFeldWaehrung()));
           }
           else
           {
@@ -453,7 +453,7 @@ public class MitgliedMap extends AbstractMap
           value = "20250101";
           break;
         case BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG:
-          value = "50";
+          value = Einstellungen.DECIMALFORMAT.format(50d);
           break;
         case BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN:
           value = "10";

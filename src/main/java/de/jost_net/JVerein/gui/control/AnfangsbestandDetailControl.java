@@ -16,27 +16,29 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AnfangsbestandDetailControl extends VorZurueckControl implements Savable
+public class AnfangsbestandDetailControl extends VorZurueckControl
+    implements Savable
 {
 
   private TextInput konto;
 
   private DateInput datum;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private Anfangsbestand anfangsbestand;
 
@@ -95,14 +97,14 @@ public class AnfangsbestandDetailControl extends VorZurueckControl implements Sa
     return datum;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
-    betrag = new DecimalInput(getAnfangsbestand().getBetrag(),
-        Einstellungen.DECIMALFORMAT);
+    betrag = new BigDecimalInput(getAnfangsbestand().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     betrag.setMandatory(true);
     betrag.setEnabled(editable);
     return betrag;
@@ -114,7 +116,7 @@ public class AnfangsbestandDetailControl extends VorZurueckControl implements Sa
     Anfangsbestand a = getAnfangsbestand();
     // Konto ist schon gesetzt und ist nicht editierbar
     a.setDatum((Date) getDatum().getValue());
-    a.setBetrag((Double) getBetrag().getValue());
+    a.setBetrag((BigDecimal) getBetrag().getValue());
     return a;
   }
 

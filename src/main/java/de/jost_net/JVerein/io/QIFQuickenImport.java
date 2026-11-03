@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -93,8 +95,6 @@ public class QIFQuickenImport implements Importer
   private BufferedReader br = null;
 
   private String dateiName;
-
-  private DecimalFormat decimalFormat = null;
 
   private int anzahlKonten;
 
@@ -301,7 +301,7 @@ public class QIFQuickenImport implements Importer
     QIFImportPos importPos = (QIFImportPos) Einstellungen.getDBService()
         .createObject(QIFImportPos.class, null);
     importPos.setBeleg(qifBuchung.beleg);
-    importPos.setBetrag(getAsDouble(qifBuchung.betrag));
+    importPos.setBetrag(getAsBigDecimal(qifBuchung.betrag));
     importPos.setDatum(getAsDate(qifBuchung.datum));
     importPos.setName(qifBuchung.person);
     importPos.setQIFBuchart(qifBuchung.buchungsArt);
@@ -350,7 +350,7 @@ public class QIFQuickenImport implements Importer
     importHead.setImportFile(dateiName);
     importHead.setName(qifType.getKontoName());
     importHead.setStartDate(getAsDate(qifType.datum));
-    importHead.setStartSaldo(getAsDouble(qifType.eroeffnungsSaldo));
+    importHead.setStartSaldo(getAsBigDecimal(qifType.eroeffnungsSaldo));
 
     if (null != qifKonto)
     {
@@ -362,34 +362,27 @@ public class QIFQuickenImport implements Importer
     ++anzahlKonten;
   }
 
-  private double getAsDouble(String betrag) throws ApplicationException
-  {
-    try
-    {
-      return getDecimalFormat().parse(betrag).doubleValue();
-    }
-    catch (ParseException ex)
-    {
-      throw new ApplicationException("Falsches Format beim Betrag: " + betrag);
-    }
-  }
-
   /**
    * IN Quicken sind die Zahlen mit Dezimalpunkt und Tausender Komma formatiert.
    * Beispiel: 7,669.38
    * 
    */
-  private DecimalFormat getDecimalFormat()
+  private BigDecimal getAsBigDecimal(String betrag) throws ApplicationException
   {
-    if (null == decimalFormat)
+    try
     {
       DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
       dfs.setDecimalSeparator('.');
       dfs.setGroupingSeparator(',');
-      decimalFormat = new DecimalFormat("##,##0.00", dfs);
-
+      DecimalFormat decimalFormat = new DecimalFormat("##,##0.00", dfs);
+      decimalFormat.setParseBigDecimal(true);
+      decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+      return (BigDecimal) decimalFormat.parse(betrag);
     }
-    return decimalFormat;
+    catch (ParseException ex)
+    {
+      throw new ApplicationException("Falsches Format beim Betrag: " + betrag);
+    }
   }
 
   private Date getAsDate(String datum) throws ApplicationException

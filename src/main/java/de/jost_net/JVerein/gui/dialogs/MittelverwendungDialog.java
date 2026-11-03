@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 
@@ -24,8 +25,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -35,9 +36,9 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 public class MittelverwendungDialog extends AbstractDialog<Boolean>
 {
 
-  private DecimalInput verwendungsrueckstandInput = null;
+  private BigDecimalInput verwendungsrueckstandInput = null;
 
-  private DecimalInput zwanghafteWeitergabeInput = null;
+  private BigDecimalInput zwanghafteWeitergabeInput = null;
 
   private LabelInput status = null;
 
@@ -45,14 +46,14 @@ public class MittelverwendungDialog extends AbstractDialog<Boolean>
 
   private boolean fortfahren = false;
 
-  private Double verwendungsrueckstand;
+  private BigDecimal verwendungsrueckstand;
 
-  private Double zwanghafteWeitergabe;
+  private BigDecimal zwanghafteWeitergabe;
 
   private String name;
 
-  public MittelverwendungDialog(Double verwendungsrueckstand,
-      Double zwanghafteWeitergabe, String name)
+  public MittelverwendungDialog(BigDecimal verwendungsrueckstand,
+      BigDecimal zwanghafteWeitergabe, String name)
   {
     super(SWT.CENTER);
     setTitle("Startwerte setzen");
@@ -77,7 +78,7 @@ public class MittelverwendungDialog extends AbstractDialog<Boolean>
     return status;
   }
 
-  private DecimalInput getVerwendungsrueckstandInput()
+  private BigDecimalInput getVerwendungsrueckstandInput()
       throws RemoteException, ParseException
   {
     if (verwendungsrueckstandInput != null)
@@ -87,18 +88,18 @@ public class MittelverwendungDialog extends AbstractDialog<Boolean>
 
     if (verwendungsrueckstand == null)
     {
-      verwendungsrueckstandInput = new DecimalInput(
-          Einstellungen.DECIMALFORMAT);
+      verwendungsrueckstandInput = new BigDecimalInput(
+          Einstellungen.BIGDECIMALFORMAT);
     }
     else
     {
-      verwendungsrueckstandInput = new DecimalInput(verwendungsrueckstand,
-          Einstellungen.DECIMALFORMAT);
+      verwendungsrueckstandInput = new BigDecimalInput(verwendungsrueckstand,
+          Einstellungen.BIGDECIMALFORMAT);
     }
     return verwendungsrueckstandInput;
   }
 
-  private DecimalInput getZwanghafteWeitergabeInput()
+  private BigDecimalInput getZwanghafteWeitergabeInput()
       throws RemoteException, ParseException
   {
     if (zwanghafteWeitergabeInput != null)
@@ -108,12 +109,13 @@ public class MittelverwendungDialog extends AbstractDialog<Boolean>
 
     if (zwanghafteWeitergabe == null)
     {
-      zwanghafteWeitergabeInput = new DecimalInput(Einstellungen.DECIMALFORMAT);
+      zwanghafteWeitergabeInput = new BigDecimalInput(
+          Einstellungen.BIGDECIMALFORMAT);
     }
     else
     {
-      zwanghafteWeitergabeInput = new DecimalInput(zwanghafteWeitergabe,
-          Einstellungen.DECIMALFORMAT);
+      zwanghafteWeitergabeInput = new BigDecimalInput(zwanghafteWeitergabe,
+          Einstellungen.BIGDECIMALFORMAT);
     }
     return zwanghafteWeitergabeInput;
   }
@@ -132,12 +134,12 @@ public class MittelverwendungDialog extends AbstractDialog<Boolean>
     return nameInput;
   }
 
-  public Double getVerwendungsrueckstand()
+  public BigDecimal getVerwendungsrueckstand()
   {
     return verwendungsrueckstand;
   }
 
-  public Double getZwanghafteWeitergabe()
+  public BigDecimal getZwanghafteWeitergabe()
   {
     return zwanghafteWeitergabe;
   }
@@ -175,8 +177,9 @@ public class MittelverwendungDialog extends AbstractDialog<Boolean>
         status.setColor(Color.ERROR);
         return;
       }
-      verwendungsrueckstand = (Double) verwendungsrueckstandInput.getValue();
-      zwanghafteWeitergabe = (Double) zwanghafteWeitergabeInput.getValue();
+      verwendungsrueckstand = (BigDecimal) verwendungsrueckstandInput
+          .getValue();
+      zwanghafteWeitergabe = (BigDecimal) zwanghafteWeitergabeInput.getValue();
       name = (String) nameInput.getValue();
       fortfahren = true;
       close();

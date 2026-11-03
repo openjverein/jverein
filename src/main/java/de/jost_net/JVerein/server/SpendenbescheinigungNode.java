@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -75,7 +76,7 @@ public class SpendenbescheinigungNode implements GenericObjectNode
   {
     childrens = new ArrayList<>();
     nodetype = ROOT;
-    double minBetrag = (Double) Einstellungen
+    BigDecimal minBetrag = (BigDecimal) Einstellungen
         .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG);
 
     ResultSetExtractor rse = new ResultSetExtractor()
@@ -243,17 +244,17 @@ public class SpendenbescheinigungNode implements GenericObjectNode
       {
         @SuppressWarnings("rawtypes")
         GenericIterator it1 = getChildren();
-        double betrag = 0.0;
+        BigDecimal betrag = BigDecimal.ZERO;
         while (it1.hasNext())
         {
           SpendenbescheinigungNode sp1 = (SpendenbescheinigungNode) it1.next();
           if (sp1.getNodeType() == BUCHUNG)
           {
-            betrag += sp1.getBuchung().getBetrag();
+            betrag = betrag.add(sp1.getBuchung().getBetrag());
           }
         }
         return Adressaufbereitung.getNameVorname(mitglied) + " ("
-            + Einstellungen.DECIMALFORMAT.format(betrag) + ")";
+            + Einstellungen.BIGDECIMALFORMAT.format(betrag) + ")";
       }
       case BUCHUNG:
       {
@@ -261,7 +262,7 @@ public class SpendenbescheinigungNode implements GenericObjectNode
             + (buchung.getZweck() != null && buchung.getZweck().length() > 0
                 ? buchung.getZweck()
                 : "")
-            + ", " + Einstellungen.DECIMALFORMAT.format(buchung.getBetrag());
+            + ", " + Einstellungen.BIGDECIMALFORMAT.format(buchung.getBetrag());
       }
     }
     return "bla";

@@ -13,6 +13,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -38,23 +39,23 @@ public interface Wirtschaftsplan extends JVereinDBObject
 
   public void setProjektID(Long projektID) throws RemoteException;
 
-  double getIstVerbindlichkeiten() throws RemoteException;
+  BigDecimal getIstVerbindlichkeiten() throws RemoteException;
 
-  double getIstRuecklagenAufgeloest() throws RemoteException;
+  BigDecimal getIstRuecklagenAufgeloest() throws RemoteException;
 
-  double getIstAusgabe() throws RemoteException;
+  BigDecimal getIstAusgabe() throws RemoteException;
 
-  double getIstForderungen() throws RemoteException;
+  BigDecimal getIstForderungen() throws RemoteException;
 
-  double getIstRuecklagenGebildet() throws RemoteException;
+  BigDecimal getIstRuecklagenGebildet() throws RemoteException;
 
-  double getIstEinnahme() throws RemoteException;
+  BigDecimal getIstEinnahme() throws RemoteException;
 
-  double getPlanAusgabe() throws RemoteException;
+  BigDecimal getPlanAusgabe() throws RemoteException;
 
-  double getPlanEinnahme() throws RemoteException;
+  BigDecimal getPlanEinnahme() throws RemoteException;
 
-  double getPlanRuecklagenGebildet() throws RemoteException;
+  BigDecimal getPlanRuecklagenGebildet() throws RemoteException;
 
-  double getPlanRuecklagenAufgeloest() throws RemoteException;
+  BigDecimal getPlanRuecklagenAufgeloest() throws RemoteException;
 }

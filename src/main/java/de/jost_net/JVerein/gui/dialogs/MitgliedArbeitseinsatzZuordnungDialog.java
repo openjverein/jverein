@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -69,7 +70,7 @@ public class MitgliedArbeitseinsatzZuordnungDialog
           arbeitseinsatz = (Arbeitseinsatz) Einstellungen.getDBService()
               .createObject(Arbeitseinsatz.class, null);
           arbeitseinsatz.setDatum((Date) part.getDatum().getValue());
-          arbeitseinsatz.setStunden((Double) part.getStunden().getValue());
+          arbeitseinsatz.setStunden((BigDecimal) part.getStunden().getValue());
           arbeitseinsatz.setBemerkung((String) part.getBemerkung().getValue());
         }
         catch (RemoteException e)

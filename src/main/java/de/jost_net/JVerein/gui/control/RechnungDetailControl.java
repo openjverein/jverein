@@ -16,11 +16,22 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.Map;
+
+import com.itextpdf.text.DocumentException;
+
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.Variable.ZahlerMap;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -30,6 +41,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
+import de.jost_net.JVerein.io.FormularAufbereitung;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -38,7 +50,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
@@ -53,7 +64,7 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
 
   private TextInput mitglied;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private JVereinTablePart buchungList;
 
@@ -103,7 +114,7 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
 
   private TextInput rechnungstext;
 
-  private DecimalInput erstattungsbetrag;
+  private BigDecimalInput erstattungsbetrag;
 
   public enum TYP
   {
@@ -185,15 +196,15 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
     return nummer;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
 
-    betrag = new DecimalInput(getRechnung().getBetrag(),
-        Einstellungen.DECIMALFORMAT);
+    betrag = new BigDecimalInput(getRechnung().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
     betrag.setName("Betrag");
     betrag.disable();
     return betrag;
@@ -488,15 +499,15 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
     return rechnungstext;
   }
 
-  public DecimalInput getErstattungsbetrag() throws RemoteException
+  public BigDecimalInput getErstattungsbetrag() throws RemoteException
   {
     if (erstattungsbetrag != null)
     {
       return erstattungsbetrag;
     }
 
-    erstattungsbetrag = new DecimalInput(getRechnung().getErstattungsbetrag(),
-        Einstellungen.DECIMALFORMAT);
+    erstattungsbetrag = new BigDecimalInput(
+        getRechnung().getErstattungsbetrag(), Einstellungen.BIGDECIMALFORMAT);
     erstattungsbetrag.setName("Erstattungsbetrag");
     erstattungsbetrag.disable();
     return erstattungsbetrag;
@@ -542,6 +553,33 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
       Logger.error(fehler, e);
       throw new ApplicationException(fehler, e);
     }
+  }
+
+  public ButtonRtoL getAnzeigenButton()
+  {
+    return new ButtonRtoL("Anzeigen", c -> {
+      try
+      {
+        Rechnung re = getRechnung();
+        Map<String, Object> map = new RechnungMap().getMap(re, null);
+        map = new MitgliedMap().getMap(re.getMitglied(), map);
+        map = new ZahlerMap().getMap(re.getZahler(), map);
+        map = new AllgemeineMap().getMap(map);
+
+        FormularAufbereitung aufbereitung = new FormularAufbereitung(
+            File.createTempFile("formular", ".pdf"), true, false);
+        aufbereitung.writeForm((Formular) getRechnungFormular().getValue(),
+            map);
+        aufbereitung.closeFormular();
+        aufbereitung.showFormular();
+      }
+      catch (IOException | DocumentException e)
+      {
+        String fehler = "Fehler beim aufbereiten des Formulars";
+        GUI.getStatusBar().setErrorText(fehler);
+        Logger.error(fehler, e);
+      }
+    }, null, false, "eye.png");
   }
 
 }

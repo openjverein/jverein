@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -75,7 +76,24 @@ public class PseudoDBObject extends AbstractDBObject implements DBObject
   }
 
   /**
-   * Lifert den Double Wert des Attributs
+   * Lifert den BigDecimal Wert des Attributs
+   * 
+   * @param fieldName
+   *          das Attribut
+   * @return der Wert
+   * @throws RemoteException
+   */
+  public BigDecimal getBigDecimal(String fieldName) throws RemoteException
+  {
+    if (getAttribute(fieldName) == null)
+    {
+      return null;
+    }
+    return ((BigDecimal) getAttribute(fieldName));
+  }
+
+  /**
+   * Lifert den Integer Wert des Attributs
    * 
    * @param fieldName
    *          das Attribut

@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.math.BigDecimal;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungAutoNeuControl;
@@ -40,9 +42,9 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
     InfoPanel info = new InfoPanel();
     info.setTitle("Info");
     info.setIcon("gtk-info.png");
-    double betrag = (Double) Einstellungen
+    BigDecimal betrag = (BigDecimal) Einstellungen
         .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG);
-    if (betrag > 0.01)
+    if (betrag.compareTo(new BigDecimal("0.01")) > 0)
     {
       info.setText(String.format(
           "Es wurden nur Mitglieder berücksichtigt, bei denen Strasse, "

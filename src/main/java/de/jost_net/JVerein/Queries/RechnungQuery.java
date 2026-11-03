@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.Queries;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -91,20 +92,20 @@ public class RechnungQuery
           }
           break;
         case DIFFERENZ:
-          Double limit = (Double) filter.get(Filter.DIFFERENZ_LIMIT);
+          BigDecimal limit = (BigDecimal) filter.get(Filter.DIFFERENZ_LIMIT);
           if (limit == null)
           {
-            limit = 0.005d;
+            limit = BigDecimal.ZERO;
           }
           // Es ist egal ob der Betrag positiv oder negativ eingetragen
           // wurde
-          limit = Math.abs(limit);
+          limit = limit.abs();
 
           ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
               Sollbuchung.TABLE_NAME);
           it.addColumn(Sollbuchung.T_RECHNUNG + " as rid");
-          it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
-              + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
+          it.addColumn("sum(COALESCE(buchung.ist,0) - COALESCE("
+              + Sollbuchung.T_BETRAG + ",0) ) as dif");
           it.leftJoin(
               "(SELECT sum(COALESCE((betrag),0)) AS ist,"
                   + Buchung.T_SOLLBUCHUNG + " FROM buchung GROUP BY "
@@ -113,7 +114,7 @@ public class RechnungQuery
 
           if (value == Differenz.FEHLBETRAG)
           {
-            it.addHaving("dif < ?", -limit);
+            it.addHaving("dif < ?", limit.negate());
           }
           else
           {

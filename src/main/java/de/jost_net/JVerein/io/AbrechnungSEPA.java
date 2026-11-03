@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
@@ -66,7 +65,6 @@ import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -247,13 +245,6 @@ public class AbrechnungSEPA extends SEPASupport
       abbuchenZusatzbetraege(param, abrl, monitor);
     }
 
-    if (param.kursteilnehmer)
-    {
-      // Kursteilnehmer direkt in zahlerarray da es für jeden nur eine
-      // Lastschrift geben kann
-      zahlerarray = abbuchenKursteilnehmer(param, abrl, konto, monitor);
-    }
-
     Iterator<Entry<String, ArrayList<JVereinZahler>>> iterator = zahlermap
         .entrySet().iterator();
 
@@ -413,11 +404,10 @@ public class AbrechnungSEPA extends SEPASupport
       }
 
       // Gegenbuchung für die Sollbuchungen schreiben
-      if (!summelastschriften.equals(BigDecimal.valueOf(0)))
+      if (summelastschriften.signum() != 0)
       {
         writeSollbuchung(null, Zahlungsweg.BASISLASTSCHRIFT, null, null,
-            param.faelligkeit, abrl, konto, param,
-            -summelastschriften.doubleValue());
+            param.faelligkeit, abrl, konto, param, summelastschriften.negate());
       }
 
       if (param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
@@ -479,19 +469,17 @@ public class AbrechnungSEPA extends SEPASupport
 
         if (zahler != null)
         {
-          ArrayList<JVereinZahler> zlist = zahlermap
-              .get(zahler.getPersonTyp() + zahler.getPersonId());
+          ArrayList<JVereinZahler> zlist = zahlermap.get(zahler.getPersonId());
           if (zlist == null)
           {
             zlist = new ArrayList<>();
             zlist.add(zahler);
-            zahlermap.put(zahler.getPersonTyp() + zahler.getPersonId(), zlist);
+            zahlermap.put(zahler.getPersonId(), zlist);
           }
           else
           {
             zlist.add(zahler);
-            zahlermap.replace(zahler.getPersonTyp() + zahler.getPersonId(),
-                zlist);
+            zahlermap.replace(zahler.getPersonId(), zlist);
           }
         }
 
@@ -505,20 +493,18 @@ public class AbrechnungSEPA extends SEPASupport
               monitor, m, sb.getBeitragsgruppe(), false);
           if (zahlerSekundaer != null)
           {
-            ArrayList<JVereinZahler> zlist = zahlermap.get(
-                zahlerSekundaer.getPersonTyp() + zahlerSekundaer.getPersonId());
+            ArrayList<JVereinZahler> zlist = zahlermap
+                .get(zahlerSekundaer.getPersonId());
             if (zlist == null)
             {
               zlist = new ArrayList<>();
               zlist.add(zahlerSekundaer);
-              zahlermap.put(zahlerSekundaer.getPersonTyp()
-                  + zahlerSekundaer.getPersonId(), zlist);
+              zahlermap.put(zahlerSekundaer.getPersonId(), zlist);
             }
             else
             {
               zlist.add(zahlerSekundaer);
-              zahlermap.replace(zahlerSekundaer.getPersonTyp()
-                  + zahlerSekundaer.getPersonId(), zlist);
+              zahlermap.replace(zahlerSekundaer.getPersonId(), zlist);
             }
           }
         }
@@ -537,7 +523,7 @@ public class AbrechnungSEPA extends SEPASupport
   {
     JVereinZahler zahler = null;
     Mitglied mZahler = m.getZahler();
-    Double betr = getBetrag(m, primaer, bg, param);
+    BigDecimal betr = getBetrag(m, primaer, bg, param);
     if (betr == null)
     {
       return null;
@@ -550,9 +536,7 @@ public class AbrechnungSEPA extends SEPASupport
     {
       zahler = new JVereinZahler();
       zahler.setPersonId(mZahler.getID());
-      zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
-      zahler.setBetrag(
-          BigDecimal.valueOf(betr).setScale(2, RoundingMode.HALF_UP));
+      zahler.setBetrag(betr);
       if (mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
       {
         IBAN i = new IBAN(mZahler.getIban()); // Prüfung der IBAN
@@ -673,9 +657,7 @@ public class AbrechnungSEPA extends SEPASupport
         {
           JVereinZahler zahler = new JVereinZahler();
           zahler.setPersonId(mZahler.getID());
-          zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
-          zahler.setBetrag(BigDecimal.valueOf(z.getBetrag()).setScale(2,
-              RoundingMode.HALF_UP));
+          zahler.setBetrag(z.getBetrag());
           if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
           {
             new BIC(mZahler.getBic());
@@ -707,19 +689,17 @@ public class AbrechnungSEPA extends SEPASupport
             zahler.setSteuer(z.getSteuer());
           }
 
-          ArrayList<JVereinZahler> zlist = zahlermap
-              .get(zahler.getPersonTyp() + zahler.getPersonId());
+          ArrayList<JVereinZahler> zlist = zahlermap.get(zahler.getPersonId());
           if (zlist == null)
           {
             zlist = new ArrayList();
             zlist.add(zahler);
-            zahlermap.put(zahler.getPersonTyp() + zahler.getPersonId(), zlist);
+            zahlermap.put(zahler.getPersonId(), zlist);
           }
           else
           {
             zlist.add(zahler);
-            zahlermap.replace(zahler.getPersonTyp() + zahler.getPersonId(),
-                zlist);
+            zahlermap.replace(zahler.getPersonId(), zlist);
           }
         }
         catch (Exception e)
@@ -770,68 +750,6 @@ public class AbrechnungSEPA extends SEPASupport
           (int) ((double) count++ / (double) zusatzbetraege.size() * 100d));
     }
 
-  }
-
-  private ArrayList<JVereinZahler> abbuchenKursteilnehmer(
-      AbrechnungSEPAParam param, Abrechnungslauf abrl, Konto konto,
-      ProgressMonitor monitor) throws Exception
-  {
-    ArrayList<JVereinZahler> zahlerarray = new ArrayList<>();
-    int count = 0;
-    DBIterator<Kursteilnehmer> list = getAbrechnenKursteilnehmerIt(param);
-    while (list.hasNext())
-    {
-      if (interrupt.isInterrupted())
-      {
-        throw new ApplicationException("Abrechnung abgebrochen");
-      }
-
-      counter++;
-      Kursteilnehmer kt = list.next();
-      try
-      {
-        JVereinZahler zahler = new JVereinZahler();
-        zahler.setPersonId(kt.getID());
-        zahler.setPersonTyp(JVereinZahlerTyp.KURSTEILNEHMER);
-        zahler.setBetrag(BigDecimal.valueOf(kt.getBetrag()).setScale(2,
-            RoundingMode.HALF_UP));
-        new BIC(kt.getBic());
-        new IBAN(kt.getIban());
-        zahler.setBic(kt.getBic());
-        zahler.setIban(kt.getIban());
-        zahler.setMandatid(kt.getMandatID());
-        zahler.setMandatdatum(kt.getMandatDatum());
-        zahler.setMandatsequence(MandatSequence.RCUR);
-        zahler.setFaelligkeit(param.faelligkeit);
-        zahler.setName(kt.getKontoinhaber(Mitglied.namenformat.KONTOINHABER));
-        zahler
-            .setVerwendungszweck(getVerwendungszweckName(kt, kt.getVZweck1()));
-        zahler.setZahlungsweg(new Zahlungsweg(Zahlungsweg.BASISLASTSCHRIFT));
-        zahler.setDatum(param.faelligkeit);
-        kt.setAbbudatum(param.faelligkeit);
-        kt.store();
-
-        ArrayList<SollbuchungPosition> spArray = new ArrayList<>();
-        spArray.add(getSollbuchungPosition(zahler));
-        String zweck = writeSollbuchung(null, Zahlungsweg.BASISLASTSCHRIFT, kt,
-            spArray, param.faelligkeit, abrl, konto, param, null);
-        zahler.setVerwendungszweck(zweck);
-        zahlerarray.add(zahler);
-
-        monitor.setStatusText(String.format("Kursteilnehmer %s, %s abgerechnet",
-            kt.getName(), kt.getVorname()));
-        monitor.setPercentComplete(
-            (int) ((double) count++ / (double) list.size() * 100d));
-
-      }
-      catch (Exception e)
-      {
-        Logger.error(
-            "Fehler beim Abrechnen des Kursteilnehmers " + kt.getName(), e);
-        throw new ApplicationException(kt.getName() + ": " + e.getMessage());
-      }
-    }
-    return zahlerarray;
   }
 
   private void ausdruckenSEPA(final Basislastschrift lastschrift,
@@ -1003,7 +921,6 @@ public class AbrechnungSEPA extends SEPASupport
     abrl.setDtausdruck(param.sepaprint);
     abrl.setEingabedatum(param.vondatum);
     abrl.setAustrittsdatum(param.bisdatum);
-    abrl.setKursteilnehmer(param.kursteilnehmer);
     abrl.setModus(param.abbuchungsmodus);
     abrl.setStichtag(param.stichtag);
     abrl.setZahlungsgrund(getVerwendungszweck(param));
@@ -1020,7 +937,7 @@ public class AbrechnungSEPA extends SEPASupport
 
     SollbuchungPosition sp = Einstellungen.getDBService()
         .createObject(SollbuchungPosition.class, null);
-    sp.setBetrag(zahler.getBetrag().doubleValue());
+    sp.setBetrag(zahler.getBetrag());
     sp.setBuchungsartId(zahler.getBuchungsartId());
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
@@ -1038,74 +955,46 @@ public class AbrechnungSEPA extends SEPASupport
     Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
         .createObject(Lastschrift.class, null);
     ls.setAbrechnungslauf(Integer.parseInt(abrl.getID()));
+    ls.setMitglied(Integer.parseInt(zahler.getPersonId()));
+    Mitglied m = (Mitglied) Einstellungen.getDBService()
+        .createObject(Mitglied.class, zahler.getPersonId());
+    ls.setPersonenart(m.getPersonenart());
+    ls.setAnrede(m.getAnrede());
+    ls.setTitel(m.getTitel());
+    ls.setName(m.getName());
+    ls.setVorname(m.getVorname());
+    ls.setStrasse(m.getStrasse());
+    ls.setAdressierungszusatz(m.getAdressierungszusatz());
+    ls.setPlz(m.getPlz());
+    ls.setOrt(m.getOrt());
+    ls.setStaat(m.getStaatCode());
+    ls.setEmail(m.getEmail());
+    ls.setGeschlecht(m.getGeschlecht());
 
-    switch (zahler.getPersonTyp())
+    // Bei nicht kompakter Abbuchung Daten des Mitglieds und nicht die des
+    // Zahlers verwenden.
+    boolean zahlernameinlastschrift = (Boolean) Einstellungen
+        .getEinstellung(Property.ZAHLERBEILASTSCHRIFT);
+    Mitglied mZweck = m;
+    String zweck = zahler.getVerwendungszweck();
+    if (!kompakt)
     {
-      case KURSTEILNEHMER:
-        ls.setKursteilnehmer(Integer.parseInt(zahler.getPersonId()));
-        Kursteilnehmer k = (Kursteilnehmer) Einstellungen.getDBService()
-            .createObject(Kursteilnehmer.class, zahler.getPersonId());
-        ls.setPersonenart(k.getPersonenart());
-        ls.setAnrede(k.getAnrede());
-        ls.setTitel(k.getTitel());
-        ls.setName(k.getName());
-        ls.setVorname(k.getVorname());
-        ls.setStrasse(k.getStrasse());
-        ls.setAdressierungszusatz(k.getAdressierungszusatz());
-        ls.setPlz(k.getPlz());
-        ls.setOrt(k.getOrt());
-        ls.setStaat(k.getStaatCode());
-        ls.setEmail(k.getEmail());
-        if (k.getGeschlecht() != null)
-        {
-          ls.setGeschlecht(k.getGeschlecht());
-        }
-        ls.setVerwendungszweck(zahler.getVerwendungszweck());
-        break;
-      case MITGLIED:
-        ls.setMitglied(Integer.parseInt(zahler.getPersonId()));
-        Mitglied m = (Mitglied) Einstellungen.getDBService()
-            .createObject(Mitglied.class, zahler.getPersonId());
-        ls.setPersonenart(m.getPersonenart());
-        ls.setAnrede(m.getAnrede());
-        ls.setTitel(m.getTitel());
-        ls.setName(m.getName());
-        ls.setVorname(m.getVorname());
-        ls.setStrasse(m.getStrasse());
-        ls.setAdressierungszusatz(m.getAdressierungszusatz());
-        ls.setPlz(m.getPlz());
-        ls.setOrt(m.getOrt());
-        ls.setStaat(m.getStaatCode());
-        ls.setEmail(m.getEmail());
-        ls.setGeschlecht(m.getGeschlecht());
-
-        // Bei nicht kompakter Abbuchung Daten des Mitglieds und nicht die des
-        // Zahlers verwenden.
-        boolean zahlernameinlastschrift = (Boolean) Einstellungen
-            .getEinstellung(Property.ZAHLERBEILASTSCHRIFT);
-        Mitglied mZweck = m;
-        String zweck = zahler.getVerwendungszweck();
-        if (!kompakt)
-        {
-          mZweck = zahler.getMitglied();
-        }
-        if (zahlernameinlastschrift)
-        {
-          zweck = getVerwendungszweckName(mZweck, zahler.getVerwendungszweck());
-        }
-        if (!kompakt && !zahlernameinlastschrift
-            && !zahler.getMitglied().getID().equals(zahler.getPersonId()))
-        {
-          zweck = zweck + " " + mZweck.getName().toUpperCase() + ", "
-              + mZweck.getVorname().toUpperCase();
-        }
-        ls.setVerwendungszweck(zweck);
-        zahler.setVerwendungszweck(zweck);
-        break;
-      default:
-        assert false : "Personentyp ist nicht implementiert";
+      mZweck = zahler.getMitglied();
     }
-    ls.setBetrag(zahler.getBetrag().doubleValue());
+    if (zahlernameinlastschrift)
+    {
+      zweck = getVerwendungszweckName(mZweck, zahler.getVerwendungszweck());
+    }
+    if (!kompakt && !zahlernameinlastschrift
+        && !zahler.getMitglied().getID().equals(zahler.getPersonId()))
+    {
+      zweck = zweck + " " + mZweck.getName().toUpperCase() + ", "
+          + mZweck.getVorname().toUpperCase();
+    }
+    ls.setVerwendungszweck(zweck);
+    zahler.setVerwendungszweck(zweck);
+
+    ls.setBetrag(zahler.getBetrag());
     ls.setBic(zahler.getBic());
     ls.setIban(zahler.getIban());
     ls.setMandatDatum(zahler.getMandatdatum());
@@ -1121,7 +1010,8 @@ public class AbrechnungSEPA extends SEPASupport
   private String writeSollbuchung(Long zahlerId, int zahlungsweg,
       IAdresse adress, ArrayList<SollbuchungPosition> spArray, Date datum,
       Abrechnungslauf abrl, Konto konto, AbrechnungSEPAParam param,
-      Double summe) throws ApplicationException, RemoteException, SEPAException
+      BigDecimal summe)
+      throws ApplicationException, RemoteException, SEPAException
   {
     Sollbuchung sollb = null;
     String zweck = null;
@@ -1139,13 +1029,13 @@ public class AbrechnungSEPA extends SEPASupport
       // Zweck wird später gefüllt, es muss aber schon was drin stehen damit
       // gespeichert werden kann
       sollb.setZweck1(" ");
-      sollb.setBetrag(0d);
+      sollb.setBetrag(BigDecimal.ZERO);
       sollb.store();
 
-      summe = 0d;
+      summe = BigDecimal.ZERO;
       for (SollbuchungPosition sp : spArray)
       {
-        summe += sp.getBetrag();
+        summe = summe.add(sp.getBetrag());
         sp.setSollbuchung(sollb.getID());
         sp.store();
       }
@@ -1205,11 +1095,6 @@ public class AbrechnungSEPA extends SEPASupport
         re.setRechnungstext(zweck);
         re.store();
       }
-    }
-    if (spArray != null && adress != null && adress instanceof Kursteilnehmer)
-    {
-      zweck = spArray.get(0).getZweck();
-      summe = ((Kursteilnehmer) adress).getBetrag();
     }
 
     if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT && !((Boolean) Einstellungen
@@ -1374,19 +1259,11 @@ public class AbrechnungSEPA extends SEPASupport
     return PseudoIterator.asList(list);
   }
 
-  public static DBIterator<Kursteilnehmer> getAbrechnenKursteilnehmerIt(
-      AbrechnungSEPAParam param) throws RemoteException
+  public static BigDecimal getBetrag(Mitglied m, boolean primaer,
+      Beitragsgruppe bg, AbrechnungSEPAParam param)
+      throws RemoteException, ApplicationException
   {
-    DBIterator<Kursteilnehmer> list = Einstellungen.getDBService()
-        .createList(Kursteilnehmer.class);
-    list.addFilter("abbudatum is null");
-    return list;
-  }
-
-  public static Double getBetrag(Mitglied m, boolean primaer, Beitragsgruppe bg,
-      AbrechnungSEPAParam param) throws RemoteException, ApplicationException
-  {
-    Double betr;
+    BigDecimal betr;
     if (((Integer) Einstellungen.getEinstellung(
         Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
         && (m.getZahlungstermin() != null
@@ -1414,7 +1291,7 @@ public class AbrechnungSEPA extends SEPASupport
     {
       betr = m.getIndividuellerBeitrag();
     }
-    if (betr == 0d)
+    if (betr.signum() == 0)
     {
       return null;
     }

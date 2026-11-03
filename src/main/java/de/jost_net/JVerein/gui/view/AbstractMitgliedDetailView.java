@@ -37,7 +37,6 @@ import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.gui.control.LesefeldMitgliedControl;
 import de.jost_net.JVerein.gui.control.MitgliedDetailControl;
 import de.jost_net.JVerein.gui.control.MitgliedDetailControl.TabSelection;
@@ -51,7 +50,6 @@ import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.MitgliedDokument;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
@@ -98,8 +96,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   final LesefeldMitgliedControl lesefeldControl = control.getLesefeldControl();
 
   final MitgliedskontoControl controlMk = new MitgliedskontoControl(this);
-
-  private DokumentControl dcontrol;
 
   private Container containerMitgliedschaft;
 
@@ -420,18 +416,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     {
       Container cont = getTabOrLabelContainer(parentComposite, DOKUMENTE);
 
-      dcontrol = new DokumentControl(true, MitgliedDokument.class);
-
-      ButtonArea butts = new ButtonArea();
-      butts.addButton(dcontrol.getNeuButton());
-      butts.paint(cont.getComposite());
-
-      cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      cont.getComposite().setLayout(new GridLayout(1, false));
-
-      dcontrol.getDokumenteList().paint(cont.getComposite());
-      dcontrol.setDragDrop(cont.getComposite());
-      control.setDokumentControl(dcontrol);
+      control.getBelegPart().paint(cont.getComposite());
     }
   }
 
@@ -597,8 +582,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     if (!control.getMitglied().isNewObject())
     {
-      Container cont = getTabOrLabelContainer(parentComposite,
-          "Mitgliedskonto");
+      Container cont = getTabOrLabelContainer(parentComposite, "Sollbuchungen");
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
@@ -639,7 +623,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         "Zahlungsweg");
     zahlungsweg.getComposite().setLayout(new GridLayout(1, false));
 
-    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)
+        && (Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
     {
       ButtonArea buttons1 = new ButtonArea();
       buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());

@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.action.WirtschaftsplanAddBuchungsartAction;
@@ -104,7 +105,7 @@ public class WirtschaftsplanMenu extends ContextMenu
         {
           try
           {
-            return Math.abs((double) node.getAttribute("ist")) < 0.005;
+            return ((BigDecimal) node.getAttribute("ist")).signum() == 0;
           }
           catch (RemoteException e)
           {

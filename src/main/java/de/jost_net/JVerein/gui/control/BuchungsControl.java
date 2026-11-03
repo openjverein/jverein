@@ -162,11 +162,11 @@ public class BuchungsControl extends FilterControl
     buchungsList.addColumn("Buchungsart", "buchungsart",
         new BuchungsartFormatter());
     buchungsList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT) && geldkonto)
     {
       buchungsList.addColumn("Netto", "netto",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+          new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         buchungsList.addColumn("Steuer", "steuer", o -> {

@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
@@ -40,7 +42,6 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
@@ -55,7 +56,7 @@ public class SollbuchungPositionControl extends AbstractControl
 
   private TextAreaInput zweck;
 
-  private DecimalInput betrag;
+  private BigDecimalInput betrag;
 
   private AbstractInput buchungsart;
 
@@ -92,7 +93,7 @@ public class SollbuchungPositionControl extends AbstractControl
     position = pos;
   }
 
-  public DecimalInput getBetrag() throws RemoteException
+  public BigDecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
@@ -101,12 +102,12 @@ public class SollbuchungPositionControl extends AbstractControl
 
     if (getPosition().isNewObject() && getPosition().getBetrag() == null)
     {
-      betrag = new DecimalInput(Einstellungen.DECIMALFORMAT);
+      betrag = new BigDecimalInput(Einstellungen.BIGDECIMALFORMAT);
     }
     else
     {
-      betrag = new DecimalInput(getPosition().getBetrag(),
-          Einstellungen.DECIMALFORMAT);
+      betrag = new BigDecimalInput(getPosition().getBetrag(),
+          Einstellungen.BIGDECIMALFORMAT);
     }
     betrag.setMandatory(true);
     return betrag;
@@ -216,7 +217,7 @@ public class SollbuchungPositionControl extends AbstractControl
     SollbuchungPosition pos = getPosition();
     pos.setDatum((Date) getDatum().getValue());
     pos.setZweck((String) getZweck().getValue());
-    pos.setBetrag((Double) getBetrag().getValue());
+    pos.setBetrag((BigDecimal) getBetrag().getValue());
     if (getBuchungsart().getValue() != null)
     {
       Buchungsart ba = (Buchungsart) getBuchungsart().getValue();
@@ -258,12 +259,12 @@ public class SollbuchungPositionControl extends AbstractControl
       SollbuchungPosition pos = (SollbuchungPosition) prepareStore();
       pos.store();
       // Betrag in Sollbuchung neu berechnen
-      Double betrag = 0.0;
+      BigDecimal betrag = BigDecimal.ZERO;
       Sollbuchung sollb = pos.getSollbuchung();
       List<SollbuchungPosition> sollbpList = sollb.getSollbuchungPositionList();
       for (SollbuchungPosition sollp : sollbpList)
       {
-        betrag += sollp.getBetrag();
+        betrag = betrag.add(sollp.getBetrag());
       }
       sollb.setBetrag(betrag);
       sollb.store();

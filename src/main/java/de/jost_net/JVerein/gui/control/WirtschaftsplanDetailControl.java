@@ -16,14 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
@@ -57,7 +55,8 @@ import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class WirtschaftsplanDetailControl extends VorZurueckControl implements Savable
+public class WirtschaftsplanDetailControl extends VorZurueckControl
+    implements Savable
 {
   public final static String AUSWERTUNG_CSV = ".csv";
 
@@ -266,7 +265,7 @@ public class WirtschaftsplanDetailControl extends VorZurueckControl implements S
     };
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
-        Einstellungen.DECIMALFORMAT);
+        Einstellungen.BIGDECIMALFORMAT);
     treePart.addColumn("Buchungsklasse / Buchungsart / Posten",
         "buchungsklassebezeichnung", null, true);
     treePart.addColumn("Soll", "soll", formatter, true);
@@ -296,8 +295,8 @@ public class WirtschaftsplanDetailControl extends VorZurueckControl implements S
           case "soll":
             try
             {
-              NumberFormat nf = NumberFormat.getInstance(Locale.getDefault());
-              item.setSoll(nf.parse(newValue).doubleValue());
+              item.setSoll(
+                  (BigDecimal) Einstellungen.BIGDECIMALFORMAT.parse(newValue));
             }
             catch (NumberFormatException | ParseException e)
             {
@@ -410,20 +409,20 @@ public class WirtschaftsplanDetailControl extends VorZurueckControl implements S
     {
       @SuppressWarnings("rawtypes")
       GenericIterator outerIterator = parent.getChildren();
-      double klasseSoll = 0;
+      BigDecimal klasseSoll = BigDecimal.ZERO;
       while (outerIterator.hasNext())
       {
         WirtschaftsplanNode child = (WirtschaftsplanNode) outerIterator.next();
-        double artSoll = 0;
+        BigDecimal artSoll = BigDecimal.ZERO;
         @SuppressWarnings("rawtypes")
         GenericIterator innerIterator = child.getChildren();
         while (innerIterator.hasNext())
         {
           WirtschaftsplanNode leaf = (WirtschaftsplanNode) innerIterator.next();
-          artSoll += leaf.getSoll();
+          artSoll = artSoll.add(leaf.getSoll());
         }
         child.setSoll(artSoll);
-        klasseSoll += artSoll;
+        klasseSoll = klasseSoll.add(artSoll);
       }
       parent.setSoll(klasseSoll);
     }
@@ -433,11 +432,11 @@ public class WirtschaftsplanDetailControl extends VorZurueckControl implements S
       {
         @SuppressWarnings("rawtypes")
         GenericIterator iterator = parent.getChildren();
-        double soll = 0;
+        BigDecimal soll = BigDecimal.ZERO;
         while (iterator.hasNext())
         {
           WirtschaftsplanNode child = (WirtschaftsplanNode) iterator.next();
-          soll += child.getSoll();
+          soll = soll.add(child.getSoll());
         }
         parent.setSoll(soll);
 

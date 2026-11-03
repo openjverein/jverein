@@ -62,7 +62,7 @@ public class AnfangsbestandControl extends FilterControl
     anfangsbestandList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     anfangsbestandList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     anfangsbestandList
         .setContextMenu(new AnfangsbestandMenu(anfangsbestandList));
     anfangsbestandList.setMulti(true);

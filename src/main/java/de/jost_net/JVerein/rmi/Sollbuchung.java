@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -98,7 +99,7 @@ public interface Sollbuchung extends JVereinDBObject, IGutschriftProvider
 
   public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;
 
-  public void setBetrag(Double betrag) throws RemoteException;
+  public void setBetrag(BigDecimal betrag) throws RemoteException;
 
   public Rechnung getRechnung() throws RemoteException;
 

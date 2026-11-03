@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -53,9 +54,9 @@ public interface QIFImportHead extends DBObject
 
   public String getBeschreibung() throws RemoteException;
 
-  public void setStartSaldo(double betrag) throws RemoteException;
+  public void setStartSaldo(BigDecimal betrag) throws RemoteException;
 
-  public double getStartSaldo() throws RemoteException;
+  public BigDecimal getStartSaldo() throws RemoteException;
 
   public void setStartDate(Date datum) throws RemoteException;
 

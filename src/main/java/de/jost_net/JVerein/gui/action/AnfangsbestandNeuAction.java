@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -82,7 +83,7 @@ public class AnfangsbestandNeuAction implements Action
       if (!it.hasNext())
       {
         anf.setDatum(k.getEroeffnung());
-        anf.setBetrag(0d);
+        anf.setBetrag(BigDecimal.ZERO);
       }
       GUI.startView(AnfangsbestandDetailView.class, anf);
     }

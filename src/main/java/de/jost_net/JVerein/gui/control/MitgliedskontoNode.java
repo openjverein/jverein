@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,9 +58,9 @@ public class MitgliedskontoNode implements GenericObjectNode
 
   private String zahlungsweg = null;
 
-  private Double soll = null;
+  private BigDecimal soll = null;
 
-  private Double ist = null;
+  private BigDecimal ist = null;
 
   private MitgliedskontoNode parent = null;
 
@@ -77,8 +78,8 @@ public class MitgliedskontoNode implements GenericObjectNode
     this.mitglied = m;
     this.zahlungsweg = Zahlungsweg.get(m.getZahlungsweg());
     this.name = Adressaufbereitung.getNameVorname(m);
-    this.soll = Double.valueOf(0);
-    this.ist = Double.valueOf(0);
+    this.soll = BigDecimal.ZERO;
+    this.ist = BigDecimal.ZERO;
     this.children = new ArrayList<>();
     this.id = m.getID();
     DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
@@ -97,7 +98,7 @@ public class MitgliedskontoNode implements GenericObjectNode
     while (sollbIt.hasNext())
     {
       Sollbuchung sollb = (Sollbuchung) sollbIt.next();
-      soll += sollb.getBetrag();
+      soll = soll.add(sollb.getBetrag());
       MitgliedskontoNode mkn = new MitgliedskontoNode(this, sollb);
       children.add(mkn);
     }
@@ -105,7 +106,7 @@ public class MitgliedskontoNode implements GenericObjectNode
     {
       for (MitgliedskontoNode nodeist : node.children)
       {
-        ist += nodeist.ist;
+        ist = ist.add(nodeist.ist);
       }
     }
   }
@@ -130,12 +131,12 @@ public class MitgliedskontoNode implements GenericObjectNode
       it.addFilter(Buchung.SOLLBUCHUNG + " = ?",
           new Object[] { sollb.getID() });
       it.setOrder("order by datum desc");
-      ist = 0d;
+      ist = BigDecimal.ZERO;
       while (it.hasNext())
       {
         Buchung bist = (Buchung) it.next();
         MitgliedskontoNode mkn = new MitgliedskontoNode(this, sollb, bist);
-        ist += bist.getBetrag();
+        ist = ist.add(bist.getBetrag());
         children.add(mkn);
       }
     }
@@ -215,12 +216,12 @@ public class MitgliedskontoNode implements GenericObjectNode
     {
       if (ist == null)
       {
-        ist = Double.valueOf(0);
+        ist = BigDecimal.ZERO;
       }
       if (type == MITGLIED || type == SOLL)
       {
-        double differenz = ist - soll;
-        return differenz != 0d ? differenz : null;
+        BigDecimal differenz = ist.subtract(soll);
+        return differenz.signum() != 0 ? differenz : null;
       }
       else
       {
@@ -282,12 +283,12 @@ public class MitgliedskontoNode implements GenericObjectNode
     }
   }
 
-  public Double getSoll()
+  public BigDecimal getSoll()
   {
     return soll;
   }
 
-  public Double getIst()
+  public BigDecimal getIst()
   {
     return ist;
   }

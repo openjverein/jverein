@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,9 +60,9 @@ public class WirtschaftsplanNode
 
   private WirtschaftsplanItem wirtschaftsplanItem;
 
-  private double soll;
+  private BigDecimal soll;
 
-  private double ist;
+  private BigDecimal ist;
 
   private WirtschaftsplanNode parent;
 
@@ -126,7 +127,7 @@ public class WirtschaftsplanNode
         wirtschaftsplan.getID());
     extendedDBIterator.addGroupBy("wirtschaftsplanitem.buchungsart");
 
-    double sollSumme = 0d;
+    BigDecimal sollSumme = BigDecimal.ZERO;
     while (extendedDBIterator.hasNext())
     {
       PseudoDBObject obj = extendedDBIterator.next();
@@ -137,7 +138,7 @@ public class WirtschaftsplanNode
         continue;
       }
 
-      double soll = obj.getDouble(SUMME);
+      BigDecimal soll = obj.getBigDecimal(SUMME);
       String id = obj.getAttribute(ID).toString();
       // Falls die Buchungsklasse vom Standard abweicht, ist noch keine
       // Node vorhanden
@@ -149,7 +150,7 @@ public class WirtschaftsplanNode
             buchungsart, art, wirtschaftsplan, false));
       }
       nodes.get(id).setSoll(soll);
-      sollSumme += soll;
+      sollSumme = sollSumme.add(soll);
     }
     setSoll(sollSumme);
 
@@ -321,7 +322,7 @@ public class WirtschaftsplanNode
     istIt.addGroupBy("buchungsart.id");
     istIt.addHaving("anzahl > 0 OR abs(" + SUMME + ") >= 0.01");
 
-    double istSumme = 0d;
+    BigDecimal istSumme = BigDecimal.ZERO;
     while (istIt.hasNext())
     {
       PseudoDBObject obj = istIt.next();
@@ -337,7 +338,7 @@ public class WirtschaftsplanNode
         continue;
       }
 
-      double ist = obj.getDouble(SUMME);
+      BigDecimal ist = obj.getBigDecimal(SUMME);
       // Falls die Buchungsklasse vom Standard abweicht, ist noch keine
       // Node vorhanden
       if (!nodes.containsKey(key))
@@ -351,7 +352,7 @@ public class WirtschaftsplanNode
             "Neue Buchungsart erzeugt: " + buchungsart.getBezeichnung());
       }
       nodes.get(key).setIst(ist);
-      istSumme += ist;
+      istSumme = istSumme.add(ist);
     }
 
     children = new ArrayList<>(nodes.values());
@@ -378,7 +379,7 @@ public class WirtschaftsplanNode
       item.setBuchungsklasseId(parent.getBuchungsklasse().getID());
       item.setBuchungsartId(buchungsart.getID());
       item.setPosten(buchungsart.getBezeichnung());
-      item.setSoll(0);
+      item.setSoll(BigDecimal.ZERO);
 
       children.add(new WirtschaftsplanNode(this, item));
 
@@ -397,11 +398,11 @@ public class WirtschaftsplanNode
     iterator.addFilter("wirtschaftsplanitem.art = ?", art);
     iterator.addFilter("wirtschaftsplanitem.wirtschaftsplan = ?",
         wirtschaftsplan.getID());
-    double sollSumme = 0d;
+    BigDecimal sollSumme = BigDecimal.ZERO;
     while (iterator.hasNext())
     {
       WirtschaftsplanItem item = iterator.next();
-      sollSumme += item.getSoll();
+      sollSumme = sollSumme.add(item.getSoll());
       children.add(new WirtschaftsplanNode(this, item));
       setWirtschaftsplanItem(item);
     }
@@ -592,46 +593,46 @@ public class WirtschaftsplanNode
     this.buchungsart = buchungsart;
   }
 
-  public double getSoll()
+  public BigDecimal getSoll()
   {
     return soll;
   }
 
-  public double getSollEinnahmen()
+  public BigDecimal getSollEinnahmen()
   {
-    if (soll > 0.005)
+    if (soll.signum() > 0)
     {
       return soll;
     }
     else
     {
-      return 0;
+      return BigDecimal.ZERO;
     }
   }
 
-  public double getSollAusgaben()
+  public BigDecimal getSollAusgaben()
   {
-    if (soll < -0.005)
+    if (soll.signum() < 0)
     {
       return soll;
     }
     else
     {
-      return 0;
+      return BigDecimal.ZERO;
     }
   }
 
-  public void setSoll(double soll)
+  public void setSoll(BigDecimal soll)
   {
     this.soll = soll;
   }
 
-  public double getIst()
+  public BigDecimal getIst()
   {
     return ist;
   }
 
-  public void setIst(double ist)
+  public void setIst(BigDecimal ist)
   {
     this.ist = ist;
   }

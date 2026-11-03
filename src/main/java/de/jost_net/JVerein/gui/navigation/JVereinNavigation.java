@@ -60,7 +60,6 @@ import de.jost_net.JVerein.gui.view.JahresabschlussListeView;
 import de.jost_net.JVerein.gui.view.KontoListeView;
 import de.jost_net.JVerein.gui.view.KontoSaldoView;
 import de.jost_net.JVerein.gui.view.KontoauszugMailView;
-import de.jost_net.JVerein.gui.view.KursteilnehmerListeView;
 import de.jost_net.JVerein.gui.view.LastschriftListeView;
 import de.jost_net.JVerein.gui.view.LehrgangListeView;
 import de.jost_net.JVerein.gui.view.LehrgangsartListeView;
@@ -117,13 +116,6 @@ public class JVereinNavigation implements Extension
         mitglieder
             .addChild(new JVereinNavigationItem(mitglieder, "Nicht-Mitglieder",
                 new StartViewAction(NichtMitgliedListeView.class),
-                "user-friends.png"));
-      }
-      if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
-      {
-        mitglieder
-            .addChild(new JVereinNavigationItem(mitglieder, "Kursteilnehmer",
-                new StartViewAction(KursteilnehmerListeView.class),
                 "user-friends.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
@@ -195,8 +187,12 @@ public class JVereinNavigation implements Extension
       // Buchungen
       buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Buchungen",
           new StartViewAction(BuchungListeView.class), "emblem-documents.png"));
-      buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Belege",
-          new StartViewAction(BelegListeView.class), "emblem-documents.png"));
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+      {
+        buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung, "Belege",
+            new StartViewAction(BelegListeView.class), "emblem-documents.png"));
+      }
       buchfuehrung.addChild(
           new JVereinNavigationItem(buchfuehrung, "Buchungsklassensaldo",
               new StartViewAction(BuchungsklasseSaldoView.class),

@@ -14,11 +14,8 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
+package de.jost_net.JVerein.rmi;
 
-package de.jost_net.JVerein.io;
-
-public enum JVereinZahlerTyp
+public interface BelegMitglied extends AbstractBelegReferenz
 {
-  MITGLIED,
-  KURSTEILNEHMER
 }

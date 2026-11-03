@@ -18,8 +18,8 @@ package de.jost_net.JVerein.gui.control;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
@@ -35,6 +35,7 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.MarkOverdueMessageConsumer;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -72,7 +73,6 @@ import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.extension.ExtensionRegistry;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.DirectoryInput;
 import de.willuhn.jameica.gui.input.ImageInput;
@@ -148,8 +148,6 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput wiedervorlage;
 
-  private CheckboxInput kursteilnehmer;
-
   private CheckboxInput lehrgaenge;
 
   private CheckboxInput juristischepersonen;
@@ -170,10 +168,6 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput individuellebeitraege;
 
-  private CheckboxInput kursteilnehmergebpflicht;
-
-  private CheckboxInput kursteilnehmergespflicht;
-
   private TextInput rechnungtextabbuchung;
 
   private TextInput rechnungtextueberweisung;
@@ -192,7 +186,7 @@ public class EinstellungControl extends AbstractControl
 
   private SelectInput sepamandatidsourcemodel;
 
-  private DecimalInput spendenbescheinigungminbetrag;
+  private BigDecimalInput spendenbescheinigungminbetrag;
 
   private CheckboxInput spendenbescheinigungprintbuchungsart;
 
@@ -251,6 +245,8 @@ public class EinstellungControl extends AbstractControl
   private TextAreaInput mailsignatur;
 
   private SelectInput zahlungsweg;
+
+  private SelectInput nmzahlungsweg;
 
   private SelectInput zahlungsrhytmus;
 
@@ -354,7 +350,7 @@ public class EinstellungControl extends AbstractControl
 
   private TextInput qrcodeintro;
 
-  private DecimalInput afarestwert;
+  private BigDecimalInput afarestwert;
 
   private SelectInput afaort;
 
@@ -427,6 +423,10 @@ public class EinstellungControl extends AbstractControl
   private IntegerInput belegZaehlerSonstiges;
 
   private DirectoryInput belegAllgemeinVerzeichnis;
+
+  private IntegerInput belegZaehlerMitglied;
+
+  private TextInput belegnummerMitglied;
 
   public EinstellungControl(AbstractView view)
   {
@@ -790,17 +790,6 @@ public class EinstellungControl extends AbstractControl
     return wiedervorlage;
   }
 
-  public CheckboxInput getKursteilnehmer() throws RemoteException
-  {
-    if (kursteilnehmer != null)
-    {
-      return kursteilnehmer;
-    }
-    kursteilnehmer = new CheckboxInput(
-        (Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER));
-    return kursteilnehmer;
-  }
-
   public CheckboxInput getLehrgaenge() throws RemoteException
   {
     if (lehrgaenge != null)
@@ -832,28 +821,6 @@ public class EinstellungControl extends AbstractControl
     mitgliedfoto = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO));
     return mitgliedfoto;
-  }
-
-  public CheckboxInput getKursteilnehmerGebPflicht() throws RemoteException
-  {
-    if (kursteilnehmergebpflicht != null)
-    {
-      return kursteilnehmergebpflicht;
-    }
-    kursteilnehmergebpflicht = new CheckboxInput((Boolean) Einstellungen
-        .getEinstellung(Property.KURSTEILNEHMERGEBPFLICHT));
-    return kursteilnehmergebpflicht;
-  }
-
-  public CheckboxInput getKursteilnehmerGesPflicht() throws RemoteException
-  {
-    if (kursteilnehmergespflicht != null)
-    {
-      return kursteilnehmergespflicht;
-    }
-    kursteilnehmergespflicht = new CheckboxInput((Boolean) Einstellungen
-        .getEinstellung(Property.KURSTEILNEHMERGESPFLICHT));
-    return kursteilnehmergespflicht;
   }
 
   public CheckboxInput getUseZusatzfelder() throws RemoteException
@@ -1204,7 +1171,7 @@ public class EinstellungControl extends AbstractControl
       return mitgliedsDokumentVerzeichnis;
     }
     mitgliedsDokumentVerzeichnis = new DirectoryInput(
-        Einstellungen.getMitgliedDokumentVerzeichnis());
+        Einstellungen.getBelegMitgliedVerzeichnis());
     return mitgliedsDokumentVerzeichnis;
   }
 
@@ -1230,16 +1197,17 @@ public class EinstellungControl extends AbstractControl
     return belegAllgemeinVerzeichnis;
   }
 
-  public DecimalInput getSpendenbescheinigungminbetrag() throws RemoteException
+  public BigDecimalInput getSpendenbescheinigungminbetrag()
+      throws RemoteException
   {
     if (spendenbescheinigungminbetrag != null)
     {
       return spendenbescheinigungminbetrag;
     }
-    spendenbescheinigungminbetrag = new DecimalInput(
-        (Double) Einstellungen
+    spendenbescheinigungminbetrag = new BigDecimalInput(
+        (BigDecimal) Einstellungen
             .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG),
-        new DecimalFormat("###0.00"));
+        Einstellungen.BIGDECIMALFORMAT);
     return spendenbescheinigungminbetrag;
   }
 
@@ -1628,6 +1596,18 @@ public class EinstellungControl extends AbstractControl
         (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG)));
     zahlungsweg.setName("Standard-Zahlungsweg f. neue Mitglieder");
     return zahlungsweg;
+  }
+
+  public SelectInput getNMZahlungsweg() throws RemoteException
+  {
+    if (nmzahlungsweg != null)
+    {
+      return nmzahlungsweg;
+    }
+    nmzahlungsweg = new SelectInput(Zahlungsweg.getArray(), new Zahlungsweg(
+        (Integer) Einstellungen.getEinstellung(Property.NMZAHLUNGSWEG)));
+    nmzahlungsweg.setName("Standard-Zahlungsweg f. neue Nicht-Mitglieder");
+    return nmzahlungsweg;
   }
 
   public SelectInput getZahlungsrhytmus() throws RemoteException
@@ -2174,15 +2154,15 @@ public class EinstellungControl extends AbstractControl
     return leerespalte;
   }
 
-  public DecimalInput getAfaRestwert() throws RemoteException
+  public BigDecimalInput getAfaRestwert() throws RemoteException
   {
     if (afarestwert != null)
     {
       return afarestwert;
     }
-    afarestwert = new DecimalInput(
-        (Double) Einstellungen.getEinstellung(Property.AFARESTWERT),
-        new DecimalFormat("###0.00"));
+    afarestwert = new BigDecimalInput(
+        (BigDecimal) Einstellungen.getEinstellung(Property.AFARESTWERT),
+        Einstellungen.BIGDECIMALFORMAT);
     return afarestwert;
   }
 
@@ -2251,6 +2231,31 @@ public class EinstellungControl extends AbstractControl
         .getEinstellung(Property.BELEG_ZAEHLER_SONSTIGES));
     belegZaehlerSonstiges.setName("Zähler sonstige Belege");
     return belegZaehlerSonstiges;
+  }
+
+  public TextInput getBelegMitgliedNummer() throws RemoteException
+  {
+    if (belegnummerMitglied != null)
+    {
+      return belegnummerMitglied;
+    }
+    belegnummerMitglied = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.BELEGNUMMER_MITGLIED),
+        500);
+    belegnummerMitglied.setName("Belegnummer Mitglieds-Belege");
+    return belegnummerMitglied;
+  }
+
+  public IntegerInput getBelegMitgliedZaehler() throws RemoteException
+  {
+    if (belegZaehlerMitglied != null)
+    {
+      return belegZaehlerMitglied;
+    }
+    belegZaehlerMitglied = new IntegerInput((Integer) Einstellungen
+        .getEinstellung(Property.BELEG_ZAEHLER_MITGLIED));
+    belegZaehlerMitglied.setName("Zähler Mitglieds-Belege");
+    return belegZaehlerMitglied;
   }
 
   public CheckboxInput getMitgliedsnummerAnzeigen() throws RemoteException
@@ -2479,10 +2484,6 @@ public class EinstellungControl extends AbstractControl
           (Boolean) nichtmitgliedgeburtsdatumpflicht.getValue());
       Einstellungen.setEinstellung(Property.EINTRITTSDATUMPFLICHT,
           (Boolean) eintrittsdatumpflicht.getValue());
-      Einstellungen.setEinstellung(Property.KURSTEILNEHMERGEBPFLICHT,
-          (Boolean) kursteilnehmergebpflicht.getValue());
-      Einstellungen.setEinstellung(Property.KURSTEILNEHMERGESPFLICHT,
-          (Boolean) kursteilnehmergespflicht.getValue());
       Einstellungen.setEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN,
           (Boolean) jmitgliedpflichteigenschaften.getValue());
       Einstellungen.setEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN,
@@ -2520,8 +2521,6 @@ public class EinstellungControl extends AbstractControl
           (Boolean) vermerke.getValue());
       Einstellungen.setEinstellung(Property.WIEDERVORLAGE,
           (Boolean) wiedervorlage.getValue());
-      Einstellungen.setEinstellung(Property.KURSTEILNEHMER,
-          (Boolean) kursteilnehmer.getValue());
       Einstellungen.setEinstellung(Property.LEHRGAENGE,
           (Boolean) lehrgaenge.getValue());
       Einstellungen.setEinstellung(Property.JURISTISCHEPERSONEN,
@@ -2663,6 +2662,8 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.ZAHLUNGSRHYTMUS, zr.getKey());
       Zahlungsweg zw = (Zahlungsweg) zahlungsweg.getValue();
       Einstellungen.setEinstellung(Property.ZAHLUNGSWEG, zw.getKey());
+      Zahlungsweg nmzw = (Zahlungsweg) nmzahlungsweg.getValue();
+      Einstellungen.setEinstellung(Property.NMZAHLUNGSWEG, nmzw.getKey());
       SEPALandObject slo = (SEPALandObject) getDefaultSEPALand().getValue();
       Einstellungen.setEinstellung(Property.DEFAULTLAND,
           slo.getLand().getKennzeichen());
@@ -2704,17 +2705,15 @@ public class EinstellungControl extends AbstractControl
   {
     try
     {
-      if (!Einstellungen.getMitgliedDokumentVerzeichnis()
+      if (!Einstellungen.getBelegMitgliedVerzeichnis()
           .equals(mitgliedsDokumentVerzeichnis.getValue()))
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
         dialog.setTitle("Verzeichnis geändert");
-        dialog
-            .setText("Das Verzeichnis für Mitglieds-Dokumente wurde geändert.\n"
-                + "Bitte Verschieben sie ggf. vorhandene Dokumente manuell von '"
-                + Einstellungen.getMitgliedDokumentVerzeichnis() + "' nach '"
-                + mitgliedsDokumentVerzeichnis.getValue() + "'\n"
-                + "Fortfahren?");
+        dialog.setText("Das Verzeichnis für Mitglieds-Belege wurde geändert.\n"
+            + "Bitte Verschieben sie ggf. vorhandene Be	lege manuell von '"
+            + Einstellungen.getBelegMitgliedVerzeichnis() + "' nach '"
+            + mitgliedsDokumentVerzeichnis.getValue() + "'\n" + "Fortfahren?");
         if (!(Boolean) dialog.open())
         {
           throw new OperationCanceledException();
@@ -2749,7 +2748,7 @@ public class EinstellungControl extends AbstractControl
         }
       }
 
-      Einstellungen.setMitgliedDokumentVerzeichnis(
+      Einstellungen.setBelegMitgliedVerzeichnis(
           (String) mitgliedsDokumentVerzeichnis.getValue());
 
       Einstellungen.setBelegBuchungVerzeichnis(
@@ -2769,6 +2768,11 @@ public class EinstellungControl extends AbstractControl
           (String) belegnummerSonstiges.getValue());
       Einstellungen.setEinstellung(Property.BELEG_ZAEHLER_SONSTIGES,
           (Integer) belegZaehlerSonstiges.getValue());
+
+      Einstellungen.setEinstellung(Property.BELEGNUMMER_MITGLIED,
+          (String) belegnummerMitglied.getValue());
+      Einstellungen.setEinstellung(Property.BELEG_ZAEHLER_MITGLIED,
+          (Integer) belegZaehlerMitglied.getValue());
 
       DBTransaction.commit();
 
@@ -2809,7 +2813,7 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.MITGLIEDSBETRAEGE,
           (Boolean) getMitgliedsbetraege().getValue());
       Einstellungen.setEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG,
-          (Double) spendenbescheinigungminbetrag.getValue());
+          (BigDecimal) spendenbescheinigungminbetrag.getValue());
       Einstellungen.setEinstellung(
           Property.SPENDENBESCHEINIGUNGPRINTBUCHUNGSART,
           (Boolean) spendenbescheinigungprintbuchungsart.getValue());
@@ -2904,7 +2908,7 @@ public class EinstellungControl extends AbstractControl
           Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS,
           (Boolean) getAutomatischeBuchungskorrekturHibiscus().getValue());
       Einstellungen.setEinstellung(Property.AFARESTWERT,
-          (Double) afarestwert.getValue());
+          (BigDecimal) afarestwert.getValue());
       Einstellungen.setEinstellung(Property.OPTIERT,
           (Boolean) getOptiert().getValue());
       Einstellungen.setEinstellung(Property.OPTIERTPFLICHT,

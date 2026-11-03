@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,10 +131,10 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
       throws RemoteException, ApplicationException, FileNotFoundException,
       DocumentException, IOException
   {
-    summe = 0;
-    summeeinnahmen = 0;
-    summeausgaben = 0;
-    summeumbuchungen = 0;
+    summe = BigDecimal.ZERO;
+    summeeinnahmen = BigDecimal.ZERO;
+    summeausgaben = BigDecimal.ZERO;
+    summeumbuchungen = BigDecimal.ZERO;
 
     this.params = params;
     // objects[0] = control, objects[1] ist der Filtertext
@@ -226,7 +227,8 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
           params.getFontFett(), params.getNegativRot());
       reporter.addColumn("Saldo", Element.ALIGN_RIGHT, params.getColorTable(),
           true, params.getFontFett(), 2);
-      reporter.addColumn(summeeinnahmen + summeausgaben + summeumbuchungen,
+      reporter.addColumn(
+          summeeinnahmen.add(summeausgaben).add(summeumbuchungen),
           params.getColorTable(), params.getFontFett(), params.getNegativRot());
       reporter.closeTable();
     }
@@ -282,23 +284,23 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
     {
       buchungsartBezeichnung = new BuchungsartFormatter().format(bua);
     }
-    double buchungsartSumme = 0;
+    BigDecimal buchungsartSumme = BigDecimal.ZERO;
 
     for (Buchung b : buchungen)
     {
 
-      buchungsartSumme += b.getBetrag();
+      buchungsartSumme = buchungsartSumme.add(b.getBetrag());
       if (bua.getArt() == ArtBuchungsart.EINNAHME)
       {
-        summeeinnahmen += b.getBetrag();
+        summeeinnahmen = summeeinnahmen.add(b.getBetrag());
       }
       if (bua.getArt() == ArtBuchungsart.AUSGABE)
       {
-        summeausgaben += b.getBetrag();
+        summeausgaben = summeausgaben.add(b.getBetrag());
       }
       if (bua.getArt() == ArtBuchungsart.UMBUCHUNG)
       {
-        summeumbuchungen += b.getBetrag();
+        summeumbuchungen = summeumbuchungen.add(b.getBetrag());
       }
     }
 

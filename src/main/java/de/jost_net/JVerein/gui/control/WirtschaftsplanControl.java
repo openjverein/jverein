@@ -63,7 +63,7 @@ public class WirtschaftsplanControl extends FilterControl
         service.createList(Wirtschaftsplan.class), null);
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
-        Einstellungen.DECIMALFORMAT);
+        Einstellungen.BIGDECIMALFORMAT);
     DateFormatter dateFormatter = new DateFormatter(new JVDateFormatTTMMJJJJ());
 
     wirtschaftsplaene.addColumn("ID", "id");

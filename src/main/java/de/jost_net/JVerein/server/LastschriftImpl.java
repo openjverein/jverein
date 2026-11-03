@@ -16,12 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
-import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.logging.Logger;
@@ -109,10 +109,6 @@ public class LastschriftImpl extends AbstractJVereinDBObject
     {
       return Mitglied.class;
     }
-    if ("kursteilnehmer".equals(arg0))
-    {
-      return Kursteilnehmer.class;
-    }
 
     return null;
   }
@@ -146,18 +142,6 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   public void setMitglied(Integer mitglied) throws RemoteException
   {
     setAttribute("mitglied", mitglied);
-  }
-
-  @Override
-  public Kursteilnehmer getKursteilnehmer() throws RemoteException
-  {
-    return (Kursteilnehmer) getAttribute("kursteilnehmer");
-  }
-
-  @Override
-  public void setKursteilnehmer(int kursteilnehmer) throws RemoteException
-  {
-    setAttribute("kursteilnehmer", Integer.valueOf(kursteilnehmer));
   }
 
   @Override
@@ -374,13 +358,13 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Double getBetrag() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    return (Double) getAttribute("betrag");
+    return (BigDecimal) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(Double betrag) throws RemoteException
+  public void setBetrag(BigDecimal betrag) throws RemoteException
   {
     setAttribute("betrag", betrag);
   }

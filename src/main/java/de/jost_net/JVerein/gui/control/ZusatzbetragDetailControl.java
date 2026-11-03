@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
@@ -33,7 +34,8 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ZusatzbetragDetailControl extends VorZurueckControl implements Savable
+public class ZusatzbetragDetailControl extends VorZurueckControl
+    implements Savable
 {
   private Zusatzbetrag zuab;
 
@@ -99,7 +101,7 @@ public class ZusatzbetragDetailControl extends VorZurueckControl implements Sava
     z.setBuchungsart(
         (Buchungsart) getZusatzbetragPart().getBuchungsart().getValue());
     z.setBuchungsklasseId(getZusatzbetragPart().getSelectedBuchungsKlasseId());
-    z.setBetrag((Double) getZusatzbetragPart().getBetrag().getValue());
+    z.setBetrag((BigDecimal) getZusatzbetragPart().getBetrag().getValue());
     z.setZahlungsweg(
         (Zahlungsweg) getZusatzbetragPart().getZahlungsweg().getValue());
     if (getZusatzbetragPart().isSteuerActive())

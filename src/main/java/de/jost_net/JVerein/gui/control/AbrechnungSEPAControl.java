@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,7 +34,6 @@ import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Monat;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
@@ -54,8 +54,6 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
   private TextInput zahlungsgrund;
 
   private CheckboxInput zusatzbetrag;
-
-  private CheckboxInput kursteilnehmer;
 
   // Inputs nicht in Settings gespeichert
   private SelectInput abrechnungsmonat;
@@ -150,22 +148,6 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
   public boolean isZusatzbetragSupported()
   {
     return zusatzbetrag != null;
-  }
-
-  public CheckboxInput getKursteilnehmer()
-  {
-    if (kursteilnehmer != null)
-    {
-      return kursteilnehmer;
-    }
-    kursteilnehmer = new CheckboxInput(
-        settings.getBoolean("kursteilnehmer", false));
-    return kursteilnehmer;
-  }
-
-  public boolean isKursteilnehmerSupported()
-  {
-    return kursteilnehmer != null;
   }
 
   // Inputs nicht in Settings gespeichert
@@ -299,7 +281,7 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
       if ((Integer) getAbbuchungsmodus()
           .getValue() != Abrechnungsmodi.KEINBEITRAG)
       {
-        Double betrag;
+        BigDecimal betrag;
         DBIterator<Mitglied> it2 = AbrechnungSEPA
             .getAbrechnenMitgliederIt(param);
         while (it2.hasNext())
@@ -400,17 +382,6 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
         }
       }
 
-      // Kursteilnehmer prüfen
-      if (param.kursteilnehmer)
-      {
-        DBIterator<Kursteilnehmer> list = AbrechnungSEPA
-            .getAbrechnenKursteilnehmerIt(param);
-        if (list.size() > 0)
-        {
-          isLastschrift = true;
-        }
-      }
-
       if (isLastschrift)
       {
         // Bei Lastschrift auch allgemeine Daten prüfen weil z.B. dann
@@ -503,11 +474,6 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
     {
       settings.setAttribute("zusatzbetraege",
           (Boolean) zusatzbetrag.getValue());
-    }
-    if (kursteilnehmer != null)
-    {
-      settings.setAttribute("kursteilnehmer",
-          (Boolean) kursteilnehmer.getValue());
     }
   }
 

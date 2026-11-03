@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -203,7 +204,7 @@ public class DefaultZusatzbetraegeImport implements Importer
           Zusatzbetrag zus = (Zusatzbetrag) Einstellungen.getDBService()
               .createObject(Zusatzbetrag.class, null);
           zus.setMitglied(Integer.valueOf(m.getID()));
-          double betrag = results.getDouble("Betrag");
+          BigDecimal betrag = results.getBigDecimal("Betrag");
           zus.setBetrag(betrag);
           String buchungstext = results.getString("Buchungstext");
           if (buchungstext.length() > 500)

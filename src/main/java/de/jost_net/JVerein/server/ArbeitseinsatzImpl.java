@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -75,7 +76,7 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Bitte Stunden eingeben!");
       }
-      if (getStunden() <= 0d)
+      if (getStunden().signum() <= 0)
       {
         if ((Integer) Einstellungen.getEinstellung(
             Property.ARBEITSSTUNDENMODEL) == ArbeitsstundenModel.STANDARD)
@@ -132,15 +133,15 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setStunden(Double stunden) throws RemoteException
+  public void setStunden(BigDecimal stunden) throws RemoteException
   {
     setAttribute("stunden", stunden);
   }
 
   @Override
-  public Double getStunden() throws RemoteException
+  public BigDecimal getStunden() throws RemoteException
   {
-    return (Double) getAttribute("stunden");
+    return (BigDecimal) getAttribute("stunden");
   }
 
   @Override

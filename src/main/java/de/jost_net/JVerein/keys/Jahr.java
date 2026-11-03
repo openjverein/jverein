@@ -1,5 +1,4 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -11,12 +10,50 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein.keys;
 
-public interface MitgliedDokument extends AbstractDokument
+import java.util.Calendar;
+
+/**
+ * Die letzten 10 Jahre
+ */
+public class Jahr implements KeyEnum
 {
-  //
+
+  private int jahr;
+
+  public Jahr(int key)
+  {
+    jahr = key;
+  }
+
+  public static Jahr[] getList()
+  {
+    Calendar cal = Calendar.getInstance();
+    Jahr[] jahre = new Jahr[10];
+    for (int i = 0; i < 10; i++)
+    {
+      jahre[i] = new Jahr(cal.get(Calendar.YEAR));
+      cal.add(Calendar.YEAR, -1);
+    }
+    return jahre;
+  }
+
+  @Override
+  public int getKey()
+  {
+    return jahr;
+  }
+
+  public String getText()
+  {
+    return toString();
+  }
+
+  @Override
+  public String toString()
+  {
+    return ((Integer) jahr).toString();
+  }
 }
