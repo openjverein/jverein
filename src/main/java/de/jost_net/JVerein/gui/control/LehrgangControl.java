@@ -71,10 +71,15 @@ public class LehrgangControl extends FilterControl
               ((Lehrgangsart) value).getID());
           break;
         case DATUM_VON:
-          lehrgaenge.addFilter("von >= ?", value);
+          // Auch Lehrgänge die nach Von Datum enden, also auch teilweise in das
+          // Von/Bis Fenster fallen
+          lehrgaenge.addFilter("(von >= ? OR bis >= ?)", value, value);
           break;
         case DATUM_BIS:
-          lehrgaenge.addFilter("bis <= ?", value);
+          // Auch Lehrgänge die nach Bis Datum enden, aber noch im Von/Bis
+          // Fenster
+          // beginnen
+          lehrgaenge.addFilter("von <= ?", value);
           break;
         default:
           throw new ApplicationException(

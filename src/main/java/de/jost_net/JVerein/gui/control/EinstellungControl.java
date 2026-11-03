@@ -318,6 +318,8 @@ public class EinstellungControl extends AbstractControl
 
   private SelectInput mitgliedAuswahl;
 
+  private SelectInput lehrgangAuswahl;
+
   private SelectInput buchungsartsort;
 
   private SelectInput buchungsartanzeige;
@@ -357,6 +359,8 @@ public class EinstellungControl extends AbstractControl
   private TextInput beitragaltersstufen;
 
   private CheckboxInput nummeranzeigen;
+
+  private CheckboxInput lehrgangsidanzeigen;
 
   private CheckboxInput familienbeitrag;
 
@@ -1974,6 +1978,20 @@ public class EinstellungControl extends AbstractControl
     return mitgliedAuswahl;
   }
 
+  public SelectInput getLehrgangAuswahl() throws RemoteException
+  {
+    if (null != lehrgangAuswahl)
+    {
+      return lehrgangAuswahl;
+    }
+
+    lehrgangAuswahl = new SelectInput(AbstractInputAuswahl.getArray(),
+        new AbstractInputAuswahl(
+            (Integer) Einstellungen.getEinstellung(Property.LEHRGANGAUSWAHL)));
+
+    return lehrgangAuswahl;
+  }
+
   public SelectInput getBuchungsartSort() throws RemoteException
   {
     if (buchungsartsort != null)
@@ -2269,6 +2287,17 @@ public class EinstellungControl extends AbstractControl
     return nummeranzeigen;
   }
 
+  public CheckboxInput getLehrgangsIdAnzeigen() throws RemoteException
+  {
+    if (lehrgangsidanzeigen != null)
+    {
+      return lehrgangsidanzeigen;
+    }
+    lehrgangsidanzeigen = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.LEHRGANGSIDANZEIGEN));
+    return lehrgangsidanzeigen;
+  }
+
   public CheckboxInput getFamilienbeitrag() throws RemoteException
   {
     if (familienbeitrag != null)
@@ -2561,6 +2590,10 @@ public class EinstellungControl extends AbstractControl
       AbstractInputAuswahl mAuswahl = (AbstractInputAuswahl) mitgliedAuswahl
           .getValue();
       Einstellungen.setEinstellung(Property.MITGLIEDAUSWAHL, mAuswahl.getKey());
+      AbstractInputAuswahl lgAuswahl = (AbstractInputAuswahl) lehrgangAuswahl
+          .getValue();
+      Einstellungen.setEinstellung(Property.LEHRGANGAUSWAHL,
+          lgAuswahl.getKey());
       Einstellungen.setEinstellung(Property.BUCHUNGSARTSORT,
           ((BuchungsartSort) buchungsartsort.getValue()).getKey());
       Einstellungen.setEinstellung(Property.BUCHUNGSARTANZEIGE,
@@ -2571,6 +2604,8 @@ public class EinstellungControl extends AbstractControl
         Einstellungen.setEinstellung(Property.AFAINJAHRESABSCHLUSS, true);
       Einstellungen.setEinstellung(Property.MITGLIEDSNUMMERANZEIGEN,
           (Boolean) nummeranzeigen.getValue());
+      Einstellungen.setEinstellung(Property.LEHRGANGSIDANZEIGEN,
+          (Boolean) lehrgangsidanzeigen.getValue());
       Einstellungen.setEinstellung(Property.ANLAGENKONTEN,
           (Boolean) anlagenkonten.getValue());
       Einstellungen.setEinstellung(Property.FAMILIENBEITRAG,

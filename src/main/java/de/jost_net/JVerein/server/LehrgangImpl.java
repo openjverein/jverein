@@ -24,6 +24,7 @@ import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
@@ -48,6 +49,17 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
   @Override
   public String getPrimaryAttribute()
   {
+    try
+    {
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGANGSIDANZEIGEN))
+      {
+        return "bezeichnungid";
+      }
+    }
+    catch (RemoteException e)
+    {
+      //
+    }
     return "bezeichnung";
   }
 
@@ -192,6 +204,16 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
   }
 
   @Override
+  public Object getAttribute(String fieldName) throws RemoteException
+  {
+    if (fieldName.equals("bezeichnungid"))
+    {
+      return getBezeichnung() + " (" + getID() + ")";
+    }
+    return super.getAttribute(fieldName);
+  }
+
+  @Override
   public String getObjektName()
   {
     return "Lehrgang";
@@ -226,6 +248,7 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
     while (teilnehmer.hasNext())
     {
       mitglieder[i] = ((Lehrgangsteilnehmer) teilnehmer.next()).getMitglied();
+      i++;
     }
     return mitglieder;
   }

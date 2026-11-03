@@ -34,7 +34,7 @@ import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
-import de.jost_net.JVerein.gui.dialogs.AbweichenderZahlerNeuDialog;
+import de.jost_net.JVerein.gui.dialogs.NichtMitgliedNeuDialog;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -53,7 +53,7 @@ import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.input.VollzahlerInput;
 import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
-import de.jost_net.JVerein.gui.menu.LehrgangMenu;
+import de.jost_net.JVerein.gui.menu.LehrgangsteilnehmerMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedMailMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
@@ -1673,12 +1673,14 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
       return lehrgaengeList;
     }
     DBService service = Einstellungen.getDBService();
-    DBIterator<Lehrgangsteilnehmer> lehrgaenge = service.createList(Lehrgangsteilnehmer.class);
+    DBIterator<Lehrgangsteilnehmer> lehrgaenge = service
+        .createList(Lehrgangsteilnehmer.class);
     lehrgaenge.addFilter("mitglied = " + getMitglied().getID());
     lehrgaengeList = new JVereinTablePart(lehrgaenge,
         new EditAction(LehrgangsteilnehmerDetailView.class));
     lehrgaengeList.setTableName("Lehrgänge");
     lehrgaengeList.setMulti(true);
+    lehrgaengeList.addColumn("Lehrgang", "lehrgang");
     lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
     lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
     lehrgaengeList.addColumn("Von/am", "von",
@@ -1687,7 +1689,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgaengeList.addColumn("Veranstalter", "veranstalter");
     lehrgaengeList.addColumn("Ergebnis", "ergebnis");
-    lehrgaengeList.setContextMenu(new LehrgangMenu(null));
+    lehrgaengeList.setContextMenu(new LehrgangsteilnehmerMenu(null));
     return lehrgaengeList;
   }
 
@@ -1804,8 +1806,8 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
                 }
               }
 
-              AbweichenderZahlerNeuDialog dialog = new AbweichenderZahlerNeuDialog(
-                  AbweichenderZahlerNeuDialog.POSITION_CENTER, nm);
+              NichtMitgliedNeuDialog dialog = new NichtMitgliedNeuDialog(
+                  NichtMitgliedNeuDialog.POSITION_CENTER, nm);
               if (!dialog.open())
               {
                 if (dialog.getStatus() != null)
@@ -1898,8 +1900,9 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
 
   public Button getLehrgangNeu()
   {
-    return new Button("Neuer Lehrgang",
-        new NewAction(LehrgangsteilnehmerDetailView.class, Lehrgangsteilnehmer.class, getMitglied()),
+    return new Button("Neuer Lehrgangsteilnehmer",
+        new NewAction(LehrgangsteilnehmerDetailView.class,
+            Lehrgangsteilnehmer.class, getMitglied()),
         null, false, "document-new.png");
   }
 

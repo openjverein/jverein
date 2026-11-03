@@ -17,12 +17,17 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
+
+import org.eclipse.swt.layout.GridLayout;
+
 import de.jost_net.JVerein.gui.control.LehrgangDetailControl;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
@@ -50,6 +55,15 @@ public class LehrgangDetailView extends AbstractDetailView
     right.addLabelPair("Bis", control.getBis());
     right.addLabelPair("Betrag", control.getBetrag());
 
+    LabelGroup grBuchungen = new LabelGroup(getParent(), "Lehrgangsteilnehmer",
+        true);
+    grBuchungen.getComposite().setLayout(new GridLayout(1, false));
+    ButtonArea buttonslehrg = new ButtonArea();
+    buttonslehrg.addButton(control.getLehrgangsteilnehmerNeuButton());
+    buttonslehrg.addButton(control.getNichtMitgliedErzeugenButton());
+    buttonslehrg.paint(grBuchungen.getComposite());
+    grBuchungen.addPart(control.getTablePart());
+
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.LEHRGANG));
     buttons.addButton(control.getZurueckButton());
@@ -58,6 +72,10 @@ public class LehrgangDetailView extends AbstractDetailView
     buttons.addButton(new SaveButton(control));
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
   @Override

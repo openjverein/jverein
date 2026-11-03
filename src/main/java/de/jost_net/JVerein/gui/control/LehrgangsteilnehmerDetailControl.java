@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.input.LehrgangInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
@@ -48,7 +49,7 @@ public class LehrgangsteilnehmerDetailControl extends VorZurueckControl
 
   private SelectInput lehrgangsart;
 
-  private SelectInput lehrgang;
+  private AbstractInput lehrgang;
 
   private DateInput von = null;
 
@@ -102,18 +103,17 @@ public class LehrgangsteilnehmerDetailControl extends VorZurueckControl
     return mitglied;
   }
 
-  public SelectInput getLehrgang() throws RemoteException
+  public Input getLehrgang() throws RemoteException
   {
     if (lehrgang != null)
     {
       return lehrgang;
     }
-    DBIterator<Lehrgang> it = Einstellungen.getDBService()
-        .createList(Lehrgang.class);
-    it.setOrder("order by bezeichnung");
-    lehrgang = new SelectInput(it != null ? PseudoIterator.asList(it) : null,
-        getLehrgangsteilnehmer().getLehrgang());
-    lehrgang.setPleaseChoose("Bitte auswählen");
+
+    lehrgang = new LehrgangInput().getLehrgangInput(lehrgang,
+        getLehrgangsteilnehmer().getLehrgang(),
+        (Integer) Einstellungen.getEinstellung(Property.LEHRGANGAUSWAHL));
+
     lehrgang.setMandatory(true);
     lehrgang.addListener(new Listener()
     {

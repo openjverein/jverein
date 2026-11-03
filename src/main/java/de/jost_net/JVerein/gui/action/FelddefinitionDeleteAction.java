@@ -36,7 +36,7 @@ public class FelddefinitionDeleteAction extends DeleteAction
   private boolean verwendung = false;
 
   @Override
-  protected String getText(Object object[])
+  protected String getText(JVereinDBObject[] object)
       throws RemoteException, ApplicationException
   {
     if (object == null || object.length == 0
@@ -103,7 +103,7 @@ public class FelddefinitionDeleteAction extends DeleteAction
   }
 
   @Override
-  protected boolean getMitNo(Object object[])
+  protected boolean getMitNo(JVereinDBObject[] object)
   {
     return verwendung && object.length > 1;
   }

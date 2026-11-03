@@ -39,7 +39,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Ein Dialog, ueber den man ein eines Nicht-Mitglieds erzeugen kann.
  */
-public class AbweichenderZahlerNeuDialog extends AbstractDialog<Boolean>
+public class NichtMitgliedNeuDialog extends AbstractDialog<Boolean>
 {
 
   private String status = null;
@@ -50,11 +50,11 @@ public class AbweichenderZahlerNeuDialog extends AbstractDialog<Boolean>
 
   private Mitglied mitglied;
 
-  public AbweichenderZahlerNeuDialog(int position, Mitglied m)
+  public NichtMitgliedNeuDialog(int position, Mitglied m)
   {
     super(position);
     mitglied = m;
-    setTitle("Abweichender Zahler");
+    setTitle("Neues Nicht-Mitglied");
     setSize(1000, SWT.DEFAULT);
   }
 

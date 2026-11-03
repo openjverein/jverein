@@ -46,6 +46,7 @@ import de.jost_net.JVerein.server.FormularfeldImpl;
 import de.jost_net.JVerein.server.JahresabschlussImpl;
 import de.jost_net.JVerein.server.KontoImpl;
 import de.jost_net.JVerein.server.LastschriftImpl;
+import de.jost_net.JVerein.server.LehrgangImpl;
 import de.jost_net.JVerein.server.LehrgangsteilnehmerImpl;
 import de.jost_net.JVerein.server.LehrgangsartImpl;
 import de.jost_net.JVerein.server.LesefeldImpl;
@@ -328,6 +329,10 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Lehrgänge");
+          backup(LehrgangImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+
+          monitor.setStatusText("Speichere Lehrgangsteilnehmer");
           backup(LehrgangsteilnehmerImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 

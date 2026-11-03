@@ -74,7 +74,7 @@ public class LehrgangsteilnehmerListeView extends AbstractView
 
     control.getTablePart().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(new HelpButton(DokumentationUtil.LEHRGANG));
+    buttons.addButton(new HelpButton(DokumentationUtil.LEHRGANGSTEILNEHMER));
     buttons.addButton(new NewButton(new NewAction(
         LehrgangsteilnehmerDetailView.class, Lehrgangsteilnehmer.class)));
     buttons.paint(this.getParent());

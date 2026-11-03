@@ -35,7 +35,7 @@ public class LehrgangsteilnehmerDetailView extends AbstractDetailView
     GUI.getView().setTitle("Lehrgangsteilnehmer");
     control = new LehrgangsteilnehmerDetailControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Lehrgang");
+    LabelGroup group = new LabelGroup(getParent(), "Lehrgangsteilnehmer");
     group.addLabelPair("Mitglied", control.getMitglied());
     group.addLabelPair("Lehrgang", control.getLehrgang());
     group.addLabelPair("Lehrgangsart", control.getLehrgangsart());
@@ -46,7 +46,7 @@ public class LehrgangsteilnehmerDetailView extends AbstractDetailView
     group.addLabelPair("Ergebnis", control.getErgebnis());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
-    buttons.addButton(new HelpButton(DokumentationUtil.LEHRGANG));
+    buttons.addButton(new HelpButton(DokumentationUtil.LEHRGANGSTEILNEHMER));
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());

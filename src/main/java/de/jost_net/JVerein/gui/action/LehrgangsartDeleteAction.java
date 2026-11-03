@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
@@ -38,7 +37,7 @@ public class LehrgangsartDeleteAction extends DeleteAction
   List<String> benutzteLehrgangsarten = new ArrayList<>();
 
   @Override
-  protected String getText(Object object[])
+  protected String getText(JVereinDBObject[] object)
       throws RemoteException, ApplicationException
   {
     if (object == null || object.length == 0
@@ -90,12 +89,11 @@ public class LehrgangsartDeleteAction extends DeleteAction
     }
     catch (Exception e)
     {
-      DBTransaction.rollback();
       throw e;
     }
   }
 
-  protected boolean getMitNo(Object object[])
+  protected boolean getMitNo(JVereinDBObject[] object)
   {
     return benutzteLehrgangsarten.size() > 0 ? true : false;
   }

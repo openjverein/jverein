@@ -42,7 +42,7 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 public class MitgliedDeleteAction extends DeleteAction
 {
   @Override
-  protected String getText(Object object[])
+  protected String getText(JVereinDBObject[] object)
       throws RemoteException, ApplicationException
   {
     if (object == null || object.length == 0

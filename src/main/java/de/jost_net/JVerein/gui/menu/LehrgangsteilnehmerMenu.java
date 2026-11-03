@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.ForderungAction;
+import de.jost_net.JVerein.gui.action.LehrgangDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangsteilnehmerDetailView;
@@ -33,7 +34,7 @@ public class LehrgangsteilnehmerMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Lehrgänge.
+   * Erzeugt ein Kontext-Menu fuer die Liste der Lehrgangsteilnehmer.
    */
   public LehrgangsteilnehmerMenu(JVereinTablePart part)
   {
@@ -47,6 +48,8 @@ public class LehrgangsteilnehmerMenu extends ContextMenu
       addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
           new MitgliedDetailAction(), "user-friends.png"));
     }
+    addItem(new CheckedSingleContextMenuItem("Lehrgang anzeigen",
+        new LehrgangDetailAction(), "chalkboard-teacher.png"));
     addItem(new CheckedContextMenuItem("Forderung erstellen",
         new ForderungAction(), "lastschrift.png"));
   }

@@ -82,10 +82,15 @@ public class LehrgangsteilnehmerControl extends FilterControl
           teilnehmer.addFilter("lehrgang = ?", ((Lehrgang) value).getID());
           break;
         case DATUM_VON:
-          teilnehmer.addFilter("von >= ?", value);
+          // Auch Lehrgänge die nach Von Datum enden, also auch teilweise in das
+          // Von/Bis Fenster fallen
+          teilnehmer.addFilter("(von >= ? OR bis >= ?)", value, value);
           break;
         case DATUM_BIS:
-          teilnehmer.addFilter("bis <= ?", value);
+          // Auch Lehrgänge die nach Bis Datum enden, aber noch im Von/Bis
+          // Fenster
+          // beginnen
+          teilnehmer.addFilter("von <= ?", value);
           break;
         default:
           throw new ApplicationException(

@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -41,15 +42,30 @@ public class ForderungDialog extends AbstractDialog<Boolean>
 {
   private Mitglied[] mitglieder;
 
+  private String zweck;
+
+  private BigDecimal betrag;
+
   /**
    * @param position
    */
   public ForderungDialog(int position, Mitglied[] m)
   {
+    this(position, m, null, null);
+  }
+
+  /**
+   * @param position
+   */
+  public ForderungDialog(int position, Mitglied[] m, String zweck,
+      BigDecimal betrag)
+  {
     super(position);
     super.setSize(950, SWT.DEFAULT);
     setTitle("Forderung erstellen");
     this.mitglieder = m;
+    this.zweck = zweck;
+    this.betrag = betrag;
   }
 
   @Override
@@ -76,7 +92,15 @@ public class ForderungDialog extends AbstractDialog<Boolean>
     left.addHeadline("Forderung");
     left.addLabelPair("Fälligkeit ", control.getFaelligkeit());
     left.addLabelPair("Zahlungsgrund", control.getPart().getBuchungstext());
+    if (zweck != null)
+    {
+      control.getPart().getBuchungstext().setValue(zweck);
+    }
     left.addLabelPair("Betrag", control.getPart().getBetrag());
+    if (betrag != null)
+    {
+      control.getPart().getBetrag().setValue(betrag);
+    }
     left.addLabelPair("Buchungsart", control.getPart().getBuchungsart());
     if (einstellungBuchungsklasseInBuchung)
     {

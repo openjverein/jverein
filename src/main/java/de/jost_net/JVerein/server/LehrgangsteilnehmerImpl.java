@@ -20,9 +20,11 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -67,6 +69,16 @@ public class LehrgangsteilnehmerImpl extends AbstractJVereinDBObject
       if (getLehrgang() == null)
       {
         throw new ApplicationException("Bitte Lehrgang auswählen!");
+      }
+      DBIterator<Lehrgangsteilnehmer> it = Einstellungen.getDBService()
+          .createList(Lehrgangsteilnehmer.class);
+      it.addFilter("lehrgang = ?", this.getLehrgang().getID());
+      it.addFilter("mitglied = ?", this.getMitglied().getID());
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Das Mitglied ist bereits bei dem Lehrgang eingetragen!");
       }
     }
     catch (RemoteException e)

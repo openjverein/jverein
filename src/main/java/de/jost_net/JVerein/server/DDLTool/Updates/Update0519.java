@@ -32,6 +32,7 @@ public class Update0519 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
+    // Das wird der Lehrgangsteilnehmer
     Column lehrgangsart = new Column("lehrgangsart", COLTYPE.BIGINT, 4, null,
         false, true);
     execute(alterColumnDropNotNull("lehrgang", lehrgangsart));
@@ -40,6 +41,7 @@ public class Update0519 extends AbstractDDLUpdate
         "lehrgangsart", "id", "SET NULL", "RESTRICT"));
     execute(renameTable("lehrgang", "lehrgangsteilnehmer"));
 
+    // Der neue Lehrgang
     Table t = new Table("lehrgang");
     Column pk = new Column("id", COLTYPE.BIGINT, 19, null, true, true);
     t.add(pk);
@@ -59,6 +61,7 @@ public class Update0519 extends AbstractDDLUpdate
     execute(createForeignKey("fkLehrgangLehrgangsart", "lehrgang",
         "lehrgangsart", "lehrgangsart", "id", "RESTRICT", "NO ACTION"));
 
+    // Lehrgang bei Lehrgangsteilnehmer hinzufügen
     Column col2 = new Column("lehrgang", COLTYPE.BIGINT, 19, null, false,
         false);
     execute(addColumn("lehrgangsteilnehmer", col2));
@@ -68,5 +71,10 @@ public class Update0519 extends AbstractDDLUpdate
     execute(
         createForeignKey("fkLehrgangsteilnehmerLehrgang", "lehrgangsteilnehmer",
             "lehrgang", "lehrgang", "id", "RESTRICT", "NO ACTION"));
+
+    // Unnötige Spalten bei Lehrgangsart löschen
+    execute(dropColumn("lehrgangsart", "von"));
+    execute(dropColumn("lehrgangsart", "bis"));
+    execute(dropColumn("lehrgangsart", "veranstalter"));
   }
 }

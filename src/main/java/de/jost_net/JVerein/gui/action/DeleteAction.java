@@ -301,7 +301,7 @@ public class DeleteAction implements Action
    * @throws ApplicationException
    * @return Der Text für die Ausgabe im YesNoCancel Dialog
    */
-  protected String getText(Object object[])
+  protected String getText(JVereinDBObject[] object)
       throws RemoteException, ApplicationException
   {
     return String.format("Wollen Sie %d %s wirklich löschen?", object.length,
@@ -347,7 +347,7 @@ public class DeleteAction implements Action
    *          Die zu löschenden Objekte
    * @return YesNoCancel Dialog mit oder ohne No Button
    */
-  protected boolean getMitNo(Object object[])
+  protected boolean getMitNo(JVereinDBObject[] object)
   {
     return false;
   }
