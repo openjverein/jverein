@@ -798,7 +798,7 @@ public enum VorlageTyp
   BELEG_MITGLIED_PFAD("mitglied-beleg-pfad", "Mitglied Beleg Pfad",
       "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
   IDEA_DATEINAME("idea-dateiname", "IDEA-Export Dateiname",
-      "IDEA export $filter_geschaefts_jahr", Vorlageart.DATEINAME.getKey()),
+      "IDEA export $filter_jahr", Vorlageart.DATEINAME.getKey()),
   BELEGE_TITEL("belege-titel", "Belege Titel", "Belege",
       Vorlageart.TITEL.getKey()),
   BELEGE_SUBTITEL("belege-subtitel", "Belege Subtitel", "",
