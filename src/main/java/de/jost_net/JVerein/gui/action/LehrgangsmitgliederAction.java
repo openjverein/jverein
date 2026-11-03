@@ -21,8 +21,10 @@ import de.jost_net.JVerein.gui.control.LehrgangDetailControl;
 import de.jost_net.JVerein.gui.dialogs.ForderungDialog;
 import de.jost_net.JVerein.gui.view.LehrgangsteilnehmerDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -101,7 +103,16 @@ public class LehrgangsmitgliederAction implements Action
               new LehrgangsmitgliederDeleteAction(control).handleAction(tln);
               break;
             case MITGLIED_ANZEIGEN:
-              GUI.startView(MitgliedDetailView.class, tln[0].getMitglied());
+              Mitglied mitglied = tln[0].getMitglied();
+              if (mitglied.getMitgliedstyp() == null || mitglied
+                  .getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+              {
+                GUI.startView(new MitgliedDetailView(), mitglied);
+              }
+              else
+              {
+                GUI.startView(new NichtMitgliedDetailView(), mitglied);
+              }
               break;
             case FORDERUNG:
               Mitglied[] mitglieder = new Mitglied[tln.length];
