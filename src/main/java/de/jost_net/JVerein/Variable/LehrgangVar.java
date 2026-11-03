@@ -18,7 +18,7 @@ public enum LehrgangVar
 {
   LEHRGANGSART("lehrgang_lehrgangsart"),
   DATUM_VON_F("lehrgang_datum_von_f"),
-  DATUM_BIS_F("lehrgang_datum_dis_f"),
+  DATUM_BIS_F("lehrgang_datum_bis_f"),
   BETRAG("lehrgang_betrag"),
   BEZEICHNUNG("lehrgang_bezeichnung"),
   VERANSTALTER("lehrgang_veranstalter");
