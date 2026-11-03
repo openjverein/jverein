@@ -714,7 +714,7 @@ public class DbBereinigenControl extends AbstractControl
         try
         {
           beleg = it.next();
-          beleg.deleteForced();
+          beleg.delete();
           count++;
         }
         catch (OperationCanceledException oce)
@@ -730,8 +730,7 @@ public class DbBereinigenControl extends AbstractControl
       }
       if (count > 0)
       {
-        monitor.setStatusText(String.format(
-            "%d Belege" + (count != 1 ? "en" : "") + " gelöscht.", count));
+        monitor.setStatusText(String.format("%d Belege gelöscht.", count));
       }
       else
       {
@@ -744,7 +743,7 @@ public class DbBereinigenControl extends AbstractControl
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen von Lastschriften.";
+      String fehler = "Fehler beim Löschen von Belegen.";
       monitor.setStatusText(fehler);
     }
   }
