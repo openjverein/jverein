@@ -26,7 +26,6 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -47,10 +46,10 @@ public class LehrgangControl extends FilterControl
     super(view);
   }
 
-  private DBIterator<Lehrgangsteilnehmer> getIterator()
+  private DBIterator<Lehrgang> getIterator()
       throws RemoteException, ApplicationException
   {
-    DBIterator<Lehrgangsteilnehmer> lehrgaenge = Einstellungen.getDBService()
+    DBIterator<Lehrgang> lehrgaenge = Einstellungen.getDBService()
         .createList(Lehrgang.class);
 
     for (Entry<Filter, Object> entry : getFilter().entrySet())
@@ -97,7 +96,7 @@ public class LehrgangControl extends FilterControl
     {
       return lehrgaengeList;
     }
-    DBIterator<Lehrgangsteilnehmer> lehrgaenge = getIterator();
+    DBIterator<Lehrgang> lehrgaenge = getIterator();
     lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
     lehrgaengeList.addColumn("Nr", "id-int");
     lehrgaengeList.addColumn(getGesperrtColumn(), false);
@@ -128,7 +127,7 @@ public class LehrgangControl extends FilterControl
         return;
       }
       lehrgaengeList.removeAll();
-      DBIterator<Lehrgangsteilnehmer> lehrgaenge = getIterator();
+      DBIterator<Lehrgang> lehrgaenge = getIterator();
       while (lehrgaenge.hasNext())
       {
         lehrgaengeList.addItem(lehrgaenge.next());

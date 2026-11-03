@@ -80,7 +80,7 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
     }
     catch (RemoteException e)
     {
-      String fehler = "Lehrgang kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Lehrgang kann nicht gelöscht werden. Siehe system log";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -97,7 +97,7 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
       }
       if (getBezeichnung() == null || getBezeichnung().isBlank())
       {
-        throw new ApplicationException("Bitte Bezeichnung auswäeingeben!");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
       if (getVon() == null)
       {

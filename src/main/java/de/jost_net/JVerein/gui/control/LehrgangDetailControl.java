@@ -348,21 +348,21 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
   @Override
   protected String getTableTitle()
   {
-    return VorlageUtil.getName(VorlageTyp.LEHRGAENG_TEILNEHMER_TITEL,
+    return VorlageUtil.getName(VorlageTyp.LEHRGANG_TEILNEHMER_TITEL,
         getLehrgang());
   }
 
   @Override
   protected String getTableSubtitle()
   {
-    return VorlageUtil.getName(VorlageTyp.LEHRGAENG_TEILNEHMER_SUBTITEL,
+    return VorlageUtil.getName(VorlageTyp.LEHRGANG_TEILNEHMER_SUBTITEL,
         getLehrgang());
   }
 
   @Override
   protected String getTableDateiname()
   {
-    return VorlageUtil.getName(VorlageTyp.LEHRGAENG_TEILNEHMER_DATEINAME,
+    return VorlageUtil.getName(VorlageTyp.LEHRGANG_TEILNEHMER_DATEINAME,
         getLehrgang());
   }
 }

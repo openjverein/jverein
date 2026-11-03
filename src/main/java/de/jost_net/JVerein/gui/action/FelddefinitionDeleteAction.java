@@ -46,7 +46,7 @@ public class FelddefinitionDeleteAction extends DeleteAction
     }
 
     // Check ob eine Felddefinition bei Mitgliedern verwendet wird
-    for (Object o : object)
+    for (JVereinDBObject o : object)
     {
       if (isZusatzfeldUsed((Felddefinition) o))
       {

@@ -389,9 +389,9 @@ public class VorlageUtil
         case BELEG_MITGLIEDER_TITEL:
           map = new BelegMap().getMap((Beleg) obj, map);
           break;
-        case LEHRGAENG_TEILNEHMER_DATEINAME:
-        case LEHRGAENG_TEILNEHMER_TITEL:
-        case LEHRGAENG_TEILNEHMER_SUBTITEL:
+        case LEHRGANG_TEILNEHMER_DATEINAME:
+        case LEHRGANG_TEILNEHMER_TITEL:
+        case LEHRGANG_TEILNEHMER_SUBTITEL:
           map = new LehrgangMap().getMap((Lehrgang) obj, map);
           break;
       }
@@ -916,9 +916,9 @@ public class VorlageUtil
         case BELEG_MITGLIEDER_TITEL:
           map = new BelegMap().getMap(null, map);
           break;
-        case LEHRGAENG_TEILNEHMER_DATEINAME:
-        case LEHRGAENG_TEILNEHMER_TITEL:
-        case LEHRGAENG_TEILNEHMER_SUBTITEL:
+        case LEHRGANG_TEILNEHMER_DATEINAME:
+        case LEHRGANG_TEILNEHMER_TITEL:
+        case LEHRGANG_TEILNEHMER_SUBTITEL:
           map = LehrgangMap.getDummyMap(map);
           break;
       }

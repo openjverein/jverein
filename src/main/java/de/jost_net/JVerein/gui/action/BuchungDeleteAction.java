@@ -42,7 +42,7 @@ public class BuchungDeleteAction extends DeleteAction
 
     // Check ob einer der Buchungen
     // eine Spendenbescheinigung zugeordnet ist
-    for (Object o : object)
+    for (JVereinDBObject o : object)
     {
       Buchung bu = (Buchung) o;
       if (bu.getSpendenbescheinigung() != null)

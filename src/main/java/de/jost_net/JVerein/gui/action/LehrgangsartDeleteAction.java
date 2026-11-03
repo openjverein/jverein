@@ -45,7 +45,7 @@ public class LehrgangsartDeleteAction extends DeleteAction
     {
       throw new ApplicationException("Keine Lehrgangsart ausgewählt");
     }
-    for (Object o : object)
+    for (JVereinDBObject o : object)
     {
       Lehrgangsart la = (Lehrgangsart) o;
       DBIterator<Lehrgangsteilnehmer> it = Einstellungen.getDBService()
