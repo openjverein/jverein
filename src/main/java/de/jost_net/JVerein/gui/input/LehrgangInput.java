@@ -33,7 +33,7 @@ public class LehrgangInput
     switch (auswahl)
     {
       case AbstractInputAuswahl.ComboBox:
-        // Hole alle Mitglieder aus Datenbank um sie später anzuzeigen.
+        // Hole alle Lehrgänge aus Datenbank um sie später anzuzeigen.
         DBIterator<Lehrgang> it = Einstellungen.getDBService()
             .createList(Lehrgang.class);
         it.setOrder("order by bezeichnung");
