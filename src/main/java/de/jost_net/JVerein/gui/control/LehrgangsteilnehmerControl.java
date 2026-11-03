@@ -106,8 +106,8 @@ public class LehrgangsteilnehmerControl extends FilterControl
     {
       return teilnehmerList;
     }
-    DBIterator<Lehrgangsteilnehmer> lehrgaenge = getIterator();
-    teilnehmerList = new JVereinTablePart(lehrgaenge, null);
+    DBIterator<Lehrgangsteilnehmer> teilnehmer = getIterator();
+    teilnehmerList = new JVereinTablePart(teilnehmer, null);
     teilnehmerList.addColumn("Nr", "id-int");
     teilnehmerList.addColumn("Name", "mitglied");
     teilnehmerList.addColumn("Lehrgang", "lehrgang");
@@ -138,10 +138,10 @@ public class LehrgangsteilnehmerControl extends FilterControl
         return;
       }
       teilnehmerList.removeAll();
-      DBIterator<Lehrgangsteilnehmer> lehrgaenge = getIterator();
-      while (lehrgaenge.hasNext())
+      DBIterator<Lehrgangsteilnehmer> teilnehmer = getIterator();
+      while (teilnehmer.hasNext())
       {
-        teilnehmerList.addItem(lehrgaenge.next());
+        teilnehmerList.addItem(teilnehmer.next());
       }
       teilnehmerList.sort();
     }
