@@ -49,10 +49,13 @@ public class LehrgangMap extends AbstractMap
           value = fromDate((Date) lg.getBis());
           break;
         case LEHRGANGSART:
-          value = lg.getLehrgangsart();
+          value = lg.getLehrgangsart().getBezeichnung();
           break;
         case BETRAG:
-          value = Einstellungen.BIGDECIMALFORMAT.format(lg.getBetrag());
+          if (lg.getBetrag() != null)
+          {
+            value = Einstellungen.BIGDECIMALFORMAT.format(lg.getBetrag());
+          }
           break;
         case BEZEICHNUNG:
           value = lg.getBezeichnung();
