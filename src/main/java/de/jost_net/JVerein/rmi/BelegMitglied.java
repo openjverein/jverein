@@ -14,31 +14,8 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.menu;
+package de.jost_net.JVerein.rmi;
 
-import de.jost_net.JVerein.gui.action.DokumentInfoBearbeitenAction;
-import de.jost_net.JVerein.gui.action.DokumentShowAction;
-import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
-import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.ContextMenuItem;
-
-/**
- * Kontext-Menu zu den Dokumenten.
- */
-public class DokumentMenu extends ContextMenu
+public interface BelegMitglied extends AbstractBelegReferenz
 {
-
-  public DokumentMenu(boolean enabled)
-  {
-    new ContextMenuItem();
-    addItem(new CheckedSingleContextMenuItem("Anzeigen",
-        new DokumentShowAction(), "eye.png"));
-    addItem(new CheckedSingleContextMenuItem("Infos bearbeiten",
-        new DokumentInfoBearbeitenAction(), "text-x-generic.png"));
-    if (enabled)
-    {
-      addItem(ContextMenuItem.SEPARATOR);
-      addItem(new DeleteMenueItem());
-    }
-  }
 }

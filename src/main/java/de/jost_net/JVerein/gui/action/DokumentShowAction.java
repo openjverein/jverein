@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.io.File;
 import java.io.IOException;
 import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.rmi.AbstractDokument;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -33,13 +33,13 @@ public class DokumentShowAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof AbstractDokument))
+    if (context == null || !(context instanceof Beleg))
     {
-      throw new ApplicationException("Kein Dokument ausgewählt");
+      throw new ApplicationException("Kein Beleg ausgewählt");
     }
     try
     {
-      AbstractDokument ad = (AbstractDokument) context;
+      Beleg ad = (Beleg) context;
       File file = ad.getFile();
       if (file != null)
       {

@@ -16,11 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Date;
 
 import de.jost_net.JVerein.keys.BelegArt;
+import de.willuhn.util.ApplicationException;
 
-public interface Beleg extends AbstractDokument
+public interface Beleg extends JVereinDBObject
 {
   public String getBelegnummer() throws RemoteException;
 
@@ -29,5 +33,33 @@ public interface Beleg extends AbstractDokument
   public BelegArt getBelegArt() throws RemoteException;
 
   public void setBelegArt(BelegArt belegart) throws RemoteException;
+
+  String getRootDir() throws RemoteException;
+
+  String getDateiPfad(String filename) throws RemoteException;
+
+  Date getDatum() throws RemoteException;
+
+  void setDatum(Date datum) throws RemoteException;
+
+  String getBemerkung() throws RemoteException;
+
+  void setBemerkung(String bemerkung) throws RemoteException;
+
+  String getUUID() throws RemoteException;
+
+  void setUUID(String uuid) throws RemoteException;
+
+  File getFile() throws IOException, ApplicationException;
+
+  void setFile(File file) throws RemoteException;
+
+  void setHash(byte[] hash) throws RemoteException;
+
+  byte[] getHash() throws RemoteException;
+
+  String getPfad() throws RemoteException;
+
+  void setPfad(String pfad) throws RemoteException;
 
 }

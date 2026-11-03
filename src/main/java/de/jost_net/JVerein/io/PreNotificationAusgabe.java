@@ -88,21 +88,12 @@ public class PreNotificationAusgabe extends AbstractAusgabe
   }
 
   @Override
-  protected String getDateiname(DBObject object)
-      throws RemoteException
+  protected String getDateiname(DBObject object) throws RemoteException
   {
     if (object != null)
     {
-      if (((Lastschrift) object).getMitglied() != null)
-      {
-        return VorlageUtil
-            .getName(VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, object);
-      }
-      else
-      {
-        return VorlageUtil.getName(
-            VorlageTyp.PRENOTIFICATION_KURSTEILNEHMER_DATEINAME, object);
-      }
+      return VorlageUtil.getName(VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME,
+          object);
     }
     else
     {

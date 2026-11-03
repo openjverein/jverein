@@ -247,10 +247,6 @@ public class AbrechnungslaufDetailControl extends VorZurueckControl
     {
       zs += "Zusatzbeträge ";
     }
-    if (getAbrechnungslauf().getKursteilnehmer())
-    {
-      zs += "Kursteilnehmer ";
-    }
     zusatzabrechnungen = new LabelInput(zs);
     zusatzabrechnungen.setName("Weitere Abrechnungen");
     return zusatzabrechnungen;

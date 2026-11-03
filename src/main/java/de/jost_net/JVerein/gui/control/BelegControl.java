@@ -158,7 +158,12 @@ public class BelegControl extends FilterControl
           {
             docs.addFilter("NOT EXISTS " + "(SELECT * FROM belegbuchung "
                 + "WHERE belegbuchung.beleg = beleg.id)");
+            docs.addFilter("NOT EXISTS " + "(SELECT * FROM belegmitglied "
+                + "WHERE belegmitglied.beleg = beleg.id)");
           }
+          break;
+        case BELEG_ART:
+          docs.addFilter("belegart = ?", ((BelegArt) value).getKey());
           break;
         default:
           throw new ApplicationException(

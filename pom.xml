@@ -36,7 +36,7 @@
     <swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
     <icu4j.version>52.2</icu4j.version>
     <jaxb.api.version>2.4.0-b180830.0359</jaxb.api.version>
-    <bytebuddy.agent.version>1.18.16-jdk5</bytebuddy.agent.version>
+    <bytebuddy.agent.version>1.18.17-jdk5</bytebuddy.agent.version>
     <release.root>${project.build.directory}/releases</release.root>
     <release.plugin.dir>${release.root}/${project.artifactId}</release.plugin.dir>
     <release.nightly.generated.dir>${project.build.directory}/generated-resources/nightly</release.nightly.generated.dir>
@@ -87,7 +87,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.23.2</version>
+      <version>1.24.1</version>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
@@ -297,7 +297,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.6.3</version>
+        <version>3.7.0</version>
         <executions>
           <execution>
             <id>enforce-build-prerequisites</id>

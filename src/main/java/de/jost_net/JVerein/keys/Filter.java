@@ -33,20 +33,18 @@ import de.willuhn.datasource.rmi.DBObject;
  */
 public enum Filter
 {
-  ABBUCHUNGSDATUM_BIS("filter_abbuchung_bis_f", "Abbuchungsdatum bis",
-      "20241231", FilterArt.DATE),
-  ABBUCHUNGSDATUM_VON("filter_abbuchung_von_f", "Abbuchungsdatum von",
-      "20240101", FilterArt.DATE),
   ABRECHNUNGSLAUF("filter_abrechnungslauf", "Abrechnungslauf", "44",
       FilterArt.SELECT, Abrechnungslauf.class),
   ABRECHNUNGSLAUF_AB("filter_abrechnungslauf_ab", "Abrechnungslauf ab", "4",
       FilterArt.INTEGER),
   ARBEITSEINSATZ_AUSWERTUNG("filter_auswertung", "Auswertung", "2024",
       FilterArt.SELECT, ArbeitseinsatzAuswertung.values()),
-  ARBEITSEINSATZ_JAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,
-      new ArbeitseinsatzJahr[1]),
-  AUSFUEHRUNG("filter_ausfuehrungstag", "Ausführungstag", "20.04.2026",
-      FilterArt.SELECT_OHNE_NULL, new Ausfuehrung[1]),
+  AUSFUEHRUNG("filter_ausfuehrungstag", "Ausführung", FilterControl.ALLE,
+      FilterArt.SELECT, Ausfuehrung.values()),
+  AUSFUEHRUNG_BIS("filter_ausfuehrungsdatum_bis_f",
+      "Letzte abgerechnete Fälligkeit bis", "20261231", FilterArt.DATE),
+  AUSFUEHRUNG_VON("filter_ausfuehrungsdatum_von_f",
+      "Letzte abgerechnete Fälligkeit von", "20260101", FilterArt.DATE),
   AUSTRITT_BIS("filter_austrittsdatum_bis_f", "Austritt bis", "20241231",
       FilterArt.DATE),
   AUSTRITT_VON("filter_austrittsdatum_von_f", "Austritt von", "20240101",
@@ -105,10 +103,6 @@ public enum Filter
       FilterArt.BIGDECIMAL),
   EIGENSCHAFTEN("filter_eigenschaften", "Eigenschaften", "+Eigenschaft",
       FilterArt.EIGENSCHAFTEN),
-  EINGABEDATUM_BIS("filter_eingabedatum_bis_f", "Eingabedatum bis", "20241231",
-      FilterArt.DATE),
-  EINGABEDATUM_VON("filter_eingabedatum_von_f", "Eingabedatum von", "20240101",
-      FilterArt.DATE),
   EINTRITT_BIS("filter_eintrittsdatum_bis_f", "Eintritt bis", "20241231",
       FilterArt.DATE),
   EINTRITT_VON("filter_eintrittsdatum_von_f", "Eintritt von", "20240101",
@@ -123,6 +117,8 @@ public enum Filter
       FilterArt.DATE),
   GESCHLECHT("filter_geschlecht", "Geschlecht", FilterControl.ALLE,
       FilterArt.SELECT, Geschlecht.values()),
+  JAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,
+      Jahr.getList()),
   KONTO("filter_kontoid", "Konto", "3", FilterArt.KONTO, Konto.class),
   // Die zwei nächsten Filter werden nicht angewendet,sie werden aber bei der
   // Variablen Ersetzung gebraucht
@@ -140,7 +136,7 @@ public enum Filter
   MITGLIED("filter_mitglied", "Mitglied", "Meier", FilterArt.TEXT),
   MITGLIED_NAME("filter_mitglied_name", "Mitglied", "Meier", FilterArt.TEXT),
   MITGLIEDART("filter_mitgliedsart", "Mitgliedsart", FilterControl.ALLE,
-      FilterArt.SELECT, MitgliedsArt.getList()),
+      FilterArt.SELECT, MitgliedsArt.values()),
   MITGLIEDSCHAFT_STATUS("filter_mitgliedschaft", "Mitgliedschaft",
       FilterControl.ALLE, FilterArt.SELECT, MitgliedStatus.values()),
   MITGLIEDSNUMMER("filter_mitgliedsnummer", "Mitgliedsnummer", "45",
@@ -179,8 +175,6 @@ public enum Filter
   VERMERK("filter_vermerk", "Vermerk", "Vermerk", FilterArt.TEXT),
   VERSAND("filter_versand", "Versand", FilterControl.ALLE, FilterArt.SELECT,
       SuchVersand.values()),
-  VERWENDUNGSZWECK("filter_verwendungszweck", "Verwendungszweck", "Beitrag",
-      FilterArt.TEXT),
   VORLAGEART("filter_vorlagenart", "Vorlagenart", "Titel", FilterArt.SELECT,
       Vorlageart.values()),
   ZAHLER("filter_zahler", "Zahler", "Text", FilterArt.TEXT),
@@ -194,7 +188,9 @@ public enum Filter
   // Für Auswertung
   JUBELJAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,
       Jubeljahr.getList()),
-  AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste", FilterArt.TEXT);
+  AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste", FilterArt.TEXT),
+  BELEG_ART("beleg_art", "Beleg Art", BelegArt.BUCHUNG.toString(),
+      FilterArt.SELECT, BelegArt.values());
 
   private String setting;
 

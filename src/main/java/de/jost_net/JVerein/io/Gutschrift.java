@@ -50,7 +50,6 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.IGutschriftProvider;
@@ -377,8 +376,7 @@ public class Gutschrift extends SEPASupport
     {
       betrag = prov.getBetrag().negate();
     }
-    // Sollbuchung nur wenn Mitglied und Zahler vorhanden, z.B. nicht bei
-    // Kursteilnehmer
+    // Sollbuchung nur wenn Mitglied und Zahler vorhanden.
     if (prov.getMitglied() != null && prov.getGutschriftZahler() != null)
     {
       sollbuchung = generiereSollbuchung(prov, betrag, zweck);
@@ -455,20 +453,10 @@ public class Gutschrift extends SEPASupport
     // Lastschrift wird als Datenklasse für die Überweisung benutzt
     Lastschrift ls = (Lastschrift) service.createObject(Lastschrift.class,
         null);
-    if (prov.getGutschriftZahler() == null)
-    {
-      // Dann muss es eine Lastschrift sein bei dem kein Mitglied gesetzt ist
-      Kursteilnehmer k = ((Lastschrift) prov).getKursteilnehmer();
-      ls.setKursteilnehmer(Integer.parseInt(k.getID()));
-      ila = (Lastschrift) prov;
-    }
-    else
-    {
-      Mitglied m = prov.getGutschriftZahler();
-      ls.setMitglied(Integer.parseInt(m.getID()));
-      ila = m;
-    }
 
+    Mitglied m = prov.getGutschriftZahler();
+    ls.setMitglied(Integer.parseInt(m.getID()));
+    ila = m;
     ls.setEmail(ila.getEmail());
     ls.setBic(ila.getBic());
     ls.setIban(ila.getIban());
