@@ -1,4 +1,4 @@
-package de.jost_net.JVerein.gui.dialog;
+package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -49,13 +49,13 @@ public class BelegCheckDialog extends AbstractDialog<Boolean>
     list.paint(c.getComposite());
 
     ButtonArea buttons = new ButtonArea();
-    if (fehlerMap.values().contains(FehlerArt.CHECKSUM_FEHLT))
+    if (fehlerMap.values().contains(FehlerArt.PREUEFSUMME_FEHLT))
     {
-      buttons.addButton("Fehlende Hashs erstellen", co -> {
+      buttons.addButton("Fehlende Prüfsummen erstellen", co -> {
         int count = 0;
         for (Entry<Beleg, FehlerArt> entry : fehlerMap.entrySet())
         {
-          if (entry.getValue() != FehlerArt.CHECKSUM_FEHLT)
+          if (entry.getValue() != FehlerArt.PREUEFSUMME_FEHLT)
           {
             continue;
           }
@@ -67,14 +67,14 @@ public class BelegCheckDialog extends AbstractDialog<Boolean>
           }
           catch (RemoteException e)
           {
-            Logger.error("Fehler beim Speichern des Hashes", e);
+            Logger.error("Fehler beim Speichern der Prüfsumme", e);
           }
           catch (Exception e)
           {
             throw e;
           }
           GUI.getStatusBar()
-              .setSuccessText("Hashes bei " + count + " Belegen ergänzt");
+              .setSuccessText("Prüfsumme bei " + count + " Belegen ergänzt");
         }
       }, null, true, "ok.png");
     }

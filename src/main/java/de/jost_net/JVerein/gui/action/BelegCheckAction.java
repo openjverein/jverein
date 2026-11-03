@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.dialog.BelegCheckDialog;
+import de.jost_net.JVerein.gui.dialogs.BelegCheckDialog;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.SimpleDialog;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 public class BelegCheckAction implements Action
@@ -18,8 +19,8 @@ public class BelegCheckAction implements Action
   public enum FehlerArt
   {
     DATEI_FEHLT,
-    CHECKSUM_FEHLT,
-    CHECKSUM_FALSCH
+    PREUEFSUMME_FEHLT,
+    PRUEFSUMME_FALSCH
   }
 
   @Override
@@ -46,11 +47,11 @@ public class BelegCheckAction implements Action
         Boolean ergebnis = beleg.checkChecksum();
         if (ergebnis == null)
         {
-          fehlerMap.put(beleg, FehlerArt.CHECKSUM_FEHLT);
+          fehlerMap.put(beleg, FehlerArt.PREUEFSUMME_FEHLT);
         }
         else if (!ergebnis)
         {
-          fehlerMap.put(beleg, FehlerArt.CHECKSUM_FALSCH);
+          fehlerMap.put(beleg, FehlerArt.PRUEFSUMME_FALSCH);
         }
       }
       if (fehlerMap.isEmpty())
@@ -65,6 +66,10 @@ public class BelegCheckAction implements Action
       {
         new BelegCheckDialog(fehlerMap).open();
       }
+    }
+    catch (OperationCanceledException e)
+    {
+      throw e;
     }
     catch (Exception e)
     {
