@@ -372,10 +372,7 @@ public class SplitBuchung
   public Buchung createSplitBuchung()
       throws RemoteException, ApplicationException
   {
-    Buchung buch = createSplitbuchung(getMaster(), getMaster(), null, null);
-    addBuchung(buch);
-
-    return buch;
+    return createSplitbuchung(getMaster(), getMaster(), null, null);
   }
 
   /**
@@ -389,6 +386,7 @@ public class SplitBuchung
       throws RemoteException, ApplicationException
   {
     Buchung buch = createSplitBuchung();
+    addBuchung(buch);
     buch.setBetrag(getMaster().getBetrag().negate());
     buch.setSplitTyp(SplitbuchungTyp.GEGEN);
     return buch;

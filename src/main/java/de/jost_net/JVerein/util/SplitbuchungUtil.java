@@ -174,6 +174,8 @@ public class SplitbuchungUtil
         zugeordnet = zugeordnet.add(betragZuordnen);
 
         Buchung splitBuchung = splitBuchungSplit.createSplitBuchung();
+        splitBuchungSplit.addBuchung(splitBuchung);
+
         splitBuchung.setBetrag(betragZuordnen);
         if (splitPositionZweck)
         {
@@ -202,11 +204,12 @@ public class SplitbuchungUtil
         if (buchung.getBetrag().compareTo(zugeordnet) != 0)
         {
           restBuchung = splitBuchungSplit.createSplitBuchung();
+          splitBuchungSplit.addBuchung(restBuchung);
           restBuchung.setBetrag(buchung.getBetrag().subtract(zugeordnet));
         }
         // Wenn es nur eine Splitposition gibt, die Splitbuchung auflösen.
         // (Haupt- und Gegen-Buchung gibt es immer, daher müssen es 3 sein)
-        if (splitBuchungSplit.getAnzahl() == 3)
+        if (splitBuchungSplit.getBuchungen().size() == 3)
         {
           Buchung split = null;
           for (Buchung b : splitBuchungSplit.getBuchungen())

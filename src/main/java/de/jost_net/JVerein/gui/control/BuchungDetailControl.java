@@ -732,8 +732,7 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
       }
       else
       {
-        // Buchung wurde schon der Splibuchung hinzugefügt, daher muss hier
-        // nichts gespeichert werden.
+        b.getSplitbuchung().addBuchung(b);
         b.plausi();
         GUI.getStatusBar().setSuccessText("Buchung übernommen");
       }
