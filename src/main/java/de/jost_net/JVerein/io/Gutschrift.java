@@ -245,7 +245,7 @@ public class Gutschrift extends SEPASupport
               // Wenn keine Datei ausgewählt wurde, dann wird keine generiert
               Ueberweisung ueberweisung = new Ueberweisung(null);
               ueberweisung.write(ueberweisungen, file, params.faelligkeit,
-                  ausgabe, null);
+                  ausgabe, params.verwendungszweck);
               if (ausgabe == UeberweisungAusgabe.HIBISCUS)
               {
                 monitor.setStatusText("SEPA Auftrag an Hibiscus übergeben");
