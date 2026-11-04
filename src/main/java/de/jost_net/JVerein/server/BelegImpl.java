@@ -62,6 +62,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
 
   private File file;
 
+  private boolean hashUpdateAllowed = false;
+
   private static final long serialVersionUID = 1L;
 
   public BelegImpl() throws RemoteException
@@ -82,7 +84,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       {
         throw new ApplicationException("UUID darf nicht verändert werden!");
       }
-      if (hasChanged("hash"))
+      if (hasChanged("hash") && !hashUpdateAllowed)
       {
         throw new ApplicationException("Hash darf nicht verändert werden!");
       }
@@ -313,7 +315,23 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   {
     if (!isNewObject())
     {
+      // wenn nicht vorhanden, erstellen wir den Hash
+      if (getHash() == null)
+      {
+        try
+        {
+          setHash(createHash(getFile()));
+          hashUpdateAllowed = true;
+        }
+        catch (ApplicationException | IOException e)
+        {
+          Logger.error(
+              "Fehler beim erstellen des Hashes für einen bestehenden Beleg",
+              e);
+        }
+      }
       super.store();
+      hashUpdateAllowed = false;
       return;
     }
     try
@@ -435,8 +453,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
     setAttribute("uuid", uuid);
   }
 
-  @Override
-  public File getFile() throws IOException, ApplicationException
+  private File getFileInternal() throws IOException, ApplicationException
   {
     if (isNewObject())
     {
@@ -479,25 +496,31 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         throw new ApplicationException("Datei existiert nicht");
       }
     }
-    if (getHash() != null && getHash().length > 0 && file != null)
+    return file;
+  }
+
+  @Override
+  public File getFile() throws IOException, ApplicationException
+  {
+    File file = getFileInternal();
+    if (getHash() != null && getHash().length > 0 && file != null
+        && !Arrays.equals(getHash(), createHash(file)))
     {
-      try (FileInputStream fis = new FileInputStream(file))
-      {
-        MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM);
-        md.update(fis.readAllBytes());
-        if (!Arrays.equals(getHash(), md.digest()))
-        {
-          throw new ApplicationException(
-              "Datei wurde seit dem Speichern verändert, Hash stimmt nicht überein!");
-        }
-      }
-      catch (NoSuchAlgorithmException e)
-      {
-        throw new ApplicationException(
-            "Fehler beim erstellen des Datei-Hashes");
-      }
+      throw new ApplicationException(
+          "Datei wurde seit dem Speichern verändert, Hash stimmt nicht überein!");
     }
     return file;
+  }
+
+  @Override
+  public Boolean checkChecksum() throws IOException, ApplicationException
+  {
+    File file = getFileInternal();
+    if (getHash() != null && getHash().length > 0 && file != null)
+    {
+      return Arrays.equals(getHash(), createHash(file));
+    }
+    return null;
   }
 
   @Override
@@ -584,17 +607,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
           Application.getMessagingFactory()
               .getMessagingQueue("jameica.messaging.putmeta").sendMessage(qm);
         }
-        try (FileInputStream stream = new FileInputStream(file))
-        {
-          MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM);
-          md.update(stream.readAllBytes());
-          setHash(md.digest());
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-          throw new ApplicationException(
-              "Fehler beim erstellen des Datei-Hashes");
-        }
+        setHash(createHash(file));
       }
       catch (FileNotFoundException e)
       {
@@ -627,6 +640,21 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
             .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
       }
       throw e;
+    }
+  }
+
+  private byte[] createHash(File file)
+      throws ApplicationException, FileNotFoundException, IOException
+  {
+    try (FileInputStream stream = new FileInputStream(file))
+    {
+      MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM);
+      md.update(stream.readAllBytes());
+      return md.digest();
+    }
+    catch (NoSuchAlgorithmException e)
+    {
+      throw new ApplicationException("Fehler beim erstellen des Datei-Hashes");
     }
   }
 
