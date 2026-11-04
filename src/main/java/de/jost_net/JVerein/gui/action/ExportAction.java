@@ -25,6 +25,7 @@ package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.control.AbstractListeControl;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
+import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -49,13 +50,22 @@ public class ExportAction implements Action
       Object[] objArray = null;
       if (context instanceof AbstractListeControl control)
       {
-        objArray = control.getTablePart().getItems().toArray();
+
+        IJVereinPart tablePart = control.getTablePart();
+
+        if (tablePart == null)
+        {
+          throw new ApplicationException(
+              "Für diesen Bereich gibt es keine exportierbaren Daten.");
+        }
+
+        objArray = tablePart.getItems().toArray();
       }
       else if (context instanceof Object[] objs)
       {
         objArray = objs;
       }
-      else
+      else if (context != null)
       {
         objArray = new Object[] { context };
       }

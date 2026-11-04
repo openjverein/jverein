@@ -128,10 +128,16 @@ public class BelegExport implements Exporter
         throw new IOException(
             "Verzeichnis konnte nicht erstellt werden: " + directory);
       }
+
+      if (belegFile == null || !belegFile.isFile() || !belegFile.canRead())
+      {
+        throw new ApplicationException(
+            "Belegdatei nicht vorhanden oder nicht lesbar.");
+      }
       Files.copy(belegFile.toPath(), target.toPath(),
           StandardCopyOption.REPLACE_EXISTING);
 
-      monitor.setPercentComplete(i++ * 100 / belegList.size());
+      monitor.setPercentComplete(++i * 100 / belegList.size());
     }
   }
 
