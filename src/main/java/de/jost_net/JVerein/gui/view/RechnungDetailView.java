@@ -85,6 +85,7 @@ public class RechnungDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     buttons.addButton(control.getRechnungDruckUndMailButton());
     buttons.addButton(control.getMahnungDruckUndMailButton());
+    buttons.addButton(control.getAnzeigenButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
 

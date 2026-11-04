@@ -162,6 +162,9 @@ public class BelegControl extends FilterControl
                 + "WHERE belegmitglied.beleg = beleg.id)");
           }
           break;
+        case BELEG_ART:
+          docs.addFilter("belegart = ?", ((BelegArt) value).getKey());
+          break;
         default:
           throw new ApplicationException(
               "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
