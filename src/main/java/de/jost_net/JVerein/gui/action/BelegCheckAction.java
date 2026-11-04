@@ -58,7 +58,7 @@ public class BelegCheckAction implements Action
       {
         SimpleDialog dialog = new SimpleDialog(SimpleDialog.POSITION_CENTER);
         dialog.setText("Die Dateien aller " + it.size()
-            + " Belege sind vorhanden und haben korrekte Hash-Werte.");
+            + " Belege sind vorhanden und haben korrekte Prüfsummen.");
         dialog.setTitle("Belege geprüft");
         dialog.open();
       }
@@ -74,7 +74,7 @@ public class BelegCheckAction implements Action
     catch (Exception e)
     {
       throw new ApplicationException(
-          "Fehler beim prüfen der Hash-Werte: " + e.getMessage());
+          "Fehler beim prüfen der Prüfsummen: " + e.getMessage());
     }
   }
 
