@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -111,30 +112,30 @@ public class BelegExport implements Exporter
         belegList.add(beleg);
       }
     }
-
+    Path base = file.toPath().toRealPath();
     int i = 0;
     for (Beleg beleg : belegList)
     {
 
       File belegFile = beleg.getFile();
-      String dateiname = VorlageUtil.getName(VorlageTyp.BELEG_EXPORT_DATEINAME,
-          beleg, belegFile.getName());
-
-      File target = new File(file, dateiname);
-      File directory = target.getParentFile();
-
-      if (!directory.exists() && !directory.mkdirs())
-      {
-        throw new IOException(
-            "Verzeichnis konnte nicht erstellt werden: " + directory);
-      }
-
       if (belegFile == null || !belegFile.isFile() || !belegFile.canRead())
       {
         throw new ApplicationException(
             "Belegdatei nicht vorhanden oder nicht lesbar.");
       }
-      Files.copy(belegFile.toPath(), target.toPath(),
+
+      String dateiname = VorlageUtil.getName(VorlageTyp.BELEG_EXPORT_DATEINAME,
+          beleg, belegFile.getName());
+
+      Path target = base.resolve(dateiname).normalize();
+      if (!target.startsWith(base))
+      {
+        throw new ApplicationException("Ungültiger Exportpfad: " + dateiname);
+      }
+      Path directory = target.getParent();
+      Files.createDirectories(directory);
+
+      Files.copy(belegFile.toPath(), target,
           StandardCopyOption.REPLACE_EXISTING);
 
       monitor.setPercentComplete(++i * 100 / belegList.size());
@@ -154,7 +155,7 @@ public class BelegExport implements Exporter
   }
 
   @Override
-  public boolean isDirecoryExport()
+  public boolean isDirectoryExport()
   {
     return true;
   }

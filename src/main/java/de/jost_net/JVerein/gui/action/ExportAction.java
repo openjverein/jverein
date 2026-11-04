@@ -72,7 +72,7 @@ public class ExportAction implements Action
 
       if (objArray == null || objArray.length == 0)
       {
-        throw new ApplicationException("Keine Daten zum esportieren vorhanden");
+        throw new ApplicationException("Keine Daten zum Exportieren vorhanden");
       }
       ExportDialog d = new ExportDialog(objArray, context.getClass(), help,
           context);
@@ -89,7 +89,7 @@ public class ExportAction implements Action
     }
     catch (Exception e)
     {
-      Logger.error("Fehlerbeim Export", e);
+      Logger.error("Fehler beim Export", e);
       GUI.getStatusBar().setErrorText("Fehler beim Exportieren");
     }
   }

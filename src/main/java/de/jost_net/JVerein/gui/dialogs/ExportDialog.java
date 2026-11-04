@@ -232,7 +232,7 @@ public class ExportDialog extends AbstractDialog<Object>
       }
 
       final String filename;
-      if (exporter.isDirecoryExport())
+      if (exporter.isDirectoryExport())
       {
         DirectoryDialog fd = new DirectoryDialog(GUI.getShell(), SWT.NONE);
 
@@ -274,7 +274,7 @@ public class ExportDialog extends AbstractDialog<Object>
 
       // Wir merken uns noch das Verzeichnis vom letzten mal
       settings.setAttribute("lastdir",
-          exporter.isDirecoryExport() ? file.getPath() : file.getParent());
+          exporter.isDirectoryExport() ? file.getPath() : file.getParent());
 
       BackgroundTask t = new BackgroundTask()
       {

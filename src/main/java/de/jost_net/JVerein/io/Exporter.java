@@ -117,7 +117,7 @@ public interface Exporter extends IO
    */
   public int getExportDialogOptions();
 
-  public default boolean isDirecoryExport()
+  public default boolean isDirectoryExport()
   {
     return false;
   }
