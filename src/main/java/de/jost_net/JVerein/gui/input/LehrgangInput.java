@@ -21,14 +21,14 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.input.AbstractInput;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 
 public class LehrgangInput
 {
 
-  public AbstractInput getLehrgangInput(AbstractInput lehrgangInput,
-      Lehrgang lehrgang, int auswahl) throws RemoteException
+  public Input getLehrgangInput(Input lehrgangInput, Lehrgang lehrgang,
+      int auswahl) throws RemoteException
   {
     switch (auswahl)
     {

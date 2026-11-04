@@ -128,7 +128,7 @@ public enum Filter
       FilterArt.TEXT),
   KONTOART("filter_kontoart", "Kontoart", FilterControl.ALLE, FilterArt.SELECT,
       Kontoart.getList()),
-  LEHRGANG("filter_lehrgang", "Lehrgang", "KS-2026-1", FilterArt.SELECT,
+  LEHRGANG("filter_lehrgang", "Lehrgang", "KS-2026-1", FilterArt.LEHRGANG,
       Lehrgang.class),
   LEHRGANGSART("filter_lehrgangsart", "Lehrgangsart", "Grundkurs",
       FilterArt.SELECT, Lehrgangsart.class),
@@ -220,7 +220,8 @@ public enum Filter
     BIGDECIMAL,
     KONTO,
     BUCHUNGSART,
-    BETRAG
+    BETRAG,
+    LEHRGANG
   }
 
   Filter(String setting, String anzeigeText, String defalutValue, FilterArt art)

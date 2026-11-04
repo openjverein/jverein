@@ -47,7 +47,7 @@ public class LehrgangsteilnehmerDetailControl extends VorZurueckControl
 
   private SelectInput lehrgangsart;
 
-  private AbstractInput lehrgang;
+  private Input lehrgang;
 
   private DateInput von = null;
 
