@@ -375,6 +375,7 @@ public class VorlageUtil
         case BELEG_BUCHUNGEN_PFAD:
         case BELEG_ALLGEMEIN_PFAD:
         case BELEG_MITGLIED_PFAD:
+        case BELEG_EXPORT_DATEINAME:
           map.put("file_name", name);
         case BELEG_BUCHUNGEN_DATEINAME:
         case BELEG_BUCHUNGEN_SUBTITEL:
@@ -888,6 +889,7 @@ public class VorlageUtil
         case BELEG_BUCHUNGEN_PFAD:
         case BELEG_ALLGEMEIN_PFAD:
         case BELEG_MITGLIED_PFAD:
+        case BELEG_EXPORT_DATEINAME:
           map.put("file_name", "Filename.pdf");
         case BELEG_BUCHUNGEN_DATEINAME:
         case BELEG_BUCHUNGEN_SUBTITEL:

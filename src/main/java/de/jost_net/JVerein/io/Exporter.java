@@ -116,4 +116,9 @@ public interface Exporter extends IO
    * @return Optionen wie in AbstractPartExportDialog definiert
    */
   public int getExportDialogOptions();
+
+  public default boolean isDirecoryExport()
+  {
+    return false;
+  }
 }
