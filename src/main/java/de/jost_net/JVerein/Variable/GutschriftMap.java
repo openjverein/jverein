@@ -188,7 +188,7 @@ public class GutschriftMap extends AbstractMap
       map = inMap;
     }
 
-    for (LastschriftVar var : LastschriftVar.values())
+    for (GutschriftVar var : GutschriftVar.values())
     {
       Object value = null;
       switch (var)
