@@ -814,7 +814,8 @@ public enum VorlageTyp
       "Beleg-Buchungen-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
   BELEG_EXPORT_DATEINAME("beleg-export-dateiname", "Beleg Export Dateiname",
-      "$beleg_nummer/$file_name", Vorlageart.PFAD.getKey()),
+      "$beleg_nummer$file_name.substring($file_name.lastIndexOf('.'))",
+      Vorlageart.PFAD.getKey()),
 
   BELEG_MITGLIEDER_TITEL("beleg-mitglieder-titel", "Beleg Mitglieder Titel",
       "Beleg-Mitglieder-$beleg_nummer-$aktuellesdatum-$aktuellezeit",

@@ -138,6 +138,7 @@ public class BelegExport implements Exporter
       Files.copy(belegFile.toPath(), target,
           StandardCopyOption.REPLACE_EXISTING);
 
+      monitor.log(target.getFileName() + " exportiert");
       monitor.setPercentComplete(++i * 100 / belegList.size());
     }
   }
