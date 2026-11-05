@@ -170,7 +170,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
 
   private SelectNoScrollInput zahlungsweg;
 
-  private LabelGroup bankverbindungLabelGroup;
+  private LabelGroup zahlungsdatenLabelGroup;
 
   private SelectNoScrollInput zahlungsrhytmus;
 
@@ -620,15 +620,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
       zahlungsweg = new SelectNoScrollInput(weg,
           new Zahlungsweg((Integer) Einstellungen.getEinstellung(prop)));
     }
-
-    if (isMitglied)
-    {
-      zahlungsweg.setName("Zahlungsweg des Mitglieds");
-    }
-    else
-    {
-      zahlungsweg.setName("Zahlungsweg des Nicht-Mitglieds");
-    }
+    zahlungsweg.setName("Zahlungsweg");
     zahlungsweg.addListener(new Listener()
     {
 
@@ -718,13 +710,26 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     }
   }
 
-  // Lösche alle Daten aus der Bankverbindungsmaske
-  private void deleteBankverbindung()
+  // Lösche alle Daten aus der Zahlungsdatensmaske
+  // Zahlungsweg wird auf Überweisung gestellt
+  private void deleteZahlungsdaten()
   {
     try
     {
-      getZahlungsrhythmus().setValue(new Zahlungsrhythmus(
-          (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSRHYTMUS)));
+      getZahlungsweg().setValue((new Zahlungsweg(Zahlungsweg.ÜBERWEISUNG)));
+      getMandatID().setMandatory(false);
+      getMandatDatum().setMandatory(false);
+      getMandatVersion().setMandatory(false);
+      getIban().setMandatory(false);
+      if (zahlungsrhytmus != null)
+      {
+        zahlungsrhytmus.setValue(new Zahlungsrhythmus(
+            (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSRHYTMUS)));
+      }
+      if (zahlungstermin != null)
+      {
+        zahlungstermin.setValue(null);
+      }
       getMandatID().setValue(null);
       getMandatDatum().setValue(null);
       getMandatVersion().setValue(null);
@@ -739,13 +744,22 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     }
   }
 
-  public LabelGroup getBankverbindungLabelGroup(Composite parent)
+  public LabelGroup getZahlungsdatenLabelGroup(Composite parent)
   {
-    if (bankverbindungLabelGroup == null)
+    if (zahlungsdatenLabelGroup == null)
     {
-      bankverbindungLabelGroup = new LabelGroup(parent, "Bankverbindung");
+      String titel;
+      if (isMitglied)
+      {
+        titel = "Zahlungsdaten des Mitglieds";
+      }
+      else
+      {
+        titel = "Zahlungsdaten des Nicht-Mitglieds";
+      }
+      zahlungsdatenLabelGroup = new LabelGroup(parent, titel);
     }
-    return bankverbindungLabelGroup;
+    return zahlungsdatenLabelGroup;
   }
 
   public SelectInput getZahlungsrhythmus() throws RemoteException
@@ -1691,16 +1705,16 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     return lehrgaengeList;
   }
 
-  public Button getKontoDatenLoeschenButton()
+  public Button getZahlungsdatenLoeschenButton()
   {
-    Button b = new Button("Daten löschen", new Action()
+    Button b = new Button("Zahlungsdaten löschen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-        dialog.setTitle("Bankverbindung-Daten löschen");
-        dialog.setText("Bankverbindung-Daten löschen?");
+        dialog.setTitle("Zahlungsdaten löschen");
+        dialog.setText("Zahlungsdaten löschen?");
         boolean delete = false;
         try
         {
@@ -1712,7 +1726,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
         }
         if (delete)
         {
-          deleteBankverbindung();
+          deleteZahlungsdaten();
         }
       }
     }, null, false, "user-trash-full.png");
@@ -1829,13 +1843,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
                   // Wenn alte ktoi Daten verwendet wurden, dann diese löschen
                   if (ktoi)
                   {
-                    getZahlungsweg()
-                        .setValue(new Zahlungsweg(Zahlungsweg.ÜBERWEISUNG));
-                    deleteBankverbindung();
-                    mandatid.setMandatory(false);
-                    mandatdatum.setMandatory(false);
-                    mandatversion.setMandatory(false);
-                    iban.setMandatory(false);
+                    deleteZahlungsdaten();
                     m.clearKtoi();
                   }
                 }
