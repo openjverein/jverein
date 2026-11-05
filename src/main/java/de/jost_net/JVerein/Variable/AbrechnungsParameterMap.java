@@ -168,9 +168,6 @@ public class AbrechnungsParameterMap extends AbstractMap
         case KOMPAKTEABBUCHUNG:
           value = "J";
           break;
-        case KURSTEILNEHMER:
-          value = "N";
-          break;
         case SEPAPRINT:
           value = "J";
           break;
