@@ -684,6 +684,31 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     {
       abweichenderZahlerInput.setName("Abweichender Zahler für Zusatzbeträge");
     }
+    abweichenderZahlerInput.addListener(new Listener()
+    {
+      @Override
+      public void handleEvent(Event event)
+      {
+        try
+        {
+          if (getMitglied().getAbweichenderZahler() == null
+              && getMandatDatum().getValue() == null
+              && abweichenderZahlerInput.getValue() != null)
+          {
+            getZahlungsweg()
+                .setValue((new Zahlungsweg(Zahlungsweg.ÜBERWEISUNG)));
+            getMandatID().setMandatory(false);
+            getMandatDatum().setMandatory(false);
+            getMandatVersion().setMandatory(false);
+            getIban().setMandatory(false);
+          }
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+    });
     return abweichenderZahlerInput;
   }
 
