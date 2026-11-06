@@ -326,7 +326,7 @@ public class PersonalbogenControl extends DruckMailControl
   }
 
   @Override
-  protected JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     // Nichts tun, hier ist keine Tabelle implementiert
     return null;

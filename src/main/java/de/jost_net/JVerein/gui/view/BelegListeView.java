@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.BelegControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.ExportButton;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.util.DragnDropUtil;
@@ -56,6 +57,7 @@ public class BelegListeView extends AbstractView
     DragnDropUtil.setDragDrop(getParent(), f -> control.addFile(f));
 
     ButtonArea buttons = new ButtonArea();
+    buttons.addButton(new ExportButton(DokumentationUtil.BELEG, control));
     buttons.addButton(new HelpButton(DokumentationUtil.BELEG));
     buttons.addButton(
         new NewButton(new NewAction(BelegDetailView.class, Beleg.class)));
