@@ -17,6 +17,7 @@ package de.jost_net.JVerein.Variable;
 public enum ZusatzbetragVar
 {
   ERSTE_FAELLIGKEIT("zusatzbetrag_erste_faelligkeit"),
+  LETZTE_FAELLIGKEIT("zusatzbetrag_letzte_faelligkeit"),
   NAECHSTE_FAELLIGKEIT("zusatzbetrag_naechste_faelligkeit"),
   NICHT_MEHR_AUSFUEHREN("zusatzbetrag_nicht_mehr_ausfuehren"),
   INTERVALL("zusatzbetrag_intervall"),

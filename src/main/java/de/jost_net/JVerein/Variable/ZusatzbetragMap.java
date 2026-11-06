@@ -45,6 +45,10 @@ public class ZusatzbetragMap extends AbstractMap
         case ERSTE_FAELLIGKEIT:
           value = Datum.formatDate(zusatzbetrag.getStartdatum());
           break;
+        case LETZTE_FAELLIGKEIT:
+          value = Datum.formatDate(Datum.addInterval(
+              zusatzbetrag.getFaelligkeit(), -zusatzbetrag.getIntervall()));
+          break;
         case NAECHSTE_FAELLIGKEIT:
           value = Datum.formatDate(zusatzbetrag.getFaelligkeit());
           break;
@@ -84,6 +88,9 @@ public class ZusatzbetragMap extends AbstractMap
       {
         case ERSTE_FAELLIGKEIT:
           value = Datum.formatDate(toDate("01.01.2026"));
+          break;
+        case LETZTE_FAELLIGKEIT:
+          value = Datum.formatDate(toDate("01.05.2026"));
           break;
         case NAECHSTE_FAELLIGKEIT:
           value = Datum.formatDate(toDate("01.06.2026"));
