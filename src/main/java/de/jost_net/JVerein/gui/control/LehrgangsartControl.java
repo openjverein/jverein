@@ -24,12 +24,10 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangsartDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.util.ApplicationException;
 
 public class LehrgangsartControl extends FilterControl
@@ -56,11 +54,6 @@ public class LehrgangsartControl extends FilterControl
     lehrgangsartList = new JVereinTablePart(lehrgangsarten, null);
     lehrgangsartList.addColumn(getGesperrtColumn(), false);
     lehrgangsartList.addColumn("Bezeichnung", "bezeichnung");
-    lehrgangsartList.addColumn("Von/am", "von",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    lehrgangsartList.addColumn("Bis", "bis",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    lehrgangsartList.addColumn("Veranstalter", "veranstalter");
     lehrgangsartList.setContextMenu(new LehrgangsartMenu(lehrgangsartList));
     lehrgangsartList.setMulti(true);
     lehrgangsartList.setAction(

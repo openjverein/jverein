@@ -1,0 +1,54 @@
+/**********************************************************************
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ **********************************************************************/
+package de.jost_net.JVerein.gui.menu;
+
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.ForderungAction;
+import de.jost_net.JVerein.gui.action.LehrgangDetailAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.LehrgangsteilnehmerDetailView;
+import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.ContextMenuItem;
+
+/**
+ * Kontext-Menu zu den Lehrgängen
+ */
+public class LehrgangsteilnehmerMenu extends ContextMenu
+{
+
+  /**
+   * Erzeugt ein Kontext-Menu fuer die Liste der Lehrgangsteilnehmer.
+   */
+  public LehrgangsteilnehmerMenu(JVereinTablePart part)
+  {
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(LehrgangsteilnehmerDetailView.class, part),
+        "text-x-generic.png"));
+    addItem(new DeleteMenueItem());
+    addItem(ContextMenuItem.SEPARATOR);
+    if (part != null)
+    {
+      addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+          new MitgliedDetailAction(), "user-friends.png"));
+    }
+    addItem(new CheckedSingleContextMenuItem("Lehrgang anzeigen",
+        new LehrgangDetailAction(), "chalkboard-teacher.png"));
+    addItem(new CheckedContextMenuItem("Forderung erstellen",
+        new ForderungAction(), "lastschrift.png"));
+  }
+}

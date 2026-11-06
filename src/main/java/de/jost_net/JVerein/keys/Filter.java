@@ -22,6 +22,7 @@ import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Projekt;
@@ -127,6 +128,8 @@ public enum Filter
       FilterArt.TEXT),
   KONTOART("filter_kontoart", "Kontoart", FilterControl.ALLE, FilterArt.SELECT,
       Kontoart.getList()),
+  LEHRGANG("filter_lehrgang", "Lehrgang", "KS-2026-1", FilterArt.LEHRGANG,
+      Lehrgang.class),
   LEHRGANGSART("filter_lehrgangsart", "Lehrgangsart", "Grundkurs",
       FilterArt.SELECT, Lehrgangsart.class),
   MAIL("filter_mail", "Mail", FilterControl.ALLE, FilterArt.SELECT,
@@ -217,7 +220,8 @@ public enum Filter
     BIGDECIMAL,
     KONTO,
     BUCHUNGSART,
-    BETRAG
+    BETRAG,
+    LEHRGANG
   }
 
   Filter(String setting, String anzeigeText, String defalutValue, FilterArt art)

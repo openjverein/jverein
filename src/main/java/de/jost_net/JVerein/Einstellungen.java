@@ -247,6 +247,7 @@ public class Einstellungen
     INDIVIDUELLEBEITRAEGE("individuellebeitraege", Boolean.class, "0"),
     EXTERNEMITGLIEDSNUMMER("externemitgliedsnummer", Boolean.class, "0"),
     MITGLIEDSNUMMERANZEIGEN("nummeranzeigen", Boolean.class, "0"),
+    LEHRGANGSIDANZEIGEN("lehrgangsidanzeigen", Boolean.class, "0"),
     SUMMENANLAGENKONTO("summenanlagenkonto", Boolean.class, "0"),
     LEERESPALTE("leerespalte", Boolean.class,
         System.getProperty("os.name").toLowerCase().indexOf("windows") != -1
@@ -261,6 +262,8 @@ public class Einstellungen
     BUCHUNGSARTSORT("buchungsartsort", Integer.class, "1"),
     BUCHUNGSARTANZEIGE("buchungsartanzeige", Integer.class, "1"),
     MITGLIEDAUSWAHL("mitgliedauswahl", Integer.class,
+        ((Integer) AbstractInputAuswahl.SearchInput).toString()),
+    LEHRGANGAUSWAHL("lehrgangauswahl", Integer.class,
         ((Integer) AbstractInputAuswahl.SearchInput).toString()),
     AFAINJAHRESABSCHLUSS("afainjahresabschluss", Boolean.class, "1"),
     UNTERDRUECKUNGOHNEBUCHUNG("unterdrueckungohnebuchung", Boolean.class, "1"),

@@ -43,7 +43,8 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     DOUBLE,
     LONGBLOB,
     MEDIUMTEXT,
-    VARBINARY
+    VARBINARY,
+    DECIMAL
   }
 
   private DRIVER drv;
@@ -380,6 +381,9 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
         break;
       case VARBINARY:
         ret += "VARBINARY(" + col.getLen() + ")";
+        break;
+      case DECIMAL:
+        ret += "DECIMAL(" + col.getLen() + ",2)";
         break;
     }
     ret += " ";

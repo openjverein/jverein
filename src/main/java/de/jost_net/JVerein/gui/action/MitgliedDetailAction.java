@@ -32,7 +32,7 @@ import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
-import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.Action;
@@ -83,9 +83,9 @@ public class MitgliedDetailAction implements Action
         Zusatzbetrag z = (Zusatzbetrag) context;
         mitglied = z.getMitglied();
       }
-      else if (context instanceof Lehrgang)
+      else if (context instanceof Lehrgangsteilnehmer)
       {
-        Lehrgang l = (Lehrgang) context;
+        Lehrgangsteilnehmer l = (Lehrgangsteilnehmer) context;
         mitglied = l.getMitglied();
       }
       else if (context instanceof Lastschrift)
