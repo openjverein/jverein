@@ -17,19 +17,16 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.server.SplitBuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -83,23 +80,11 @@ public class SplitbuchungBulkAufloesenAction implements Action
         {
           // Check ob einer der Buchungen der Splittbuchung
           // eine Spendenbescheinigung zugeordnet ist
-          final DBService service = Einstellungen.getDBService();
-          String sql = "SELECT DISTINCT buchung.id from buchung "
-              + "WHERE (splitid = ? and spendenbescheinigung IS NOT NULL) ";
-          spendenbescheinigung = (boolean) service.execute(sql,
-              new Object[] { splitbu.getSplitId() }, new ResultSetExtractor()
-              {
-                @Override
-                public Object extract(ResultSet rs)
-                    throws RemoteException, SQLException
-                {
-                  if (rs.next())
-                  {
-                    return true;
-                  }
-                  return false;
-                }
-              });
+          DBIterator<Buchung> it = Einstellungen.getDBService()
+              .createList(Buchung.class);
+          it.addFilter("splitid = ?", splitbu.getSplitId());
+          it.addFilter("spendenbescheinigung IS NOT NULL");
+          spendenbescheinigung = it.hasNext();
           if (spendenbescheinigung)
             break;
           schongeprueft.add(splitbu.getSplitId());
@@ -165,8 +150,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
         splitid = bu.getSplitId();
         if (!geloescht.contains(splitid))
         {
-          SplitbuchungsContainer.init(bu);
-          SplitbuchungsContainer.aufloesen();
+          new SplitBuchung(bu).aufloesen();
           geloescht.add(splitid);
         }
       }
