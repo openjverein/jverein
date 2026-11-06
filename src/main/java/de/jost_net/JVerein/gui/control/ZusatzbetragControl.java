@@ -18,8 +18,8 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Map.Entry;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -32,6 +32,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.keys.Ausfuehrung;
 import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Steuer;
@@ -45,6 +46,7 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class ZusatzbetragControl extends FilterControl
 {
@@ -57,7 +59,8 @@ public class ZusatzbetragControl extends FilterControl
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (zusatzbetraegeList != null)
     {
@@ -123,15 +126,10 @@ public class ZusatzbetragControl extends FilterControl
     zusatzbetraegeList.setAction(
         new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
     VorZurueckControl.setObjektListe(null, null);
-
-    if (getFilterValue(Filter.AUSFUEHRUNG) == Ausfuehrung.AKTIVE)
-    {
-      nichtAktiveEliminieren(zusatzbetraegeList);
-    }
     return zusatzbetraegeList;
   }
 
-  public void TabRefresh()
+  public void TabRefresh() throws ApplicationException
   {
     try
     {
@@ -143,10 +141,6 @@ public class ZusatzbetragControl extends FilterControl
         {
           zusatzbetraegeList.addItem(zusatzbetraege.next());
         }
-        if (getFilterValue(Filter.AUSFUEHRUNG) == Ausfuehrung.AKTIVE)
-        {
-          nichtAktiveEliminieren(zusatzbetraegeList);
-        }
         zusatzbetraegeList.sort();
       }
     }
@@ -156,48 +150,61 @@ public class ZusatzbetragControl extends FilterControl
     }
   }
 
-  private DBIterator<Zusatzbetrag> getIterator() throws RemoteException
+  private DBIterator<Zusatzbetrag> getIterator()
+      throws RemoteException, ApplicationException
   {
-    Ausfuehrung ausfuehrung = (Ausfuehrung) getFilterValue(Filter.AUSFUEHRUNG);
     DBIterator<Zusatzbetrag> zusatzbetraege = Einstellungen.getDBService()
         .createList(Zusatzbetrag.class);
     zusatzbetraege.join("mitglied");
     zusatzbetraege.addFilter(Zusatzbetrag.T_MITGLIED + " = mitglied.id");
-    if (ausfuehrung == null || ausfuehrung == Ausfuehrung.AKTIVE)
+    if (!(Boolean) Einstellungen
+        .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
     {
-      if (getFilterValue(Filter.AUSFUEHRUNG_VON) != null)
-      {
-        zusatzbetraege.addFilter("ausfuehrung >= ?",
-            (Date) getFilterValue(Filter.AUSFUEHRUNG_VON));
-      }
-      if (getFilterValue(Filter.AUSFUEHRUNG_BIS) != null)
-      {
-        zusatzbetraege.addFilter("ausfuehrung <= ?",
-            (Date) getFilterValue(Filter.AUSFUEHRUNG_BIS));
-      }
+      // Nur eingetretene Mitglieder oder Nicht-Mitglieder
+      zusatzbetraege.addFilter(
+          "(mitglied.eintritt is null or mitglied.eintritt <= ?)", new Date());
+      zusatzbetraege.addFilter(
+          "(mitglied.austritt is null or mitglied.austritt > ?)", new Date());
     }
-    else if (ausfuehrung == Ausfuehrung.NOCH_NICHT)
+
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      zusatzbetraege.addFilter("ausfuehrung is null");
+      Object value = entry.getValue();
+      switch (entry.getKey())
+      {
+        case AUSFUEHRUNG:
+          Ausfuehrung art = (Ausfuehrung) getFilterValue(Filter.AUSFUEHRUNG);
+          switch (art)
+          {
+            case AKTIVE:
+              String filter = "(intervall = ? AND ausfuehrung IS NULL OR ";
+              filter += "intervall != ? AND (endedatum IS NULL OR faelligkeit < endedatum))";
+              zusatzbetraege.addFilter(filter, IntervallZusatzzahlung.KEIN,
+                  IntervallZusatzzahlung.KEIN);
+              break;
+            case UEBERFAELLIG:
+              filter = "((intervall = ? AND ausfuehrung IS NULL AND faelligkeit < ?) OR ";
+              filter += "(intervall != ? AND faelligkeit < ? AND (endedatum IS NULL OR endedatum > ?)))";
+              zusatzbetraege.addFilter(filter, IntervallZusatzzahlung.KEIN,
+                  new Date(), IntervallZusatzzahlung.KEIN, new Date(),
+                  new Date());
+              break;
+          }
+          break;
+        case AUSFUEHRUNG_VON:
+          zusatzbetraege.addFilter("ausfuehrung >= ?", value);
+          break;
+        case AUSFUEHRUNG_BIS:
+          zusatzbetraege.addFilter("ausfuehrung <= ?", value);
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
+      }
     }
     zusatzbetraege
         .setOrder("ORDER BY ausfuehrung DESC, faelligkeit DESC, name");
     return zusatzbetraege;
-  }
-
-  private void nichtAktiveEliminieren(JVereinTablePart table)
-      throws RemoteException
-  {
-    List<?> li = table.getItems();
-    Iterator<?> it = li.iterator();
-    while (it.hasNext())
-    {
-      Zusatzbetrag z = (Zusatzbetrag) it.next();
-      if (!z.isOffen(new Date()))
-      {
-        table.removeItem(z);
-      }
-    }
   }
 
   @Override
