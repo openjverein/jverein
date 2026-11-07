@@ -131,7 +131,7 @@ public class BelegExport implements Exporter
       Path target = base.resolve(dateiname).normalize();
       if (!target.startsWith(base))
       {
-        throw new ApplicationException("Ungültiger Exportpfad: " + dateiname);
+        monitor.log("Ungültiger Exportpfad: " + dateiname);
       }
       Path directory = target.getParent();
       Files.createDirectories(directory);
