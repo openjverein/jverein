@@ -197,6 +197,7 @@ public class Ueberweisung
           .createObject(SepaSammelUeberweisung.class, null);
       sammelUeberweisung.setKonto(hibk);
       sammelUeberweisung.setTermin(faell);
+      sammelUeberweisung.setTerminUeberweisung(true);
       sammelUeberweisung.setBezeichnung(
           "Gutschrift vom " + new JVDateFormatDATETIME().format(new Date()));
 
