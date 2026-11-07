@@ -145,6 +145,12 @@ public class BelegControl extends FilterControl
       Object value = entry.getValue();
       switch (entry.getKey())
       {
+        case DATUM_VON:
+          docs.addFilter("datum >= ?", value);
+          break;
+        case DATUM_BIS:
+          docs.addFilter("datum <= ?", value);
+          break;
         case BELEGNUMMER:
           docs.addFilter("(lower(belegnummer) like ?)",
               "%" + ((String) value).toLowerCase() + "%");
