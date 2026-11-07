@@ -86,15 +86,6 @@ public class BelegListeView extends AbstractView
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
     GUI.getView().addPanelButton(control.getSpaltenPanelButton());
-
-    SimpleDialog d = new SimpleDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Achtung Kursteilnehmer");
-    d.setText("Kursteilnehmer werden in der Version 5.0 nicht mehr unterstützt."
-        + "\nBitte verwenden Sie die in der Docu erwähnten Alternativen."
-        + "\nFür Kursteilnehmer können über das Kontextmenü Nicht-Mitglieder erstellt werden."
-        + "\nIst als Mandats-ID nicht Mitgliedsnummer ausgewählt, muss sie manuell nachgetragen werden!");
-    d.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
-    d.open();
   }
 
 }

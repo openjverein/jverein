@@ -216,7 +216,6 @@ public class Ueberweisung
                       .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)),
                   255));
         }
-        ue.setTermin(faell);
         if (verwendungszweck != null)
         {
           ue.setZweck(StringTool.getStringWithMaxLength(
