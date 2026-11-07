@@ -41,6 +41,7 @@ import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.jost_net.OBanToo.StringLatin.Zeichen;
@@ -48,10 +49,9 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
 import de.willuhn.jameica.hbci.HBCIProperties;
-import de.willuhn.jameica.hbci.gui.action.SepaUeberweisungMerge;
-import de.willuhn.jameica.hbci.rmi.AuslandsUeberweisung;
-import de.willuhn.jameica.hbci.rmi.HibiscusAddress;
 import de.willuhn.jameica.hbci.rmi.Konto;
+import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
+import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -162,12 +162,12 @@ public class Ueberweisung
     try
     {
       Konto hibk;
+      // DB-Service holen
+      DBService hibiscusService = (DBService) Application.getServiceFactory()
+          .lookup(HBCI.class, "database");
       try
       {
-        // DB-Service holen
-        DBService service = (DBService) Application.getServiceFactory()
-            .lookup(HBCI.class, "database");
-        DBIterator<Konto> konten = service.createList(Konto.class);
+        DBIterator<Konto> konten = hibiscusService.createList(Konto.class);
         konten.addFilter("iban = ?",
             (String) Einstellungen.getEinstellung(Property.IBAN));
         Logger.debug("Vereinskonto: "
@@ -185,16 +185,18 @@ public class Ueberweisung
       {
         throw new RemoteException(e.getMessage());
       }
-      AuslandsUeberweisung[] ueberweisungen = new AuslandsUeberweisung[lastschriften
-          .size()];
-      int i = 0;
+      SepaSammelUeberweisung sammelUeberweisung = (SepaSammelUeberweisung) hibiscusService
+          .createObject(SepaSammelUeberweisung.class, null);
+      sammelUeberweisung.setKonto(hibk);
+      sammelUeberweisung.setTermin(faell);
+      sammelUeberweisung.setTerminUeberweisung(true);
+      sammelUeberweisung.setBezeichnung(
+          "Gutschrift vom " + new JVDateFormatDATETIME().format(new Date()));
+
       for (Lastschrift ls : lastschriften)
       {
-        DBService service = (DBService) Application.getServiceFactory()
-            .lookup(HBCI.class, "database");
+        SepaSammelUeberweisungBuchung ue = sammelUeberweisung.createBuchung();
 
-        AuslandsUeberweisung ue = (AuslandsUeberweisung) service
-            .createObject(AuslandsUeberweisung.class, null);
         if (betrag != null)
         {
           ue.setBetrag(betrag.doubleValue());
@@ -203,11 +205,8 @@ public class Ueberweisung
         {
           ue.setBetrag(ls.getBetrag().doubleValue());
         }
-        HibiscusAddress ad = (HibiscusAddress) service
-            .createObject(HibiscusAddress.class, null);
-        ad.setBic(ls.getBic());
-        ad.setIban(ls.getIban());
-        ue.setGegenkonto(ad);
+        ue.setGegenkontoBLZ(ls.getBic());
+        ue.setGegenkontoNummer(ls.getIban());
         ue.setEndtoEndId(ls.getMandatID());
         if (ls.getMitglied() != null)
         {
@@ -228,12 +227,9 @@ public class Ueberweisung
           ue.setZweck(StringTool.getStringWithMaxLength(
               Zeichen.convert(ls.getVerwendungszweck()), 140));
         }
-        ue.setKonto(hibk);
-        ueberweisungen[i] = ue;
-        i++;
+        ue.store();
       }
-      SepaUeberweisungMerge merge = new SepaUeberweisungMerge();
-      merge.handleAction(ueberweisungen);
+      sammelUeberweisung.store();
     }
     catch (RemoteException e)
     {

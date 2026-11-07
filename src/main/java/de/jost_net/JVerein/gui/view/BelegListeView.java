@@ -27,10 +27,13 @@ import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.SimpleDialog;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class BelegListeView extends AbstractView
@@ -83,5 +86,15 @@ public class BelegListeView extends AbstractView
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
     GUI.getView().addPanelButton(control.getSpaltenPanelButton());
+
+    SimpleDialog d = new SimpleDialog(YesNoDialog.POSITION_CENTER);
+    d.setTitle("Achtung Kursteilnehmer");
+    d.setText("Kursteilnehmer werden in der Version 5.0 nicht mehr unterstützt."
+        + "\nBitte verwenden Sie die in der Docu erwähnten Alternativen."
+        + "\nFür Kursteilnehmer können über das Kontextmenü Nicht-Mitglieder erstellt werden."
+        + "\nIst als Mandats-ID nicht Mitgliedsnummer ausgewählt, muss sie manuell nachgetragen werden!");
+    d.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
+    d.open();
   }
+
 }
