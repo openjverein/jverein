@@ -129,7 +129,7 @@ public class BelegExport implements Exporter
       }
       catch (ApplicationException e)
       {
-        monitor.log(e.getMessage());
+        monitor.log(beleg.getBelegnummer() + ": " + e.getMessage());
         continue;
       }
 
