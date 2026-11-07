@@ -535,7 +535,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public String getMenueID()
   {
-    return "Mitglieder.Zusatzbeträge";
+    return "OpenJVerein.Mitglieder.Zusatzbeträge";
   }
 
   @Override
