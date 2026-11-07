@@ -116,12 +116,20 @@ public class BelegExport implements Exporter
     int i = 0;
     for (Beleg beleg : belegList)
     {
-
-      File belegFile = beleg.getFile();
-      if (belegFile == null || !belegFile.isFile() || !belegFile.canRead())
+      File belegFile;
+      try
       {
-        monitor.log("Belegdatei nicht vorhanden oder nicht lesbar: "
-            + beleg.getBelegnummer());
+        belegFile = beleg.getFile();
+        if (belegFile == null || !belegFile.isFile() || !belegFile.canRead())
+        {
+          monitor.log("Belegdatei nicht vorhanden oder nicht lesbar: "
+              + beleg.getBelegnummer());
+          continue;
+        }
+      }
+      catch (ApplicationException e)
+      {
+        monitor.log(e.getMessage());
         continue;
       }
 
@@ -142,6 +150,7 @@ public class BelegExport implements Exporter
       monitor.log(target.getFileName() + " exportiert");
       monitor.setPercentComplete(++i * 100 / belegList.size());
     }
+
   }
 
   @Override
