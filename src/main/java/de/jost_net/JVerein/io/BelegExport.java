@@ -120,8 +120,9 @@ public class BelegExport implements Exporter
       File belegFile = beleg.getFile();
       if (belegFile == null || !belegFile.isFile() || !belegFile.canRead())
       {
-        throw new ApplicationException(
-            "Belegdatei nicht vorhanden oder nicht lesbar.");
+        monitor.log("Belegdatei nicht vorhanden oder nicht lesbar: "
+            + beleg.getBelegnummer());
+        continue;
       }
 
       String dateiname = VorlageUtil.getName(VorlageTyp.BELEG_EXPORT_DATEINAME,
