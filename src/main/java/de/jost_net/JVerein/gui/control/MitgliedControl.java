@@ -714,9 +714,11 @@ public class MitgliedControl extends VorZurueckControl implements Savable
     {
       getZahlungsrhythmus().setValue(new Zahlungsrhythmus(
           (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSRHYTMUS)));
-      getMandatID().setValue(null);
+      getMitglied().setMandatID(null);
+      getMitglied().setMandatVersion(0);
+      getMandatID().setValue(getMitglied().getMandatID());
+      getMandatVersion().setValue(getMitglied().getMandatVersion());
       getMandatDatum().setValue(null);
-      getMandatVersion().setValue(null);
       getLetzteLastschrift().setValue(null);
       getBic().setValue(null);
       getIban().setValue(null);
@@ -878,6 +880,7 @@ public class MitgliedControl extends VorZurueckControl implements Savable
         {
           getMitglied()
               .setMandatVersion((Integer) getMandatVersion().getValue());
+          getMitglied().setMandatID((String) getMandatID().getValue());
           mandatid.setValue(getMitglied().getMandatID());
         }
         catch (RemoteException e)
