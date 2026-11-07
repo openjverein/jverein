@@ -30,7 +30,9 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class ZusatzbetragListeView extends AbstractView
 {
@@ -43,11 +45,16 @@ public class ZusatzbetragListeView extends AbstractView
     final ZusatzbetragControl control = new ZusatzbetragControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addInput(control.getFilterInput(Filter.AUSFUEHRUNG));
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getFilterInput(Filter.AUSFUEHRUNG));
+
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
     Input von = control.getFilterInput(Filter.AUSFUEHRUNG_VON);
-    group.addInput(von);
+    right.addInput(von);
     Input bis = control.getFilterInput(Filter.AUSFUEHRUNG_BIS);
-    group.addInput(bis);
+    right.addInput(bis);
 
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(von, bis);

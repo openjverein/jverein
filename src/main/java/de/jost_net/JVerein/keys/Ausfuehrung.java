@@ -4,7 +4,7 @@ public enum Ausfuehrung implements KeyEnum
 {
 
   AKTIVE(1, "Aktive"),
-  NOCH_NICHT(2, "Noch nicht ausgeführt");
+  UEBERFAELLIG(2, "Überfällig");
 
   private int key;
 
