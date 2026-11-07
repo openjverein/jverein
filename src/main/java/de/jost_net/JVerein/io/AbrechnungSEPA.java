@@ -51,6 +51,7 @@ import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.Variable.ZusatzbetragMap;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
@@ -650,6 +651,7 @@ public class AbrechnungSEPA extends SEPASupport
         Map<String, Object> map = new AllgemeineMap().getMap(null);
         map = new MitgliedMap().getMap(m, map, ohneLesefelder);
         map = new AbrechnungsParameterMap().getMap(param, map);
+        map = new ZusatzbetragMap().getMap(z, map);
 
         vzweck = VelocityTool.eval(map, vzweck, true);
 
