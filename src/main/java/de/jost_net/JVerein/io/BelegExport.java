@@ -66,17 +66,23 @@ public class BelegExport implements Exporter
   {
     if (!file.exists() && !file.mkdirs())
     {
+      monitor.setPercentComplete(100);
+      monitor.setStatus(ProgressMonitor.STATUS_ERROR);
       throw new ApplicationException(
           "Exportverzeichnis konnte nicht erstellt werden.");
     }
 
     if (!file.isDirectory())
     {
+      monitor.setPercentComplete(100);
+      monitor.setStatus(ProgressMonitor.STATUS_ERROR);
       throw new ApplicationException("Das Exportziel ist kein Verzeichnis.");
     }
 
     if (objects == null || objects.length == 0)
     {
+      monitor.setPercentComplete(100);
+      monitor.setStatus(ProgressMonitor.STATUS_ERROR);
       throw new ApplicationException("Keine Belege vorhanden");
     }
 
@@ -150,7 +156,8 @@ public class BelegExport implements Exporter
 
       monitor.log(target.getFileName() + " exportiert");
     }
-
+    monitor.setPercentComplete(100);
+    monitor.setStatus(ProgressMonitor.STATUS_DONE);
   }
 
   @Override
