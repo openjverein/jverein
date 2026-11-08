@@ -29,72 +29,73 @@ public class Update0515 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
+    execute(alterColumnType("arbeitseinsatz", "stunden", COLTYPE.DECIMAL, 15));
 
-    execute("ALTER TABLE arbeitseinsatz MODIFY COLUMN stunden DECIMAL(15,2)");
+    execute(alterColumnType("altersstaffel", "betrag", COLTYPE.DECIMAL, 15));
 
-    execute("ALTER TABLE altersstaffel MODIFY COLUMN betrag DECIMAL(15,2)");
+    execute(alterColumnType("beitragsgruppe", "betrag", COLTYPE.DECIMAL, 15));
+    execute(alterColumnType("beitragsgruppe", "betragmonatlich",
+        COLTYPE.DECIMAL, 15));
+    execute(alterColumnType("beitragsgruppe", "betragvierteljaehrlich",
+        COLTYPE.DECIMAL, 15));
+    execute(alterColumnType("beitragsgruppe", "betraghalbjaehrlich",
+        COLTYPE.DECIMAL, 15));
+    execute(alterColumnType("beitragsgruppe", "betragjaehrlich",
+        COLTYPE.DECIMAL, 15));
+    execute(alterColumnType("beitragsgruppe", "arbeitseinsatzstunden",
+        COLTYPE.DECIMAL, 15));
+    execute(alterColumnType("beitragsgruppe", "arbeitseinsatzbetrag",
+        COLTYPE.DECIMAL, 15));
 
-    execute("ALTER TABLE beitragsgruppe MODIFY COLUMN betrag DECIMAL(15,2)");
-    execute(
-        "ALTER TABLE beitragsgruppe MODIFY COLUMN betragmonatlich DECIMAL(15,2)");
-    execute(
-        "ALTER TABLE beitragsgruppe MODIFY COLUMN betragvierteljaehrlich DECIMAL(15,2)");
-    execute(
-        "ALTER TABLE beitragsgruppe MODIFY COLUMN betraghalbjaehrlich  DECIMAL(15,2)");
-    execute(
-        "ALTER TABLE beitragsgruppe MODIFY COLUMN betragjaehrlich DECIMAL(15,2)");
-    execute(
-        "ALTER TABLE beitragsgruppe MODIFY COLUMN arbeitseinsatzstunden  DECIMAL(15,2)");
-    execute(
-        "ALTER TABLE beitragsgruppe MODIFY COLUMN arbeitseinsatzbetrag  DECIMAL(15,2)");
+    execute(alterColumnType("mitglied", "individuellerbeitrag", COLTYPE.DECIMAL,
+        15));
 
-    execute(
-        "ALTER TABLE mitglied MODIFY COLUMN individuellerbeitrag DECIMAL(15,2)");
-
-    execute("ALTER TABLE zusatzbetrag MODIFY COLUMN betrag DECIMAL(15,2)");
-
-    execute(
-        "ALTER TABLE zusatzbetragvorlage MODIFY COLUMN betrag DECIMAL(15,2)");
-
-    execute("ALTER TABLE anfangsbestand MODIFY COLUMN betrag DECIMAL(15,2)");
-
-    execute("ALTER TABLE buchung MODIFY COLUMN betrag DECIMAL(15,2)");
-
-    execute("ALTER TABLE konto MODIFY COLUMN betrag DECIMAL(15,2)");
-    execute("ALTER TABLE konto MODIFY COLUMN afastart DECIMAL(15,2)");
-    execute("ALTER TABLE konto MODIFY COLUMN afadauer DECIMAL(15,2)");
-    execute("ALTER TABLE konto MODIFY COLUMN afarestwert DECIMAL(15,2)");
-
-    execute("ALTER TABLE rechnung MODIFY COLUMN betrag DECIMAL(15,2)");
-    execute(
-        "ALTER TABLE rechnung MODIFY COLUMN erstattungsbetrag DECIMAL(15,2)");
-
-    execute("ALTER TABLE kursteilnehmer MODIFY COLUMN betrag DECIMAL(15,2)");
-
-    execute("ALTER TABLE lastschrift MODIFY COLUMN betrag DECIMAL(15,2)");
-
-    execute("ALTER TABLE sollbuchung MODIFY COLUMN betrag DECIMAL(15,2)");
+    execute(alterColumnType("zusatzbetrag", "betrag", COLTYPE.DECIMAL, 15));
 
     execute(
-        "ALTER TABLE sollbuchungposition MODIFY COLUMN betrag DECIMAL(15,2)");
+        alterColumnType("zusatzbetragvorlage", "betrag", COLTYPE.DECIMAL, 15));
+
+    execute(alterColumnType("anfangsbestand", "betrag", COLTYPE.DECIMAL, 15));
+
+    execute(alterColumnType("buchung", "betrag", COLTYPE.DECIMAL, 15));
+
+    execute(alterColumnType("konto", "betrag", COLTYPE.DECIMAL, 15));
+    execute(alterColumnType("konto", "afastart", COLTYPE.DECIMAL, 15));
+    execute(alterColumnType("konto", "afadauer", COLTYPE.DECIMAL, 15));
+    execute(alterColumnType("konto", "afarestwert", COLTYPE.DECIMAL, 15));
+
+    execute(alterColumnType("rechnung", "betrag", COLTYPE.DECIMAL, 15));
     execute(
-        "ALTER TABLE sollbuchungposition MODIFY COLUMN steuersatz DECIMAL(15,2)");
+        alterColumnType("rechnung", "erstattungsbetrag", COLTYPE.DECIMAL, 15));
 
-    execute("ALTER TABLE steuer MODIFY COLUMN satz DECIMAL(15,2)");
+    execute(alterColumnType("kursteilnehmer", "betrag", COLTYPE.DECIMAL, 15));
+
+    execute(alterColumnType("lastschrift", "betrag", COLTYPE.DECIMAL, 15));
+
+    execute(alterColumnType("sollbuchung", "betrag", COLTYPE.DECIMAL, 15));
 
     execute(
-        "ALTER TABLE spendenbescheinigung MODIFY COLUMN betrag DECIMAL(15,2)");
+        alterColumnType("sollbuchungposition", "betrag", COLTYPE.DECIMAL, 15));
+    execute(alterColumnType("sollbuchungposition", "steuersatz",
+        COLTYPE.DECIMAL, 15));
+
+    execute(alterColumnType("steuer", "satz", COLTYPE.DECIMAL, 15));
 
     execute(
-        "ALTER TABLE jahresabschluss MODIFY COLUMN verwendungsrueckstand DECIMAL(15,2)");
+        alterColumnType("spendenbescheinigung", "betrag", COLTYPE.DECIMAL, 15));
+
+    execute(alterColumnType("jahresabschluss", "verwendungsrueckstand",
+        COLTYPE.DECIMAL, 15));
+    execute(alterColumnType("jahresabschluss", "zwanghafteweitergabe",
+        COLTYPE.DECIMAL, 15));
+
     execute(
-        "ALTER TABLE jahresabschluss MODIFY COLUMN zwanghafteweitergabe DECIMAL(15,2)");
+        alterColumnType("wirtschaftsplanitem", "soll", COLTYPE.DECIMAL, 15));
 
-    execute("ALTER TABLE wirtschaftsplanitem MODIFY COLUMN soll DECIMAL(15,2)");
+    execute(alterColumnType("qifimportpos", "betrag", COLTYPE.DECIMAL, 15));
 
-    execute("ALTER TABLE qifimportpos MODIFY COLUMN betrag DECIMAL(15,2)");
-
-    execute("ALTER TABLE qifimporthead MODIFY COLUMN startsaldo DECIMAL(15,2)");
+    execute(
+        alterColumnType("qifimporthead", "startsaldo", COLTYPE.DECIMAL, 15));
 
     execute(dropColumn("buchungsart", "steuersatz"));
   }

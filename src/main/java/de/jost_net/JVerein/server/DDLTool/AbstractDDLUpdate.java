@@ -6,8 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import de.jost_net.JVerein.server.DBSupportH2Impl;
-import de.jost_net.JVerein.server.DBSupportMySqlImpl;
 import de.willuhn.logging.Logger;
 import de.willuhn.sql.ScriptExecutor;
 import de.willuhn.util.ApplicationException;
@@ -20,10 +18,6 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
   protected Connection conn;
 
   protected ProgressMonitor monitor;
-
-  public static final String MYSQL = DBSupportMySqlImpl.class.getName();
-
-  public static final String H2 = DBSupportH2Impl.class.getName();
 
   public enum DRIVER
   {
@@ -68,7 +62,8 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     }
     nr = Integer.parseInt(name.substring(6));
     this.conn = conn;
-    if (driver.endsWith("DBSupportH2Impl"))
+    if (driver.endsWith("DBSupportH2v2Impl")
+        || driver.endsWith("DBSupportH2Impl"))
     {
       drv = DRIVER.H2;
     }
@@ -184,6 +179,25 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
         }
         return "ALTER TABLE " + table + " ADD " + col.getName() + " "
             + getType(col);
+      }
+    }
+    return "";
+  }
+
+  public String alterColumnType(String table, String column, COLTYPE type,
+      int length)
+  {
+    switch (drv)
+    {
+      case H2:
+      {
+        return "ALTER TABLE " + table + " ALTER COLUMN " + column + " "
+            + getDataType(type, length) + ";\n";
+      }
+      case MYSQL:
+      {
+        return "ALTER TABLE " + table + " MODIFY COLUMN " + column + " "
+            + getDataType(type, length) + ";\n";
       }
     }
     return "";
@@ -338,54 +352,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
 
   private String getType(Column col)
   {
-    String ret = "";
-    switch (col.getType())
-    {
-      case INTEGER:
-        ret += "INTEGER";
-        break;
-      case BIGINT:
-        ret += "BIGINT(" + col.getLen() + ")";
-        break;
-      case BOOLEAN:
-        switch (drv)
-        {
-          case H2:
-            ret += "BOOLEAN";
-            break;
-          case MYSQL:
-            ret += "BIT(1)";
-            break;
-        }
-        break;
-      case CHAR:
-        ret += "CHAR(" + col.getLen() + ")";
-        break;
-      case DATE:
-        ret += "DATE";
-        break;
-      case TIMESTAMP:
-        ret += "TIMESTAMP";
-        break;
-      case DOUBLE:
-        ret += "DOUBLE";
-        break;
-      case VARCHAR:
-        ret += "VARCHAR(" + col.getLen() + ")";
-        break;
-      case MEDIUMTEXT:
-        ret += "MEDIUMTEXT";
-        break;
-      case LONGBLOB:
-        ret += "LONGBLOB";
-        break;
-      case VARBINARY:
-        ret += "VARBINARY(" + col.getLen() + ")";
-        break;
-      case DECIMAL:
-        ret += "DECIMAL(" + col.getLen() + ",2)";
-        break;
-    }
+    String ret = getDataType(col.getType(), col.getLen());
     ret += " ";
     if (col.isNotnull())
     {
@@ -399,6 +366,60 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     {
       ret += "DEFAULT " + col.getDefaultvalue();
     }
+    return ret;
+  }
+
+  private String getDataType(COLTYPE type, int length)
+  {
+    String ret = "";
+    switch (type)
+    {
+      case INTEGER:
+        ret += "INTEGER";
+        break;
+      case BIGINT:
+        ret += "BIGINT";
+        break;
+      case BOOLEAN:
+        switch (drv)
+        {
+          case H2:
+            ret += "BOOLEAN";
+            break;
+          case MYSQL:
+            ret += "BIT(1)";
+            break;
+        }
+        break;
+      case CHAR:
+        ret += "CHAR(" + length + ")";
+        break;
+      case DATE:
+        ret += "DATE";
+        break;
+      case TIMESTAMP:
+        ret += "TIMESTAMP";
+        break;
+      case DOUBLE:
+        ret += "DOUBLE";
+        break;
+      case VARCHAR:
+        ret += "VARCHAR(" + length + ")";
+        break;
+      case MEDIUMTEXT:
+        ret += "MEDIUMTEXT";
+        break;
+      case LONGBLOB:
+        ret += "LONGBLOB";
+        break;
+      case VARBINARY:
+        ret += "VARBINARY(" + length + ")";
+        break;
+      case DECIMAL:
+        ret += "DECIMAL(" + length + ",2)";
+        break;
+    }
+    ret += " ";
     return ret;
   }
 
