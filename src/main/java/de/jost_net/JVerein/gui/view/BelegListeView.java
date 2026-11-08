@@ -57,8 +57,8 @@ public class BelegListeView extends AbstractView
     DragnDropUtil.setDragDrop(getParent(), f -> control.addFile(f));
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(new ExportButton(DokumentationUtil.BELEG, control));
     buttons.addButton(new HelpButton(DokumentationUtil.BELEG));
+    buttons.addButton(new ExportButton(DokumentationUtil.BELEG, control));
     buttons.addButton(
         new NewButton(new NewAction(BelegDetailView.class, Beleg.class)));
     buttons.paint(this.getParent());
