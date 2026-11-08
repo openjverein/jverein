@@ -405,7 +405,7 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   }
 
   @Override
-  protected IJVereinPart getTablePart()
+  public IJVereinPart getTablePart()
       throws RemoteException, ApplicationException
   {
     switch (selectedTab)

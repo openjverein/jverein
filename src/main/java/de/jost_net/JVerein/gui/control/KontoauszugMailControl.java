@@ -182,7 +182,7 @@ public class KontoauszugMailControl extends DruckMailControl
   }
 
   @Override
-  protected IJVereinPart getTablePart()
+  public IJVereinPart getTablePart()
       throws RemoteException, ApplicationException
   {
     return null;
