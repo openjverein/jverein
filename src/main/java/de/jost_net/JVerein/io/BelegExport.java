@@ -116,6 +116,7 @@ public class BelegExport implements Exporter
     int i = 0;
     for (Beleg beleg : belegList)
     {
+      monitor.setPercentComplete(i++ * 100 / belegList.size());
       File belegFile;
       try
       {
@@ -148,7 +149,6 @@ public class BelegExport implements Exporter
           StandardCopyOption.REPLACE_EXISTING);
 
       monitor.log(target.getFileName() + " exportiert");
-      monitor.setPercentComplete(++i * 100 / belegList.size());
     }
 
   }
