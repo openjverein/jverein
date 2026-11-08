@@ -158,7 +158,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException("Fehler beim insertCheck");
+      throw new ApplicationException("Fehler beim deleteCheck");
     }
   }
 
