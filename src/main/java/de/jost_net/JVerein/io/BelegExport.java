@@ -147,6 +147,7 @@ public class BelegExport implements Exporter
       if (!target.startsWith(base))
       {
         monitor.log("Ungültiger Exportpfad: " + dateiname);
+        continue;
       }
       Path directory = target.getParent();
       Files.createDirectories(directory);
