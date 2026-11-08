@@ -100,7 +100,7 @@ public class BelegCheckAction implements Action
         catch (Exception e)
         {
           throw new ApplicationException(
-              "Fehler beim prüfen der Prüfsummen: " + e.getMessage());
+              "Fehler beim prüfen des Belegs: " + e.getMessage());
         }
       }
 
