@@ -92,9 +92,10 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       {
         throw new ApplicationException("Pfad darf nicht verändert werden!");
       }
-      for (AbstractBelegReferenz ref : getReferenzes())
+      if (!hashUpdateAllowed)
       {
-        ref.checkChangesAllowed();
+        for (AbstractBelegReferenz ref : getReferenzes())
+          ref.checkChangesAllowed();
       }
       if (getBemerkung() == null || getBemerkung().isBlank())
       {
@@ -143,7 +144,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException("Fehler beim insertCheck");
+      throw new ApplicationException("Fehler beim deleteCheck");
     }
   }
 
@@ -315,8 +316,9 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   {
     if (!isNewObject())
     {
-      // wenn nicht vorhanden, erstellen wir den Hash
-      if (getHash() == null)
+      // wenn nicht vorhanden, erstellen wir den Hash, nur wenn sonst nichts
+      // geändert wurde
+      if (getHash() == null && !hasChanged())
       {
         try
         {
