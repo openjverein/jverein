@@ -170,7 +170,7 @@ public class NichtMitgliedNeuDialog extends AbstractDialog<Boolean>
         "Bankverbindung");
     bankverbindung.getComposite().setLayout(new GridLayout(1, false));
     ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton(control.getKontoDatenLoeschenButton());
+    buttons2.addButton(control.getZahlungsdatenLoeschenButton());
     buttons2.paint(bankverbindung.getComposite());
 
     SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
