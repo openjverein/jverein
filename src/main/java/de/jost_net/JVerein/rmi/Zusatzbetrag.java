@@ -73,8 +73,6 @@ public interface Zusatzbetrag extends JVereinDBObject
 
   public boolean isAktiv(Date datum) throws RemoteException;
 
-  public boolean isOffen(Date datum) throws RemoteException;
-
   public void naechsteFaelligkeit() throws RemoteException;
 
   public void vorherigeFaelligkeit() throws RemoteException;

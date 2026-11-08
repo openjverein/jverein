@@ -169,6 +169,6 @@ public class WiedervorlageImpl extends AbstractJVereinDBObject
   @Override
   public String getMenueID()
   {
-    return "Mitglieder.Wiedervorlagen";
+    return "OpenJVerein.Mitglieder.Wiedervorlagen";
   }
 }
