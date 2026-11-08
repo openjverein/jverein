@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.keys.BelegArt;
 import de.willuhn.util.ApplicationException;
@@ -70,5 +71,7 @@ public interface Beleg extends JVereinDBObject
    * @return true wenn korrekt, false wenn Falsch, null wenn nicht vorhanden
    */
   Boolean checkChecksum() throws IOException, ApplicationException;
+
+  List<AbstractBelegReferenz> getReferenzes() throws RemoteException;
 
 }

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,7 +45,6 @@ import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
@@ -94,16 +94,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       }
       if (!hashUpdateAllowed)
       {
-        for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
-        {
-          DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
-              .createList(c);
-          it.addFilter("beleg = ?", getID());
-          while (it.hasNext())
-          {
-            it.next().checkChangesAllowed();
-          }
-        }
+        for (AbstractBelegReferenz ref : getReferenzes())
+          ref.checkChangesAllowed();
       }
       if (getBemerkung() == null || getBemerkung().isBlank())
       {
@@ -145,15 +137,9 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
     {
       // Alle vorhandenn erferenzen des Objects prüfen, ob sie geändert/gelöscht
       // werden dürfen
-      for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
+      for (AbstractBelegReferenz ref : getReferenzes())
       {
-        DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
-            .createList(c);
-        it.addFilter("beleg = ?", getID());
-        while (it.hasNext())
-        {
-          it.next().checkChangesAllowed();
-        }
+        ref.checkChangesAllowed();
       }
     }
     catch (RemoteException e)
@@ -170,14 +156,9 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       // Alle vorhandenn erferenzen des Objects impliziet löschen, damit dort im
       // deleteCheck geprüft werden kann
       DBTransaction.starten();
-      for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
+      for (AbstractBelegReferenz ref : getReferenzes())
       {
-        DBIterator<DBObject> it = Einstellungen.getDBService().createList(c);
-        it.addFilter("beleg = ?", getID());
-        while (it.hasNext())
-        {
-          it.next().delete();
-        }
+        ref.delete();
       }
 
       super.delete();
@@ -203,6 +184,23 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       DBTransaction.rollback();
       throw e;
     }
+  }
+
+  @Override
+  public List<AbstractBelegReferenz> getReferenzes() throws RemoteException
+  {
+    List<AbstractBelegReferenz> list = new ArrayList<>();
+    for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
+    {
+      DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
+          .createList(c);
+      it.addFilter("beleg = ?", getID());
+      while (it.hasNext())
+      {
+        list.add(it.next());
+      }
+    }
+    return list;
   }
 
   @Override
