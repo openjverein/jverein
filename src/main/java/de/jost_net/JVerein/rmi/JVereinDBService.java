@@ -49,6 +49,14 @@ public interface JVereinDBService extends DBService
   public void install() throws RemoteException;
 
   /**
+   * Setze einen neuen Treiber, nur möglich, wenn nicht gestartet
+   * 
+   * @param driver
+   * @throws RemoteException
+   */
+  public void setDriver(String driver) throws RemoteException;
+
+  /**
    * Checkt die Konsistenz der Datenbank.
    * 
    * @throws RemoteException
