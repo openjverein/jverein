@@ -37,7 +37,8 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     DOUBLE,
     LONGBLOB,
     MEDIUMTEXT,
-    VARBINARY
+    VARBINARY,
+    DECIMAL
   }
 
   private DRIVER drv;
@@ -178,6 +179,25 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
         }
         return "ALTER TABLE " + table + " ADD " + col.getName() + " "
             + getType(col);
+      }
+    }
+    return "";
+  }
+
+  public String alterColumnType(String table, String column, COLTYPE type,
+      int length)
+  {
+    switch (drv)
+    {
+      case H2:
+      {
+        return "ALTER TABLE " + table + " ALTER COLUMN " + column + " "
+            + getDataType(type, length) + ";\n";
+      }
+      case MYSQL:
+      {
+        return "ALTER TABLE " + table + " MODIFY COLUMN " + column + " "
+            + getDataType(type, length) + ";\n";
       }
     }
     return "";
@@ -332,8 +352,27 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
 
   private String getType(Column col)
   {
+    String ret = getDataType(col.getType(), col.getLen());
+    ret += " ";
+    if (col.isNotnull())
+    {
+      ret += "NOT NULL ";
+    }
+    else if (drv == DRIVER.MYSQL && !col.isAutoincrement())
+    {
+      ret += "NULL ";
+    }
+    if (col.getDefaultvalue() != null)
+    {
+      ret += "DEFAULT " + col.getDefaultvalue();
+    }
+    return ret;
+  }
+
+  private String getDataType(COLTYPE type, int length)
+  {
     String ret = "";
-    switch (col.getType())
+    switch (type)
     {
       case INTEGER:
         ret += "INTEGER";
@@ -353,7 +392,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
         }
         break;
       case CHAR:
-        ret += "CHAR(" + col.getLen() + ")";
+        ret += "CHAR(" + length + ")";
         break;
       case DATE:
         ret += "DATE";
@@ -365,7 +404,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
         ret += "DOUBLE";
         break;
       case VARCHAR:
-        ret += "VARCHAR(" + col.getLen() + ")";
+        ret += "VARCHAR(" + length + ")";
         break;
       case MEDIUMTEXT:
         ret += "MEDIUMTEXT";
@@ -374,22 +413,13 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
         ret += "LONGBLOB";
         break;
       case VARBINARY:
-        ret += "VARBINARY(" + col.getLen() + ")";
+        ret += "VARBINARY(" + length + ")";
+        break;
+      case DECIMAL:
+        ret += "DECIMAL(" + length + ",2)";
         break;
     }
     ret += " ";
-    if (col.isNotnull())
-    {
-      ret += "NOT NULL ";
-    }
-    else if (drv == DRIVER.MYSQL && !col.isAutoincrement())
-    {
-      ret += "NULL ";
-    }
-    if (col.getDefaultvalue() != null)
-    {
-      ret += "DEFAULT " + col.getDefaultvalue();
-    }
     return ret;
   }
 
