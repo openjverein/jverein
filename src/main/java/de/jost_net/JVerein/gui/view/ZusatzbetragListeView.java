@@ -49,6 +49,7 @@ public class ZusatzbetragListeView extends AbstractView
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getFilterInput(Filter.AUSFUEHRUNG));
+    left.addInput(control.getFilterInput(Filter.NAME));
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     Input von = control.getFilterInput(Filter.AUSFUEHRUNG_VON);
