@@ -191,6 +191,12 @@ public class ZusatzbetragControl extends FilterControl
               break;
           }
           break;
+        case NAME:
+          zusatzbetraege.addFilter(
+              "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?))",
+              "%" + ((String) value).toLowerCase() + "%",
+              "%" + ((String) value).toLowerCase() + "%");
+          break;
         case AUSFUEHRUNG_VON:
           zusatzbetraege.addFilter("ausfuehrung >= ?", value);
           break;
