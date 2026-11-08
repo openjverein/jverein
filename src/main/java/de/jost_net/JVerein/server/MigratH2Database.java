@@ -76,10 +76,16 @@ public class MigratH2Database
 
         }
         catch (ClassNotFoundException | NoSuchMethodException
-            | IllegalAccessException | InvocationTargetException e)
+            | IllegalAccessException e)
         {
           throw new ApplicationException(
               "Die aktuelle Jameica Version unterstützt die Migration nicht");
+        }
+        catch (InvocationTargetException e)
+        {
+          Logger.error("Fehler bei der Migration", e.getCause());
+          throw new ApplicationException(
+              "Fehler bei der Migration: " + e.getCause().getMessage());
         }
         catch (RemoteException e)
         {
