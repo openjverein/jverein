@@ -22,6 +22,7 @@ import org.eclipse.swt.SWT;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.action.BelegZuordnenAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.ForderungAction;
 import de.jost_net.JVerein.gui.action.GutschriftAction;
@@ -38,6 +39,7 @@ import de.jost_net.JVerein.gui.action.MitgliedZusatzbetraegeZuordnungAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.FreiesFormularMailView;
 import de.jost_net.JVerein.gui.view.KontoauszugMailView;
@@ -74,8 +76,8 @@ public class MitgliedMenu extends ContextMenu
    * 
    * @throws RemoteException
    */
-  public MitgliedMenu(Action detailaction, JVereinTablePart part)
-      throws RemoteException
+  public MitgliedMenu(MitgliedControl control, Action detailaction,
+      JVereinTablePart part) throws RemoteException
   {
     if (detailaction instanceof MitgliedDetailAction)
     {
@@ -100,6 +102,11 @@ public class MitgliedMenu extends ContextMenu
     {
       addItem(new CheckedContextMenuItem("Arbeitseinsatz zuordnen",
           new MitgliedArbeitseinsatzZuordnungAction(), "screwdriver.png"));
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+    {
+      addItem(new CheckedContextMenuItem("Beleg zuordnen",
+          new BelegZuordnenAction(null, control), "view-refresh.png"));
     }
     if (detailaction instanceof NichtMitgliedDetailAction)
     {

@@ -395,7 +395,7 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     mitgliederList.setMulti(true);
 
     mitgliederList.setContextMenu(
-        new MitgliedMenu(new MitgliedDetailAction(), mitgliederList));
+        new MitgliedMenu(null, new MitgliedDetailAction(), mitgliederList));
     return mitgliederList;
   }
 
