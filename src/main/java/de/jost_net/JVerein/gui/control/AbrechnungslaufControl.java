@@ -82,11 +82,6 @@ public class AbrechnungslaufControl extends FilterControl
       abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
           new JaNeinFormatter());
     }
-    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
-    {
-      abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
-          new JaNeinFormatter());
-    }
     abrechnungslaufList
         .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
     abrechnungslaufList.setAction(

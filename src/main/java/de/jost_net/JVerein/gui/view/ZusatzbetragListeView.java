@@ -23,13 +23,16 @@ import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
-import de.jost_net.JVerein.keys.Ausfuehrung;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class ZusatzbetragListeView extends AbstractView
 {
@@ -42,8 +45,29 @@ public class ZusatzbetragListeView extends AbstractView
     final ZusatzbetragControl control = new ZusatzbetragControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addInput(
-        control.getFilterInput(Filter.AUSFUEHRUNG, Ausfuehrung.getList()));
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getFilterInput(Filter.AUSFUEHRUNG));
+    left.addInput(control.getFilterInput(Filter.NAME));
+
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    Input von = control.getFilterInput(Filter.AUSFUEHRUNG_VON);
+    right.addInput(von);
+    Input bis = control.getFilterInput(Filter.AUSFUEHRUNG_BIS);
+    right.addInput(bis);
+
+    ButtonArea fbuttons = new ButtonArea();
+    ToolTipButton zurueck = control.getZurueckButton(von, bis);
+    fbuttons.addButton(zurueck);
+    ToolTipButton vor = control.getVorButton(von, bis);
+    fbuttons.addButton(vor);
+    fbuttons.addButton(control.getProfileButton(this));
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
+    zurueck.setToolTipText("Datumsbereich zurück");
+    vor.setToolTipText("Datumsbereich vowärts");
 
     control.getTablePart().paint(this.getParent());
 

@@ -16,9 +16,19 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.Map;
+
+import com.itextpdf.text.DocumentException;
+
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.Variable.ZahlerMap;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.BigDecimalInput;
@@ -31,6 +41,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
+import de.jost_net.JVerein.io.FormularAufbereitung;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -542,6 +553,33 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
       Logger.error(fehler, e);
       throw new ApplicationException(fehler, e);
     }
+  }
+
+  public ButtonRtoL getAnzeigenButton()
+  {
+    return new ButtonRtoL("Anzeigen", c -> {
+      try
+      {
+        Rechnung re = getRechnung();
+        Map<String, Object> map = new RechnungMap().getMap(re, null);
+        map = new MitgliedMap().getMap(re.getMitglied(), map);
+        map = new ZahlerMap().getMap(re.getZahler(), map);
+        map = new AllgemeineMap().getMap(map);
+
+        FormularAufbereitung aufbereitung = new FormularAufbereitung(
+            File.createTempFile("formular", ".pdf"), true, false);
+        aufbereitung.writeForm((Formular) getRechnungFormular().getValue(),
+            map);
+        aufbereitung.closeFormular();
+        aufbereitung.showFormular();
+      }
+      catch (IOException | DocumentException e)
+      {
+        String fehler = "Fehler beim aufbereiten des Formulars";
+        GUI.getStatusBar().setErrorText(fehler);
+        Logger.error(fehler, e);
+      }
+    }, null, false, "eye.png");
   }
 
 }

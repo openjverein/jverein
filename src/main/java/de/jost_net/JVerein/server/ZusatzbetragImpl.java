@@ -380,34 +380,6 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     return super.getAttribute(fieldName);
   }
 
-  /*
-   * 
-   */
-  @Override
-  public boolean isOffen(Date datum) throws RemoteException
-  {
-    if (!getMitglied().isAngemeldet(datum) && !(Boolean) Einstellungen
-        .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
-    {
-      return false;
-    }
-    // Einmalige Ausführung
-    if (getIntervall().intValue() == IntervallZusatzzahlung.KEIN)
-    {
-      return (getAusfuehrung() == null);
-    }
-
-    // Wenn das Endedatum gesetzt ist und das Fälligkeitsdatum liegt zum oder
-    // hinter
-    // dem Endedatum: nicht mehr ausführen
-    if (getEndedatum() != null
-        && getFaelligkeit().getTime() >= getEndedatum().getTime())
-    {
-      return false;
-    }
-    return true;
-  }
-
   @Override
   public boolean isAktiv(Date datum) throws RemoteException
   {
@@ -563,7 +535,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public String getMenueID()
   {
-    return "Mitglieder.Zusatzbeträge";
+    return "OpenJVerein.Mitglieder.Zusatzbeträge";
   }
 
   @Override

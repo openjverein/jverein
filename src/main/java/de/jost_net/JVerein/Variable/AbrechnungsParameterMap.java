@@ -71,13 +71,6 @@ public class AbrechnungsParameterMap extends AbstractMap
         case KOMPAKTEABBUCHUNG:
           value = param.kompakteabbuchung ? "J" : "N";
           break;
-        case KURSTEILNEHMER:
-          value = "";
-          if (param.kursteilnehmer != null)
-          {
-            value = param.kursteilnehmer ? "J" : "N";
-          }
-          break;
         case SEPAPRINT:
           value = param.sepaprint ? "J" : "N";
           break;
@@ -140,6 +133,70 @@ public class AbrechnungsParameterMap extends AbstractMap
             value = param.zusatzbetraege ? "J" : "N";
           }
           break;
+      }
+      map.put(var.getName(), value);
+    }
+    return map;
+  }
+
+  public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
+  {
+    Map<String, Object> map = null;
+    if (inMap == null)
+    {
+      map = new HashMap<>();
+    }
+    else
+    {
+      map = inMap;
+    }
+
+    for (AbrechnungsParameterVar var : AbrechnungsParameterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case ABBUCHUNGSMODUS:
+          value = "Alle";
+          break;
+        case ABRECHNUNGSMONAT:
+          value = "Januar";
+          break;
+        case FAELLIGKEIT:
+          value = "01.12.2025";
+          break;
+        case KOMPAKTEABBUCHUNG:
+          value = "J";
+          break;
+        case SEPAPRINT:
+          value = "J";
+          break;
+        case STICHTAG:
+          value = "01.12.2025";
+          break;
+        case STICHTAG_MONAT:
+          value = "12";
+          break;
+        case STICHTAG_MONAT_TEXT:
+          value = "Dezember";
+          break;
+        case STICHTAG_JAHR:
+          value = "2025";
+          break;
+        case VERWENDUNGSZWECK:
+          value = "Der Zweck";
+          break;
+        case VONDATUM:
+          value = "01.06.2025";
+          break;
+        case EINGABEVONDATUM:
+          value = "01.06.2025";
+          break;
+        case BISDATUM:
+          value = "01.12.2025";
+          break;
+        case ZUSATZBETRAEGE:
+          value = "J";
       }
       map.put(var.getName(), value);
     }

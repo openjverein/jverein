@@ -37,15 +37,16 @@ import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class BelegPart implements Part
@@ -64,7 +65,7 @@ public class BelegPart implements Part
     grDokument.getComposite().setLayout(new GridLayout(1, false));
 
     ButtonArea butts = new ButtonArea();
-    butts.addButton("Beleg zuordnen", new BelegZuordnenAction(getTablePart()),
+    butts.addButton("Beleg zuordnen", new BelegZuordnenAction(this, null),
         getCurrentObject(), false, "document-new.png");
     butts.addButton("Neu", new BelegNewAction(), getCurrentObject(), false,
         "document-new.png");
@@ -95,7 +96,7 @@ public class BelegPart implements Part
     return currentObject;
   }
 
-  public TablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (docsList != null)
     {
@@ -113,6 +114,27 @@ public class BelegPart implements Part
     docsList.setAction(new EditAction(BelegDetailView.class, docsList));
 
     return docsList;
+  }
+
+  public void refreshDocsList()
+  {
+    try
+    {
+      if (docsList != null)
+      {
+        docsList.removeAll();
+        DBIterator<Beleg> it = getCurrentObject().getBelegList();
+        while (it.hasNext())
+        {
+          docsList.addItem(it.next());
+        }
+        docsList.sort();
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim Refresh der Tabelle", e);
+    }
   }
 
   /**

@@ -37,7 +37,6 @@ import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.gui.control.LesefeldMitgliedControl;
 import de.jost_net.JVerein.gui.control.MitgliedDetailControl;
 import de.jost_net.JVerein.gui.control.MitgliedDetailControl.TabSelection;
@@ -51,7 +50,6 @@ import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.MitgliedDokument;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
@@ -98,8 +96,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   final LesefeldMitgliedControl lesefeldControl = control.getLesefeldControl();
 
   final MitgliedskontoControl controlMk = new MitgliedskontoControl(this);
-
-  private DokumentControl dcontrol;
 
   private Container containerMitgliedschaft;
 
@@ -420,18 +416,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     {
       Container cont = getTabOrLabelContainer(parentComposite, DOKUMENTE);
 
-      dcontrol = new DokumentControl(true, MitgliedDokument.class);
-
-      ButtonArea butts = new ButtonArea();
-      butts.addButton(dcontrol.getNeuButton());
-      butts.paint(cont.getComposite());
-
-      cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      cont.getComposite().setLayout(new GridLayout(1, false));
-
-      dcontrol.getDokumenteList().paint(cont.getComposite());
-      dcontrol.setDragDrop(cont.getComposite());
-      control.setDokumentControl(dcontrol);
+      control.getBelegPart().paint(cont.getComposite());
     }
   }
 
@@ -597,8 +582,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     if (!control.getMitglied().isNewObject())
     {
-      Container cont = getTabOrLabelContainer(parentComposite,
-          "Mitgliedskonto");
+      Container cont = getTabOrLabelContainer(parentComposite, "Sollbuchungen");
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
@@ -635,21 +619,34 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     GridLayout layout = new GridLayout(1, false);
     containerZahlung.getComposite().setLayout(layout);
 
-    LabelGroup zahlungsweg = new LabelGroup(containerZahlung.getComposite(),
-        "Zahlungsweg");
-    zahlungsweg.getComposite().setLayout(new GridLayout(1, false));
-
     if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
     {
-      ButtonArea buttons1 = new ButtonArea();
-      buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());
-      buttons1.paint(zahlungsweg.getComposite());
+      LabelGroup abweichenderZahler = new LabelGroup(
+          containerZahlung.getComposite(), "Abweichender Zahler");
+      abweichenderZahler.getComposite().setLayout(new GridLayout(1, false));
+
+      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
+      {
+        ButtonArea buttons1 = new ButtonArea();
+        buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());
+        buttons1.paint(abweichenderZahler.getComposite());
+      }
+
+      SimpleVerticalContainer cols1 = new SimpleVerticalContainer(
+          abweichenderZahler.getComposite(), false, spaltenanzahl);
+      cols1.addInput(control.getAbweichenderZahler());
+      cols1.arrangeVertically();
     }
+    LabelGroup zahlungsdaten = control
+        .getZahlungsdatenLabelGroup(containerZahlung.getComposite());
+    zahlungsdaten.getComposite().setLayout(new GridLayout(1, false));
+    ButtonArea buttons2 = new ButtonArea();
+    buttons2.addButton(control.getZahlungsdatenLoeschenButton());
+    buttons2.paint(zahlungsdaten.getComposite());
 
-    SimpleVerticalContainer cols1 = new SimpleVerticalContainer(
-        zahlungsweg.getComposite(), false, spaltenanzahl);
-
-    cols1.addInput(control.getZahlungsweg());
+    SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
+        zahlungsdaten.getComposite(), false, spaltenanzahl);
+    cols2.addInput(control.getZahlungsweg());
     if (isMitgliedDetail())
     {
       switch (Beitragsmodel.getByKey(
@@ -658,36 +655,20 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         case GLEICHERTERMINFUERALLE:
           break;
         case MONATLICH12631:
-          cols1.addInput(control.getZahlungsrhythmus());
+          cols2.addInput(control.getZahlungsrhythmus());
           break;
         case FLEXIBEL:
-          cols1.addInput(control.getZahlungstermin());
+          cols2.addInput(control.getZahlungstermin());
           break;
       }
     }
-
-    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
-    {
-      cols1.addInput(control.getAbweichenderZahler());
-    }
-    cols1.arrangeVertically();
-
-    LabelGroup bankverbindung = control
-        .getBankverbindungLabelGroup(containerZahlung.getComposite());
-    bankverbindung.getComposite().setLayout(new GridLayout(1, false));
-    ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton(control.getKontoDatenLoeschenButton());
-    buttons2.paint(bankverbindung.getComposite());
-
-    SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
-        bankverbindung.getComposite(), false, spaltenanzahl);
-    cols2.addInput(control.getMandatID());
-    cols2.addInput(control.getMandatDatum());
-    cols2.addInput(control.getMandatVersion());
-    cols2.addInput(control.getLetzteLastschrift());
     cols2.addInput(control.getIban());
     cols2.addInput(control.getBic());
     cols2.addInput(control.getKontoinhaber());
+    cols2.addInput(control.getMandatID());
+    cols2.addInput(control.getMandatVersion());
+    cols2.addInput(control.getMandatDatum());
+    cols2.addInput(control.getLetzteLastschrift());
     cols2.arrangeVertically();
 
     if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)

@@ -145,6 +145,12 @@ public class BelegControl extends FilterControl
       Object value = entry.getValue();
       switch (entry.getKey())
       {
+        case DATUM_VON:
+          docs.addFilter("datum >= ?", value);
+          break;
+        case DATUM_BIS:
+          docs.addFilter("datum <= ?", value);
+          break;
         case BELEGNUMMER:
           docs.addFilter("(lower(belegnummer) like ?)",
               "%" + ((String) value).toLowerCase() + "%");
@@ -158,7 +164,12 @@ public class BelegControl extends FilterControl
           {
             docs.addFilter("NOT EXISTS " + "(SELECT * FROM belegbuchung "
                 + "WHERE belegbuchung.beleg = beleg.id)");
+            docs.addFilter("NOT EXISTS " + "(SELECT * FROM belegmitglied "
+                + "WHERE belegmitglied.beleg = beleg.id)");
           }
+          break;
+        case BELEG_ART:
+          docs.addFilter("belegart = ?", ((BelegArt) value).getKey());
           break;
         default:
           throw new ApplicationException(

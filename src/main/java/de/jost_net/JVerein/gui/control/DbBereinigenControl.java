@@ -25,6 +25,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Lastschrift;
@@ -55,7 +56,7 @@ public class DbBereinigenControl extends AbstractControl
 
   Date defaultDate = null;
 
-  private double anzahl = 7.0d;
+  private double anzahl = 8.0d;
 
   // Rechnungen loeschen
   private CheckboxInput rLoeschenInput = null;
@@ -94,6 +95,10 @@ public class DbBereinigenControl extends AbstractControl
 
   private DateInput mDateInput = null;
 
+  private CheckboxInput belegeLoeschenInput;
+
+  private DateInput belegeDateInput;
+
   public DbBereinigenControl(AbstractView view)
   {
     super(view);
@@ -122,6 +127,8 @@ public class DbBereinigenControl extends AbstractControl
               (Date) sDateInput.getValue(), (boolean) bLoeschenInput.getValue(),
               (Date) bDateInput.getValue(),
               (boolean) sollLoeschenInput.getValue(),
+              (boolean) belegeLoeschenInput.getValue(),
+              (Date) belegeDateInput.getValue(),
               (boolean) lLoeschenInput.getValue(), (Date) lDateInput.getValue(),
               (boolean) aLoeschenInput.getValue(), (Date) aDateInput.getValue(),
               (boolean) jLoeschenInput.getValue(), (Date) jDateInput.getValue(),
@@ -140,10 +147,11 @@ public class DbBereinigenControl extends AbstractControl
 
   private void runDelete(final boolean rloeschen, final Date rdate,
       final boolean sloeschen, final Date sdate, final boolean bloeschen,
-      final Date bdate, final boolean sollloeschen, final boolean lloeschen,
-      final Date ldate, final boolean aloeschen, final Date adate,
-      final boolean jloeschen, final Date jdate, final boolean mloeschen,
-      final Date mdate) throws RemoteException
+      final Date bdate, final boolean sollloeschen, final boolean belegloeschen,
+      final Date belegdate, final boolean lloeschen, final Date ldate,
+      final boolean aloeschen, final Date adate, final boolean jloeschen,
+      final Date jdate, final boolean mloeschen, final Date mdate)
+      throws RemoteException
   {
     BackgroundTask t = new BackgroundTask()
     {
@@ -202,6 +210,18 @@ public class DbBereinigenControl extends AbstractControl
           else if (bloeschen && bdate != null)
           {
             buchungenLoeschen(monitor, bdate, sollloeschen);
+          }
+          monitor.setPercentComplete((int) (progress / anzahl * 100d));
+          progress++;
+
+          // Belege löschen
+          if (belegloeschen && belegdate == null)
+          {
+            monitor.log("Belege löschen: Kein gültiges Datum eingegeben");
+          }
+          else if (belegloeschen && belegdate != null)
+          {
+            belegeLoeschen(monitor, belegdate);
           }
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
@@ -339,6 +359,27 @@ public class DbBereinigenControl extends AbstractControl
     }
     sollLoeschenInput = new CheckboxInput(true);
     return sollLoeschenInput;
+  }
+
+  // Belege loeschen
+  public CheckboxInput getBelegeLoeschen()
+  {
+    if (belegeLoeschenInput != null)
+    {
+      return belegeLoeschenInput;
+    }
+    belegeLoeschenInput = new CheckboxInput(false);
+    return belegeLoeschenInput;
+  }
+
+  public DateInput getDatumAuswahlBelege()
+  {
+    if (belegeDateInput != null)
+    {
+      return belegeDateInput;
+    }
+    belegeDateInput = new DateInput(defaultDate);
+    return belegeDateInput;
   }
 
   // Lastschriften loeschen
@@ -655,6 +696,59 @@ public class DbBereinigenControl extends AbstractControl
     catch (Exception e)
     {
       String fehler = "Fehler beim Löschen von Buchungen.";
+      monitor.setStatusText(fehler);
+    }
+  }
+
+  private void belegeLoeschen(ProgressMonitor monitor, final Date date)
+  {
+    try
+    {
+      DBIterator<Beleg> it = Einstellungen.getDBService()
+          .createList(Beleg.class);
+      it.addFilter("datum < ?", date);
+      int count = 0;
+      Beleg beleg = null;
+      while (it.hasNext())
+      {
+        try
+        {
+
+          beleg = it.next();
+          // Nur löschen, wenn es keine Referenzen daruaf gibt
+          if (beleg.getReferenzes().isEmpty())
+          {
+            beleg.delete();
+            count++;
+          }
+        }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
+        }
+        catch (Exception e)
+        {
+          String fehler = "Fehler beim Löschen des Beleges mit Nr "
+              + beleg.getID() + ", " + e.getMessage();
+          monitor.setStatusText(fehler);
+        }
+      }
+      if (count > 0)
+      {
+        monitor.setStatusText(String.format("%d Belege gelöscht.", count));
+      }
+      else
+      {
+        monitor.log("Keine Belege im vorgegebenen Zeitraum vorhanden!");
+      }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      String fehler = "Fehler beim Löschen von Belegen.";
       monitor.setStatusText(fehler);
     }
   }

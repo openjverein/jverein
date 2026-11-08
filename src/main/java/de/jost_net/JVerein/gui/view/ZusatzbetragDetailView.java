@@ -18,8 +18,10 @@ package de.jost_net.JVerein.gui.view;
 
 import java.util.Map;
 
+import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.ZusatzbetragMap;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.control.Savable;
@@ -50,7 +52,9 @@ public class ZusatzbetragDetailView extends AbstractDetailView
     group2.addLabelPair("Als Vorlage speichern", control.getVorlage());
 
     Map<String, Object> map = new AllgemeineMap().getMap(null);
+    map = AbrechnungsParameterMap.getDummyMap(map);
     map = MitgliedMap.getDummyMap(map);
+    map = ZusatzbetragMap.getDummyMap(map);
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.ZUSATZBETRAEGE));

@@ -26,7 +26,6 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
@@ -239,12 +238,6 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
       while (it.hasNext())
       {
         Lastschrift la = (Lastschrift) it.next();
-        Kursteilnehmer kt = la.getKursteilnehmer();
-        if (kt != null)
-        {
-          kt.resetAbbudatum();
-          kt.store();
-        }
         la.delete();
       }
       object.delete();

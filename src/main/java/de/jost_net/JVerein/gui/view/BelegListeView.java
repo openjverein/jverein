@@ -21,13 +21,20 @@ import de.jost_net.JVerein.gui.control.BelegControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.util.DragnDropUtil;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.SimpleDialog;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SWTUtil;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class BelegListeView extends AbstractView
 {
@@ -40,16 +47,32 @@ public class BelegListeView extends AbstractView
     final BelegControl control = new BelegControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addInput(control.getFilterInput(Filter.BELEGNUMMER));
-    group.addInput(control.getFilterInput(Filter.BEMERKUNG));
-    group.addLabelPair("Nicht zugeordnet",
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getFilterInput(Filter.BELEGNUMMER));
+    left.addInput(control.getFilterInput(Filter.BEMERKUNG));
+    left.addLabelPair("Nicht zugeordnet",
         control.getFilterInput(Filter.NICHT_ZUGEORDNET));
 
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getFilterInput(Filter.BELEG_ART));
+    Input von = control.getFilterInput(Filter.DATUM_VON);
+    right.addInput(von);
+    Input bis = control.getFilterInput(Filter.DATUM_BIS);
+    right.addInput(bis);
+
     ButtonArea fbuttons = new ButtonArea();
+    ToolTipButton zurueck = control.getZurueckButton(von, bis);
+    fbuttons.addButton(zurueck);
+    ToolTipButton vor = control.getVorButton(von, bis);
+    fbuttons.addButton(vor);
     fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
+    zurueck.setToolTipText("Datumsbereich zurück");
+    vor.setToolTipText("Datumsbereich vowärts");
 
     control.getTablePart().paint(getParent());
     DragnDropUtil.setDragDrop(getParent(), f -> control.addFile(f));
@@ -64,4 +87,5 @@ public class BelegListeView extends AbstractView
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
     GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
+
 }

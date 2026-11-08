@@ -53,6 +53,7 @@ public class BelegAuswahlDialog extends AbstractDialog<Beleg[]>
     group.addInput(control.getFilterInput(Filter.BEZEICHNUNG));
     group.addLabelPair("Nicht zugeordnet",
         control.getFilterInput(Filter.NICHT_ZUGEORDNET));
+    group.addInput(control.getFilterInput(Filter.BELEG_ART));
 
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());

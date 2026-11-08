@@ -47,7 +47,6 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont1.addLabelPair("Abweichende Zahler", control.getAbweichendeZahler());
     cont1.addLabelPair("Arbeitseinsatz", control.getArbeitseinsatz());
     cont1.addLabelPair("Familienverband", control.getFamilienbeitrag());
-    cont1.addLabelPair("Kursteilnehmer", control.getKursteilnehmer());
     cont1.addLabelPair("Lehrgänge", control.getLehrgaenge());
     cont1.addLabelPair("Lesefelder", control.getUseLesefelder());
     cont1.addLabelPair("Nicht-Mitglieder", control.getZusatzadressen());
