@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.File;
@@ -437,12 +436,6 @@ class MitgliederImportTest
             () -> new AssertionError("Mitglied nicht gespeichert: " + vorname));
   }
 
-  /** DB-ID als Long, wie sie in VollZahlerID / AbweichenderZahlerID steht. */
-  private Long dbId(String vorname)
-  {
-    return Long.valueOf((String) persistiertNachVorname(vorname).get("ID"));
-  }
-
   /** Legt ein bereits vorhandenes Mitglied in der Fake-DB an. */
   private void vorhandenesMitglied(String name, String vorname,
       Beitragsgruppe beitragsgruppe) throws Exception
@@ -639,4 +632,20 @@ class MitgliederImportTest
         "Import abgebrochen: Zeile 1: Abweichender Zahler Id abc ist keine gültige Integer Zahl."));
   }
 
+  @Test
+  void abweichenderZahlerNichtGefundenBrichtImportAb() throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, "-1;Mustermann;Anna;Vollzahler;;",
+        ";Mustermann;Tom;Vollzahler;;-2"));
+
+    verify(monitor).log(contains(
+        "Import abgebrochen: Zeile 2: Abweichender Zahler für Id -2 nicht gefunden."));
+  }
+
+  @Test
+  void abweichenderZahlerGefundenImportOk() throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, "-1;Mustermann;Anna;Vollzahler;;",
+        ";Mustermann;Tom;Vollzahler;;-1"));
+  }
 }
