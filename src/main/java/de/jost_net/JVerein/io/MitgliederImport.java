@@ -55,8 +55,12 @@ import de.willuhn.util.ProgressMonitor;
 public class MitgliederImport implements Importer
 {
 
-  static Map<String, String> idMap = new HashMap<>();
+  // Speichert das Mapping der lokalen Ids zu den echten Ids.
+  // <lokale Id, echte Id>
+  static Map<Integer, String> idMap = new HashMap<>();
 
+  // Speichert die echte Id die bei der importierten Zeile erzeugt wurde.
+  // <zeile, echte Id>
   static Map<Integer, String> zeileMap = new HashMap<>();
 
   @Override
@@ -89,20 +93,49 @@ public class MitgliederImport implements Importer
       try
       {
         results.findColumn("id");
-        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-        dialog.setTitle("Mitglieder überschreiben");
-        dialog.setText("In der Importdatei ist die Spalte \"id\" vorhanden,\n"
-            + "es werden die Felder der existierenden Mitglieder mit dieser ID\n"
-            + "geändert und ggf. geleert.\n" + "Soll fortgefahren werden?");
-        if (!(boolean) dialog.open())
+        boolean showDialog = false;
+        String id = null;
+        Integer intId = null;
+        while (results.next())
         {
-          throw new ApplicationException("Import abgebrochen");
+          id = results.getString("id");
+          if (id != null && !id.isBlank())
+          {
+            try
+            {
+              intId = Integer.parseInt(id);
+              if (intId > 0)
+              {
+                showDialog = true;
+                break;
+              }
+            }
+            catch (NumberFormatException ex)
+            {
+              throw new ApplicationException("Zeile " + results.getRow()
+                  + ": Mitglied ID " + id + " ist keine gültige Integer Zahl.");
+            }
+          }
+        }
+
+        if (showDialog)
+        {
+          YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+          dialog.setTitle("Mitglieder überschreiben");
+          dialog.setText("In der Importdatei ist die Spalte \"id\" vorhanden,\n"
+              + "es werden die Felder der existierenden Mitglieder mit dieser ID\n"
+              + "geändert und ggf. geleert.\n" + "Soll fortgefahren werden?");
+          if (!(boolean) dialog.open())
+          {
+            throw new ApplicationException("Import abgebrochen");
+          }
         }
       }
       catch (SQLException e)
       {
         // id nicht vorhanden
       }
+      results.beforeFirst();
 
       /* Zusatzfelder ermitteln und in Liste ablegen */
       DBIterator<Felddefinition> felddefinitionIt = Einstellungen.getDBService()
@@ -195,12 +228,18 @@ public class MitgliederImport implements Importer
               // dann nehmen wir die ID
               id = tmpId;
             }
+            else if (idMap.containsKey(integerId))
+            {
+              throw new ApplicationException(
+                  "Zeile " + anz + ": Mitglied ID " + tmpId
+                      + " wurde bereits bei einem anderen Mitglied verwendet.");
+            }
           }
         }
         catch (NumberFormatException ex)
         {
-          throw new ApplicationException(
-              "Mitglied ID " + id + " ist keine gültige Integer Zahl.");
+          throw new ApplicationException("Zeile " + anz + ": Mitglied ID "
+              + tmpId + " ist keine gültige Integer Zahl.");
         }
 
         Mitglied m = null;
@@ -212,7 +251,7 @@ public class MitgliederImport implements Importer
         catch (ObjectNotFoundException e)
         {
           throw new ApplicationException(
-              "Mitglied mit ID " + id + " nicht vorhanden.");
+              "Zeile " + anz + ": Mitglied mit ID " + id + " nicht vorhanden.");
         }
         try
         {
@@ -227,8 +266,8 @@ public class MitgliederImport implements Importer
             }
             catch (ObjectNotFoundException e)
             {
-              throw new ApplicationException(
-                  "Adresstyp nicht vorhanden: " + mitgliedstyp);
+              throw new ApplicationException("Zeile " + anz
+                  + ": Adresstyp nicht vorhanden: " + mitgliedstyp);
             }
           }
           else
@@ -1085,7 +1124,7 @@ public class MitgliederImport implements Importer
         // Mitglied Id für die negativen Referenzen speichern
         if (integerId != null && integerId < 0)
         {
-          idMap.put(tmpId, m.getID());
+          idMap.put(integerId, m.getID());
         }
         // Id der Mitglieder der jeweiligen Zeile speichern
         zeileMap.put(anz, m.getID());
@@ -1289,10 +1328,11 @@ public class MitgliederImport implements Importer
           }
           try
           {
-            if (Integer.parseInt(abweichenderZahler) < 0)
+            Integer intId = Integer.parseInt(abweichenderZahler);
+            if (intId < 0)
             {
               String alteId = abweichenderZahler;
-              abweichenderZahler = idMap.get(abweichenderZahler);
+              abweichenderZahler = idMap.get(intId);
               if (abweichenderZahler == null)
               {
                 throw new ApplicationException(
@@ -1501,7 +1541,7 @@ public class MitgliederImport implements Importer
               // Es wird ein Eintrag in der Import Datei adressiert. Wir holen
               // uns die echte id
               String alteId = zahlerId;
-              zahlerId = idMap.get(zahlerId);
+              zahlerId = idMap.get(integerId);
               if (zahlerId == null)
               {
                 throw new ApplicationException("Zeile " + zeile

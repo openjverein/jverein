@@ -354,29 +354,44 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
               .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
           && getVollZahlerID() != null)
       {
-        // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten
-        // sein!
+        Mitglied z = null;
+
+        // ja, einige Checks
         DBIterator<Mitglied> zahler = Einstellungen.getDBService()
             .createList(Mitglied.class);
+        zahler.addFilter("id = " + getVollZahlerID());
+        if (zahler.hasNext())
+        {
+          z = zahler.next();
+          if (!z.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+          {
+            throw new ApplicationException(
+                "Der ausgewählte Vollzahler darf kein Nicht-Mitglied sein!");
+          }
+          if (z.getBeitragsgruppe() != null && z.getBeitragsgruppe()
+              .getBeitragsArt() != ArtBeitragsart.NORMAL)
+          {
+            throw new ApplicationException(
+                "Die Art der Beitragsgruppe des ausgewählten Vollzahler muß Normal sein!");
+          }
+        }
+        else
+        {
+          throw new ApplicationException(
+              "Der ausgewählte Vollzahler existiert nicht!");
+        }
+
+        // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten
+        // sein!
+        zahler = Einstellungen.getDBService().createList(Mitglied.class);
         zahler.addFilter("id = " + getVollZahlerID());
         if (getAustritt() != null)
           zahler.addFilter("(austritt is not null and austritt < ?)",
               getAustritt());
-        Mitglied z = null;
+        z = null;
         if (zahler.hasNext())
         {
           z = zahler.next();
-        }
-        if (!z.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
-        {
-          throw new ApplicationException(
-              "Der ausgewählte Vollzahler darf kein Nicht-Mitglied sein!");
-        }
-        if (z.getBeitragsgruppe() != null
-            && z.getBeitragsgruppe().getBeitragsArt() != ArtBeitragsart.NORMAL)
-        {
-          throw new ApplicationException(
-              "Die Art der Beitragsgruppe des ausgewählten Vollzahler muß Normal sein!");
         }
 
         if (z != null && ((Mitglied) z).getAustritt() != null)
