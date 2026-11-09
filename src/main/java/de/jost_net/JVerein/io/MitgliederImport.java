@@ -1545,7 +1545,7 @@ public class MitgliederImport implements Importer
               if (zahlerId == null)
               {
                 throw new ApplicationException("Zeile " + zeile
-                    + " : Vollzahler für Id " + alteId + " nicht gefunden.");
+                    + ": Vollzahler für Id " + alteId + " nicht gefunden.");
               }
             }
           }

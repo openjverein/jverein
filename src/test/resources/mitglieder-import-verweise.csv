@@ -1,0 +1,7 @@
+id;name;vorname;beitragsgruppe;voll_zahlerid;abweichende_zahlerid
+-1;Wichtig;Willi;Vollzahler;;
+;Wichtig;Ulla;Angehoeriger;-1;
+;Meier;Ben;Angehoeriger;1;
+;Mustermann;Anna;Angehoeriger;2;
+;Mustermann;Tom;Angehoeriger;2;
+;Meier;Eva;Angehoeriger;1;
