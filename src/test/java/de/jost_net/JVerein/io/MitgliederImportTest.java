@@ -621,4 +621,22 @@ class MitgliederImportTest
         "Import abgebrochen: Zeile 1: Vollzahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: 1"));
   }
 
+  @Test
+  void fehlenderAbweichenderZahlerBrichtImportAb() throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, ";Mustermann;Anna;Vollzahler;;99"));
+
+    verify(monitor).log(contains(
+        "Import abgebrochen: Zeile 1: Abweichenden Zahler nicht gefunden: 99"));
+  }
+
+  @Test
+  void abweichenderZahlerKeinIntegerBrichtImportAb() throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, ";Mustermann;Anna;Vollzahler;;abc"));
+
+    verify(monitor).log(contains(
+        "Import abgebrochen: Zeile 1: Abweichender Zahler Id abc ist keine gültige Integer Zahl."));
+  }
+
 }

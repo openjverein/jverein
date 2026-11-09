@@ -1336,7 +1336,7 @@ public class MitgliederImport implements Importer
               if (abweichenderZahler == null)
               {
                 throw new ApplicationException(
-                    "Zeile " + anz + " : Abweichender Zahler für Id " + alteId
+                    "Zeile " + anz + ": Abweichender Zahler für Id " + alteId
                         + " nicht gefunden.");
               }
             }
@@ -1344,7 +1344,7 @@ public class MitgliederImport implements Importer
           catch (NumberFormatException ex)
           {
             throw new ApplicationException(
-                "Zeile " + anz + " : Abweichender Zahler Id "
+                "Zeile " + anz + ": Abweichender Zahler Id "
                     + abweichenderZahler + " ist keine gültige Integer Zahl.");
           }
           String id = zeileMap.get(anz);
