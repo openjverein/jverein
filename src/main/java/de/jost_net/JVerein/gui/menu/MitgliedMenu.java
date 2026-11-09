@@ -106,7 +106,7 @@ public class MitgliedMenu extends ContextMenu
     if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
       addItem(new CheckedContextMenuItem("Beleg zuordnen",
-          new BelegZuordnenAction(null, control), "view-refresh.png"));
+          new BelegZuordnenAction(null, control), "emblem-documents.png"));
     }
     if (detailaction instanceof NichtMitgliedDetailAction)
     {
