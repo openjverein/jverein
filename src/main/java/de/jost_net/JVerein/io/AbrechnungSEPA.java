@@ -712,12 +712,12 @@ public class AbrechnungSEPA extends SEPASupport
               Adressaufbereitung.getNameVorname(m) + ": " + e.getMessage());
         }
 
+        Date faelligkeit = z.getFaelligkeit();
         if (z.getIntervall().intValue() != IntervallZusatzzahlung.KEIN
             && (z.getEndedatum() == null
                 || z.getFaelligkeit().getTime() <= z.getEndedatum().getTime()))
         {
-          z.setFaelligkeit(
-              Datum.addInterval(z.getFaelligkeit(), z.getIntervall()));
+          z.setFaelligkeit(Datum.addInterval(faelligkeit, z.getIntervall()));
         }
         try
         {
@@ -730,7 +730,7 @@ public class AbrechnungSEPA extends SEPASupport
             za.setZusatzbetrag(z);
             za.setLetzteAusfuehrung(z.getAusfuehrung());
             za.store();
-            z.setAusfuehrung(param.stichtag);
+            z.setAusfuehrung(faelligkeit);
             z.store();
           }
         }
