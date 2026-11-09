@@ -107,7 +107,9 @@ public class H2migration extends AbstractBox
 
     Label desc = new Label(parent, SWT.WRAP);
     desc.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    desc.setText("Die Datenbank von OpenJVerein muss migriert werden");
+    desc.setText(
+        "Die von OpenJVerein verwendete H2 Datenbank ist veraltet und sollte"
+            + " auf die aktuelle Version migriert werden.");
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Migration starten", e -> MigratH2Database.start(), null,
