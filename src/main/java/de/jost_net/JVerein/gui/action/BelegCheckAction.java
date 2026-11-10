@@ -10,8 +10,11 @@ import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.SimpleDialog;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
 public class BelegCheckAction implements Action
 {
@@ -26,56 +29,95 @@ public class BelegCheckAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    try
+    BackgroundTask t = new BackgroundTask()
     {
-      DBIterator<Beleg> it = Einstellungen.getDBService()
-          .createList(Beleg.class);
+      private boolean interrupted;
 
-      Map<Beleg, FehlerArt> fehlerMap = new HashMap<>();
-      while (it.hasNext())
+      @Override
+      public void run(ProgressMonitor monitor) throws ApplicationException
       {
-        Beleg beleg = it.next();
         try
         {
-          beleg.getFile();
+          DBIterator<Beleg> it = Einstellungen.getDBService()
+              .createList(Beleg.class);
+
+          Map<Beleg, FehlerArt> fehlerMap = new HashMap<>();
+
+          monitor.log("Starte Prüfung");
+          int i = 0;
+          while (it.hasNext())
+          {
+            monitor.setPercentComplete(i++ * 100 / it.size());
+
+            if (isInterrupted())
+            {
+              throw new OperationCanceledException();
+            }
+            Beleg beleg = it.next();
+            try
+            {
+              beleg.getFile();
+            }
+            catch (IOException | ApplicationException e)
+            {
+              fehlerMap.put(beleg, FehlerArt.DATEI_FEHLT);
+              continue;
+            }
+            Boolean ergebnis = null;
+
+            ergebnis = beleg.checkChecksum();
+
+            if (ergebnis == null)
+            {
+              fehlerMap.put(beleg, FehlerArt.PREUEFSUMME_FEHLT);
+            }
+            else if (!ergebnis)
+            {
+              fehlerMap.put(beleg, FehlerArt.PRUEFSUMME_FALSCH);
+            }
+          }
+          monitor.setStatus(ProgressMonitor.STATUS_DONE);
+          monitor.setPercentComplete(100);
+          monitor.setStatusText("Prüfung abgeschlossen");
+          if (fehlerMap.isEmpty())
+          {
+            SimpleDialog dialog = new SimpleDialog(
+                SimpleDialog.POSITION_CENTER);
+            dialog.setText("Die Dateien aller " + it.size()
+                + " Belege sind vorhanden und haben korrekte Prüfsummen.");
+            dialog.setTitle("Belege geprüft");
+            dialog.open();
+          }
+          else
+          {
+            new BelegCheckDialog(fehlerMap).open();
+          }
         }
-        catch (IOException | ApplicationException e)
+        catch (OperationCanceledException e)
         {
-          fehlerMap.put(beleg, FehlerArt.DATEI_FEHLT);
-          continue;
+          throw e;
         }
-        Boolean ergebnis = beleg.checkChecksum();
-        if (ergebnis == null)
+        catch (Exception e)
         {
-          fehlerMap.put(beleg, FehlerArt.PREUEFSUMME_FEHLT);
-        }
-        else if (!ergebnis)
-        {
-          fehlerMap.put(beleg, FehlerArt.PRUEFSUMME_FALSCH);
+          throw new ApplicationException(
+              "Fehler beim prüfen des Belegs: " + e.getMessage());
         }
       }
-      if (fehlerMap.isEmpty())
+
+      @Override
+      public void interrupt()
       {
-        SimpleDialog dialog = new SimpleDialog(SimpleDialog.POSITION_CENTER);
-        dialog.setText("Die Dateien aller " + it.size()
-            + " Belege sind vorhanden und haben korrekte Prüfsummen.");
-        dialog.setTitle("Belege geprüft");
-        dialog.open();
+        interrupted = true;
       }
-      else
+
+      @Override
+      public boolean isInterrupted()
       {
-        new BelegCheckDialog(fehlerMap).open();
+        return interrupted;
       }
-    }
-    catch (OperationCanceledException e)
-    {
-      throw e;
-    }
-    catch (Exception e)
-    {
-      throw new ApplicationException(
-          "Fehler beim prüfen der Prüfsummen: " + e.getMessage());
-    }
+
+    };
+    Application.getController().start(t);
   }
 
 }

@@ -330,7 +330,8 @@ public class MitgliedControl extends FilterControl
       Logger.error("Fehler", e);
     }
 
-    mitgliedList.setContextMenu(new MitgliedMenu(detailaction, mitgliedList));
+    mitgliedList
+        .setContextMenu(new MitgliedMenu(this, detailaction, mitgliedList));
     mitgliedList.setMulti(true);
     mitgliedList.setRememberState(true);
     if (detailaction instanceof MitgliedDetailAction)
