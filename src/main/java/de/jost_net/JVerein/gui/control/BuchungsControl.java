@@ -78,6 +78,7 @@ public class BuchungsControl extends FilterControl
       geldkonto = false;
       settingsprefix = BuchungDetailControl.ANLAGENKONTO_PREFIX;
     }
+    this.kontenfilter = kontenfilter;
   }
 
   @Override
