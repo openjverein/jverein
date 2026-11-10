@@ -67,7 +67,7 @@ import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ProgressMonitor;
 
-class MitgliederImportTest
+class MitgliederZahlerImportTest
 {
   /** Familien-Testdaten (Verweise per Id). */
   private static final String FAMILIEN = "mitglieder-import.csv";
@@ -312,6 +312,24 @@ class MitgliederImportTest
           return null;
       }
     });
+  }
+
+  private Mitglied gespeichertMitId(String id) throws Exception
+  {
+    for (Mitglied m : gespeichert)
+    {
+      if (id.equals(m.getID()))
+      {
+        return m;
+      }
+    }
+    throw new AssertionError("Mitglied nicht gespeichert: " + id);
+  }
+
+  /** Wert eines Feldes, wie er für das Mitglied in der DB stünde. */
+  private Object persistiert(String id, String feld) throws Exception
+  {
+    return datenbank.get(id).get(feld);
   }
 
   private static String beschreibung(Map<String, Object> werte) throws Exception
@@ -647,5 +665,8 @@ class MitgliederImportTest
   {
     importieren(csv(ALLE_SPALTEN, "-1;Mustermann;Anna;Vollzahler;;",
         ";Mustermann;Tom;Vollzahler;;-1"));
+    gespeichertMitId("1");
+    gespeichertMitId("2");
+    assertEquals(persistiert("3", "AbweichenderZahlerID"), Long.valueOf(1));
   }
 }
