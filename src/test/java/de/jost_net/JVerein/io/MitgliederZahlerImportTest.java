@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,8 +62,11 @@ import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import de.jost_net.JVerein.rmi.Version;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ProgressMonitor;
@@ -101,6 +105,17 @@ class MitgliederZahlerImportTest
 
   private ProgressMonitor monitor;
 
+  /** Der Bestätigungsdialog "Mitglieder überschreiben" wird nicht angezeigt. */
+  private MockedConstruction<YesNoDialog> dialoge;
+
+  /** Antwort des Bestätigungsdialogs */
+  private Boolean antwort;
+
+  /** Stand der simulierten Tabelle beim Start der Transaktion. */
+  private Map<String, Map<String, Object>> sicherung = new HashMap<>();
+
+  private int sicherungAnzahl;
+
   /**
    * Von oeffnen() angelegte JDBC-Ressourcen, werden in tearDown geschlossen.
    */
@@ -111,6 +126,9 @@ class MitgliederZahlerImportTest
   {
     settings = Mockito.mockConstruction(Settings.class);
     treePart = Mockito.mockConstruction(TreePart.class);
+    antwort = Boolean.TRUE;
+    dialoge = Mockito.mockConstruction(YesNoDialog.class,
+        (dialog, context) -> when(dialog.open()).thenReturn(antwort));
     gespeichert = new ArrayList<>();
     datenbank = new HashMap<>();
     monitor = mock(ProgressMonitor.class);
@@ -132,7 +150,19 @@ class MitgliederZahlerImportTest
         Class<?> klasse = invocation.getArgument(0);
         if (klasse == Mitglied.class)
         {
-          return neuesMitglied(mitgliedstyp);
+          String id = invocation.getArgument(1);
+          return id == null ? neuesMitglied(mitgliedstyp)
+              : gespeichertMitId(id);
+        }
+        if (klasse == Mitgliedstyp.class)
+        {
+          Mitgliedstyp typ = mock(Mitgliedstyp.class);
+          Mockito.doReturn(invocation.getArgument(1)).when(typ).getID();
+          return typ;
+        }
+        if (klasse == Version.class)
+        {
+          return transaktion();
         }
         return mock(klasse);
       }
@@ -197,6 +227,10 @@ class MitgliederZahlerImportTest
     if (einstellungen != null)
     {
       einstellungen.close();
+    }
+    if (dialoge != null)
+    {
+      dialoge.close();
     }
     if (treePart != null)
     {
@@ -323,7 +357,31 @@ class MitgliederZahlerImportTest
         return m;
       }
     }
-    throw new AssertionError("Mitglied nicht gespeichert: " + id);
+    throw new ObjectNotFoundException(id);
+  }
+
+  /**
+   * Das Objekt, über das DBTransaction die Transaktion steuert. Der Rollback
+   * stellt den Stand der simulierten Tabelle beim Start wieder her.
+   */
+  private Version transaktion() throws Exception
+  {
+    Version version = mock(Version.class);
+    Mockito.doAnswer(i -> {
+      sicherung = new HashMap<>(datenbank);
+      sicherungAnzahl = gespeichert.size();
+      return null;
+    }).when(version).transactionBegin();
+    Mockito.doAnswer(i -> {
+      datenbank.clear();
+      datenbank.putAll(sicherung);
+      while (gespeichert.size() > sicherungAnzahl)
+      {
+        gespeichert.remove(gespeichert.size() - 1);
+      }
+      return null;
+    }).when(version).transactionRollback();
+    return version;
   }
 
   /** Wert eines Feldes, wie er für das Mitglied in der DB stünde. */
@@ -667,6 +725,200 @@ class MitgliederZahlerImportTest
         ";Mustermann;Tom;Vollzahler;;-1"));
     gespeichertMitId("1");
     gespeichertMitId("2");
-    assertEquals(persistiert("3", "AbweichenderZahlerID"), Long.valueOf(1));
+    assertEquals(persistiert("2", "AbweichenderZahlerID"), Long.valueOf(1));
+  }
+
+  // ---- Spalte id: bestehende Mitglieder überschreiben ----
+
+  /** Die Beitragsgruppe mit dieser Bezeichnung aus der Fake-DB. */
+  private Beitragsgruppe gruppe(String bezeichnung) throws Exception
+  {
+    DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
+        .createList(Beitragsgruppe.class);
+    it.addFilter("bezeichnung = ?", bezeichnung);
+    return it.next();
+  }
+
+  @Test
+  void positiveIdUeberschreibtEinBestehendesMitglied() throws Exception
+  {
+    vorhandenesMitglied("Alt", "Paul", gruppe("Vollzahler")); // ID 1
+
+    importieren(csv("id;name", "1;Neu"));
+
+    verify(monitor, never()).log(anyString());
+    assertEquals(1, datenbank.size());
+    assertEquals("Neu", persistiertNachVorname("Paul").get("Name"));
+  }
+
+  @Test
+  void unbekanntePositiveIdBrichtImportAb() throws Exception
+  {
+    importieren(csv("id;name", "99;Neu"));
+
+    verify(monitor).log(contains(
+        "Import abgebrochen: Zeile 1: Mitglied mit ID 99 nicht vorhanden."));
+  }
+
+  @Test
+  void negativeIdWirdNumerischVerglichen() throws Exception
+  {
+    // -01 und -1 sind dieselbe Id
+    importieren(csv(ALLE_SPALTEN, "-01;Mustermann;Max;Vollzahler;;",
+        ";Mustermann;Anna;Angehoeriger;-1;"));
+
+    verify(monitor, never()).log(anyString());
+    assertEquals(Long.valueOf(1),
+        persistiertNachVorname("Anna").get("VollZahlerID"));
+  }
+
+  @Test
+  void zweiImportenTeilenKeineNegativenIds() throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, "-1;Mustermann;Max;Vollzahler;;"));
+    verify(monitor, never()).log(anyString());
+
+    importieren(csv(ALLE_SPALTEN, ";Mustermann;Anna;Angehoeriger;-1;"));
+    verify(monitor).log(contains("Vollzahler für Id -1 nicht gefunden"));
+  }
+
+  @Test
+  void externeMitgliedsnummerAendertNichtsAnDenVerweisen() throws Exception
+  {
+    einstellung(Property.EXTERNEMITGLIEDSNUMMER, true);
+
+    importieren(csv(
+        "id;externemitgliedsnummer;name;vorname;beitragsgruppe;voll_zahlerid",
+        "-1;M-1;Mustermann;Max;Vollzahler;",
+        "-2;M-2;Mustermann;Anna;Angehoeriger;-1"));
+
+    verify(monitor, never()).log(anyString());
+    assertEquals(Long.valueOf(1),
+        persistiertNachVorname("Anna").get("VollZahlerID"));
+  }
+
+  @Test
+  void zeilennummerBleibtDiePositionInDerCsv() throws Exception
+  {
+    // Zeile 1 (Anna) wird erst nach Zeile 2 (Max) verarbeitet, der Fehler muss
+    // trotzdem "Zeile 1" melden
+    importieren(csv(ALLE_SPALTEN, ";Mustermann;Anna;Angehoeriger;-2;99",
+        "-2;Mustermann;Max;Vollzahler;;"));
+
+    verify(monitor).log(contains("Zeile 1: Abweichenden Zahler nicht gefunden: 99"));
+  }
+
+  // ---- Bestätigungsdialog "Mitglieder überschreiben" ----
+
+  @Test
+  void nurNegativeIdsFragenNichtNachDemUeberschreiben() throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, "-1;Mustermann;Max;Vollzahler;;",
+        "-2;Mustermann;Anna;Angehoeriger;-1;"));
+
+    assertEquals(0, dialoge.constructed().size());
+    verify(monitor, never()).log(anyString());
+  }
+
+  @Test
+  void positiveIdFragtEinmalNachDemUeberschreiben() throws Exception
+  {
+    vorhandenesMitglied("Alt", "Paul", gruppe("Vollzahler"));
+    vorhandenesMitglied("Alt", "Pia", gruppe("Vollzahler"));
+
+    importieren(csv("id;name", "1;Neu", "2;Neu"));
+
+    assertEquals(1, dialoge.constructed().size());
+    verify(monitor, never()).log(anyString());
+  }
+
+  @Test
+  void dialogMitNeinBrichtDenImportAb() throws Exception
+  {
+    antwort = Boolean.FALSE;
+    vorhandenesMitglied("Alt", "Paul", gruppe("Vollzahler"));
+
+    importieren(csv("id;name", "1;Neu"));
+
+    verify(monitor).log(contains("Import abgebrochen"));
+    assertEquals("Alt", persistiertNachVorname("Paul").get("Name"));
+  }
+
+  // ---- Nicht-Mitglieder ----
+
+  @Test
+  void vollzahlerIdBeiNichtMitgliedBrichtImportAb() throws Exception
+  {
+    importieren(csv("id;name;vorname;adresstyp;beitragsgruppe;voll_zahlerid",
+        "-1;Mustermann;Max;1;Vollzahler;",
+        ";Mustermann;Anna;2;Angehoeriger;-1"));
+
+    verify(monitor).log(contains(
+        "Zeile 2: Für Nicht-Mitglieder ist keine Vollzahler Id erlaubt: -1"));
+    // Der Rollback macht auch das schon gespeicherte Mitglied rückgängig
+    assertTrue(datenbank.isEmpty());
+  }
+
+  // ---- abweichende_zahlerid: Verweise innerhalb der Datei ----
+
+  @Test
+  void abweichenderZahlerPerNegativerIdUndDatenbankIdMitLeerenZellen()
+      throws Exception
+  {
+    vorhandenesMitglied("Zahler", "Paul", gruppe("Vollzahler")); // ID 1
+
+    importieren(csv(ALLE_SPALTEN, ";Meier;Tom;Vollzahler;;-1",
+        "-1;Mustermann;Max;Vollzahler;;", ";Wichtig;Eva;Vollzahler;;1",
+        ";Meier;Hans;Vollzahler;;"));
+
+    verify(monitor, never()).log(anyString());
+    assertEquals(Long.valueOf(3),
+        persistiertNachVorname("Tom").get("AbweichenderZahlerID"));
+    assertEquals(Long.valueOf(1),
+        persistiertNachVorname("Eva").get("AbweichenderZahlerID"));
+    assertNull(persistiertNachVorname("Max").get("AbweichenderZahlerID"));
+    assertNull(persistiertNachVorname("Hans").get("AbweichenderZahlerID"));
+    // Ein abweichender Zahler begründet keinen Familienverband
+    assertEquals("", familienverbaende());
+  }
+
+  @Test
+  void vollzahlerUndAbweichenderZahlerGleichzeitig() throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, "-1;Mustermann;Max;Vollzahler;;",
+        ";Mustermann;Anna;Angehoeriger;-1;-1"));
+
+    verify(monitor, never()).log(anyString());
+    assertEquals(Long.valueOf(1),
+        persistiertNachVorname("Anna").get("VollZahlerID"));
+    assertEquals(Long.valueOf(1),
+        persistiertNachVorname("Anna").get("AbweichenderZahlerID"));
+  }
+
+  @Test
+  void abweichenderZahlerKannEinWeiterUntenStehenderAngehoerigerSein()
+      throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, ";Meier;Tom;Vollzahler;;-3",
+        "-2;Wichtig;Hans;Vollzahler;;", "-3;Wichtig;Eva;Angehoeriger;-2;"));
+
+    verify(monitor, never()).log(anyString());
+    assertEquals(Long.valueOf(3),
+        persistiertNachVorname("Tom").get("AbweichenderZahlerID"));
+    assertEquals(Long.valueOf(2),
+        persistiertNachVorname("Eva").get("VollZahlerID"));
+  }
+
+  @Test
+  void abweichendeZahlerDuerfenSichGegenseitigZahlen() throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, "-1;Mustermann;Max;Vollzahler;;-2",
+        "-2;Mustermann;Anna;Vollzahler;;-1"));
+
+    verify(monitor, never()).log(anyString());
+    assertEquals(Long.valueOf(2),
+        persistiertNachVorname("Max").get("AbweichenderZahlerID"));
+    assertEquals(Long.valueOf(1),
+        persistiertNachVorname("Anna").get("AbweichenderZahlerID"));
   }
 }
