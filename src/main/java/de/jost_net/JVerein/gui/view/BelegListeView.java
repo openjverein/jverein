@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.BelegControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.ExportButton;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
@@ -27,13 +28,10 @@ import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.SimpleDialog;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class BelegListeView extends AbstractView
@@ -79,6 +77,7 @@ public class BelegListeView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(new HelpButton(DokumentationUtil.BELEG));
+    buttons.addButton(new ExportButton(DokumentationUtil.BELEG, control));
     buttons.addButton(
         new NewButton(new NewAction(BelegDetailView.class, Beleg.class)));
     buttons.paint(this.getParent());

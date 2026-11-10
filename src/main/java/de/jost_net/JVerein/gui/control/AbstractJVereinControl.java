@@ -97,7 +97,7 @@ public abstract class AbstractJVereinControl extends AbstractControl
    * @throws RemoteException
    * @throws ApplicationException
    */
-  protected abstract IJVereinPart getTablePart()
+  public abstract IJVereinPart getTablePart()
       throws RemoteException, ApplicationException;
 
   /**

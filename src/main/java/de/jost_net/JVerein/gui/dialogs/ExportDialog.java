@@ -23,6 +23,7 @@ import java.util.Collections;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.gui.control.AuswertungControl;
@@ -230,32 +231,50 @@ public class ExportDialog extends AbstractDialog<Object>
         params.setSubtitle(exporter.getSubtitle(dateinameObject));
       }
 
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText(
-          "Bitte geben Sie eine Datei ein, in die die Daten exportiert werden sollen.");
-      fd.setOverwrite(true);
-      fd.setFileName(exporter.getDateiname(dateinameObject));
-      if (fileExtensions != null && fileExtensions.length > 0)
+      final String filename;
+      if (exporter.isDirectoryExport())
       {
-        fd.setFilterExtensions(fileExtensions);
-      }
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      final String s = fd.open();
+        DirectoryDialog fd = new DirectoryDialog(GUI.getShell(), SWT.NONE);
 
-      if (s == null || s.length() == 0)
+        fd.setText("Exportverzeichnis auswählen");
+        fd.setMessage("Bitte wählen Sie das Zielverzeichnis aus.");
+        String path = settings.getString("lastdir",
+            System.getProperty("user.home"));
+        if (path != null && path.length() > 0)
+        {
+          fd.setFilterPath(path);
+        }
+        filename = fd.open();
+      }
+      else
+      {
+        FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+        fd.setText(
+            "Bitte geben Sie eine Datei ein, in die die Daten exportiert werden sollen.");
+        fd.setOverwrite(true);
+        fd.setFileName(exporter.getDateiname(dateinameObject));
+        if (fileExtensions != null && fileExtensions.length > 0)
+        {
+          fd.setFilterExtensions(fileExtensions);
+        }
+        String path = settings.getString("lastdir",
+            System.getProperty("user.home"));
+        if (path != null && path.length() > 0)
+        {
+          fd.setFilterPath(path);
+        }
+        filename = fd.open();
+
+      }
+      if (filename == null || filename.length() == 0)
       {
         throw new OperationCanceledException("Abgebrochen");
       }
-
-      final File file = new File(s);
+      final File file = new File(filename);
 
       // Wir merken uns noch das Verzeichnis vom letzten mal
-      settings.setAttribute("lastdir", file.getParent());
+      settings.setAttribute("lastdir",
+          exporter.isDirectoryExport() ? file.getPath() : file.getParent());
 
       BackgroundTask t = new BackgroundTask()
       {
