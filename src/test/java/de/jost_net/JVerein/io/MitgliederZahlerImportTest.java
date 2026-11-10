@@ -116,6 +116,9 @@ class MitgliederZahlerImportTest
 
   private int sicherungAnzahl;
 
+  /** Anzahl aller store()-Aufrufe, der Rollback macht sie nicht rückgängig. */
+  private int speicherungen;
+
   /**
    * Von oeffnen() angelegte JDBC-Ressourcen, werden in tearDown geschlossen.
    */
@@ -270,6 +273,7 @@ class MitgliederZahlerImportTest
       Class<?> typ = invocation.getMethod().getReturnType();
       if (name.equals("store"))
       {
+        speicherungen++;
         if (!werte.containsKey("ID"))
         {
           werte.put("ID", String.valueOf(gespeichert.size() + 1));
@@ -920,5 +924,51 @@ class MitgliederZahlerImportTest
         persistiertNachVorname("Max").get("AbweichenderZahlerID"));
     assertEquals(Long.valueOf(1),
         persistiertNachVorname("Anna").get("AbweichenderZahlerID"));
+  }
+
+  // ---- Zustand und Reihenfolge ----
+
+  @Test
+  void zeilenDurchlaufTeiltKeinenZustandMitAnderenImporten() throws Exception
+  {
+    try (ResultSet r1 = oeffnen(csv(ALLE_SPALTEN, "-1;Mustermann;Max;Vollzahler;;"));
+        ResultSet r2 = oeffnen(csv(ALLE_SPALTEN, "-1;Meier;Hans;Vollzahler;;")))
+    {
+      ZeilenDurchlauf a = new ZeilenDurchlauf(r1);
+      ZeilenDurchlauf b = new ZeilenDurchlauf(r2);
+
+      a.gespeichert(1, -1, "7");
+
+      assertEquals("7", a.getEchteId(-1));
+      assertTrue(a.istLokaleIdVergeben(-1));
+      assertNull(b.getEchteId(-1));
+      assertTrue(!b.istLokaleIdVergeben(-1));
+    }
+  }
+
+  @Test
+  void fehlerInDerVollzahlerPruefungKommtVorDemErstenSpeichern()
+      throws Exception
+  {
+    // Max (Zeile 1) wäre als Erster gespeichert worden, bevor Zeile 2 beim
+    // Sortieren als ungültig auffällt
+    importieren(csv("id;name;vorname;adresstyp;beitragsgruppe;voll_zahlerid",
+        "-1;Mustermann;Max;1;Vollzahler;",
+        ";Mustermann;Anna;2;Angehoeriger;-1"));
+
+    verify(monitor).log(contains(
+        "Zeile 2: Für Nicht-Mitglieder ist keine Vollzahler Id erlaubt: -1"));
+    assertEquals(0, speicherungen);
+  }
+
+  @Test
+  void falscheBeitragsgruppeWirdVorDemErstenSpeichernGemeldet() throws Exception
+  {
+    importieren(csv(ALLE_SPALTEN, "-1;Mustermann;Max;Vollzahler;;",
+        ";Mustermann;Anna;Vollzahler;-1;"));
+
+    verify(monitor).log(contains(
+        "Zeile 2: Vollzahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt"));
+    assertEquals(0, speicherungen);
   }
 }

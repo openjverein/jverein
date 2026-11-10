@@ -7,14 +7,20 @@ import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import jakarta.mail.internet.AddressException;
 
@@ -55,14 +61,6 @@ import de.willuhn.util.ProgressMonitor;
 public class MitgliederImport implements Importer
 {
 
-  // Speichert das Mapping der lokalen Ids zu den echten Ids.
-  // <lokale Id, echte Id>
-  static Map<Integer, String> idMap = new HashMap<>();
-
-  // Speichert die echte Id die bei der importierten Zeile erzeugt wurde.
-  // <zeile, echte Id>
-  static Map<Integer, String> zeileMap = new HashMap<>();
-
   @Override
   public void doImport(Object context, IOFormat format, File file,
       String encoding, ProgressMonitor monitor) throws Exception
@@ -70,9 +68,6 @@ public class MitgliederImport implements Importer
     ResultSet results;
     try
     {
-      idMap = new HashMap<>();
-      zeileMap = new HashMap<>();
-
       Properties props = new java.util.Properties();
       props.put("separator", ";");
       props.put("suppressHeaders", "false");
@@ -228,7 +223,7 @@ public class MitgliederImport implements Importer
               // dann nehmen wir die ID
               id = tmpId;
             }
-            else if (idMap.containsKey(integerId))
+            else if (durchlauf.istLokaleIdVergeben(integerId))
             {
               throw new ApplicationException(
                   "Zeile " + anz + ": Mitglied ID " + tmpId
@@ -429,7 +424,7 @@ public class MitgliederImport implements Importer
             && m.getBeitragsgruppe()
                 .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
         {
-          String zahlerId = ZeilenDurchlauf.getMappedZahlerId(results);
+          String zahlerId = durchlauf.getVollzahlerId();
           if (zahlerId != null && !zahlerId.isBlank())
           {
             DBIterator<Mitglied> it = Einstellungen.getDBService()
@@ -1121,13 +1116,8 @@ public class MitgliederImport implements Importer
           throw new ApplicationException(
               "Zeile " + anz + ": " + ae.getMessage());
         }
-        // Mitglied Id für die negativen Referenzen speichern
-        if (integerId != null && integerId < 0)
-        {
-          idMap.put(integerId, m.getID());
-        }
-        // Id der Mitglieder der jeweiligen Zeile speichern
-        zeileMap.put(anz, m.getID());
+        // Mitglied der Zeile und lokale Id für spätere Referenzen merken
+        durchlauf.gespeichert(anz, integerId, m.getID());
 
         for (Felddefinition f : zusfeldList)
         {
@@ -1314,67 +1304,53 @@ public class MitgliederImport implements Importer
             String.format(text, Adressaufbereitung.getNameVorname(m)));
       }
 
-      // Jetzt werden die abweichenden Zahler Referenzen gesetzt
-      results.beforeFirst();
-      while (results.next())
+      // Jetzt werden die abweichenden Zahler Referenzen gesetzt. Das geht erst
+      // jetzt, weil sie auf jedes Mitglied der Datei zeigen können.
+      for (int zeile : durchlauf.getAbweichendeZeilen())
       {
-        anz = results.getRow();
+        anz = zeile;
+        results.absolute(zeile);
+        String abweichenderZahler = results.getString("abweichende_zahlerid");
         try
         {
-          String abweichenderZahler = results.getString("abweichende_zahlerid");
-          if (abweichenderZahler == null || abweichenderZahler.isBlank())
+          Integer intId = Integer.parseInt(abweichenderZahler);
+          if (intId < 0)
           {
-            continue;
-          }
-          try
-          {
-            Integer intId = Integer.parseInt(abweichenderZahler);
-            if (intId < 0)
+            String alteId = abweichenderZahler;
+            abweichenderZahler = durchlauf.getEchteId(intId);
+            if (abweichenderZahler == null)
             {
-              String alteId = abweichenderZahler;
-              abweichenderZahler = idMap.get(intId);
-              if (abweichenderZahler == null)
-              {
-                throw new ApplicationException(
-                    "Zeile " + anz + ": Abweichender Zahler für Id " + alteId
-                        + " nicht gefunden.");
-              }
+              throw new ApplicationException(
+                  "Zeile " + anz + ": Abweichender Zahler für Id " + alteId
+                      + " nicht gefunden.");
             }
           }
-          catch (NumberFormatException ex)
-          {
-            throw new ApplicationException(
-                "Zeile " + anz + ": Abweichender Zahler Id "
-                    + abweichenderZahler + " ist keine gültige Integer Zahl.");
-          }
-          String id = zeileMap.get(anz);
-          DBIterator<Mitglied> it = Einstellungen.getDBService()
-              .createList(Mitglied.class);
-          it.addFilter("id = ?", abweichenderZahler);
-          if (!it.hasNext())
-          {
-            throw new ApplicationException(
-                "Zeile " + anz + ": Abweichenden Zahler nicht gefunden: "
-                    + abweichenderZahler);
-          }
-          Mitglied m = (Mitglied) Einstellungen.getDBService()
-              .createObject(Mitglied.class, id);
-          m.setAbweichenderZahlerID(Long.parseLong(abweichenderZahler));
-          try
-          {
-            m.store();
-          }
-          catch (ApplicationException ae)
-          {
-            throw new ApplicationException(
-                "Zeile " + anz + ": " + ae.getMessage());
-          }
         }
-        catch (SQLException e)
+        catch (NumberFormatException ex)
         {
-          // Wenn es die Spalte nicht gibt, brauchen wir auch die weiteren
-          // Zeilen nicht mehr untersuchen.
-          break;
+          throw new ApplicationException("Zeile " + anz
+              + ": Abweichender Zahler Id " + abweichenderZahler
+              + " ist keine gültige Integer Zahl.");
+        }
+        String id = durchlauf.getIdDerZeile(anz);
+        DBIterator<Mitglied> it = Einstellungen.getDBService()
+            .createList(Mitglied.class);
+        it.addFilter("id = ?", abweichenderZahler);
+        if (!it.hasNext())
+        {
+          throw new ApplicationException("Zeile " + anz
+              + ": Abweichenden Zahler nicht gefunden: " + abweichenderZahler);
+        }
+        Mitglied m = (Mitglied) Einstellungen.getDBService()
+            .createObject(Mitglied.class, id);
+        m.setAbweichenderZahlerID(Long.parseLong(abweichenderZahler));
+        try
+        {
+          m.store();
+        }
+        catch (ApplicationException ae)
+        {
+          throw new ApplicationException("Zeile " + anz + ": " + ae.getMessage());
         }
       }
 
@@ -1394,176 +1370,234 @@ public class MitgliederImport implements Importer
   }
 
   /**
-   * Iteriert in zwei Durchläufen über die Zeilen: zuerst alle Zeilen ohne
-   * voll_zahlerid, danach die Zeilen mit voll_zahlerid.
+   * Bestimmt vorab die Reihenfolge der Zeilen und merkt sich beim Import, aus
+   * welcher Zeile welches Mitglied entstanden ist. Der Zustand gehört zu einem
+   * Import, es gibt keine statischen Daten.
+   * <p>
+   * Ein Familienangehöriger braucht beim Speichern seinen Vollzahler. Deshalb
+   * werden zuerst alle Zeilen ohne voll_zahlerid verarbeitet, danach die Zeilen
+   * mit voll_zahlerid. Die voll_zahlerid wird dabei einmal vorab geprüft, so
+   * dass Fehler vor dem ersten Speichern gemeldet werden. Die Zeilennummern in
+   * den Meldungen sind immer die Position in der Datei. Die abweichenden Zahler
+   * werden erst nach allen Mitgliedern gesetzt, siehe getAbweichendeZeilen().
    */
   static class ZeilenDurchlauf
   {
     private final ResultSet results;
 
-    private boolean zweiterDurchlauf = false;
+    /** Namen der Spalten der Datei in Kleinschreibung */
+    private final Set<String> spalten = new HashSet<>();
+
+    /** Zeilen in der Reihenfolge, in der sie verarbeitet werden */
+    private final List<Integer> reihenfolge = new ArrayList<>();
+
+    /** Zeilen mit einem abweichenden Zahler in der Reihenfolge der Datei */
+    private final List<Integer> abweichendeZeilen = new ArrayList<>();
+
+    /** Art der Beitragsgruppe nach Bezeichnung, jede Gruppe wird nur einmal gelesen */
+    private final Map<String, ArtBeitragsart> beitragsarten = new HashMap<>();
+
+    /** Lokale (negative) Id der Datei -> echte Id */
+    private final Map<Integer, String> lokaleIds = new HashMap<>();
+
+    /** Zeile -> echte Id des Mitglieds, das aus der Zeile entstanden ist */
+    private final Map<Integer, String> zeilenIds = new HashMap<>();
+
+    private int position = 0;
 
     ZeilenDurchlauf(ResultSet results)
+        throws SQLException, ApplicationException, RemoteException
     {
       this.results = results;
+      ResultSetMetaData meta = results.getMetaData();
+      for (int i = 1; i <= meta.getColumnCount(); i++)
+      {
+        spalten.add(meta.getColumnLabel(i).toLowerCase(Locale.ROOT));
+      }
+      planen();
     }
 
-    boolean next() throws SQLException, ApplicationException, RemoteException
+    /** Liefert die nächste Zeile in der Reihenfolge der Verarbeitung. */
+    boolean next() throws SQLException
     {
-      while (true)
+      if (position >= reihenfolge.size())
       {
-        while (results.next())
-        {
-          if ((getZahlerId(results) != null) == zweiterDurchlauf)
-          {
-            return true;
-          }
-        }
-        if (zweiterDurchlauf)
-        {
-          return false;
-        }
-        zweiterDurchlauf = true;
-        results.beforeFirst();
+        return false;
       }
+      return results.absolute(reihenfolge.get(position++));
+    }
+
+    int size()
+    {
+      return reihenfolge.size();
+    }
+
+    /** Zeilen mit abweichendem Zahler, in der Reihenfolge der Datei. */
+    List<Integer> getAbweichendeZeilen()
+    {
+      return abweichendeZeilen;
+    }
+
+    /** Wurde die lokale Id schon bei einem anderen Mitglied verwendet? */
+    boolean istLokaleIdVergeben(int lokaleId)
+    {
+      return lokaleIds.containsKey(lokaleId);
     }
 
     /**
-     * Liefert die voll_zahlerid der aktuellen Zeile oder null, wenn die Spalte
-     * fehlt oder leer ist. Diese Funktion wird beim Sortieren benutzt. Damit
-     * das funktioniert müssen Checks gemacht werden.
-     * 
-     * @throws ApplicationException
-     * @throws RemoteException
+     * Merkt sich das gespeicherte Mitglied der Zeile und, bei negativer Id, die
+     * lokale Id.
      */
-    static String getZahlerId(ResultSet results)
+    void gespeichert(int zeile, Integer lokaleId, String echteId)
+    {
+      if (lokaleId != null && lokaleId < 0)
+      {
+        lokaleIds.put(lokaleId, echteId);
+      }
+      zeilenIds.put(zeile, echteId);
+    }
+
+    /** Echte Id des Mitglieds, das aus der Zeile entstanden ist. */
+    String getIdDerZeile(int zeile)
+    {
+      return zeilenIds.get(zeile);
+    }
+
+    /** Echte Id zu einer lokalen Id oder null, wenn sie nicht vorkommt. */
+    String getEchteId(int lokaleId)
+    {
+      return lokaleIds.get(lokaleId);
+    }
+
+    /** Inhalt der Zelle der aktuellen Zeile, null wenn Spalte fehlt oder leer. */
+    private String zelle(String spalte) throws SQLException
+    {
+      if (!spalten.contains(spalte))
+      {
+        return null;
+      }
+      String wert = results.getString(spalte);
+      return wert == null || wert.isBlank() ? null : wert;
+    }
+
+    private void planen()
+        throws SQLException, ApplicationException, RemoteException
+    {
+      List<Integer> ohneVollzahler = new ArrayList<>();
+      List<Integer> mitVollzahler = new ArrayList<>();
+      results.beforeFirst();
+      while (results.next())
+      {
+        int zeile = results.getRow();
+        String zahlerId = zelle("voll_zahlerid");
+        if (zahlerId == null)
+        {
+          ohneVollzahler.add(zeile);
+        }
+        else
+        {
+          pruefeVollzahler(zeile, zahlerId);
+          mitVollzahler.add(zeile);
+        }
+        if (zelle("abweichende_zahlerid") != null)
+        {
+          abweichendeZeilen.add(zeile);
+        }
+      }
+      results.beforeFirst();
+      reihenfolge.addAll(ohneVollzahler);
+      reihenfolge.addAll(mitVollzahler);
+    }
+
+    /**
+     * Prüft, ob die Zeile eine voll_zahlerid haben darf: nicht bei
+     * Nicht-Mitgliedern und nur bei Beitragsgruppen der Art Familienangehöriger.
+     */
+    private void pruefeVollzahler(int zeile, String zahlerId)
+        throws SQLException, ApplicationException, RemoteException
+    {
+      String mitgliedstyp = zelle("adresstyp");
+      if (mitgliedstyp != null && !mitgliedstyp.equals(Mitgliedstyp.MITGLIED))
+      {
+        throw new ApplicationException("Zeile " + zeile
+            + ": Für Nicht-Mitglieder ist keine Vollzahler Id erlaubt: "
+            + zahlerId);
+      }
+      // Ohne Spalte beitragsgruppe ändert die Zeile ein vorhandenes Mitglied
+      String beitragsgruppe = zelle("beitragsgruppe");
+      if (beitragsgruppe != null
+          && beitragsart(zeile, beitragsgruppe) != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+      {
+        throw new ApplicationException("Zeile " + zeile
+            + ": Vollzahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: "
+            + zahlerId);
+      }
+    }
+
+    private ArtBeitragsart beitragsart(int zeile, String bezeichnung)
         throws ApplicationException, RemoteException
     {
-      String zahlerId = null;
-      int zeile = 0;
-      try
+      ArtBeitragsart art = beitragsarten.get(bezeichnung);
+      if (art != null)
       {
-        zeile = results.getRow();
-        zahlerId = results.getString("voll_zahlerid");
+        return art;
       }
-      catch (SQLException e)
+      DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
+          .createList(Beitragsgruppe.class);
+      it.addFilter("bezeichnung = ?", bezeichnung);
+      it.addFilter("IFNULL(sekundaer, 0) IS FALSE");
+      if (!it.hasNext())
       {
-        // voll_zahlerid kommt nicht als Spalte vor.
-        return null;
+        throw new ApplicationException("Zeile " + zeile
+            + ": Beitragsgruppe nicht gefunden: " + bezeichnung);
       }
-      // Die Spalte gibt es, jetzt den Wert prüfen.
-      if (zahlerId == null || zahlerId.isBlank())
+      Beitragsgruppe bg = (Beitragsgruppe) it.next();
+      if (it.hasNext())
       {
-        return null;
+        throw new ApplicationException("Beitragsgruppe mit dem Namen "
+            + bezeichnung + " ist mehrfach vorhanden");
       }
-      // Es gibt eine voll_zahlerid. Wir prüfen ob sie auch erlaubt ist.
-      try
-      {
-        // Sie ist nicht bei Nicht-Mitgliedern erlaubt. Bei denen gibt es
-        // keinen Familienverband
-        String mitgliedstyp = results.getString("adresstyp");
-        if (mitgliedstyp != null && !mitgliedstyp.isBlank()
-            && !mitgliedstyp.equals(Mitgliedstyp.MITGLIED))
-        {
-          throw new ApplicationException("Zeile " + zeile
-              + ": Für Nicht-Mitglieder ist keine Vollzahler Id erlaubt: "
-              + zahlerId);
-        }
-      }
-      catch (SQLException e)
-      {
-        // Keinen Spalte adresstyp vorhanden. Da ist nichts zu prüfen.
-        // Wenn es ein neues Objekt ist, dann bekommt es automatisch den Typ
-        // Mitglied und da wäre voll_zahlerid erlaubt.
-      }
-      try
-      {
-        // Sie ist nur bei Beitragsgruppe Familienangehöriger erlaubt
-        String beitragsgruppe = results.getString("beitragsgruppe");
-        if (beitragsgruppe != null && !beitragsgruppe.isBlank())
-        {
-          DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
-              .createList(Beitragsgruppe.class);
-          it.addFilter("bezeichnung = ?", beitragsgruppe);
-          it.addFilter("IFNULL(sekundaer, 0) IS FALSE");
-          if (!it.hasNext())
-          {
-            throw new ApplicationException("Zeile " + zeile
-                + ": Beitragsgruppe nicht gefunden: " + beitragsgruppe);
-          }
-          Beitragsgruppe bg = (Beitragsgruppe) it.next();
-          if (it.hasNext())
-          {
-            throw new ApplicationException("Beitragsgruppe mit dem Namen "
-                + beitragsgruppe + " ist mehrfach vorhanden");
-          }
-          if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-          {
-            throw new ApplicationException("Zeile " + zeile
-                + ": Vollzahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: "
-                + zahlerId);
-          }
-        }
-      }
-      catch (SQLException e)
-      {
-        // Es ist keine beitragsgruppe Spalte vorhanden. Dann ist es ein
-        // existierendes Mitglied.
-      }
-      return zahlerId;
+      art = bg.getBeitragsArt();
+      beitragsarten.put(bezeichnung, art);
+      return art;
     }
 
     /**
      * Liefert die voll_zahlerid der aktuellen Zeile oder null, wenn die Spalte
      * fehlt oder leer ist. Bei negativer voll_zahlerid ersetzen wir sie durch
-     * die aktuelle id
-     * 
-     * @throws ApplicationException
+     * die echte Id des Mitglieds, das aus der Datei schon gespeichert wurde.
      */
-    static String getMappedZahlerId(ResultSet results)
-        throws ApplicationException
+    String getVollzahlerId() throws SQLException, ApplicationException
     {
-      try
-      {
-        int zeile = results.getRow();
-        String zahlerId = results.getString("voll_zahlerid");
-        if (zahlerId == null || zahlerId.isBlank())
-        {
-          return null;
-        }
-        else
-        {
-          try
-          {
-            Integer integerId = Integer.parseInt(zahlerId);
-            if (integerId < 0)
-            {
-              // Es wird ein Eintrag in der Import Datei adressiert. Wir holen
-              // uns die echte id
-              String alteId = zahlerId;
-              zahlerId = idMap.get(integerId);
-              if (zahlerId == null)
-              {
-                throw new ApplicationException("Zeile " + zeile
-                    + ": Vollzahler für Id " + alteId + " nicht gefunden.");
-              }
-            }
-          }
-          catch (NumberFormatException ignore)
-          {
-            throw new ApplicationException(
-                "Zeile " + zeile + " : Vollzahler Id " + zahlerId
-                    + " ist keine gültige Integer Zahl.");
-          }
-          return zahlerId;
-        }
-      }
-      catch (SQLException e)
+      int zeile = results.getRow();
+      String zahlerId = zelle("voll_zahlerid");
+      if (zahlerId == null)
       {
         return null;
       }
+      try
+      {
+        Integer integerId = Integer.parseInt(zahlerId);
+        if (integerId < 0)
+        {
+          // Es wird ein Eintrag in der Import Datei adressiert. Wir holen uns
+          // die echte id
+          String alteId = zahlerId;
+          zahlerId = lokaleIds.get(integerId);
+          if (zahlerId == null)
+          {
+            throw new ApplicationException("Zeile " + zeile
+                + ": Vollzahler für Id " + alteId + " nicht gefunden.");
+          }
+        }
+      }
+      catch (NumberFormatException ignore)
+      {
+        throw new ApplicationException("Zeile " + zeile + " : Vollzahler Id "
+            + zahlerId + " ist keine gültige Integer Zahl.");
+      }
+      return zahlerId;
     }
-
   }
 
   @Override
