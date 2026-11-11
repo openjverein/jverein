@@ -175,7 +175,7 @@ public class SplitBuchung
     {
       for (Buchung b : splitbuchungen)
       {
-        if (b.getSplitTyp() == SplitbuchungTyp.HAUPT)
+        if (b.getSplitTyp() != null && b.getSplitTyp() == SplitbuchungTyp.HAUPT)
         {
           b.setSplitId(null);
           b.setSplitTyp(null);

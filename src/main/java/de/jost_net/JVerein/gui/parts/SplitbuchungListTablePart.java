@@ -51,7 +51,8 @@ public class SplitbuchungListTablePart extends JVereinTablePart
         BigDecimal summe = BigDecimal.ZERO;
         for (Buchung b : (List<Buchung>) this.getItems())
         {
-          if (!b.isToDelete() && b.getSplitTyp() != SplitbuchungTyp.HAUPT)
+          if (!b.isToDelete() && (b.getSplitTyp() == null
+              || b.getSplitTyp() != SplitbuchungTyp.HAUPT))
           {
             summe = summe.add(b.getBetrag());
           }
