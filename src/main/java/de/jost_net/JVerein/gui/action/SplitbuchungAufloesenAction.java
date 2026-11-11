@@ -50,8 +50,8 @@ public class SplitbuchungAufloesenAction implements Action
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Auflösen der Splituchung.";
-      GUI.getStatusBar().setErrorText(fehler);
+      String fehler = "Fehler beim Auflösen der Splituchung. ";
+      GUI.getStatusBar().setErrorText(fehler + e.getMessage());
       Logger.error(fehler, e);
     }
   }

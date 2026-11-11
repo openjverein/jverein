@@ -416,7 +416,8 @@ public class SplitBuchung
     buch.setBuchungsartId(origin.getBuchungsartId());
     buch.setBuchungsklasseId(origin.getBuchungsklasseId());
     buch.setDatum(master.getDatum());
-    if (zweckeVonHauptbuchung != null && kommentareVonHauptbuchung.get(origin))
+    if (kommentareVonHauptbuchung != null
+        && kommentareVonHauptbuchung.get(origin))
     {
       buch.setKommentar(master.getKommentar());
     }

@@ -75,6 +75,11 @@ public class SplitBuchungDeleteAction extends BuchungDeleteAction
       }
       bu.setDelete(true);
     }
+  }
+
+  @Override
+  protected void doFinally() throws RemoteException
+  {
     control.refreshSplitbuchungen();
   }
 

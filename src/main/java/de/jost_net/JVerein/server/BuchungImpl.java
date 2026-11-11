@@ -52,7 +52,7 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
 {
   private static final long serialVersionUID = 1L;
 
-  private transient SplitBuchung splittbuchung;
+  private transient SplitBuchung splitbuchung;
 
   private transient boolean delete = false;
 
@@ -920,13 +920,13 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
   @Override
   public void setSplitbuchung(SplitBuchung splitbuchung)
   {
-    this.splittbuchung = splitbuchung;
+    this.splitbuchung = splitbuchung;
   }
 
   @Override
   public SplitBuchung getSplitbuchung()
   {
-    return splittbuchung;
+    return splitbuchung;
   }
 
   @Override
