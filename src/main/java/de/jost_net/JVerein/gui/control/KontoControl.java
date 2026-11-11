@@ -113,6 +113,9 @@ public class KontoControl extends FilterControl
         new BuchungsartFormatter());
     kontenList.addColumn(new Column("buchungsklasse", "Buchungsklasse",
         new BuchungsklasseFormatter()), false);
+    kontenList.addColumn(
+        new Column("kommentar", "Kommentar", v -> v.toString().split("\n")[0]),
+        false);
     if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN))
     {
       kontenList.addColumn(new Column("anlagenart", "Anlagen Buchungsart",
