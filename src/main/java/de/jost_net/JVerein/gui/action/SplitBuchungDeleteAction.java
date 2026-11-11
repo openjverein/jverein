@@ -18,14 +18,14 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Messaging.SplitbuchungMessage;
+import de.jost_net.JVerein.gui.control.BuchungSplitDetailControl;
 import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
@@ -34,6 +34,13 @@ import de.willuhn.util.ApplicationException;
 public class SplitBuchungDeleteAction extends BuchungDeleteAction
 {
   private Buchung bu;
+
+  private BuchungSplitDetailControl control;
+
+  public SplitBuchungDeleteAction(BuchungSplitDetailControl control)
+  {
+    this.control = control;
+  }
 
   @Override
   protected void doDelete(JVereinDBObject object, Integer selection)
@@ -58,7 +65,7 @@ public class SplitBuchungDeleteAction extends BuchungDeleteAction
 
     if (bu.isNewObject())
     {
-      SplitbuchungsContainer.get().remove(bu);
+      control.getSplitBuchung().remove(bu);
     }
     else
     {
@@ -73,9 +80,18 @@ public class SplitBuchungDeleteAction extends BuchungDeleteAction
   }
 
   @Override
-  protected void doFinally()
+  protected void doFinally() throws RemoteException
   {
-    Application.getMessagingFactory().sendMessage(new SplitbuchungMessage(bu));
+    GUI.getDisplay().syncExec(() -> {
+      try
+      {
+        control.refreshSplitbuchungen();
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler beim neuladen der Liste.", e);
+      }
+    });
   }
 
   @Override

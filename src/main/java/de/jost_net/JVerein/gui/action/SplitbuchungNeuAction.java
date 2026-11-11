@@ -18,44 +18,29 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.server.SplitBuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class SplitbuchungNeuAction implements Action
 {
   @Override
-  public void handleAction(Object context)
+  public void handleAction(Object context) throws ApplicationException
   {
     try
     {
-      Buchung master = SplitbuchungsContainer.getMaster();
-      Buchung buch = (Buchung) Einstellungen.getDBService()
-          .createObject(Buchung.class, null);
-      buch.setAuszugsnummer(master.getAuszugsnummer());
-      buch.setBlattnummer(master.getBlattnummer());
-      buch.setDatum(master.getDatum());
-      buch.setKommentar(master.getKommentar());
-      buch.setKonto(master.getKonto());
-      buch.setSollbuchung(master.getSollbuchung());
-      buch.setName(master.getName());
-      buch.setProjekt(master.getProjekt());
-      buch.setSplitId(Long.valueOf(master.getID()));
-      buch.setUmsatzid(master.getUmsatzid());
-      buch.setZweck(master.getZweck());
-      buch.setBuchungsartId(master.getBuchungsartId());
-      buch.setBuchungsklasseId(master.getBuchungsklasseId());
-      buch.setIban(master.getIban());
-      buch.setSplitbuchung(true);
-      buch.setSplitTyp(SplitbuchungTyp.SPLIT);
-      buch.setSteuer(master.getSteuer());
-      buch.setBetrag(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT)
-          .subtract(SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT)));
+      SplitBuchung splitBuchung = (SplitBuchung) context;
+
+      Buchung buch = splitBuchung.createSplitBuchung();
+
+      // Fehlbetrag der Splitbuchung berechnen
+      buch.setBetrag(splitBuchung.getSumme(SplitbuchungTyp.HAUPT)
+          .subtract(splitBuchung.getSumme(SplitbuchungTyp.SPLIT)));
 
       // Wenn CurrentObject und View von aktueller und nächster View gleich
       // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch

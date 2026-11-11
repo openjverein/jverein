@@ -42,7 +42,8 @@ public class BuchungPart implements Part
   @Override
   public void paint(Composite parent) throws RemoteException
   {
-    String title = control.getBuchung().isSplitbuchung() ? "Splitbuchung"
+    String title = control.getBuchung().getSplitbuchung() != null
+        ? "Splitbuchung"
         : "Buchung";
     GUI.getView().setTitle(title);
 
@@ -62,8 +63,7 @@ public class BuchungPart implements Part
     grKontoauszug.addLabelPair("Verwendungszweck", control.getZweck());
     DateInput date = control.getDatum();
     grKontoauszug.addLabelPair("Datum", date);
-    if (control.getBuchung().isSplitbuchung())
-      date.setEnabled(false);
+    date.setEnabled(control.getBuchung().getSplitbuchung() == null);
     grKontoauszug.addLabelPair("Art", control.getArt());
     grKontoauszug.addLabelPair("Kommentar", control.getKommentar());
 
