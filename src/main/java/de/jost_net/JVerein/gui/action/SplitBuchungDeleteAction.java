@@ -24,6 +24,8 @@ import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
@@ -80,7 +82,16 @@ public class SplitBuchungDeleteAction extends BuchungDeleteAction
   @Override
   protected void doFinally() throws RemoteException
   {
-    control.refreshSplitbuchungen();
+    GUI.getDisplay().syncExec(() -> {
+      try
+      {
+        control.refreshSplitbuchungen();
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler beim neuladen der Liste.", e);
+      }
+    });
   }
 
   @Override
