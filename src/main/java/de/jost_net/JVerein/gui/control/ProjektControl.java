@@ -54,6 +54,7 @@ public class ProjektControl extends FilterControl
       return projektList;
     }
     projektList = new JVereinTablePart(getProjekte(), null);
+    projektList.addColumn(getIdColumn(), false);
     projektList.addColumn(getGesperrtColumn(), false);
     projektList.addColumn("Bezeichnung", "bezeichnung");
     projektList.addColumn("Startdatum", "startdatum",

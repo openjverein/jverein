@@ -132,4 +132,9 @@ public abstract class AbstractJVereinControl extends AbstractControl
     return new Column(AbstractJVereinDBObject.ABGESCHLOSSEN,
         AbstractJVereinDBObject.ABGESCHLOSSEN);
   }
+
+  public Column getIdColumn()
+  {
+    return new Column("id-int", "Nr");
+  }
 }

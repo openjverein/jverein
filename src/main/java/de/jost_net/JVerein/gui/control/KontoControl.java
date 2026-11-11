@@ -21,8 +21,10 @@ import java.util.Date;
 import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.NaturalOrderColumn;
@@ -35,6 +37,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.Column;
@@ -61,6 +64,7 @@ public class KontoControl extends FilterControl
     }
 
     kontenList = new JVereinTablePart(getKonten(), null);
+    kontenList.addColumn(getIdColumn(), false);
     kontenList.addColumn(getGesperrtColumn(), false);
     kontenList.addColumn(new NaturalOrderColumn("nummer", "Nummer"));
     kontenList.addColumn("Bezeichnung", "bezeichnung");
@@ -107,6 +111,37 @@ public class KontoControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart",
         new BuchungsartFormatter());
+    kontenList.addColumn(new Column("buchungsklasse", "Buchungsklasse",
+        new BuchungsklasseFormatter()), false);
+    if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN))
+    {
+      kontenList.addColumn(new Column("anlagenart", "Anlagen Buchungsart",
+          new BuchungsartFormatter()), false);
+      kontenList.addColumn(
+          new Column("afaart", "AfA Buchungsart", new BuchungsartFormatter()),
+          false);
+      kontenList.addColumn(
+          new Column("betrag", "Anlagenwert",
+              new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)),
+          false);
+      kontenList.addColumn(new Column("anschaffung", "Anschaffungsdatum",
+          new DateFormatter(new JVDateFormatTTMMJJJJ())), false);
+      kontenList.addColumn(new Column("zweck", "Anlagenzweck"), false);
+      kontenList.addColumn(new Column("nutzungsdauer", "Nutzungsdauer"), false);
+      kontenList.addColumn(
+          new Column("afarestwert", "Restwert",
+              new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)),
+          false);
+      kontenList.addColumn(new Column("afamode", "AfA Mode"), false);
+      kontenList.addColumn(
+          new Column("afastart", "AfA Erstes Jahr",
+              new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)),
+          false);
+      kontenList.addColumn(
+          new Column("afadauer", "AFA Folgejahre",
+              new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)),
+          false);
+    }
     kontenList.setContextMenu(new KontoMenu(kontenList));
     kontenList.setMulti(true);
     kontenList.setAction(new EditAction(KontoDetailView.class, kontenList));

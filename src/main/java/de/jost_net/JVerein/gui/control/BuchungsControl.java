@@ -32,11 +32,13 @@ import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAutomatischActi
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
+import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -100,6 +102,7 @@ public class BuchungsControl extends FilterControl
         new BuchungAction(false, null));
     buchungsList.addColumn("Nr", "id-int");
     buchungsList.addColumn(getAbgeschlossenColumn(), false);
+    buchungsList.addColumn(new Column("umsatzid", "Umsatz-ID"), false);
     buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
     {
       @Override
@@ -122,7 +125,7 @@ public class BuchungsControl extends FilterControl
         return SplitbuchungTyp.get(typ).substring(0, 1);
       }
     });
-
+    buchungsList.addColumn(new Column("splitid", "H-ID"), false);
     buchungsList.addColumn("Konto", "konto");
     buchungsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -200,7 +203,18 @@ public class BuchungsControl extends FilterControl
         .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
       buchungsList.addColumn("Spendenbescheinigung", "spendenbescheinigung");
+      buchungsList.addColumn(
+          new Column("verzicht", "Erstattungsverzicht", new JaNeinFormatter()),
+          false);
+      buchungsList.addColumn(new Column("bezeichnungsachzuwendung",
+          "Bezeichnung Sachzuwendung", v -> v.toString().split("\n")[0]),
+          false);
+      buchungsList.addColumn(new Column("herkunftspende", "Herkunft",
+          o -> HerkunftSpende.get((int) o)), false);
+      buchungsList.addColumn(new Column("unterlagenwertermittlung",
+          "Unterlagen Wertermittlung", new JaNeinFormatter()), false);
     }
+    buchungsList.addColumn(new Column("art", "Art"), false);
     buchungsList.addColumn(
         new Column("kommentar", "Kommentar", v -> v.toString().split("\n")[0]),
         false);

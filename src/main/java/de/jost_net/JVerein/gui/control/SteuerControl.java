@@ -55,6 +55,7 @@ public class SteuerControl extends FilterControl
         .createList(Steuer.class);
 
     steuerList = new JVereinTablePart(steuern, null);
+    steuerList.addColumn(getIdColumn(), false);
     steuerList.addColumn(getGesperrtColumn(), false);
     steuerList.addColumn("Name", "name");
     steuerList.addColumn("Steuersatz", "satz", o -> {

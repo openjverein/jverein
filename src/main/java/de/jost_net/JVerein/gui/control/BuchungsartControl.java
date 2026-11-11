@@ -62,6 +62,7 @@ public class BuchungsartControl extends FilterControl
       return buchungsartList;
     }
     buchungsartList = new JVereinTablePart(getBuchungsarten(), null);
+    buchungsartList.addColumn(getIdColumn(), false);
     buchungsartList.addColumn(getGesperrtColumn(), false);
     buchungsartList.addColumn(new NaturalOrderColumn("nummer", "Nummer"));
     buchungsartList.addColumn("Bezeichnung", "bezeichnung");
@@ -121,6 +122,9 @@ public class BuchungsartControl extends FilterControl
       }
     }, false, Column.ALIGN_LEFT);
     buchungsartList.addColumn("Suchtext", "suchbegriff");
+    buchungsartList.addColumn(
+        new Column("regularexp", "Regulärer Ausdruck", new JaNeinFormatter()),
+        false);
     buchungsartList.setContextMenu(new BuchungsartMenu(buchungsartList));
     buchungsartList.setMulti(true);
     buchungsartList.setRememberState(true);
