@@ -226,7 +226,7 @@ public class SplitbuchungUtil
           haupt.setBuchungsklasseId(split.getBuchungsklasseId());
           haupt.setSteuer(split.getSteuer());
 
-          splitBuchungSplit.aufloesen();
+          splitBuchungSplit.aufloesen(false);
         }
         else
         {
@@ -235,7 +235,7 @@ public class SplitbuchungUtil
       }
       else
       {
-        splitBuchungSplit.aufloesen();
+        splitBuchungSplit.aufloesen(false);
         restBuchung = buchung;
       }
     }

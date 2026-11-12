@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.control.BuchungSplitDetailControl;
 import de.jost_net.JVerein.server.SplitBuchung;
 import de.willuhn.jameica.gui.Action;
@@ -45,12 +47,20 @@ public class SplitbuchungAufloesenAction implements Action
       {
         return;
       }
-      ((SplitBuchung) context).aufloesen();
+      ((SplitBuchung) context).aufloesen(true);
       control.refreshSplitbuchungen();
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Auflösen der Splituchung. ";
+      try
+      {
+        control.refreshSplitbuchungen();
+      }
+      catch (RemoteException e1)
+      {
+        //
+      }
+      String fehler = "Fehler beim Auflösen der Splitbuchung. ";
       GUI.getStatusBar().setErrorText(fehler + e.getMessage());
       Logger.error(fehler, e);
     }

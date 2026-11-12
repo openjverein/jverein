@@ -19,11 +19,9 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.control.BuchungSplitDetailControl;
-import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -31,7 +29,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Loeschen einer Splitbuchung Buchung.
  */
-public class SplitBuchungDeleteAction extends BuchungDeleteAction
+public class SplitBuchungDeleteAction extends DeleteAction
 {
   private Buchung bu;
 
@@ -69,12 +67,7 @@ public class SplitBuchungDeleteAction extends BuchungDeleteAction
     }
     else
     {
-      Spendenbescheinigung spb = bu.getSpendenbescheinigung();
-      if (spb != null && selection == YesNoCancelDialog.NO)
-      {
-        throw new ApplicationException(
-            "Übersprungen, da ihr eine Spendenbescheinigung zugeordnet ist.");
-      }
+      bu.checkDelete();
       bu.setDelete(true);
     }
   }
