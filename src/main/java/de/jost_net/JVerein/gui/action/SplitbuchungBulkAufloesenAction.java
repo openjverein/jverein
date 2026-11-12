@@ -17,21 +17,21 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Jahresabschluss;
-import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.server.SplitBuchung;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
 public class SplitbuchungBulkAufloesenAction implements Action
 {
@@ -45,17 +45,12 @@ public class SplitbuchungBulkAufloesenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null
-        || (!(context instanceof Buchung) && !(context instanceof Buchung[])))
+    if (!(context instanceof Buchung) && !(context instanceof Buchung[]))
     {
       throw new ApplicationException("Keine Buchung ausgewählt");
     }
     try
     {
-      ArrayList<Long> geloescht = new ArrayList<>();
-      ArrayList<Long> schongeprueft = new ArrayList<>();
-      Long splitid;
-
       Buchung[] b = null;
       if (context instanceof Buchung)
       {
@@ -71,53 +66,19 @@ public class SplitbuchungBulkAufloesenAction implements Action
         return;
       }
 
-      boolean spendenbescheinigung = false;
-      for (Buchung splitbu : b)
+      Map<Long, Buchung> splitbuchungIds = new HashMap<>();
+      for (Buchung bu : b)
       {
-        // Es können mehrere der gleichen Splittbuchung selektiert worden sein
-        // Die Prüfung reicht einmal pro SplitId
-        if (!schongeprueft.contains(splitbu.getSplitId()))
-        {
-          // Check ob einer der Buchungen der Splittbuchung
-          // eine Spendenbescheinigung zugeordnet ist
-          DBIterator<Buchung> it = Einstellungen.getDBService()
-              .createList(Buchung.class);
-          it.addFilter("splitid = ?", splitbu.getSplitId());
-          it.addFilter("spendenbescheinigung IS NOT NULL");
-          spendenbescheinigung = it.hasNext();
-          if (spendenbescheinigung)
-            break;
-          schongeprueft.add(splitbu.getSplitId());
-        }
+        // Wir überschreiben, da wir nur eine Buchung der Splitbuchung brauchen
+        splitbuchungIds.put(bu.getSplitId(), bu);
       }
-
-      String text = "";
-      if (!spendenbescheinigung)
-      {
-        text = "Wollen Sie diese Splituchung" + (b.length > 1 ? "en" : "")
-            + " wirklich auflösen?";
-      }
-      else
-      {
-        if (b.length == 1)
-        {
-          text = "Die Splitbuchung enthält Buchungen denen eine "
-              + "Spendenbescheinigung zugeordnet ist.\n"
-              + "Sie können nur zusammen gelöscht werden.\n"
-              + "Splitbuchung auflösen und Spendenbescheinigungen löschen?";
-        }
-        else
-        {
-          text = "Mindestens eine Splitbuchung enthält Buchungen denen "
-              + "eine Spendenbescheinigung zugeordnet ist.\n"
-              + "Sie können nur zusammen gelöscht werden.\n"
-              + "Splitbuchungen auflösen und Spendenbescheinigungen löschen?";
-        }
-      }
+      int anzahl = splitbuchungIds.size();
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Splitbuchung" + (b.length > 1 ? "en" : "") + " auflösen");
-      d.setText(text);
+      d.setTitle("Splitbuchung" + (anzahl > 1 ? "en" : "") + " auflösen");
+      d.setText(String.format("Wollen Sie %d %s wirklich auflösen?", anzahl,
+          (anzahl == 1 ? "Splitbuchung" : "Splitbuchungen")));
+
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -128,50 +89,97 @@ public class SplitbuchungBulkAufloesenAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Auflösen der Splituchung", e);
+        Logger.error("Fehler beim Auflösen der Splitbuchung", e);
         return;
       }
 
-      for (Buchung bu : b)
+      BackgroundTask t = new BackgroundTask()
       {
-        Jahresabschluss ja = bu.getJahresabschluss();
-        if (ja != null)
-        {
-          throw new ApplicationException(String.format(
-              "Buchung wurde bereits am %s von %s abgeschlossen.",
-              new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
-        }
-        Spendenbescheinigung spb = bu.getSpendenbescheinigung();
-        if (spb != null)
-        {
-          throw new ApplicationException(
-              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
-        }
-        splitid = bu.getSplitId();
-        if (!geloescht.contains(splitid))
-        {
-          new SplitBuchung(bu).aufloesen();
-          geloescht.add(splitid);
-        }
-      }
-      control.refreshBuchungsList();
+        private boolean interrupted = false;
 
-      int count = geloescht.size();
-      if (count > 0)
-      {
-        GUI.getStatusBar()
-            .setSuccessText(String.format(
-                "%d Splituchung" + (count != 1 ? "en" : "") + " aufgelöst.",
-                count));
-      }
-      else
-      {
-        GUI.getStatusBar().setErrorText("Keine Splituchung aufgelöst");
-      }
+        @Override
+        public void run(ProgressMonitor monitor) throws ApplicationException
+        {
+          int count = 0;
+          int skip = 0;
+          monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
+          monitor.setStatusText(
+              "Löse " + splitbuchungIds.size() + " Splitbuchen auf.");
+          for (Long id : splitbuchungIds.keySet())
+          {
+            if (isInterrupted())
+            {
+              throw new OperationCanceledException();
+            }
+            try
+            {
+              new SplitBuchung(splitbuchungIds.get(id)).aufloesen(false);
+              count++;
+              monitor.setStatusText("Splitbuchung " + id + " aufgelöst.");
+            }
+            catch (ApplicationException e2)
+            {
+              skip++;
+              String fehler = "Fehler beim Auflösen der Splitbuchung " + id
+                  + ": ";
+              monitor.setStatusText(fehler + e2.getMessage());
+            }
+            catch (RemoteException e3)
+            {
+              skip++;
+              String fehler = "Fehler beim Auflösen der Splitbuchung " + id
+                  + ": " + "Es wird eventuell von anderen Objekten benutzt.";
+              monitor.setStatusText(fehler);
+              Logger.error(fehler, e3);
+            }
+            monitor.setPercentComplete(
+                100 * (count + skip) / splitbuchungIds.size());
+          }
+          GUI.getDisplay().syncExec(() -> {
+            try
+            {
+              control.refreshBuchungsList();
+            }
+            catch (ApplicationException e)
+            {
+              Logger.error("Fehler beim neuladen der Liste.", e);
+            }
+          });
+          if (count > 0)
+          {
+            String text = String.format(
+                "%d Splitbuchung" + (count != 1 ? "en" : "") + " aufgelöst.",
+                count);
+            monitor.setStatusText(text);
+            GUI.getStatusBar().setSuccessText(text);
+          }
+          else
+          {
+            String text = "Keine Splitbuchung aufgelöst";
+            monitor.setStatusText(text);
+            GUI.getStatusBar().setSuccessText(text);
+          }
+          monitor.setPercentComplete(100);
+          monitor.setStatus(ProgressMonitor.STATUS_DONE);
+        }
+
+        @Override
+        public void interrupt()
+        {
+          interrupted = true;
+        }
+
+        @Override
+        public boolean isInterrupted()
+        {
+          return interrupted;
+        }
+      };
+      Application.getController().start(t);
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Auflösen einer Splituchung.";
+      String fehler = "Fehler beim Auflösen einer Splitbuchung.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

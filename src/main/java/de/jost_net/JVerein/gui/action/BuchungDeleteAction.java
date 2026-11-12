@@ -18,10 +18,8 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.util.ApplicationException;
 
 /**
@@ -29,49 +27,6 @@ import de.willuhn.util.ApplicationException;
  */
 public class BuchungDeleteAction extends DeleteAction
 {
-  private boolean spendenbescheinigung = false;
-
-  @Override
-  protected String getText(JVereinDBObject object[])
-      throws RemoteException, ApplicationException
-  {
-    if (object == null || object.length == 0 || !(object[0] instanceof Buchung))
-    {
-      throw new ApplicationException("Keine Buchung ausgewählt");
-    }
-
-    // Check ob einer der Buchungen
-    // eine Spendenbescheinigung zugeordnet ist
-    for (JVereinDBObject o : object)
-    {
-      Buchung bu = (Buchung) o;
-      if (bu.getSpendenbescheinigung() != null)
-      {
-        spendenbescheinigung = true;
-        break;
-      }
-    }
-
-    if (!spendenbescheinigung)
-    {
-      return "Wollen Sie " + object.length + " Buchung"
-          + (object.length > 1 ? "en" : "") + " wirklich löschen?";
-    }
-    else
-    {
-      if (object.length == 1)
-      {
-        return "Die Buchung gehört zu einer Spendenbescheinigung.\n"
-            + "Sie können nur zusammen gelöscht werden.\n" + "Beide löschen?";
-      }
-      else
-      {
-        return "Mindestens eine Buchung gehört zu einer Spendenbescheinigung.\n"
-            + "Sie können nur zusammen gelöscht werden.\n"
-            + "Auch Buchungen mit Spendenbescheinigungen löschen?";
-      }
-    }
-  }
 
   @Override
   protected void doDelete(JVereinDBObject object, Integer selection)
@@ -83,28 +38,14 @@ public class BuchungDeleteAction extends DeleteAction
     }
 
     Buchung bu = (Buchung) object;
-    Spendenbescheinigung spb = bu.getSpendenbescheinigung();
 
     if (bu.getSplitId() != null)
     {
       throw new ApplicationException(
           "Splitbuchungen können nicht gelöscht werden, sie müssen erst aufgelöst werden!");
     }
-    if (spb != null && selection == YesNoCancelDialog.NO)
-    {
-      throw new ApplicationException(
-          "Übersprungen, da ihr eine Spendenbescheinigung zugeordnet ist.");
-    }
-    if (bu.getSpendenbescheinigung() != null)
-    {
-      bu.getSpendenbescheinigung().delete();
-    }
+
     bu.delete();
   }
 
-  @Override
-  protected boolean getMitNo(JVereinDBObject object[])
-  {
-    return spendenbescheinigung && object.length > 1;
-  }
 }

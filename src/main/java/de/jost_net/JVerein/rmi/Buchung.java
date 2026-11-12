@@ -172,6 +172,8 @@ public interface Buchung extends AbstractBelegDBObject
 
   public void setSteuerId(Long id) throws RemoteException;
 
+  public void checkDelete() throws RemoteException, ApplicationException;
+
   // Für Sachspenden
   public String getBezeichnungSachzuwendung() throws RemoteException;
 

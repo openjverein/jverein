@@ -168,9 +168,11 @@ public class SplitBuchung
    * @throws RemoteException
    * @throws ApplicationException
    */
-  public void aufloesen() throws RemoteException, ApplicationException
+  public void aufloesen(boolean restore)
+      throws RemoteException, ApplicationException
   {
     DBTransaction.starten();
+    Buchung hauptbuchung = getMaster();
     try
     {
       for (Buchung b : splitbuchungen)
@@ -183,7 +185,15 @@ public class SplitBuchung
         }
         else
         {
-          b.delete();
+          try
+          {
+            b.delete();
+          }
+          catch (ApplicationException ex)
+          {
+            throw new ApplicationException(
+                ex.getMessage() + " Bei Buchung Nr. " + b.getID());
+          }
         }
       }
       DBTransaction.commit();
@@ -192,6 +202,21 @@ public class SplitBuchung
     catch (Exception e)
     {
       DBTransaction.rollback();
+      if (restore)
+      {
+        // Splitbuchung neu aufbauen
+        splitbuchungen = new ArrayList<>();
+        hauptbuchung.setSplitId(Long.valueOf(hauptbuchung.getID()));
+        hauptbuchung.setSplitTyp(SplitbuchungTyp.HAUPT);
+        addBuchung(hauptbuchung);
+        // Die zugehörigen Buchungen müssen noch in der BD stehen
+        DBIterator<Buchung> it = getBuchungIt(hauptbuchung.getID());
+        while (it.hasNext())
+        {
+          Buchung buchung = (Buchung) it.next();
+          addBuchung(buchung);
+        }
+      }
       throw e;
     }
   }
