@@ -531,7 +531,7 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
     if (eigenschaftenTree != null)
     {
       // liefert nur denRoot
-      ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems();
+      List<?> rootNodes = (List<?>) eigenschaftenTree.getItems();
       EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
       // Mitgliedstyp wird erst in handleStore() gesetzt!!
       String typ = getMitgliedstyp().getID();

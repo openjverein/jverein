@@ -66,7 +66,8 @@ public class JVereinUpdateProvider
     driver = driverClass.getClass().getName();
 
     // h2v2 wird genauso wie H2 behandelt
-    if (driver.equals(H2V2))
+    if (driverClass instanceof DBSupportH2Impl
+        || driverClass instanceof DBSupportH2v2Impl)
     {
       driver = H2;
     }
