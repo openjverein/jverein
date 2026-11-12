@@ -74,7 +74,7 @@ public class BuchungQuery
         "order by datum, blattnummer, id");
     sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER_ID",
         "order by datum, auszugsnummer, blattnummer, id");
-    sortValues.put("DEFAULT", "order by datum");
+    sortValues.put("DEFAULT", "order by datum, id");
   }
 
   public BuchungQuery(Map<Filter, Object> filter, boolean geldkonto)
