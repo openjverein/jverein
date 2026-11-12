@@ -57,6 +57,7 @@ import de.jost_net.JVerein.gui.view.FamilienbeitragView;
 import de.jost_net.JVerein.gui.view.FormularListeView;
 import de.jost_net.JVerein.gui.view.FreiesFormularMailView;
 import de.jost_net.JVerein.gui.view.JahresabschlussListeView;
+import de.jost_net.JVerein.gui.view.JahresvergleichView;
 import de.jost_net.JVerein.gui.view.KontoListeView;
 import de.jost_net.JVerein.gui.view.KontoSaldoView;
 import de.jost_net.JVerein.gui.view.KontoauszugMailView;
@@ -197,6 +198,9 @@ public class JVereinNavigation implements Extension
           new JVereinNavigationItem(buchfuehrung, "Buchungsklassensaldo",
               new StartViewAction(BuchungsklasseSaldoView.class),
               "emblem-documents.png"));
+      buchfuehrung.addChild(new JVereinNavigationItem(buchfuehrung,
+          "Jahresvergleich", new StartViewAction(JahresvergleichView.class),
+          "emblem-documents.png"));
       // UstVA
       if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
