@@ -18,8 +18,12 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.RechnungQuery;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
+import de.jost_net.JVerein.gui.formatter.PersonenartFormatter;
+import de.jost_net.JVerein.gui.formatter.StaatFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
@@ -32,6 +36,7 @@ import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -55,13 +60,15 @@ public class RechnungControl extends FilterControl
     }
     GenericIterator<Rechnung> rechnungen = new RechnungQuery(getFilter()).get();
     rechnungList = new BetragSummaryTablePart(rechnungen, null);
+    rechnungList.addColumn(getIdColumn(), false);
     rechnungList.addColumn(getGesperrtColumn(), false);
-    rechnungList.addColumn("Nr", "nummer");
+    rechnungList.addColumn("Nummer", "nummer");
     rechnungList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     rechnungList.addColumn("Rechnungsdatum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     rechnungList.addColumn("Mitglied", "mitglied");
+    rechnungList.addColumn(new Column("zahler", "Zahler"), false);
     rechnungList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     rechnungList.addColumn("Ist", "ist",
@@ -74,7 +81,42 @@ public class RechnungControl extends FilterControl
     rechnungList.addColumn("Referenz Rechnung", "refrechnung");
     rechnungList.addColumn("Erstattungsbetrag", "erstattungsbetrag",
         new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
-
+    rechnungList.addColumn(new Column("formular", "Formular"), false);
+    rechnungList.addColumn(
+        new Column("personenart", "Personenart", new PersonenartFormatter()),
+        false);
+    rechnungList.addColumn(new Column("anrede", "Anrede"), false);
+    rechnungList.addColumn(new Column("titel", "Titel"), false);
+    rechnungList.addColumn(new Column("name", "Name"), false);
+    rechnungList.addColumn(new Column("vorname", "Vorname"), false);
+    rechnungList.addColumn(
+        new Column("adressierungszusatz", "Adressierungszusatz"), false);
+    rechnungList.addColumn(new Column("strasse", "Straße"), false);
+    rechnungList.addColumn(new Column("plz", "PLZ"), false);
+    rechnungList.addColumn(new Column("ort", "Ort"), false);
+    try
+    {
+      if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
+      {
+        rechnungList.addColumn(new Column("staat", "Staat",
+            new StaatFormatter(), false, Column.ALIGN_LEFT), false);
+      }
+    }
+    catch (RemoteException ignore)
+    {
+    }
+    rechnungList.addColumn(new Column("geschlecht", "Geschlecht"), false);
+    rechnungList.addColumn(new Column("mandatid", "Mandatid"), false);
+    rechnungList.addColumn(new Column("mandatdatum", "Mandatdatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()), false,
+        Column.ALIGN_AUTO), false);
+    rechnungList.addColumn(new Column("bic", "BIC"), false);
+    rechnungList.addColumn(new Column("iban", "IBAN", new IBANFormatter(),
+        false, Column.ALIGN_LEFT), false);
+    rechnungList.addColumn(new Column("leitwegid", "LeitwegID"), false);
+    rechnungList.addColumn(
+        new Column("kommentar", "Kommentar", v -> v.toString().split("\n")[0]),
+        false);
     rechnungList.setContextMenu(new RechnungMenu(rechnungList));
     rechnungList.setMulti(true);
     rechnungList

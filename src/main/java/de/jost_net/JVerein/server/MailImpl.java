@@ -280,24 +280,32 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   }
 
   @Override
-  public Object getAttribute(String fieldName) throws RemoteException
-  {
-    if ("anhaenge".equals(fieldName))
-    {
-      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<PseudoDBObject>(
-          "mailanhang");
-      it.addFilter("mail = ?", getID());
-      it.addColumn("count(id) as count");
-      PseudoDBObject o = it.next();
-      return o.getAttribute("count");
-    }
-    return super.getAttribute(fieldName);
-  }
-
-  @Override
   public void setVersand(Timestamp versand) throws RemoteException
   {
     setAttribute("versand", versand);
+  }
+
+  @Override
+  public Object getAttribute(String s) throws RemoteException
+  {
+    switch (s)
+    {
+      case "empfaenger":
+        ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<PseudoDBObject>(
+            "mailempfaenger");
+        it.addFilter("mail = ?", getID());
+        it.addColumn("count(id) as count");
+        PseudoDBObject o = it.next();
+        return o.getAttribute("count");
+      case "anhaenge":
+        it = new ExtendedDBIterator<PseudoDBObject>("mailanhang");
+        it.addFilter("mail = ?", getID());
+        it.addColumn("count(id) as count");
+        o = it.next();
+        return o.getAttribute("count");
+      default:
+        return super.getAttribute(s);
+    }
   }
 
   @Override

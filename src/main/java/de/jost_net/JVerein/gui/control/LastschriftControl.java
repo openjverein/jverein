@@ -20,8 +20,11 @@ import java.rmi.RemoteException;
 import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
+import de.jost_net.JVerein.gui.formatter.PersonenartFormatter;
+import de.jost_net.JVerein.gui.formatter.StaatFormatter;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -40,6 +43,7 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -67,16 +71,40 @@ public class LastschriftControl extends FilterControl
     lastschriftList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
+    lastschriftList.addColumn(new Column("mitglied", "Mitglied"), false);
+    lastschriftList.addColumn(
+        new Column("personenart", "Personenart", new PersonenartFormatter()),
+        false);
+    lastschriftList.addColumn(new Column("anrede", "Anrede"), false);
+    lastschriftList.addColumn(new Column("titel", "Titel"), false);
     lastschriftList.addColumn("Name", "name");
     lastschriftList.addColumn("Vorname", "vorname");
+    lastschriftList.addColumn(
+        new Column("adressierungszusatz", "Adressierungszusatz"), false);
+    lastschriftList.addColumn(new Column("strasse", "Straße"), false);
+    lastschriftList.addColumn(new Column("plz", "PLZ"), false);
+    lastschriftList.addColumn(new Column("ort", "Ort"), false);
+    try
+    {
+      if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
+      {
+        lastschriftList.addColumn(new Column("staat", "Staat",
+            new StaatFormatter(), false, Column.ALIGN_LEFT), false);
+      }
+    }
+    catch (RemoteException ignore)
+    {
+    }
+    lastschriftList.addColumn(new Column("geschlecht", "Geschlecht"), false);
     lastschriftList.addColumn("Email", "email");
     lastschriftList.addColumn("Zweck", "verwendungszweck");
     lastschriftList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT));
     lastschriftList.addColumn("Fälligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    lastschriftList.addColumn(new Column("bic", "BIC"), false);
     lastschriftList.addColumn("IBAN", "iban", new IBANFormatter());
-    lastschriftList.addColumn("Mandat", "mandatid");
+    lastschriftList.addColumn("Mandatid", "mandatid");
     lastschriftList.addColumn("Mandatdatum", "mandatdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lastschriftList.setContextMenu(new LastschriftMenu(lastschriftList));

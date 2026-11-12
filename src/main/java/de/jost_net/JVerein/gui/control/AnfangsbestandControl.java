@@ -57,8 +57,8 @@ public class AnfangsbestandControl extends FilterControl
     anfangsbestandList = new JVereinTablePart(getAnfangsstaende(), null);
     anfangsbestandList.addColumn("Nr", "id-int");
     anfangsbestandList.addColumn(getAbgeschlossenColumn(), false);
-    anfangsbestandList.addColumn("Nummer", "nummer");
-    anfangsbestandList.addColumn("Bezeichnung", "bezeichnung");
+    anfangsbestandList.addColumn("Kontonummer", "nummer");
+    anfangsbestandList.addColumn("Konto Bezeichnung", "bezeichnung");
     anfangsbestandList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     anfangsbestandList.addColumn("Betrag", "betrag",

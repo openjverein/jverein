@@ -33,6 +33,7 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -58,11 +59,14 @@ public class MailControl extends FilterControl
     mailsList.addColumn("Nr", "id-int");
     mailsList.addColumn(getGesperrtColumn(), false);
     mailsList.addColumn("Betreff", "betreff");
+    mailsList.addColumn(
+        new Column("txt", "Text", v -> v.toString().split("\n")[0]), false);
     mailsList.addColumn("Bearbeitung", "bearbeitung",
         new DateFormatter(new JVDateFormatDATETIME()));
     mailsList.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatDATETIME()));
     mailsList.addColumn("Anhänge", "anhaenge");
+    mailsList.addColumn(new Column("empfaenger", "Empfänger"), false);
     mailsList.setContextMenu(new MailMenu(mailsList));
     mailsList.setMulti(true);
     mailsList.setAction(new EditAction(MailDetailView.class, mailsList));

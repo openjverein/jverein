@@ -30,6 +30,7 @@ import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
+import de.jost_net.JVerein.gui.formatter.PersonenartFormatter;
 import de.jost_net.JVerein.gui.formatter.StaatFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsrhythmusFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsterminFormatter;
@@ -174,7 +175,7 @@ public class MitgliedControl extends FilterControl
         return (Boolean) o ? "\u2705" : "\u2757";
       }
     }, Column.ALIGN_LEFT, true);
-    add("Mitgliedsnummer", "idint", false, true);
+    add("Mitgliedsnummer", "id-int", false, true);
     try
     {
       if ((Boolean) Einstellungen
@@ -213,6 +214,8 @@ public class MitgliedControl extends FilterControl
     {
       //
     }
+    add("Personenart", "personenart", false, new PersonenartFormatter(),
+        Column.ALIGN_LEFT, true);
     add("Anrede", "anrede", false, true);
     add("Titel", "titel", false, true);
     add("Name", "name", true, true);
@@ -232,6 +235,10 @@ public class MitgliedControl extends FilterControl
     catch (RemoteException ignore)
     {
     }
+    add("Vermerk 1", "vermerk1", false, v -> v.toString().split("\n")[0],
+        Column.ALIGN_LEFT, true);
+    add("Vermerk 2", "vermerk2", false, v -> v.toString().split("\n")[0],
+        Column.ALIGN_LEFT, true);
     add("Zahlungsweg", "zahlungsweg", false, new ZahlungswegFormatter(),
         Column.ALIGN_LEFT, true);
     add("Zahlungsrhytmus", "zahlungsrhytmus", false,

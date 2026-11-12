@@ -58,7 +58,7 @@ public class AbrechnungslaufControl extends FilterControl
 
     abrechnungslaufList = new AutoUpdateTablePart(getAbrechnungslaeufe(),
         new EditAction(AbrechnungslaufDetailView.class));
-    abrechnungslaufList.addColumn("Nr", "nr");
+    abrechnungslaufList.addColumn("Nr", "id-int");
     if ((Boolean) Einstellungen.getEinstellung(Property.ABRLABSCHLIESSEN))
     {
       abrechnungslaufList.addColumn("Abgeschlossen", "abgeschlossen",
@@ -82,6 +82,7 @@ public class AbrechnungslaufControl extends FilterControl
       abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
           new JaNeinFormatter());
     }
+    abrechnungslaufList.addColumn(new Column("bemerkung", "Bemerkung"), false);
     abrechnungslaufList
         .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
     abrechnungslaufList.setAction(

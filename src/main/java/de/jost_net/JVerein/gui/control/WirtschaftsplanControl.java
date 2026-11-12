@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -70,6 +71,10 @@ public class WirtschaftsplanControl extends FilterControl
     wirtschaftsplaene.addColumn("Bezeichnung", "bezeichnung");
     wirtschaftsplaene.addColumn("Von", "datum_von", dateFormatter);
     wirtschaftsplaene.addColumn("Bis", "datum_bis", dateFormatter);
+    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+    {
+      wirtschaftsplaene.addColumn("Projekt", "projekt");
+    }
     wirtschaftsplaene.addColumn("Einnahmen Soll", "planEinnahme", formatter);
     wirtschaftsplaene.addColumn("Ausgaben Soll", "planAusgabe", formatter);
     wirtschaftsplaene.addColumn("Saldo Soll", "planSaldo", formatter);

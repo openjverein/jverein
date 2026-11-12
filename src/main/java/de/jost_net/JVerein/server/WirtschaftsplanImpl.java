@@ -441,6 +441,8 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
       case "differenz":
         return ((BigDecimal) getAttribute("istSaldo"))
             .subtract((BigDecimal) getAttribute("planSaldo"));
+      case "projekt":
+        return getProjekt();
       default:
         return super.getAttribute(s);
     }

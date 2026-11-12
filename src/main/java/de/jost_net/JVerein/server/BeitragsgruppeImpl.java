@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -497,19 +498,46 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if (fieldName.equals("buchungsklasse"))
+    switch (fieldName)
     {
-      return getBuchungsklasse();
+      case "buchungsklasse":
+        return getBuchungsklasse();
+      case "buchungsart":
+        return getBuchungsart();
+      case "steuer":
+        return getSteuer();
+      case "staffel":
+        try
+        {
+          AltersgruppenParser ap = new AltersgruppenParser(
+              (String) Einstellungen
+                  .getEinstellung(Property.BEITRAGALTERSSTUFEN));
+          String text = "";
+          DBIterator<Altersstaffel> it = getAltersstaffelIterator();
+          while (it.hasNext() && ap.hasNext())
+          {
+            ap.getNext();
+            Altersstaffel a = it.next();
+            text = text + "|"
+                + Einstellungen.BIGDECIMALFORMAT.format(a.getBetrag());
+          }
+          if (!text.isEmpty())
+          {
+            return text.substring(1);
+          }
+          else
+          {
+            return "";
+          }
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("unable to format line", e);
+        }
+        return "";
+      default:
+        return super.getAttribute(fieldName);
     }
-    else if (fieldName.equals("buchungsart"))
-    {
-      return getBuchungsart();
-    }
-    if (fieldName.equals("steuer"))
-    {
-      return getSteuer();
-    }
-    return super.getAttribute(fieldName);
   }
 
   @Override

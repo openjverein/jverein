@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -31,6 +32,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.util.ApplicationException;
 
 public class JahresabschlussControl extends FilterControl
@@ -65,6 +67,14 @@ public class JahresabschlussControl extends FilterControl
     jahresabschlussList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     jahresabschlussList.addColumn("Name", "name");
+    if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
+    {
+      jahresabschlussList.addColumn(
+          new Column("verwendungsrueckstand", "Rest Verwendungsrückstand"),
+          false);
+      jahresabschlussList.addColumn(
+          new Column("zwanghafteweitergabe", "Zwanghafte Weitergabe"), false);
+    }
     jahresabschlussList
         .setContextMenu(new JahresabschlussMenu(jahresabschlussList));
     jahresabschlussList.setAction(

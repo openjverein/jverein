@@ -54,6 +54,7 @@ public class FormularControl extends FilterControl
     formulare.setOrder("ORDER BY art, bezeichnung");
 
     formularList = new JVereinTablePart(formulare, null);
+    formularList.addColumn(getIdColumn(), false);
     formularList.addColumn(getGesperrtColumn(), false);
     formularList.addColumn("Bezeichnung", "bezeichnung");
     formularList.addColumn("Art", "art", new FormularartFormatter(), false,

@@ -311,10 +311,6 @@ public class AbrechnungslaufImpl extends AbstractJVereinDBObject
     {
       return getIDText();
     }
-    if (fieldName.equals("nr"))
-    {
-      return getNr();
-    }
     return super.getAttribute(fieldName);
   }
 
