@@ -54,6 +54,7 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.AbstractTablePart.AbstractTableItem;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -124,8 +125,29 @@ public class BuchungsControl extends FilterControl
     });
 
     buchungsList.addColumn("Konto", "konto");
-    buchungsList.addColumn("Datum", "datum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    buchungsList.addColumn(new Column("datum", "Datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()))
+    {
+      @Override
+      public int compare(AbstractTableItem item1, AbstractTableItem item2)
+      {
+        int result = super.compare(item1, item2);
+        if (result != 0)
+        {
+          return result;
+        }
+        try
+        {
+          long id1 = Long.parseLong(((Buchung) item1.data).getID());
+          long id2 = Long.parseLong(((Buchung) item2.data).getID());
+          return Long.compare(id1, id2);
+        }
+        catch (Exception e)
+        {
+          return 0;
+        }
+      }
+    });
 
     if (geldkonto)
     {
