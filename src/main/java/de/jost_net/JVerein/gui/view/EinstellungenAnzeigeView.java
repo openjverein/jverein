@@ -105,6 +105,8 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getSummenAnlagenkonto());
     cont4.addLabelPair("Leere letzte Spalte in Tabellen",
         control.getLeereSpalte());
+    cont4.addLabelPair("Id bei Lehrgängen anzeigen",
+        control.getLehrgangsIdAnzeigen());
 
     cont.addSeparator();
     ColumnLayout cols2 = new ColumnLayout(cont.getComposite(), 2);
@@ -115,6 +117,7 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getAltersModel());
     links.addLabelPair("Ort der Abschreibung", control.getAfaOrt());
     links.addLabelPair("Mitglied Auswahl", control.getMitgliedAuswahl());
+    links.addLabelPair("Lehrgang Auswahl", control.getLehrgangAuswahl());
 
     SimpleContainer rechts = new SimpleContainer(cols2.getComposite());
     rechts.addLabelPair("Ungenutzte Auto Buchungsarten unterdrücken (Monate)",

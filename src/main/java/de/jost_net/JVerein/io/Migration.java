@@ -45,6 +45,8 @@ import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.Lehrgangsart;
+import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
@@ -1065,6 +1067,14 @@ public class Migration
         Lastschrift l = listlastschriften.next();
         l.delete();
       }
+      // Lehrgangsteilnehmer
+      DBIterator<Lehrgangsteilnehmer> listlehrgangsteilnehmer = Einstellungen
+          .getDBService().createList(Lehrgangsteilnehmer.class);
+      while (listlehrgangsteilnehmer.hasNext())
+      {
+        Lehrgangsteilnehmer t = listlehrgangsteilnehmer.next();
+        t.delete();
+      }
       // Lehrgänge
       DBIterator<Lehrgang> listlehrgaenge = Einstellungen.getDBService()
           .createList(Lehrgang.class);
@@ -1072,6 +1082,14 @@ public class Migration
       {
         Lehrgang l = listlehrgaenge.next();
         l.delete();
+      }
+      // Lehrgangsarten
+      DBIterator<Lehrgangsart> listlehrgangsarten = Einstellungen.getDBService()
+          .createList(Lehrgangsart.class);
+      while (listlehrgangsarten.hasNext())
+      {
+        Lehrgangsart a = listlehrgangsarten.next();
+        a.delete();
       }
       // Mailempfänger
       DBIterator<MailEmpfaenger> listmailempfaenger = Einstellungen

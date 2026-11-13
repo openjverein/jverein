@@ -54,6 +54,9 @@ public class DokumentationUtil
 
   public static final String LEHRGANG = MITGLIEDER + "lehrgange";
 
+  public static final String LEHRGANGSTEILNEHMER = MITGLIEDER
+      + "lehrgangsteilnehmer";
+
   public static final String MITGLIEDSUCHE = MITGLIEDER + "content/mitglieder";
 
   public static final String MITGLIED = MITGLIEDER + "content/grunddaten";

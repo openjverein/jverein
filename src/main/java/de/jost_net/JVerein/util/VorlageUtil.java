@@ -30,6 +30,7 @@ import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.Variable.FilterMap;
 import de.jost_net.JVerein.Variable.JahresabschlussListeFilterMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
+import de.jost_net.JVerein.Variable.LehrgangMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SaldoFilterMap;
@@ -49,6 +50,7 @@ import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Lastschrift;
+import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -102,6 +104,9 @@ public class VorlageUtil
         case LEHRGAENGE_DATEINAME:
         case LEHRGAENGE_SUBTITEL:
         case LEHRGAENGE_TITEL:
+        case LEHRGANGSTEILNEHMER_TITEL:
+        case LEHRGANGSTEILNEHMER_SUBTITEL:
+        case LEHRGANGSTEILNEHMER_DATEINAME:
         case ZUSATZBETRAEGE_DATEINAME:
         case ZUSATZBETRAEGE_TITEL:
         case ZUSATZBETRAEGE_SUBTITEL:
@@ -385,6 +390,11 @@ public class VorlageUtil
         case BELEG_MITGLIEDER_TITEL:
           map = new BelegMap().getMap((Beleg) obj, map);
           break;
+        case LEHRGANG_TEILNEHMER_DATEINAME:
+        case LEHRGANG_TEILNEHMER_TITEL:
+        case LEHRGANG_TEILNEHMER_SUBTITEL:
+          map = new LehrgangMap().getMap((Lehrgang) obj, map);
+          break;
       }
     }
     catch (RemoteException | ApplicationException e)
@@ -464,9 +474,19 @@ public class VorlageUtil
         case LEHRGAENGE_DATEINAME:
         case LEHRGAENGE_SUBTITEL:
         case LEHRGAENGE_TITEL:
-          set.add(Filter.NAME);
           set.add(Filter.VERANSTALTER);
           set.add(Filter.BEZEICHNUNG);
+          set.add(Filter.LEHRGANGSART);
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          map = new FilterMap().getDummyMap(set, map);
+          break;
+        case LEHRGANGSTEILNEHMER_TITEL:
+        case LEHRGANGSTEILNEHMER_SUBTITEL:
+        case LEHRGANGSTEILNEHMER_DATEINAME:
+          set.add(Filter.NAME);
+          set.add(Filter.VERANSTALTER);
+          set.add(Filter.LEHRGANG);
           set.add(Filter.LEHRGANGSART);
           set.add(Filter.DATUM_VON);
           set.add(Filter.DATUM_BIS);
@@ -898,6 +918,11 @@ public class VorlageUtil
         case BELEG_MITGLIEDER_SUBTITEL:
         case BELEG_MITGLIEDER_TITEL:
           map = new BelegMap().getMap(null, map);
+          break;
+        case LEHRGANG_TEILNEHMER_DATEINAME:
+        case LEHRGANG_TEILNEHMER_TITEL:
+        case LEHRGANG_TEILNEHMER_SUBTITEL:
+          map = LehrgangMap.getDummyMap(map);
           break;
       }
     }

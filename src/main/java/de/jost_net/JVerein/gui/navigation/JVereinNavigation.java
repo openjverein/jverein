@@ -62,6 +62,7 @@ import de.jost_net.JVerein.gui.view.KontoSaldoView;
 import de.jost_net.JVerein.gui.view.KontoauszugMailView;
 import de.jost_net.JVerein.gui.view.LastschriftListeView;
 import de.jost_net.JVerein.gui.view.LehrgangListeView;
+import de.jost_net.JVerein.gui.view.LehrgangsteilnehmerListeView;
 import de.jost_net.JVerein.gui.view.LehrgangsartListeView;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.MailListeView;
@@ -116,6 +117,13 @@ public class JVereinNavigation implements Extension
         mitglieder
             .addChild(new JVereinNavigationItem(mitglieder, "Nicht-Mitglieder",
                 new StartViewAction(NichtMitgliedListeView.class),
+                "user-friends.png"));
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
+      {
+        mitglieder.addChild(
+            new JVereinNavigationItem(mitglieder, "Lehrgangsteilnehmer",
+                new StartViewAction(LehrgangsteilnehmerListeView.class),
                 "user-friends.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))

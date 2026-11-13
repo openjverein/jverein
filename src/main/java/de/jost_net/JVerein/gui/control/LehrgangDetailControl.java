@@ -16,27 +16,36 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.input.MitgliedInput;
+import de.jost_net.JVerein.gui.action.LehrgangsmitgliederAction;
+import de.jost_net.JVerein.gui.dialogs.NichtMitgliedNeuDialog;
+import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
+import de.jost_net.JVerein.gui.input.BigDecimalInput;
+import de.jost_net.JVerein.gui.menu.LehrgangsmitgliederMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
+import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -51,13 +60,13 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
 
   private TextInput veranstalter = null;
 
-  private TextInput ergebnis = null;
-
-  private Lehrgang lehrg = null;
-
-  private AbstractInput mitglied;
+  private Lehrgang lehrgang = null;
 
   private TextInput bezeichnung;
+
+  private BigDecimalInput betrag;
+
+  private JVereinTablePart mitgliederList;
 
   public LehrgangDetailControl(AbstractView view)
   {
@@ -66,12 +75,12 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
 
   public Lehrgang getLehrgang()
   {
-    if (lehrg != null)
+    if (lehrgang != null)
     {
-      return lehrg;
+      return lehrgang;
     }
-    lehrg = (Lehrgang) getCurrentObject();
-    return lehrg;
+    lehrgang = (Lehrgang) getCurrentObject();
+    return lehrgang;
   }
 
   public SelectInput getLehrgangsart() throws RemoteException
@@ -87,28 +96,6 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
         it != null ? PseudoIterator.asList(it) : null,
         getLehrgang().getLehrgangsart());
     lehrgangsart.setPleaseChoose("Bitte auswählen");
-    lehrgangsart.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Lehrgangsart la = (Lehrgangsart) lehrgangsart.getValue();
-        try
-        {
-          if (la != null)
-          {
-            getVon().setValue(la.getVon());
-            getBis().setValue(la.getBis());
-            getVeranstalter().setValue(la.getVeranstalter());
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-    });
     lehrgangsart.setMandatory(true);
     return lehrgangsart;
   }
@@ -154,16 +141,6 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
     return veranstalter;
   }
 
-  public Input getErgebnis() throws RemoteException
-  {
-    if (ergebnis != null)
-    {
-      return ergebnis;
-    }
-    ergebnis = new TextInput(getLehrgang().getErgebnis(), 50);
-    return ergebnis;
-  }
-
   public TextInput getBezeichnung() throws RemoteException
   {
     if (bezeichnung != null)
@@ -171,7 +148,148 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
       return bezeichnung;
     }
     bezeichnung = new TextInput(getLehrgang().getBezeichnung(), 30);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
+  }
+
+  public BigDecimalInput getBetrag() throws RemoteException
+  {
+    if (betrag != null)
+    {
+      return betrag;
+    }
+    betrag = new BigDecimalInput(getLehrgang().getBetrag(),
+        Einstellungen.BIGDECIMALFORMAT);
+    return betrag;
+  }
+
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
+  {
+    if (mitgliederList != null)
+    {
+      return mitgliederList;
+    }
+
+    mitgliederList = new JVereinTablePart(PseudoIterator.asList(getIterator()),
+        new LehrgangsmitgliederAction(LehrgangsmitgliederAction.ART.BEARBEITEN,
+            null));
+    mitgliederList.setTableName("Mitglieder");
+    mitgliederList.addColumn("Nr", "id");
+    mitgliederList.addColumn("Anrede", "anrede");
+    mitgliederList.addColumn("Titel", "titel");
+    mitgliederList.addColumn("Name", "name");
+    mitgliederList.addColumn("Vorname", "vorname");
+    mitgliederList.addColumn("Straße", "strasse");
+    mitgliederList.addColumn("Adressieringszusatz", "adressieringszusatz");
+    mitgliederList.addColumn("Ort", "ort");
+    mitgliederList.addColumn("Ergebnis", "ergebnis");
+
+    mitgliederList.setMulti(true);
+    mitgliederList.setContextMenu(new LehrgangsmitgliederMenu(this));
+
+    return mitgliederList;
+  }
+
+  public void refreshMitgliederList()
+  {
+    if (mitgliederList == null)
+    {
+      return;
+    }
+    try
+    {
+      ExtendedDBIterator<PseudoDBObject> it = getIterator();
+      mitgliederList.removeAll();
+      while (it.hasNext())
+      {
+        mitgliederList.addItem(it.next());
+      }
+      mitgliederList.sort();
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+
+  public ExtendedDBIterator<PseudoDBObject> getIterator() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+        "mitglied");
+    it.join("lehrgangsteilnehmer",
+        "lehrgangsteilnehmer.mitglied = mitglied.id");
+    it.addFilter("lehrgangsteilnehmer.lehrgang = ?", getLehrgang().getID());
+    return it;
+  }
+
+  public Button getLehrgangsteilnehmerNeuButton()
+  {
+    return new Button("Neu",
+        new LehrgangsmitgliederAction(LehrgangsmitgliederAction.ART.NEU, this),
+        null, false, "document-new.png");
+  }
+
+  public Button getNichtMitgliedErzeugenButton()
+  {
+    Button b = new Button("Neues Nicht-Mitglied anlegen", event -> {
+
+      try
+      {
+        Mitglied nm = Einstellungen.getDBService().createObject(Mitglied.class,
+            null);
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.JURISTISCHEPERSONEN))
+        {
+          PersonenartDialog pad = new PersonenartDialog(
+              PersonenartDialog.POSITION_CENTER);
+          String pa = pad.open();
+          if (pa == null)
+          {
+            return;
+          }
+          nm.setPersonenart(pa);
+        }
+        else
+        {
+          nm.setPersonenart("n");
+        }
+        NichtMitgliedNeuDialog dialog = new NichtMitgliedNeuDialog(
+            NichtMitgliedNeuDialog.POSITION_CENTER, nm);
+        if (!dialog.open())
+        {
+          if (dialog.getStatus() != null)
+          {
+            throw new Exception(dialog.getStatus());
+          }
+          else
+          {
+            Lehrgangsteilnehmer tln = Einstellungen.getDBService()
+                .createObject(Lehrgangsteilnehmer.class, null);
+            tln.setLehrgang(Long.valueOf(getLehrgang().getID()));
+            tln.setLehrgangsart(
+                Long.valueOf(getLehrgang().getLehrgangsart().getID()));
+            tln.setMitglied(Integer.valueOf(nm.getID()));
+            tln.setVeranstalter(getLehrgang().getVeranstalter());
+            tln.setVon(getLehrgang().getVon());
+            tln.setBis(getLehrgang().getBis());
+            tln.store();
+            refreshMitgliederList();
+          }
+        }
+      }
+      catch (OperationCanceledException oce)
+      {
+        throw oce;
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException(
+            "Fehler beim Erzeugen eines Nicht-Mitgliedes: " + ex.getMessage());
+      }
+    }, null, false, "document-new.png");
+    // button
+    return b;
   }
 
   @Override
@@ -192,19 +310,7 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
     l.setVon((Date) getVon().getValue());
     l.setBis((Date) getBis().getValue());
     l.setVeranstalter((String) getVeranstalter().getValue());
-    l.setErgebnis((String) getErgebnis().getValue());
-    if (l.isNewObject())
-    {
-      if (getMitglied().getValue() != null)
-      {
-        l.setMitglied(
-            Integer.valueOf(((Mitglied) getMitglied().getValue()).getID()));
-      }
-      else
-      {
-        l.setMitglied(null);
-      }
-    }
+    l.setBetrag((BigDecimal) getBetrag().getValue());
     return l;
   }
 
@@ -214,6 +320,22 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
     try
     {
       prepareStore().store();
+      Lehrgangsart la = (Lehrgangsart) getLehrgangsart().getValue();
+      if (la != null)
+      {
+        DBIterator<Lehrgangsteilnehmer> teilnehmer = Einstellungen
+            .getDBService().createList(Lehrgangsteilnehmer.class);
+        teilnehmer.addFilter("lehrgang = ?", getLehrgang().getID());
+        while (teilnehmer.hasNext())
+        {
+          Lehrgangsteilnehmer t = teilnehmer.next();
+          t.setVon((Date) getVon().getValue());
+          t.setBis((Date) getBis().getValue());
+          t.setVeranstalter((String) getVeranstalter().getValue());
+          t.setLehrgangsart(Long.valueOf(la.getID()));
+          t.store();
+        }
+      }
     }
     catch (RemoteException e)
     {
@@ -223,26 +345,24 @@ public class LehrgangDetailControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Input getMitglied() throws RemoteException
+  @Override
+  protected String getTableTitle()
   {
-    if (mitglied != null)
-    {
-      return mitglied;
-    }
-
-    if (getLehrgang().getMitglied() != null)
-    {
-      Mitglied[] mitgliedArray = { getLehrgang().getMitglied() };
-      mitglied = new SelectInput(mitgliedArray, getLehrgang().getMitglied());
-      mitglied.setEnabled(false);
-    }
-    else
-    {
-      mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
-          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
-    }
-    mitglied.setMandatory(true);
-    return mitglied;
+    return VorlageUtil.getName(VorlageTyp.LEHRGANG_TEILNEHMER_TITEL,
+        getLehrgang());
   }
 
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.LEHRGANG_TEILNEHMER_SUBTITEL,
+        getLehrgang());
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.LEHRGANG_TEILNEHMER_DATEINAME,
+        getLehrgang());
+  }
 }
