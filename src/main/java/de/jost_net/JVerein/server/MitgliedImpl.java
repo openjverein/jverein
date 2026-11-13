@@ -63,6 +63,7 @@ import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.parts.TreePart;
+import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -430,6 +431,28 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
         || getExterneMitgliedsnummer().isEmpty())
     {
       throw new ApplicationException("Externe Mitgliedsnummer fehlt");
+    }
+
+    if ((Integer) Einstellungen.getEinstellung(
+        Property.SEPAMANDATIDSOURCE) == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER)
+    {
+      String validChars = HBCIProperties.HBCI_SEPA_MANDATE_VALIDCHARS;
+      boolean invalid = false;
+      String nummer = getExterneMitgliedsnummer();
+      for (int i = 0; i < nummer.length(); i++)
+      {
+        char c = nummer.charAt(i);
+        if (validChars.indexOf(c) == -1)
+        {
+          invalid = true;
+          break;
+        }
+      }
+      if (invalid)
+      {
+        throw new ApplicationException(
+            "Die Externe Mitgliedsnummer enthält Zeichen die für eine Mandats-ID nicht gültig sind.");
+      }
     }
 
     DBIterator<Mitglied> mitglieder = Einstellungen.getDBService()
