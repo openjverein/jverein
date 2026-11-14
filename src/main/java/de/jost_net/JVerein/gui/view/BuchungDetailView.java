@@ -23,7 +23,6 @@ import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.BuchungDetailControl;
 import de.jost_net.JVerein.keys.Kontenfilter;
-import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
@@ -40,8 +39,6 @@ import de.willuhn.util.ApplicationException;
 public class BuchungDetailView extends AbstractDetailView
 {
   private BuchungDetailControl control;
-
-  private BuchungPart part;
 
   @Override
   public void bind() throws Exception
@@ -60,15 +57,14 @@ public class BuchungDetailView extends AbstractDetailView
     final boolean editable = control.isBuchungEditable();
     final SplitBuchung splitbuchung = control.getBuchung().getSplitbuchung();
 
-    part = new BuchungPart(control);
-    part.paint(this.getParent());
+    control.getBuchungPart().paint(this.getParent());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.BUCHUNGEN));
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
-
+    buttons.addButton(control.getBuchungsbelegButton());
     ButtonRtoL saveButton = new SaveButton(o -> {
       try
       {

@@ -13,6 +13,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.BuchungReportExportDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
@@ -23,6 +24,13 @@ import de.willuhn.util.ApplicationException;
 
 public class BuchungReportAction implements Action
 {
+
+  private BuchungsControl control;
+
+  public BuchungReportAction(BuchungsControl control)
+  {
+    this.control = control;
+  }
 
   /**
    * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
@@ -48,7 +56,7 @@ public class BuchungReportAction implements Action
     try
     {
       BuchungReportExportDialog d = new BuchungReportExportDialog(
-          BuchungReportExportDialog.POSITION_CENTER, buchungen);
+          BuchungReportExportDialog.POSITION_CENTER, buchungen, control);
       d.open();
     }
     catch (OperationCanceledException | ApplicationException e)

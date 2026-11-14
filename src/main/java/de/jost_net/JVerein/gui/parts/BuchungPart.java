@@ -34,6 +34,8 @@ public class BuchungPart implements Part
 {
   private BuchungDetailControl control;
 
+  private BelegPart belegPart = null;
+
   public BuchungPart(BuchungDetailControl control)
   {
     this.control = control;
@@ -106,7 +108,13 @@ public class BuchungPart implements Part
 
     if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
-      new BelegPart().paint(scrolled.getComposite());
+      belegPart = new BelegPart();
+      belegPart.paint(scrolled.getComposite());
     }
+  }
+
+  public BelegPart getBelegPart()
+  {
+    return belegPart;
   }
 }
