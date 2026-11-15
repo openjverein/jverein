@@ -48,7 +48,7 @@ public class BuchungReportExportDialog extends AbstractDialog<Object>
     group.addInput(control.getFormular());
     if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
-      group.addLabelPair("Als Buchungsdokument speichern",
+      group.addLabelPair("Als Beleg speichern",
           control.getBuchungsdokumentSpeichern());
       group.addInput(control.getDatum());
     }
