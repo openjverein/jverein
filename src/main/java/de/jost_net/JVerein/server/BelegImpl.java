@@ -675,13 +675,13 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   @Override
   public String getObjektName()
   {
-    return "Dokument";
+    return "Beleg";
   }
 
   @Override
   public String getObjektNameMehrzahl()
   {
-    return "Dokumente";
+    return "Belege";
   }
 
   @Override
