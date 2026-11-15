@@ -102,7 +102,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
           new SplitBuchung(splitbuchungIds.get(id)).aufloesen(false);
           control.refreshBuchungsList();
           GUI.getStatusBar()
-              .setSuccessText("Splitbuchung " + id + "aufgelöst.");
+              .setSuccessText("Splitbuchung " + id + " aufgelöst.");
         }
         catch (ApplicationException e1)
         {
