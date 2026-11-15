@@ -72,6 +72,9 @@ public class BelegDetailView extends AbstractDetailView
       TabGroup tabMitglieder = new TabGroup(folder, "Mitglieder", true, 1);
       control.getMitgliederList().paint(tabMitglieder.getComposite());
 
+      TabGroup tabKonten = new TabGroup(folder, "Konten", true, 1);
+      control.getKontenList().paint(tabKonten.getComposite());
+
       // Aktiver zuletzt ausgewählter Tab.
       folder.setSelection(tabindex.getInt());
       control.setFolderSelection(tabindex);

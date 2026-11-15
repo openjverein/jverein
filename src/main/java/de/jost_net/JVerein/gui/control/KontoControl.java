@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
@@ -62,6 +63,11 @@ public class KontoControl extends FilterControl
 
     kontenList = new JVereinTablePart(getKonten(), null);
     kontenList.addColumn(getGesperrtColumn(), false);
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+    {
+      kontenList.addColumn("D", "document");
+      kontenList.addColumn(new Column("belegnummern", "Belegnummern"), false);
+    }
     kontenList.addColumn(new NaturalOrderColumn("nummer", "Nummer"));
     kontenList.addColumn("Bezeichnung", "bezeichnung");
     kontenList.addColumn("Kontoart", "kontoart", new Formatter()
@@ -107,7 +113,7 @@ public class KontoControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart",
         new BuchungsartFormatter());
-    kontenList.setContextMenu(new KontoMenu(kontenList));
+    kontenList.setContextMenu(new KontoMenu(this, kontenList));
     kontenList.setMulti(true);
     kontenList.setAction(new EditAction(KontoDetailView.class, kontenList));
     VorZurueckControl.setObjektListe(null, null);

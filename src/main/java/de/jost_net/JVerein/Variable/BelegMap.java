@@ -64,6 +64,10 @@ public class BelegMap extends AbstractMap
               value = Einstellungen
                   .getEinstellung(Property.BELEG_ZAEHLER_MITGLIED).toString();
               break;
+            case KONTO:
+              value = Einstellungen.getEinstellung(Property.BELEG_ZAEHLER_KONTO)
+                  .toString();
+              break;
           }
           break;
         case BELEG_NUMMER:

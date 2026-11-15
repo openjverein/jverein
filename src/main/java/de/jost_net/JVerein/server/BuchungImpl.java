@@ -790,10 +790,7 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
     if ("document".equals(fieldName))
     {
       DBIterator<Beleg> list = getBelegList();
-      if (list.size() > 0)
-        return list.size();
-      else
-        return null;
+      return list.size() > 0 ? list.size() : null;
     }
     if ("belegnummern".equals(fieldName))
     {

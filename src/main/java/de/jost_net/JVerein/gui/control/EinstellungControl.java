@@ -406,6 +406,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput dokumentenspeicherung_messaging;
 
+  private DirectoryInput kontenDokumentVerzeichnis;
+
   private DirectoryInput mitgliedsDokumentVerzeichnis;
 
   private DirectoryInput buchungsDokumentVerzeichnis;
@@ -427,6 +429,10 @@ public class EinstellungControl extends AbstractControl
   private IntegerInput belegZaehlerMitglied;
 
   private TextInput belegnummerMitglied;
+
+  private IntegerInput belegZaehlerKonto;
+
+  private TextInput belegnummerKonto;
 
   public EinstellungControl(AbstractView view)
   {
@@ -1162,6 +1168,17 @@ public class EinstellungControl extends AbstractControl
         (Integer) Einstellungen.getEinstellung(Property.ALTERSMODEL)));
 
     return altersmodel;
+  }
+
+  public DirectoryInput getKontenDokumentVerzeichnis() throws RemoteException
+  {
+    if (kontenDokumentVerzeichnis != null)
+    {
+      return kontenDokumentVerzeichnis;
+    }
+    kontenDokumentVerzeichnis = new DirectoryInput(
+        Einstellungen.getBelegKontoVerzeichnis());
+    return kontenDokumentVerzeichnis;
   }
 
   public DirectoryInput getMitgliedsDokumentVerzeichnis() throws RemoteException
@@ -2233,6 +2250,30 @@ public class EinstellungControl extends AbstractControl
     return belegZaehlerSonstiges;
   }
 
+  public TextInput getBelegKontoNummer() throws RemoteException
+  {
+    if (belegnummerKonto != null)
+    {
+      return belegnummerKonto;
+    }
+    belegnummerKonto = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.BELEGNUMMER_KONTO), 500);
+    belegnummerKonto.setName("Belegnummer Konten-Belege");
+    return belegnummerKonto;
+  }
+
+  public IntegerInput getBelegKontoZaehler() throws RemoteException
+  {
+    if (belegZaehlerKonto != null)
+    {
+      return belegZaehlerKonto;
+    }
+    belegZaehlerKonto = new IntegerInput(
+        (Integer) Einstellungen.getEinstellung(Property.BELEG_ZAEHLER_KONTO));
+    belegZaehlerKonto.setName("Zähler Konten-Belege");
+    return belegZaehlerKonto;
+  }
+
   public TextInput getBelegMitgliedNummer() throws RemoteException
   {
     if (belegnummerMitglied != null)
@@ -2705,13 +2746,27 @@ public class EinstellungControl extends AbstractControl
   {
     try
     {
+      if (!Einstellungen.getBelegKontoVerzeichnis()
+          .equals(kontenDokumentVerzeichnis.getValue()))
+      {
+        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+        dialog.setTitle("Verzeichnis geändert");
+        dialog.setText("Das Verzeichnis für Konten-Belege wurde geändert.\n"
+            + "Bitte Verschieben sie ggf. vorhandene Belege manuell von '"
+            + Einstellungen.getBelegKontoVerzeichnis() + "' nach '"
+            + kontenDokumentVerzeichnis.getValue() + "'\n" + "Fortfahren?");
+        if (!(Boolean) dialog.open())
+        {
+          throw new OperationCanceledException();
+        }
+      }
       if (!Einstellungen.getBelegMitgliedVerzeichnis()
           .equals(mitgliedsDokumentVerzeichnis.getValue()))
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
         dialog.setTitle("Verzeichnis geändert");
         dialog.setText("Das Verzeichnis für Mitglieds-Belege wurde geändert.\n"
-            + "Bitte Verschieben sie ggf. vorhandene Be	lege manuell von '"
+            + "Bitte Verschieben sie ggf. vorhandene Belege manuell von '"
             + Einstellungen.getBelegMitgliedVerzeichnis() + "' nach '"
             + mitgliedsDokumentVerzeichnis.getValue() + "'\n" + "Fortfahren?");
         if (!(Boolean) dialog.open())
@@ -2748,6 +2803,9 @@ public class EinstellungControl extends AbstractControl
         }
       }
 
+      Einstellungen.setBelegKontoVerzeichnis(
+          (String) kontenDokumentVerzeichnis.getValue());
+
       Einstellungen.setBelegMitgliedVerzeichnis(
           (String) mitgliedsDokumentVerzeichnis.getValue());
 
@@ -2773,6 +2831,11 @@ public class EinstellungControl extends AbstractControl
           (String) belegnummerMitglied.getValue());
       Einstellungen.setEinstellung(Property.BELEG_ZAEHLER_MITGLIED,
           (Integer) belegZaehlerMitglied.getValue());
+
+      Einstellungen.setEinstellung(Property.BELEGNUMMER_KONTO,
+          (String) belegnummerKonto.getValue());
+      Einstellungen.setEinstellung(Property.BELEG_ZAEHLER_KONTO,
+          (Integer) belegZaehlerKonto.getValue());
 
       DBTransaction.commit();
 

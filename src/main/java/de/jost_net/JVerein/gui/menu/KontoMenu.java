@@ -16,10 +16,17 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AnfangsbestandNeuAction;
+import de.jost_net.JVerein.gui.action.BelegZuordnenAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.control.KontoControl;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KontoDetailView;
+import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
@@ -31,13 +38,21 @@ public class KontoMenu extends ContextMenu
 
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Konten.
+   * 
+   * @throws RemoteException
    */
-  public KontoMenu(JVereinTablePart part)
+  public KontoMenu(KontoControl control, JVereinTablePart part)
+      throws RemoteException
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(KontoDetailView.class, part), "text-x-generic.png"));
     addItem(new CheckedSingleContextMenuItem("Anfangsbestand",
         new AnfangsbestandNeuAction(), "document-new.png"));
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+    {
+      addItem(new CheckedContextMenuItem("Beleg zuordnen",
+          new BelegZuordnenAction(null, control), "emblem-documents.png"));
+    }
     addItem(new DeleteMenueItem());
   }
 }

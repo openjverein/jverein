@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.parts.BelegPart;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
@@ -88,6 +89,11 @@ public class KontoDetailView extends AbstractDetailView
       ButtonArea afabuttons = new ButtonArea();
       afabuttons.addButton(control.getAfabutton());
       right1.addButtonArea(afabuttons);
+    }
+
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+    {
+      new BelegPart().paint(getParent());
     }
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();

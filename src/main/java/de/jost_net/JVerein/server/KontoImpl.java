@@ -24,8 +24,12 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
+import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
+import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.BelegKonto;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -37,7 +41,7 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class KontoImpl extends AbstractJVereinDBObject implements Konto
+public class KontoImpl extends AbstractBelegDBObjectImpl implements Konto
 {
 
   private static final long serialVersionUID = 1L;
@@ -677,9 +681,34 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("buchungsart".equals(fieldName))
-      return getBuchungsart();
-    return super.getAttribute(fieldName);
+    switch (fieldName)
+    {
+      case "buchungsart":
+        return getBuchungsart();
+      case "document":
+      {
+        DBIterator<Beleg> list = getBelegList();
+        return list.size() > 0 ? list.size() : null;
+      }
+      case "belegnummern":
+      {
+        DBIterator<Beleg> list = getBelegList();
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        while (list.hasNext())
+        {
+          if (!first)
+          {
+            sb.append(", ");
+          }
+          first = false;
+          sb.append(list.next().getBelegnummer());
+        }
+        return sb.toString();
+      }
+      default:
+        return super.getAttribute(fieldName);
+    }
   }
 
   @Override
@@ -746,5 +775,23 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
     it.addFilter("konto = ?", getID());
     it.addFilter("abschreibung IS TRUE");
     return it.hasNext();
+  }
+
+  @Override
+  public BelegArt getBelegArt() throws RemoteException
+  {
+    return BelegArt.KONTO;
+  }
+
+  @Override
+  protected Class<? extends AbstractBelegReferenz> getBelegReferenzClass()
+  {
+    return BelegKonto.class;
+  }
+
+  @Override
+  protected String getBelegReferenzTableName() throws RemoteException
+  {
+    return "belegkonto";
   }
 }

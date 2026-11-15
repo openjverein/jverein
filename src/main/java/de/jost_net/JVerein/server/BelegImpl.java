@@ -219,6 +219,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         return "buchungen";
       case MITGLIED:
         return "mitglieder";
+      case KONTO:
+        return "konten";
       case SONSTIGES:
         throw new RemoteException(
             "Sonstige Belege mit Messaging nicht möglich");
@@ -237,6 +239,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         return Einstellungen.getBelegAllgemeinVerzeichnis() + File.separator;
       case MITGLIED:
         return Einstellungen.getBelegMitgliedVerzeichnis() + File.separator;
+      case KONTO:
+        return Einstellungen.getBelegKontoVerzeichnis() + File.separator;
     }
     return null;
   }
@@ -255,6 +259,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       case MITGLIED:
         return VorlageUtil.getName(VorlageTyp.BELEG_MITGLIED_PFAD, this,
             filename);
+      case KONTO:
+        return VorlageUtil.getName(VorlageTyp.BELEG_KONTO_PFAD, this, filename);
     }
     return null;
   }
@@ -364,6 +370,10 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
           nummer = (String) Einstellungen
               .getEinstellung(Property.BELEGNUMMER_MITGLIED);
           break;
+        case KONTO:
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_KONTO);
+          break;
       }
       nummer = VelocityTool.eval(map, nummer);
 
@@ -395,6 +405,9 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
           break;
         case MITGLIED:
           prop = Property.BELEG_ZAEHLER_MITGLIED;
+          break;
+        case KONTO:
+          prop = Property.BELEG_ZAEHLER_KONTO;
           break;
       }
       Einstellungen.setEinstellung(prop,
