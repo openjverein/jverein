@@ -145,20 +145,15 @@ public class SplitbuchungBulkAufloesenAction implements Action
               Logger.error("Fehler beim neuladen der Liste.", e);
             }
           });
-          if (count > 0)
-          {
-            String text = String.format(
-                "%d Splitbuchung" + (count != 1 ? "en" : "") + " aufgelöst.",
-                count);
-            monitor.setStatusText(text);
-            GUI.getStatusBar().setSuccessText(text);
-          }
-          else
-          {
-            String text = "Keine Splitbuchung aufgelöst";
-            monitor.setStatusText(text);
-            GUI.getStatusBar().setSuccessText(text);
-          }
+          String text = String.format(
+              "%d Splitbuchung" + (count != 1 ? "en" : "") + " aufgelöst.",
+              count);
+          monitor.setStatusText(text);
+          monitor.setStatusText(String.format(
+              "%d Splitbuchung" + (skip != 1 ? "en" : "") + " übersprungen.",
+              skip));
+          GUI.getStatusBar().setSuccessText(text);
+
           monitor.setPercentComplete(100);
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
         }
