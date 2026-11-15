@@ -1284,10 +1284,6 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if (fieldName.equals("idint"))
-    {
-      return Integer.valueOf(getID());
-    }
     if (fieldName.equals("idnamevorname"))
     {
       return Adressaufbereitung.getIdNameVorname(this);

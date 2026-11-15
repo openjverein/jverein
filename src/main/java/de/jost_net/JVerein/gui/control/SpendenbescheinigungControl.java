@@ -21,10 +21,12 @@ import java.util.ArrayList;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.SpendenbescheinigungQuery;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
+import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -77,6 +79,15 @@ public class SpendenbescheinigungControl extends FilterControl
     spbList.addColumn("Zeile 5", "zeile5");
     spbList.addColumn("Zeile 6", "zeile6");
     spbList.addColumn("Zeile 7", "zeile7");
+    spbList.addColumn(new Column("formular", "Formular"), false);
+    spbList.addColumn(new Column("ersatzaufwendungen",
+        "Ersatz für Aufwendungen", new JaNeinFormatter()), false);
+    spbList.addColumn(new Column("bezeichnungsachzuwendung",
+        "Bezeichnung Sachzuwendung", v -> v.toString().split("\n")[0]), false);
+    spbList.addColumn(new Column("herkunftspende", "Herkunft",
+        o -> HerkunftSpende.get((int) o)), false);
+    spbList.addColumn(new Column("unterlagenwertermittlung",
+        "Unterlagen Wertermittlung", new JaNeinFormatter()), false);
 
     spbList.setContextMenu(new SpendenbescheinigungMenu(spbList));
     spbList.setMulti(true);
