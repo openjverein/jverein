@@ -93,84 +93,111 @@ public class SplitbuchungBulkAufloesenAction implements Action
         return;
       }
 
-      BackgroundTask t = new BackgroundTask()
+      if (anzahl == 1)
       {
-        private boolean interrupted = false;
-
-        @Override
-        public void run(ProgressMonitor monitor) throws ApplicationException
+        String fehler;
+        Long id = splitbuchungIds.keySet().iterator().next();
+        try
         {
-          int count = 0;
-          int skip = 0;
-          monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
-          monitor.setStatusText(
-              "Löse " + splitbuchungIds.size() + " Splitbuchen auf.");
-          for (Long id : splitbuchungIds.keySet())
+          new SplitBuchung(splitbuchungIds.get(id)).aufloesen(false);
+          control.refreshBuchungsList();
+          GUI.getStatusBar()
+              .setSuccessText("Splitbuchung " + id + "aufgelöst.");
+        }
+        catch (ApplicationException e1)
+        {
+          fehler = "Fehler beim Auflösen der Splitbuchung " + id + ": ";
+          throw new ApplicationException(fehler + e1.getMessage());
+        }
+        catch (RemoteException e2)
+        {
+          fehler = "Fehler beim Auflösen der Splitbuchung " + id + ": "
+              + "Es wird eventuell von anderen Objekten benutzt.";
+          Logger.error(fehler, e2);
+          throw new ApplicationException(fehler);
+        }
+      }
+      else
+      {
+        BackgroundTask t = new BackgroundTask()
+        {
+          private boolean interrupted = false;
+
+          @Override
+          public void run(ProgressMonitor monitor) throws ApplicationException
           {
-            if (isInterrupted())
+            int count = 0;
+            int skip = 0;
+            monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
+            monitor.setStatusText(
+                "Löse " + splitbuchungIds.size() + " Splitbuchen auf.");
+            for (Long id : splitbuchungIds.keySet())
             {
-              throw new OperationCanceledException();
+              if (isInterrupted())
+              {
+                throw new OperationCanceledException();
+              }
+              try
+              {
+                new SplitBuchung(splitbuchungIds.get(id)).aufloesen(false);
+                count++;
+                monitor.setStatusText("Splitbuchung " + id + " aufgelöst.");
+              }
+              catch (ApplicationException e2)
+              {
+                skip++;
+                String fehler = "Fehler beim Auflösen der Splitbuchung " + id
+                    + ": ";
+                monitor.setStatusText(fehler + e2.getMessage());
+              }
+              catch (RemoteException e3)
+              {
+                skip++;
+                String fehler = "Fehler beim Auflösen der Splitbuchung " + id
+                    + ": " + "Es wird eventuell von anderen Objekten benutzt.";
+                monitor.setStatusText(fehler);
+                Logger.error(fehler, e3);
+              }
+              monitor.setPercentComplete(
+                  100 * (count + skip) / splitbuchungIds.size());
             }
-            try
-            {
-              new SplitBuchung(splitbuchungIds.get(id)).aufloesen(false);
-              count++;
-              monitor.setStatusText("Splitbuchung " + id + " aufgelöst.");
-            }
-            catch (ApplicationException e2)
-            {
-              skip++;
-              String fehler = "Fehler beim Auflösen der Splitbuchung " + id
-                  + ": ";
-              monitor.setStatusText(fehler + e2.getMessage());
-            }
-            catch (RemoteException e3)
-            {
-              skip++;
-              String fehler = "Fehler beim Auflösen der Splitbuchung " + id
-                  + ": " + "Es wird eventuell von anderen Objekten benutzt.";
-              monitor.setStatusText(fehler);
-              Logger.error(fehler, e3);
-            }
-            monitor.setPercentComplete(
-                100 * (count + skip) / splitbuchungIds.size());
+            GUI.getDisplay().syncExec(() -> {
+              try
+              {
+                control.refreshBuchungsList();
+              }
+              catch (ApplicationException e)
+              {
+                Logger.error("Fehler beim neuladen der Liste.", e);
+              }
+            });
+            String text = String.format(
+                "%d Splitbuchung" + (count != 1 ? "en" : "") + " aufgelöst.",
+                count);
+            monitor.setStatusText(text);
+            monitor.setStatusText(String.format(
+                "%d Splitbuchung" + (skip != 1 ? "en" : "") + " übersprungen.",
+                skip));
+            GUI.getStatusBar().setSuccessText(text);
+
+            monitor.setPercentComplete(100);
+            monitor.setStatus(ProgressMonitor.STATUS_DONE);
           }
-          GUI.getDisplay().syncExec(() -> {
-            try
-            {
-              control.refreshBuchungsList();
-            }
-            catch (ApplicationException e)
-            {
-              Logger.error("Fehler beim neuladen der Liste.", e);
-            }
-          });
-          String text = String.format(
-              "%d Splitbuchung" + (count != 1 ? "en" : "") + " aufgelöst.",
-              count);
-          monitor.setStatusText(text);
-          monitor.setStatusText(String.format(
-              "%d Splitbuchung" + (skip != 1 ? "en" : "") + " übersprungen.",
-              skip));
-          GUI.getStatusBar().setSuccessText(text);
 
-          monitor.setPercentComplete(100);
-          monitor.setStatus(ProgressMonitor.STATUS_DONE);
-        }
+          @Override
+          public void interrupt()
+          {
+            interrupted = true;
+          }
 
-        @Override
-        public void interrupt()
-        {
-          interrupted = true;
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-          return interrupted;
-        }
-      };
-      Application.getController().start(t);
+          @Override
+          public boolean isInterrupted()
+          {
+            return interrupted;
+          }
+        };
+        Application.getController().start(t);
+      }
     }
     catch (RemoteException e)
     {
