@@ -111,10 +111,9 @@ public class SplitbuchungBulkAufloesenAction implements Action
         }
         catch (RemoteException e2)
         {
-          fehler = "Fehler beim Auflösen der Splitbuchung " + id + ": "
-              + "Es wird eventuell von anderen Objekten benutzt.";
+          fehler = "Fehler beim Auflösen der Splitbuchung " + id + ": ";
           Logger.error(fehler, e2);
-          throw new ApplicationException(fehler);
+          throw new ApplicationException(fehler + e2.getMessage());
         }
       }
       else
@@ -154,8 +153,8 @@ public class SplitbuchungBulkAufloesenAction implements Action
               {
                 skip++;
                 String fehler = "Fehler beim Auflösen der Splitbuchung " + id
-                    + ": " + "Es wird eventuell von anderen Objekten benutzt.";
-                monitor.setStatusText(fehler);
+                    + ": ";
+                monitor.setStatusText(fehler + e3.getMessage());
                 Logger.error(fehler, e3);
               }
               monitor.setPercentComplete(

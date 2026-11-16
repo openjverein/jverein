@@ -107,9 +107,10 @@ public class SplitBuchung
    * Die Hauptbuchung
    * 
    * @return
+   * @throws ApplicationException
    * @throws RemoteException
    */
-  public Buchung getMaster() throws RemoteException
+  public Buchung getMaster() throws ApplicationException, RemoteException
   {
     for (Buchung b : splitbuchungen)
     {
@@ -118,7 +119,7 @@ public class SplitBuchung
         return b;
       }
     }
-    throw new RemoteException("Hauptbuchung fehlt");
+    throw new ApplicationException("Hauptbuchung fehlt");
   }
 
   /**
