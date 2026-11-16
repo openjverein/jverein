@@ -383,8 +383,9 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public boolean isAktiv(Date datum) throws RemoteException
   {
-    if (!getMitglied().isAngemeldet(datum) && !(Boolean) Einstellungen
-        .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
+    if (!getMitglied().isAngemeldet(getFaelligkeit())
+        && !(Boolean) Einstellungen
+            .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
     {
       return false;
     }
