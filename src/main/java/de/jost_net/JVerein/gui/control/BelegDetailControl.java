@@ -27,6 +27,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.DokumentShowAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -34,16 +35,21 @@ import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.menu.BuchungAbrechnugslaufMenu;
+import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.NaturalOrderColumn;
+import de.jost_net.JVerein.gui.view.KontoDetailView;
 import de.jost_net.JVerein.keys.BelegArt;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.jost_net.JVerein.rmi.Beleg;
@@ -54,6 +60,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -79,7 +86,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   public enum Tab
   {
     BUCHUNGEN(0),
-    MITGLIEDER(1);
+    MITGLIEDER(1),
+    KONTEN(2);
 
     private int index;
 
@@ -117,6 +125,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   private SelectInput belegArt;
 
   private JVereinTablePart mitgliederList;
+
+  private JVereinTablePart kontenList;
 
   public BelegDetailControl(AbstractView view,
       AbstractBelegDBObject belegObject)
@@ -399,6 +409,72 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     return mitgliederList;
   }
 
+  public JVereinTablePart getKontenList() throws RemoteException
+  {
+    if (kontenList != null)
+    {
+      return kontenList;
+    }
+    DBIterator<Konto> it = Einstellungen.getDBService().createList(Konto.class);
+    it.join("belegkonto");
+    it.addFilter("belegkonto.referenz = konto.id");
+    it.addFilter("belegkonto.beleg = ?", getBeleg().getID());
+
+    kontenList = new JVereinTablePart(PseudoIterator.asList(it),
+        new EditAction(KontoDetailView.class));
+    kontenList.setTableName("Konten");
+    kontenList.addColumn(getGesperrtColumn(), false);
+    kontenList.addColumn(new NaturalOrderColumn("nummer", "Nummer"));
+    kontenList.addColumn("Bezeichnung", "bezeichnung");
+    kontenList.addColumn("Kontoart", "kontoart", new Formatter()
+    {
+      @Override
+      public String format(Object o)
+      {
+        if (o == null)
+        {
+          return "";
+        }
+        if (o instanceof Integer)
+        {
+          return Kontoart.getByKey((Integer) o).getText();
+        }
+        return "ungültig";
+      }
+    }, false, Column.ALIGN_LEFT);
+    kontenList.addColumn("Hibiscus-Konto", "hibiscusid", new Formatter()
+    {
+
+      @Override
+      public String format(Object o)
+      {
+        if (o == null)
+        {
+          return "nein";
+        }
+        if (o instanceof Integer)
+        {
+          Integer hibid = (Integer) o;
+          if (hibid.intValue() >= 0)
+          {
+            return "ja";
+          }
+        }
+        return "nein";
+      }
+    }, false, Column.ALIGN_LEFT);
+    kontenList.addColumn("Eröffnungsdatum", "eroeffnung",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    kontenList.addColumn("Auflösungsdatum", "aufloesung",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
+    kontenList.setMulti(true);
+
+    kontenList.setContextMenu(new KontoMenu(null, null));
+    return kontenList;
+  }
+
   public void setFolderSelection(Tab selection)
   {
     selectedTab = selection;
@@ -414,6 +490,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
         return getBuchungList();
       case MITGLIEDER:
         return getMitgliederList();
+      case KONTEN:
+        return getKontenList();
     }
     return null;
   }
@@ -429,6 +507,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
       case MITGLIEDER:
         return VorlageUtil.getName(VorlageTyp.BELEG_MITGLIEDER_TITEL,
             getBeleg());
+      case KONTEN:
+        return VorlageUtil.getName(VorlageTyp.BELEG_KONTEN_TITEL, getBeleg());
     }
     return null;
   }
@@ -443,6 +523,9 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
             getBeleg());
       case MITGLIEDER:
         return VorlageUtil.getName(VorlageTyp.BELEG_MITGLIEDER_SUBTITEL,
+            getBeleg());
+      case KONTEN:
+        return VorlageUtil.getName(VorlageTyp.BELEG_KONTEN_SUBTITEL,
             getBeleg());
     }
     return null;
@@ -459,6 +542,9 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
       case MITGLIEDER:
         return VorlageUtil.getName(VorlageTyp.BELEG_MITGLIEDER_DATEINAME,
             getBeleg());
+      case KONTEN:
+        return VorlageUtil.getName(VorlageTyp.BELEG_KONTEN_DATEINAME,
+            getBeleg());
     }
     return null;
 
@@ -469,8 +555,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     return new PanelButton("document-properties.png", context -> {
       try
       {
-        new TabelleSpaltenAuswahlDialog(getBuchungList(), getMitgliederList())
-            .open();
+        new TabelleSpaltenAuswahlDialog(getBuchungList(), getMitgliederList(),
+            getKontenList()).open();
       }
       catch (OperationCanceledException | ApplicationException e)
       {

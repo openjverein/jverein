@@ -114,8 +114,8 @@ public class BuchungsControl extends FilterControl
     if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
       buchungsList.addColumn("D", "document");
+      buchungsList.addColumn("Belegnummern", "belegnummern");
     }
-    buchungsList.addColumn("Belegnummern", "belegnummern");
     buchungsList.addColumn("S", "splittyp", new Formatter()
     {
       @Override
