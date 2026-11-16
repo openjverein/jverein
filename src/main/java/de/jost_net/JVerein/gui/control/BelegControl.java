@@ -63,8 +63,9 @@ public class BelegControl extends FilterControl
     }
     docsList = new AutoUpdateTablePart(getList(), null);
     docsList.setTableName("Belege");
-    docsList.addColumn("Belegnummer", "belegnummer");
+    docsList.addColumn(getIdColumn(), false);
     docsList.addColumn(getAbgeschlossenColumn(), false);
+    docsList.addColumn("Belegnummer", "belegnummer");
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     docsList.addColumn("Bemerkung", "bemerkung");
@@ -166,6 +167,8 @@ public class BelegControl extends FilterControl
                 + "WHERE belegbuchung.beleg = beleg.id)");
             docs.addFilter("NOT EXISTS " + "(SELECT * FROM belegmitglied "
                 + "WHERE belegmitglied.beleg = beleg.id)");
+            docs.addFilter("NOT EXISTS " + "(SELECT * FROM belegkonto "
+                + "WHERE belegkonto.beleg = beleg.id)");
           }
           break;
         case BELEG_ART:

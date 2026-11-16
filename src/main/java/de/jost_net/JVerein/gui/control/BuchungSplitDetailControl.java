@@ -161,6 +161,7 @@ public class BuchungSplitDetailControl extends VorZurueckControl
         Logger.error("unable to format line", e);
       }
     });
+    splitbuchungsList.setMulti(true);
     return splitbuchungsList;
   }
 

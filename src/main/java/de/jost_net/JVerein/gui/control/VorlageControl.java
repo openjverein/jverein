@@ -56,6 +56,7 @@ public class VorlageControl extends FilterControl
       return namenList;
     }
     namenList = new JVereinTablePart(getVorlagenList(), null);
+    namenList.addColumn(getIdColumn(), false);
     namenList.addColumn("Vorlage Art", "art");
     namenList.addColumn("Vorlagenmuster", Vorlage.MUSTER);
     namenList.setContextMenu(new VorlageMenu(namenList));

@@ -55,6 +55,7 @@ public class EigenschaftGruppeControl extends FilterControl
     eigenschaftgruppe.setOrder("ORDER BY bezeichnung");
 
     eigenschaftgruppeList = new JVereinTablePart(eigenschaftgruppe, null);
+    eigenschaftgruppeList.addColumn(getIdColumn(), false);
     eigenschaftgruppeList.addColumn(getGesperrtColumn(), false);
     eigenschaftgruppeList.addColumn("Name", "name");
     eigenschaftgruppeList.addColumn("Bezeichnung", "bezeichnung");
