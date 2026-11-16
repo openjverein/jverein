@@ -208,6 +208,7 @@ public class MitgliedControl extends FilterControl
           .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
       {
         add("D", "document", false, true);
+        add("Belegnummern", "belegnummern", false, true);
       }
     }
     catch (RemoteException e)

@@ -155,16 +155,16 @@ public class ZusatzbetragControl extends FilterControl
   {
     DBIterator<Zusatzbetrag> zusatzbetraege = Einstellungen.getDBService()
         .createList(Zusatzbetrag.class);
-    zusatzbetraege.join("mitglied");
-    zusatzbetraege.addFilter(Zusatzbetrag.T_MITGLIED + " = mitglied.id");
     if (!(Boolean) Einstellungen
         .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
     {
+      zusatzbetraege.join("mitglied");
+      zusatzbetraege.addFilter(Zusatzbetrag.T_MITGLIED + " = mitglied.id");
       // Nur eingetretene Mitglieder oder Nicht-Mitglieder
       zusatzbetraege.addFilter(
-          "(mitglied.eintritt is null or mitglied.eintritt <= ?)", new Date());
+          "(mitglied.eintritt is null or mitglied.eintritt <= faelligkeit)");
       zusatzbetraege.addFilter(
-          "(mitglied.austritt is null or mitglied.austritt > ?)", new Date());
+          "(mitglied.austritt is null or mitglied.austritt > faelligkeit)");
     }
 
     for (Entry<Filter, Object> entry : getFilter().entrySet())
@@ -184,10 +184,9 @@ public class ZusatzbetragControl extends FilterControl
               break;
             case UEBERFAELLIG:
               filter = "((intervall = ? AND ausfuehrung IS NULL AND faelligkeit < ?) OR ";
-              filter += "(intervall != ? AND faelligkeit < ? AND (endedatum IS NULL OR endedatum > ?)))";
+              filter += "(intervall != ? AND faelligkeit <= ? AND (endedatum IS NULL OR endedatum > faelligkeit)))";
               zusatzbetraege.addFilter(filter, IntervallZusatzzahlung.KEIN,
-                  new Date(), IntervallZusatzzahlung.KEIN, new Date(),
-                  new Date());
+                  new Date(), IntervallZusatzzahlung.KEIN, new Date());
               break;
           }
           break;

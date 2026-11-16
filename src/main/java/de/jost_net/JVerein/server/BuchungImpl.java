@@ -78,6 +78,21 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
   {
     try
     {
+      checkDelete();
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+      throw new ApplicationException(
+          "Buchung kann nicht gelöscht werden. Siehe system log");
+    }
+  }
+
+  @Override
+  public void checkDelete() throws RemoteException, ApplicationException
+  {
+    try
+    {
       Jahresabschluss ja = getJahresabschluss();
       if (ja != null)
       {
@@ -89,7 +104,7 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
       {
         throw new ApplicationException(
             "Buchung kann nicht gelöscht werden weil sie zu einer "
-                + "Spendenbescheinigung gehört");
+                + "Spendenbescheinigung gehört.");
       }
       if (!forcedDelete && getAbrechnungslauf() != null
           && getAbrechnungslauf().getAbgeschlossen())
@@ -104,12 +119,6 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
       // Alles ok, es gibt keine Spendenbescheinigung
       // Das passiert wenn sie kurz vorher gelöscht wurde aber
       // die ID noch im Cache gespeichert ist
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-      throw new ApplicationException(
-          "Buchung kann nicht gelöscht werden. Siehe system log");
     }
   }
 
@@ -790,10 +799,7 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
     if ("document".equals(fieldName))
     {
       DBIterator<Beleg> list = getBelegList();
-      if (list.size() > 0)
-        return list.size();
-      else
-        return null;
+      return list.size() > 0 ? list.size() : null;
     }
     if ("belegnummern".equals(fieldName))
     {

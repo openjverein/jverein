@@ -169,6 +169,8 @@ public class BelegControl extends FilterControl
                 + "WHERE belegbuchung.beleg = beleg.id)");
             docs.addFilter("NOT EXISTS " + "(SELECT * FROM belegmitglied "
                 + "WHERE belegmitglied.beleg = beleg.id)");
+            docs.addFilter("NOT EXISTS " + "(SELECT * FROM belegkonto "
+                + "WHERE belegkonto.beleg = beleg.id)");
           }
           break;
         case BELEG_ART:

@@ -804,6 +804,8 @@ public enum VorlageTyp
       "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
   BELEG_MITGLIED_PFAD("mitglied-beleg-pfad", "Mitglied Beleg Pfad",
       "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
+  BELEG_KONTO_PFAD("konto-beleg-pfad", "Konto Beleg Pfad",
+      "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
 
   BELEGE_TITEL("belege-titel", "Belege Titel", "Belege",
       Vorlageart.TITEL.getKey()),
@@ -832,6 +834,14 @@ public enum VorlageTyp
   BELEG_MITGLIEDER_DATEINAME("beleg-mitglieder-dateiname",
       "Beleg Mitglieder Dateiname",
       "Beleg-Mitglieder-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
+  BELEG_KONTEN_TITEL("beleg-konten-titel", "Beleg Konten Titel",
+      "Beleg-Konten-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.TITEL.getKey()),
+  BELEG_KONTEN_SUBTITEL("beleg-konten-subtitel", "Beleg Konten Subtitel", "",
+      Vorlageart.TITEL.getKey()),
+  BELEG_KONTEN_DATEINAME("beleg-konten-dateiname", "Beleg Konten Dateiname",
+      "Beleg-Konten-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey());
 
   private final String text;
