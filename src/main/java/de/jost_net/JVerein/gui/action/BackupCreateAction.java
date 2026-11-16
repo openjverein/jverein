@@ -33,6 +33,7 @@ import de.jost_net.JVerein.server.ArbeitseinsatzImpl;
 import de.jost_net.JVerein.server.BeitragsgruppeImpl;
 import de.jost_net.JVerein.server.BelegBuchungImpl;
 import de.jost_net.JVerein.server.BelegImpl;
+import de.jost_net.JVerein.server.BelegKontoImpl;
 import de.jost_net.JVerein.server.BuchungImpl;
 import de.jost_net.JVerein.server.BuchungsartImpl;
 import de.jost_net.JVerein.server.BuchungsklasseImpl;
@@ -204,6 +205,10 @@ public class BackupCreateAction implements Action
 
           monitor.setStatusText("Speichere Konten");
           backup(KontoImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+
+          monitor.setStatusText("Speichere Dokumente der Konten");
+          backup(BelegKontoImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Lehrgangsarten");

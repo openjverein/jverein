@@ -301,6 +301,8 @@ public class Einstellungen
     BELEG_ZAEHLER_MITGLIED("beleg_zaehler_mitglied", Integer.class, "1"),
     BELEGNUMMER_MITGLIED("belegnummer_mitglied", String.class,
         "M-$beleg_zaehler"),
+    BELEG_ZAEHLER_KONTO("beleg_zaehler_konto", Integer.class, "1"),
+    BELEGNUMMER_KONTO("belegnummer_konto", String.class, "K-$beleg_zaehler"),
 
     // Spendenbescheinigung
     FINANZAMT("finanzamt", String.class, ""),
@@ -812,6 +814,19 @@ public class Einstellungen
   public static boolean isTest()
   {
     return false;
+  }
+
+  public static String getBelegKontoVerzeichnis()
+  {
+    loadSettings();
+    return settings.getString("kontoDokumentVerzeichnis",
+        Einstellungen.getWorkPath() + File.separator + "Konten");
+  }
+
+  public static void setBelegKontoVerzeichnis(String value)
+  {
+    loadSettings();
+    settings.setAttribute("kontoDokumentVerzeichnis", value);
   }
 
   public static String getBelegMitgliedVerzeichnis()

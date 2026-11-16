@@ -46,6 +46,7 @@ import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
@@ -1433,13 +1434,25 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
     }
     else if ("document".equals(fieldName))
     {
-      DBIterator<BelegMitglied> list = Einstellungen.getDBService()
-          .createList(BelegMitglied.class);
-      list.addFilter("referenz = ?", Long.valueOf(getID()));
-      if (list.size() > 0)
-        return list.size();
-      else
-        return "";
+      DBIterator<Beleg> list = getBelegList();
+      return list.size() > 0 ? list.size() : null;
+    }
+    else if ("belegnummern".equals(fieldName))
+    {
+      DBIterator<Beleg> list = getBelegList();
+
+      StringBuilder sb = new StringBuilder();
+      boolean first = true;
+      while (list.hasNext())
+      {
+        if (!first)
+        {
+          sb.append(", ");
+        }
+        first = false;
+        sb.append(list.next().getBelegnummer());
+      }
+      return sb.toString();
     }
     else if ("kontostand".equals(fieldName))
     {

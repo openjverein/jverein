@@ -66,6 +66,11 @@ public class KontoControl extends FilterControl
     kontenList = new JVereinTablePart(getKonten(), null);
     kontenList.addColumn(getIdColumn(), false);
     kontenList.addColumn(getGesperrtColumn(), false);
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+    {
+      kontenList.addColumn("D", "document");
+      kontenList.addColumn(new Column("belegnummern", "Belegnummern"), false);
+    }
     kontenList.addColumn(new NaturalOrderColumn("nummer", "Nummer"));
     kontenList.addColumn("Bezeichnung", "bezeichnung");
     kontenList.addColumn("Kontoart", "kontoart", new Formatter()
@@ -145,7 +150,7 @@ public class KontoControl extends FilterControl
               new CurrencyFormatter("", Einstellungen.BIGDECIMALFORMAT)),
           false);
     }
-    kontenList.setContextMenu(new KontoMenu(kontenList));
+    kontenList.setContextMenu(new KontoMenu(this, kontenList));
     kontenList.setMulti(true);
     kontenList.setAction(new EditAction(KontoDetailView.class, kontenList));
     VorZurueckControl.setObjektListe(null, null);
