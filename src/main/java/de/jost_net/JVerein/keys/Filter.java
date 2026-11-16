@@ -19,6 +19,7 @@ package de.jost_net.JVerein.keys;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
@@ -52,6 +53,10 @@ public enum Filter
       FilterArt.DATE),
   BEITRAGSGRUPPE("filter_beitragsgruppe", "Beitragsgruppe", FilterControl.ALLE,
       FilterArt.SELECT, Beitragsgruppe.class),
+  BELEG_ART("beleg_art", "Belegart", BelegArt.BUCHUNG.toString(),
+      FilterArt.SELECT, BelegArt.values()),
+  BELEG_GRUPPE("beleg_gruppe", "Beleggruppe", "Sport", FilterArt.SELECT,
+      Beleggruppe.class),
   BELEGNUMMER("filter_belegnummer", "Belegnummer", "0123", FilterArt.TEXT),
   BEMERKUNG("filter_bemerkung", "Bemerkung", "Bemerkung", FilterArt.TEXT),
   BETRAG("filter_betrag", "Betrag", "50", FilterArt.BETRAG),
@@ -191,9 +196,7 @@ public enum Filter
   // Für Auswertung
   JUBELJAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,
       Jubeljahr.getList()),
-  AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste", FilterArt.TEXT),
-  BELEG_ART("beleg_art", "Beleg Art", BelegArt.BUCHUNG.toString(),
-      FilterArt.SELECT, BelegArt.values());
+  AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste", FilterArt.TEXT);
 
   private String setting;
 

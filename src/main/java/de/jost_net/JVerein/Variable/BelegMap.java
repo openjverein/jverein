@@ -73,6 +73,17 @@ public class BelegMap extends AbstractMap
         case BELEG_NUMMER:
           value = beleg.getBelegnummer();
           break;
+        case BELEG_GRUPPE:
+          if (beleg.getBelegGruppe() != null
+              && beleg.getBelegGruppe().getBezeichnung() != null)
+          {
+            value = beleg.getBelegGruppe().getBezeichnung();
+          }
+          else
+          {
+            value = "";
+          }
+          break;
       }
       map.put(var.getName(), value);
     }
@@ -92,6 +103,9 @@ public class BelegMap extends AbstractMap
           break;
         case BELEG_ZAEHLER:
           value = "1234";
+          break;
+        case BELEG_GRUPPE:
+          value = "Sport";
           break;
       }
       map.put(var.getName(), value);
