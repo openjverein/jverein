@@ -52,6 +52,7 @@ public class LehrgangsartControl extends FilterControl
     lehrgangsarten.setOrder("ORDER BY bezeichnung");
 
     lehrgangsartList = new JVereinTablePart(lehrgangsarten, null);
+    lehrgangsartList.addColumn(getIdColumn(), false);
     lehrgangsartList.addColumn(getGesperrtColumn(), false);
     lehrgangsartList.addColumn("Bezeichnung", "bezeichnung");
     lehrgangsartList.setContextMenu(new LehrgangsartMenu(lehrgangsartList));
