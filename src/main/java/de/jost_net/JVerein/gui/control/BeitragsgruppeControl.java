@@ -17,8 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import org.eclipse.swt.widgets.TableItem;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -29,11 +27,9 @@ import de.jost_net.JVerein.gui.formatter.NotizFormatter;
 import de.jost_net.JVerein.gui.menu.BeitragsgruppeMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeDetailView;
-import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -42,7 +38,6 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.jameica.gui.formatter.TableFormatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -68,8 +63,10 @@ public class BeitragsgruppeControl extends FilterControl
     DBIterator<Beitragsgruppe> beitragsgruppen = service
         .createList(Beitragsgruppe.class);
     beitragsgruppeList = new JVereinTablePart(beitragsgruppen, null);
+    beitragsgruppeList.addColumn(getIdColumn(), false);
     beitragsgruppeList.addColumn(getGesperrtColumn(), false);
     beitragsgruppeList.addColumn("Bezeichnung", "bezeichnung");
+
     switch (Beitragsmodel.getByKey(
         (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
     {
@@ -129,8 +126,9 @@ public class BeitragsgruppeControl extends FilterControl
         Property.BEITRAGSMODEL) != Beitragsmodel.FLEXIBEL.getKey()
         && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
     {
-      beitragsgruppeList.addColumn("Altersstaffel", "altersstaffel",
+      beitragsgruppeList.addColumn("Altersstaffel verwenden", "altersstaffel",
           new JaNeinFormatter());
+      beitragsgruppeList.addColumn("Altersstaffel", "staffel");
     }
     if ((Boolean) Einstellungen
         .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
@@ -153,37 +151,6 @@ public class BeitragsgruppeControl extends FilterControl
     beitragsgruppeList.addColumn("Notiz", "notiz", new NotizFormatter(40));
     beitragsgruppeList
         .setContextMenu(new BeitragsgruppeMenu(beitragsgruppeList));
-    beitragsgruppeList.setFormatter(new TableFormatter()
-    {
-      @Override
-      public void format(TableItem item)
-      {
-        Beitragsgruppe b = (Beitragsgruppe) item.getData();
-        try
-        {
-          if (b.getHasAltersstaffel())
-          {
-            AltersgruppenParser ap = new AltersgruppenParser(
-                (String) Einstellungen
-                    .getEinstellung(Property.BEITRAGALTERSSTUFEN));
-            String text = "";
-            DBIterator<Altersstaffel> it = b.getAltersstaffelIterator();
-            while (it.hasNext() && ap.hasNext())
-            {
-              ap.getNext();
-              Altersstaffel a = it.next();
-              text = text + "|"
-                  + Einstellungen.BIGDECIMALFORMAT.format(a.getBetrag());
-            }
-            item.setText(1, text.substring(1));
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("unable to format line", e);
-        }
-      }
-    });
     beitragsgruppeList.setMulti(true);
     beitragsgruppeList.setAction(
         new EditAction(BeitragsgruppeDetailView.class, beitragsgruppeList));

@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
+import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.server.AbstractJVereinDBObject;
@@ -110,7 +111,20 @@ public class BuchungListPart extends BuchungListTablePart
     }
     addColumn("Mitglied - Sollbuchung", Buchung.SOLLBUCHUNG,
         new SollbuchungFormatter());
-    addColumn("Ersatz für Aufwendungen", "verzicht", new JaNeinFormatter());
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+    {
+      addColumn(
+          new Column("verzicht", "Erstattungsverzicht", new JaNeinFormatter()),
+          true);
+      addColumn(new Column("bezeichnungsachzuwendung",
+          "Bezeichnung Sachzuwendung", v -> v.toString().split("\n")[0]),
+          false);
+      addColumn(new Column("herkunftspende", "Herkunft",
+          o -> HerkunftSpende.get((int) o)), false);
+      addColumn(new Column("unterlagenwertermittlung",
+          "Unterlagen Wertermittlung", new JaNeinFormatter()), false);
+    }
     setContextMenu(menu);
     setRememberState(true);
     setMulti(true);

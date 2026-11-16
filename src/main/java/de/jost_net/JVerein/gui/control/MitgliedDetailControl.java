@@ -129,6 +129,7 @@ import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -357,9 +358,17 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
       return externemitgliedsnummer;
     }
     externemitgliedsnummer = new TextInput(
-        getMitglied().getExterneMitgliedsnummer(), 50);
+        getMitglied().getExterneMitgliedsnummer(), 35);
     externemitgliedsnummer.setName("Ext. Mitgliedsnummer");
     externemitgliedsnummer.setMandatory(isExterneMitgliedsnummerMandatory());
+    if ((Integer) Einstellungen.getEinstellung(
+        Property.SEPAMANDATIDSOURCE) == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER)
+    {
+      // Wenn externe Mitgliedsnummer als MandatId verwendet wird, dann nur
+      // gültige Zeichen erlauben
+      externemitgliedsnummer
+          .setValidChars(HBCIProperties.HBCI_SEPA_MANDATE_VALIDCHARS);
+    }
     return externemitgliedsnummer;
   }
 
@@ -881,6 +890,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
     {
       mandatid.enable();
     }
+    mandatid.setValidChars(HBCIProperties.HBCI_SEPA_MANDATE_VALIDCHARS);
     return mandatid;
   }
 

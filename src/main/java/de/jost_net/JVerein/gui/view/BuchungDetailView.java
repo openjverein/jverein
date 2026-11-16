@@ -28,10 +28,10 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.server.SplitBuchung;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
@@ -58,7 +58,7 @@ public class BuchungDetailView extends AbstractDetailView
     control = new BuchungDetailControl(this, art);
 
     final boolean editable = control.isBuchungEditable();
-    final boolean splitbuchung = control.getBuchung().isSplitbuchung();
+    final SplitBuchung splitbuchung = control.getBuchung().getSplitbuchung();
 
     part = new BuchungPart(control);
     part.paint(this.getParent());
@@ -72,10 +72,10 @@ public class BuchungDetailView extends AbstractDetailView
     ButtonRtoL saveButton = new SaveButton(o -> {
       try
       {
-        control.buchungSpeichern();
+        control.handleStore();
 
         // Bei Splitbuchungen nach dem Speichern zurück zu Splitübersicht
-        if (splitbuchung)
+        if (splitbuchung != null)
         {
           GUI.startPreviousView();
         }
@@ -91,16 +91,20 @@ public class BuchungDetailView extends AbstractDetailView
     ButtonRtoL saveNextButton = new ButtonRtoL("Speichern und neu", context -> {
       try
       {
-        control.buchungSpeichern();
+        control.handleStore();
 
         // Bei Splitbuchungen neue Splitbuchung
-        if (splitbuchung)
+        if (splitbuchung != null)
         {
-          if (SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT).compareTo(
-              SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT)) != 0)
-            new SplitbuchungNeuAction().handleAction(context);
+          if (splitbuchung.getSumme(SplitbuchungTyp.HAUPT)
+              .compareTo(splitbuchung.getSumme(SplitbuchungTyp.SPLIT)) != 0)
+          {
+            new SplitbuchungNeuAction().handleAction(splitbuchung);
+          }
           else
+          {
             GUI.startPreviousView();
+          }
         }
         else
         {
@@ -135,7 +139,7 @@ public class BuchungDetailView extends AbstractDetailView
     // direkt gespeichert wird.
     try
     {
-      if (!control.getBuchung().isSplitbuchung())
+      if (control.getBuchung().getSplitbuchung() == null)
       {
         super.unbind();
       }

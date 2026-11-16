@@ -633,7 +633,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public Integer getAfaMode() throws RemoteException
   {
-    return (Integer) getAttribute(AFAMODE);
+    return (Integer) super.getAttribute(AFAMODE);
   }
 
   @Override
@@ -677,9 +677,23 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("buchungsart".equals(fieldName))
-      return getBuchungsart();
-    return super.getAttribute(fieldName);
+    switch (fieldName)
+    {
+      case "buchungsart":
+        return getBuchungsart();
+      case "buchungsklasse":
+        return getBuchungsklasse();
+      case "anlagenart":
+        return getAnlagenart();
+      case "afaart":
+        return getAfaart();
+      case "zweck":
+        return getAnlagenzweck().toString();
+      case "afamode":
+        return AfaMode.get(getAfaMode());
+      default:
+        return super.getAttribute(fieldName);
+    }
   }
 
   @Override

@@ -53,7 +53,9 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.IGutschriftProvider;
+import de.jost_net.JVerein.server.SplitBuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.util.SplitbuchungUtil;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.MandatSequence;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -650,7 +652,7 @@ public class Gutschrift extends SEPASupport
     if (!(params.fixerBetragAbrechnen || prov instanceof Lastschrift))
     {
       buchung.store();
-      SplitbuchungsContainer.autoSplit(buchung, sollbuchung, false);
+      SplitbuchungUtil.autoSplit(buchung, sollbuchung, false);
     }
     else
     {
@@ -794,8 +796,7 @@ public class Gutschrift extends SEPASupport
     {
       HashMap<String, BigDecimal> posMap = new HashMap<>();
       HashMap<String, String> posZweckMap = new HashMap<>();
-      SplitbuchungsContainer.positionenAbgleichen(sollb, posMap, posZweckMap,
-          false);
+      SplitbuchungUtil.positionenAbgleichen(sollb, posMap, posZweckMap, false);
       // Key in der Form BuchungsartId-BuchungsklasseId#SteuerId (Steuer nur
       // wenn steuerInBuchung gesetzt ist)
       Long baId = Long.valueOf(params.buchungsart.getID());
@@ -833,7 +834,7 @@ public class Gutschrift extends SEPASupport
         initBuchung(bu, null, key);
         bu.store();
         bu.setSplitTyp(SplitbuchungTyp.HAUPT);
-        SplitbuchungsContainer.init(bu);
+        SplitBuchung splitBuchung = new SplitBuchung(bu);
         Long splitId = Long.valueOf(bu.getID());
 
         // Falls etwas erstattet wird, dann Erstattungsbuchung erzeugen
@@ -852,7 +853,7 @@ public class Gutschrift extends SEPASupport
           buch.setSollbuchung(sollb);
           buch.setSplitTyp(SplitbuchungTyp.SPLIT);
           buch.setSplitId(splitId);
-          SplitbuchungsContainer.add(buch);
+          splitBuchung.addBuchung(buch);
         }
 
         // Der Ausgleichsbetrag wird um den Überweisungsbetrag erhöht wegen der
@@ -868,7 +869,7 @@ public class Gutschrift extends SEPASupport
           buch1.setSollbuchung(sollb);
           buch1.setSplitTyp(SplitbuchungTyp.SPLIT);
           buch1.setSplitId(splitId);
-          SplitbuchungsContainer.add(buch1);
+          splitBuchung.addBuchung(buch1);
         }
         BigDecimal restbetrag = ausgleichsbetrag
             .subtract(posOffenBetrag.min(ausgleichsbetrag));
@@ -892,7 +893,7 @@ public class Gutschrift extends SEPASupport
               rbuch.setSollbuchung(sollb);
               rbuch.setSplitTyp(SplitbuchungTyp.SPLIT);
               rbuch.setSplitId(splitId);
-              SplitbuchungsContainer.add(rbuch);
+              splitBuchung.addBuchung(rbuch);
               restbetrag = restbetrag.subtract(ausgleich);
               if (restbetrag.signum() <= 0)
               {
@@ -901,7 +902,7 @@ public class Gutschrift extends SEPASupport
             }
           }
         }
-        SplitbuchungsContainer.store();
+        splitBuchung.store();
       }
     }
     else if (prov.getIstSumme().signum() <= 0)
@@ -922,15 +923,14 @@ public class Gutschrift extends SEPASupport
       bu.setSteuer(pos.getSteuer());
       bu.store();
       bu.setSplitTyp(SplitbuchungTyp.HAUPT);
-      SplitbuchungsContainer.init(bu);
+      SplitBuchung splitBuchung = new SplitBuchung(bu);
       Long splitId = Long.valueOf(bu.getID());
 
       // Sollbuchungsposten ausgleichen und Positionen mit gleicher Buchungsart,
       // Buchungsklasse und Steuer zusammen fassen
       HashMap<String, BigDecimal> posMap = new HashMap<>();
       HashMap<String, String> posZweckMap = new HashMap<>();
-      SplitbuchungsContainer.positionenZusammenfassen(sollb, posMap,
-          posZweckMap);
+      SplitbuchungUtil.positionenZusammenfassen(sollb, posMap, posZweckMap);
       Iterator<Entry<String, BigDecimal>> iterator = posMap.entrySet().stream()
           .sorted(Map.Entry.comparingByValue()).iterator();
       while (iterator.hasNext())
@@ -943,7 +943,7 @@ public class Gutschrift extends SEPASupport
         buch.setSollbuchung(sollb);
         buch.setSplitTyp(SplitbuchungTyp.SPLIT);
         buch.setSplitId(splitId);
-        SplitbuchungsContainer.add(buch);
+        splitBuchung.addBuchung(buch);
       }
 
       // Einzahlungen erstatten
@@ -958,9 +958,9 @@ public class Gutschrift extends SEPASupport
         buch.setSollbuchung(sollb);
         buch.setSplitTyp(SplitbuchungTyp.SPLIT);
         buch.setSplitId(splitId);
-        SplitbuchungsContainer.add(buch);
+        splitBuchung.addBuchung(buch);
       }
-      SplitbuchungsContainer.store();
+      splitBuchung.store();
     }
     monitor.setStatusText(MARKER + "Ausgleichsbuchung erzeugt");
   }

@@ -17,13 +17,13 @@
 
 package de.jost_net.JVerein.gui.parts;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
+import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
@@ -31,17 +31,6 @@ import de.willuhn.jameica.gui.parts.table.Feature.Context;
 
 public class SplitbuchungListTablePart extends JVereinTablePart
 {
-
-  public SplitbuchungListTablePart(Action action)
-  {
-    super(action);
-  }
-
-  @SuppressWarnings("rawtypes")
-  public SplitbuchungListTablePart(GenericIterator list, Action action)
-  {
-    super(list, action);
-  }
 
   public SplitbuchungListTablePart(List<Buchung> list, Action action)
   {
@@ -56,17 +45,27 @@ public class SplitbuchungListTablePart extends JVereinTablePart
     if (this.hasEvent(FeatureSummary.class, e))
     {
       String summary = (String) ctx.addon.get(FeatureSummary.CTX_KEY_TEXT);
+
       try
       {
+        BigDecimal summe = BigDecimal.ZERO;
+        for (Buchung b : (List<Buchung>) this.getItems())
+        {
+          if (!b.isToDelete() && (b.getSplitTyp() == null
+              || b.getSplitTyp() != SplitbuchungTyp.HAUPT))
+          {
+            summe = summe.add(b.getBetrag());
+          }
+        }
         summary += " / Differenz:" + " "
-            + SplitbuchungsContainer.getDifference() + " "
+            + Einstellungen.BIGDECIMALFORMAT.format(summe) + " "
             + Einstellungen.CURRENCY;
+        ctx.addon.put(FeatureSummary.CTX_KEY_TEXT, summary);
       }
       catch (RemoteException re)
       {
         // nichts tun
       }
-      ctx.addon.put(FeatureSummary.CTX_KEY_TEXT, summary);
     }
     return ctx;
   }

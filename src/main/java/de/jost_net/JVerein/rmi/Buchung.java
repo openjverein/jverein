@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import de.jost_net.JVerein.server.SplitBuchung;
 import de.willuhn.util.ApplicationException;
 
 public interface Buchung extends AbstractBelegDBObject
@@ -145,16 +146,13 @@ public interface Buchung extends AbstractBelegDBObject
   public void setVerzicht(Boolean verzicht) throws RemoteException;
 
   /**
-   * Soll der Datensatz in die Datenbank geschrieben werden?<br>
    * 
-   * @param speicherung
-   *          true: ja, Normalfall <br>
-   *          false: nein, bei Splitbuchungen werden die Datensätze zunächst in
-   *          einer ArrayList gehalten und später in die Datenbank geschrieben.
+   * @param splitbuchung
+   *          die Splitbuchung zu der die Buchung gehört, sonst null
    */
-  public void setSplitbuchung(boolean speicherung) throws RemoteException;
+  public void setSplitbuchung(SplitBuchung splitbuchung) throws RemoteException;
 
-  public boolean isSplitbuchung() throws RemoteException;
+  public SplitBuchung getSplitbuchung() throws RemoteException;
 
   public void setDelete(boolean delete) throws RemoteException;
 
