@@ -637,7 +637,7 @@ public class KontoImpl extends AbstractBelegDBObjectImpl implements Konto
   @Override
   public Integer getAfaMode() throws RemoteException
   {
-    return (Integer) getAttribute(AFAMODE);
+    return (Integer) super.getAttribute(AFAMODE);
   }
 
   @Override
@@ -706,6 +706,16 @@ public class KontoImpl extends AbstractBelegDBObjectImpl implements Konto
         }
         return sb.toString();
       }
+      case "buchungsklasse":
+        return getBuchungsklasse();
+      case "anlagenart":
+        return getAnlagenart();
+      case "afaart":
+        return getAfaart();
+      case "zweck":
+        return getAnlagenzweck().toString();
+      case "afamode":
+        return AfaMode.get(getAfaMode());
       default:
         return super.getAttribute(fieldName);
     }

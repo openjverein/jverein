@@ -53,6 +53,7 @@ public class EigenschaftControl extends FilterControl
     eigenschaften.setOrder("ORDER BY bezeichnung");
 
     eigenschaftList = new JVereinTablePart(eigenschaften, null);
+    eigenschaftList.addColumn(getIdColumn(), false);
     eigenschaftList.addColumn(getGesperrtColumn(), false);
     eigenschaftList.addColumn("Name", "name");
     eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
