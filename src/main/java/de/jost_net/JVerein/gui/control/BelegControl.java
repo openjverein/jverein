@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -11,8 +11,6 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
@@ -34,12 +32,14 @@ import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -70,8 +70,10 @@ public class BelegControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     docsList.addColumn("Bemerkung", "bemerkung");
     docsList.addColumn("Pfad", "vollpfad");
-    docsList.addColumn("Art", "belegart",
-        i -> BelegArt.getByKey((Integer) i).toString());
+    docsList.addColumn("Belegart", "belegart",
+        i -> BelegArt.getByKey((Integer) i).toString(), false,
+        Column.ALIGN_LEFT);
+    docsList.addColumn("Beleggruppe", "beleggruppe");
     docsList.setContextMenu(new BelegMenu(docsList));
     docsList.setMulti(true);
     // Nur in der View, nicht im Dialog
@@ -173,6 +175,9 @@ public class BelegControl extends FilterControl
           break;
         case BELEG_ART:
           docs.addFilter("belegart = ?", ((BelegArt) value).getKey());
+          break;
+        case BELEG_GRUPPE:
+          docs.addFilter("beleggruppe = ?", ((Beleggruppe) value).getID());
           break;
         default:
           throw new ApplicationException(
