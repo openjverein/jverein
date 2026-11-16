@@ -45,7 +45,7 @@ public class BelegListeView extends AbstractView
     final BelegControl control = new BelegControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getFilterInput(Filter.BELEGNUMMER));
@@ -53,8 +53,11 @@ public class BelegListeView extends AbstractView
     left.addLabelPair("Nicht zugeordnet",
         control.getFilterInput(Filter.NICHT_ZUGEORDNET));
 
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addInput(control.getFilterInput(Filter.BELEG_ART));
+    middle.addInput(control.getFilterInput(Filter.BELEG_GRUPPE));
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getFilterInput(Filter.BELEG_ART));
     Input von = control.getFilterInput(Filter.DATUM_VON);
     right.addInput(von);
     Input bis = control.getFilterInput(Filter.DATUM_BIS);

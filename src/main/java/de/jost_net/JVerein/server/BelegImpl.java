@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -11,8 +11,6 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
@@ -43,6 +41,7 @@ import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.messaging.QueryMessage;
@@ -268,24 +267,36 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("belegnummer".equals(fieldName))
+    switch (fieldName)
     {
-      String nr = (String) super.getAttribute("belegnummer");
-      if (nr != null && !nr.isBlank())
-      {
-        return nr;
-      }
+      case "beleggruppe":
+        if (getBelegGruppe() != null)
+        {
+          return getBelegGruppe().getBezeichnung();
+        }
+        else
+        {
+          return "";
+        }
+      case "belegnummer":
+        String nr = (String) super.getAttribute("belegnummer");
+        if (nr != null && !nr.isBlank())
+        {
+          return nr;
+        }
 
-      // Alte Dokumente haben zT. keine Belegnummer (Wenn es mehrere Dokumente
-      // in einer Buchung gab), dann als Fallback die Referenz verwenden
-      Long ref = (Long) getAttribute("referenz");
-      return ref == null ? null : ref.toString() + "-" + getID();
+        // Alte Dokumente haben zT. keine Belegnummer (Wenn es mehrere Dokumente
+        // in einer Buchung gab), dann als Fallback die Referenz verwenden
+        Long ref = (Long) getAttribute("referenz");
+        return ref == null ? null : ref.toString() + "-" + getID();
+      case "vollpfad":
+        if (getPfad() != null)
+        {
+          return getRootDir() + getPfad();
+        }
+      default:
+        return super.getAttribute(fieldName);
     }
-    else if ("vollpfad".equals(fieldName) && getPfad() != null)
-    {
-      return getRootDir() + getPfad();
-    }
-    return super.getAttribute(fieldName);
   }
 
   @Override
@@ -694,5 +705,27 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   public void setPfad(String pfad) throws RemoteException
   {
     setAttribute("pfad", pfad);
+  }
+
+  @Override
+  public Beleggruppe getBelegGruppe() throws RemoteException
+  {
+    return (Beleggruppe) super.getAttribute("beleggruppe");
+  }
+
+  @Override
+  public void setBelegGruppe(Beleggruppe beleggruppe) throws RemoteException
+  {
+    setAttribute("beleggruppe", beleggruppe);
+  }
+
+  @Override
+  protected Class<?> getForeignObject(String field)
+  {
+    if ("beleggruppe".equals(field))
+    {
+      return Beleggruppe.class;
+    }
+    return null;
   }
 }

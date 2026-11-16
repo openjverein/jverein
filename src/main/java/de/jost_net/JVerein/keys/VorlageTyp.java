@@ -395,6 +395,9 @@ public enum VorlageTyp
       "Projekte-$aktuellesdatum-$aktuellezeit", Vorlageart.DATEINAME.getKey()),
   STEUERN_DATEINAME("steuern-dateiname", "Steuern Dateiname",
       "Steuern-$aktuellesdatum-$aktuellezeit", Vorlageart.DATEINAME.getKey()),
+  BELEGGRUPPEN_DATEINAME("beleggruppen-dateiname", "Beleggruppen Dateiname",
+      "Beleggruppen-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
 
   // Titel Mitglieder
   MITGLIEDER_TITEL("mitglieder-titel", "Mitglieder Titel", "Mitglieder",
@@ -783,6 +786,10 @@ public enum VorlageTyp
       "Buchungsklassen", Vorlageart.TITEL.getKey()),
   BUCHUNGSKLASSEN_SUBTITEL("buchungsklassen-subtitel",
       "Buchungsklassen Subtitel", "", Vorlageart.TITEL.getKey()),
+  BELEGGRUPPEN_TITEL("beleggruppen-titel", "Beleggruppen Titel", "Beleggruppen",
+      Vorlageart.TITEL.getKey()),
+  BELEGGRUPPEN_SUBTITEL("beleggruppen-subtitel", "Beleggruppen Subtitel", "",
+      Vorlageart.TITEL.getKey()),
   PROJEKTE_TITEL("projekte-titel", "Projekte Titel", "Projekte",
       Vorlageart.TITEL.getKey()),
   PROJEKTE_SUBTITEL("projekte-subtitel", "Projekte Subtitel", "",

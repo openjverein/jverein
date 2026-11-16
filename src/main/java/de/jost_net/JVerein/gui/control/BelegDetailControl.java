@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -11,8 +11,6 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
@@ -47,6 +45,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -71,6 +70,8 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
   private TextInput bemerkung;
 
   private FileInput datei;
+
+  private SelectInput beleggruppe;
 
   private Settings settings;
 
@@ -159,6 +160,7 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     }
 
     beleg.setBelegArt((BelegArt) getBelegArt().getValue());
+    beleg.setBelegGruppe((Beleggruppe) getBelegGruppe().getValue());
 
     return beleg;
   }
@@ -294,6 +296,21 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
       belegArt.disable();
     }
     return belegArt;
+  }
+
+  public SelectInput getBelegGruppe() throws RemoteException
+  {
+    if (beleggruppe != null)
+    {
+      return beleggruppe;
+    }
+    DBIterator<Beleggruppe> it = Einstellungen.getDBService()
+        .createList(Beleggruppe.class);
+    beleggruppe = new SelectInput(it != null ? PseudoIterator.asList(it) : null,
+        getBeleg().getBelegGruppe());
+    beleggruppe.setName("Beleggruppe");
+    beleggruppe.setPleaseChoose(" ");
+    return beleggruppe;
   }
 
   @SuppressWarnings("unchecked")
