@@ -70,7 +70,15 @@ public class BelegMap extends AbstractMap
           value = beleg.getBelegnummer();
           break;
         case BELEG_GRUPPE:
-          value = beleg.getBelegGruppe().getBezeichnung();
+          if (beleg.getBelegGruppe() != null
+              && beleg.getBelegGruppe().getBezeichnung() != null)
+          {
+            value = beleg.getBelegGruppe().getBezeichnung();
+          }
+          else
+          {
+            value = "";
+          }
           break;
       }
       map.put(var.getName(), value);
