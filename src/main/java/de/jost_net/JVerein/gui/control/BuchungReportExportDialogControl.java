@@ -230,6 +230,11 @@ public class BuchungReportExportDialogControl
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
+      catch (Exception e)
+      {
+        Logger.error(e.getMessage(), e);
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
     }
     else
     {
@@ -264,7 +269,7 @@ public class BuchungReportExportDialogControl
               skip++;
               monitor.setStatusText("Buchung " + id + ": " + ex.getMessage());
             }
-            catch (RemoteException e)
+            catch (Exception e)
             {
               skip++;
               Logger.error(e.getMessage(), e);

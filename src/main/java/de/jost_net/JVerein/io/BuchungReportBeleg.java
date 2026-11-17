@@ -8,7 +8,6 @@ import java.util.Map;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.keys.BelegArt;
@@ -40,22 +39,24 @@ public class BuchungReportBeleg
     this.beleggruppe = beleggruppe;
   }
 
-  public void store() throws ApplicationException
+  public void store() throws Exception
   {
     if (buchung != null)
     {
       File file = null;
       try
       {
-        // Belegnummernummer erstellen
-        String zaehler = Einstellungen
-            .getEinstellung(Property.BELEG_ZAEHLER_BUCHUNG).toString();
-        String nummer = (String) Einstellungen
-            .getEinstellung(Property.BELEGNUMMER_BUCHUNG);
+        Beleg doc = Einstellungen.getDBService().createObject(Beleg.class,
+            null);
+        doc.setDatum(datum);
+        doc.setBelegArt(BelegArt.BUCHUNG);
+        doc.setBelegGruppe(beleggruppe);
+        doc.erzeugeBelegnummer();
+
+        // Belegnummer wird in der Formularaufbereitung gebraucht
         Map<String, Object> map = new AllgemeineMap().getMap(null);
-        map.put("beleg_zaehler", zaehler);
-        map.put("beleg_nummer", VelocityTool.eval(map, nummer));
         map = new BuchungMap().getMap(buchung, map);
+        map.put("beleg_nummer", doc.getBelegnummer());
 
         // PDF erstellen
         String dateiname = VorlageUtil.getName(
@@ -70,12 +71,7 @@ public class BuchungReportBeleg
         formular.store();
         aufbereitung.closeFormular();
 
-        Beleg doc = Einstellungen.getDBService().createObject(Beleg.class,
-            null);
         doc.setBemerkung(file.getName());
-        doc.setDatum(datum);
-        doc.setBelegArt(BelegArt.BUCHUNG);
-        doc.setBelegGruppe(beleggruppe);
         doc.setFile(file);
         doc.store();
 

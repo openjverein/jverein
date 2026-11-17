@@ -117,7 +117,7 @@ public class BelegControl extends FilterControl
         document.setBemerkung(file.getName());
         document.setDatum(new Date());
         document.setBelegArt(belegArt);
-
+        document.erzeugeBelegnummer();
         document.setFile(file);
         document.store();
 

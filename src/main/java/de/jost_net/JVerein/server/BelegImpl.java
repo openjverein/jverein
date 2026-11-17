@@ -351,10 +351,16 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
               e);
         }
       }
-      super.store();
       hashUpdateAllowed = false;
-      return;
     }
+    super.store();
+  }
+
+  @Override
+  public void erzeugeBelegnummer()
+      throws NumberFormatException, RemoteException, ApplicationException
+  {
+    String nummer = "";
     try
     {
       if (getBelegArt() == null)
@@ -368,7 +374,6 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       Map<String, Object> map = new AllgemeineMap().getMap(null);
       map = new BelegMap().getMap(this, map);
 
-      String nummer = "";
       switch (getBelegArt())
       {
         case BUCHUNG:
@@ -405,7 +410,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         throw new ApplicationException(
             "Beleg mit dieser Nummer existiert bereits. Belegnummer in Einstellungen korrigieren!");
       }
-      super.store();
+
       // Belegnummer hochzählen
       Property prop = null;
       switch (getBelegArt())
@@ -429,7 +434,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
 
       transactionCommit();
     }
-    catch (Exception e)
+    catch (ApplicationException e)
     {
       transactionRollback();
       throw e;
