@@ -35,6 +35,10 @@ public interface Beleg extends JVereinDBObject
 
   public void setBelegArt(BelegArt belegart) throws RemoteException;
 
+  public Beleggruppe getBelegGruppe() throws RemoteException;
+
+  public void setBelegGruppe(Beleggruppe beleggruppe) throws RemoteException;
+
   String getRootDir() throws RemoteException;
 
   String getDateiPfad(String filename) throws RemoteException;

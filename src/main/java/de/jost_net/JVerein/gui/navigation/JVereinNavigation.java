@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.view.AnlagenverzeichnisView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzListeView;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeListeView;
 import de.jost_net.JVerein.gui.view.BelegListeView;
+import de.jost_net.JVerein.gui.view.BeleggruppeListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungsartListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
@@ -407,6 +408,13 @@ public class JVereinNavigation implements Extension
       einstellungenbuchfuehrung.addChild(new JVereinNavigationItem(
           einstellungenbuchfuehrung, "Buchungsarten",
           new StartViewAction(BuchungsartListeView.class), "ellipsis-v.png"));
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+      {
+        einstellungenbuchfuehrung.addChild(new JVereinNavigationItem(
+            einstellungenbuchfuehrung, "Beleggruppen",
+            new StartViewAction(BeleggruppeListeView.class), "ellipsis-v.png"));
+      }
       einstellungenbuchfuehrung.addChild(new JVereinNavigationItem(
           einstellungenbuchfuehrung, "Kontenrahmen-Export",
           new KontenrahmenExportAction(), "document-save.png"));

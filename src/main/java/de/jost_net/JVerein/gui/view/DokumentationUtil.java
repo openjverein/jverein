@@ -214,6 +214,8 @@ public class DokumentationUtil
 
   public static final String BUCHUNGSKLASSEN = ADMBUCHF + "buchungsklasse";
 
+  public static final String BELEGGRUPPEN = ADMBUCHF + "beleggruppe";
+
   public static final String KONTENRAHMEN = ADMBUCHF
       + "kontenrahmen-import-export";
 
