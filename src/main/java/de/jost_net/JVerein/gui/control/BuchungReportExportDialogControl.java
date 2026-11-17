@@ -208,25 +208,23 @@ public class BuchungReportExportDialogControl
     return uebernehmenButton;
   }
 
-  private void storeBuchungsdokumente()
+  private void storeBuchungsdokumente() throws RemoteException
   {
+    Formular formular = (Formular) getFormular().getValue();
+    Date date = (Date) getDatum().getValue();
+    Beleggruppe beleggruppe = (Beleggruppe) getBelegGruppe().getValue();
+
     if (buchungen.size() == 1)
     {
       try
       {
-        new BuchungReportBeleg((Formular) getFormular().getValue(),
-            buchungen.get(0), (Date) getDatum().getValue(),
-            (Beleggruppe) getBelegGruppe().getValue()).store();
+        new BuchungReportBeleg(formular, buchungen.get(0), date, beleggruppe)
+            .store();
         GUI.getStatusBar().setSuccessText("Buchungsdokument generiert.");
         if (control != null)
         {
           control.refreshBuchungsList();
         }
-      }
-      catch (RemoteException e)
-      {
-        GUI.getStatusBar()
-            .setErrorText("Fehler bei der Buchungsdokument Generierung.");
       }
       catch (ApplicationException e)
       {
@@ -258,9 +256,7 @@ public class BuchungReportExportDialogControl
             try
             {
               id = bu.getID();
-              new BuchungReportBeleg((Formular) getFormular().getValue(), bu,
-                  (Date) getDatum().getValue(),
-                  (Beleggruppe) getBelegGruppe().getValue()).store();
+              new BuchungReportBeleg(formular, bu, date, beleggruppe).store();
               count++;
             }
             catch (ApplicationException ex)
