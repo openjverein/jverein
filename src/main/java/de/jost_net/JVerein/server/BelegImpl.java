@@ -41,6 +41,8 @@ import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.BelegKonto;
+import de.jost_net.JVerein.rmi.BelegMitglied;
 import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -55,7 +57,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   // Hier müssen alle Implementierungen von AbstractBelegReferenz
   // aufgelistet werden
   private List<Class<? extends AbstractBelegReferenz>> belegReferenzList = Arrays
-      .asList(BelegBuchungImpl.class);
+      .asList(BelegBuchungImpl.class, BelegMitglied.class, BelegKonto.class);
 
   protected static String HASH_ALGORITHM = "SHA-512";
 
