@@ -14,34 +14,21 @@
 
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Map;
-
-import com.itextpdf.text.DocumentException;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.gui.dialogs.BuchungReportExportDialog;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.io.BuchungReportAusgabe;
-import de.jost_net.JVerein.io.FormularAufbereitung;
-import de.jost_net.JVerein.io.VelocityTool;
+import de.jost_net.JVerein.io.BuchungReportBeleg;
 import de.jost_net.JVerein.keys.Ausgabeart;
-import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
@@ -227,9 +214,9 @@ public class BuchungReportExportDialogControl
     {
       try
       {
-        storeBuchungsDokument((Formular) getFormular().getValue(),
+        new BuchungReportBeleg((Formular) getFormular().getValue(),
             buchungen.get(0), (Date) getDatum().getValue(),
-            (Beleggruppe) getBelegGruppe().getValue());
+            (Beleggruppe) getBelegGruppe().getValue()).store();
         GUI.getStatusBar().setSuccessText("Buchungsdokument generiert.");
         if (control != null)
         {
@@ -271,9 +258,9 @@ public class BuchungReportExportDialogControl
             try
             {
               id = bu.getID();
-              storeBuchungsDokument((Formular) getFormular().getValue(), bu,
+              new BuchungReportBeleg((Formular) getFormular().getValue(), bu,
                   (Date) getDatum().getValue(),
-                  (Beleggruppe) getBelegGruppe().getValue());
+                  (Beleggruppe) getBelegGruppe().getValue()).store();
               count++;
             }
             catch (ApplicationException ex)
@@ -330,64 +317,6 @@ public class BuchungReportExportDialogControl
 
       };
       Application.getController().start(t);
-    }
-  }
-
-  private void storeBuchungsDokument(Formular formular, Buchung buchung,
-      Date datum, Beleggruppe beleggruppe) throws ApplicationException
-  {
-    if (buchung != null)
-    {
-      File file = null;
-      try
-      {
-        // Belegnummernummer erstellen
-        String zaehler = Einstellungen
-            .getEinstellung(Property.BELEG_ZAEHLER_BUCHUNG).toString();
-        String nummer = (String) Einstellungen
-            .getEinstellung(Property.BELEGNUMMER_BUCHUNG);
-        Map<String, Object> map = new AllgemeineMap().getMap(null);
-        map.put("beleg_zaehler", zaehler);
-        map.put("beleg_nummer", VelocityTool.eval(map, nummer));
-        map = new BuchungMap().getMap(buchung, map);
-
-        // PDF erstellen
-        String dateiname = VorlageUtil.getName(
-            VorlageTyp.BUCHUNGSREPORT_DATEINAME, buchung,
-            formular.getBezeichnung()) + ".pdf";
-        File tempDir = new File(System.getProperty("java.io.tmpdir"));
-        file = new File(tempDir, dateiname);
-        FormularAufbereitung aufbereitung = new FormularAufbereitung(file, true,
-            false);
-        aufbereitung.writeForm(formular, map);
-        // ggf. hochgezählten Zähler speichern
-        formular.store();
-        aufbereitung.closeFormular();
-
-        Beleg doc = Einstellungen.getDBService().createObject(Beleg.class,
-            null);
-        doc.setBemerkung(file.getName());
-        doc.setDatum(datum);
-        doc.setBelegArt(BelegArt.BUCHUNG);
-        doc.setBelegGruppe(beleggruppe);
-        doc.setFile(file);
-        doc.store();
-
-        buchung.addBeleg(doc);
-      }
-      catch (IOException | DocumentException e)
-      {
-        String text = "Fehler beim Speichern des Buchungsreports als Buchungsdokument.";
-        Logger.error(text, e);
-        throw new ApplicationException(text);
-      }
-      finally
-      {
-        if (file != null)
-        {
-          file.delete();
-        }
-      }
     }
   }
 
