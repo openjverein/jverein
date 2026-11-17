@@ -14,10 +14,6 @@ import de.willuhn.util.ApplicationException;
 
 public final class MasterpasswortPruefung
 {
-  private MasterpasswortPruefung()
-  {
-  }
-
   public static void abfragen() throws ApplicationException
   {
     try
@@ -25,15 +21,17 @@ public final class MasterpasswortPruefung
       String frage = "Bitte bestätige die Aktion mit dem Masterpasswort.";
       while (true)
       {
-        // Bei Abbrechen die OperationCanceledException durchreichen.
         String eingegeben = Application.getCallback().askPassword(frage);
 
-        // Null darf auf keinen Fall als erfolgreiche Prüfung gelten.
         if (eingegeben == null)
+        {
           throw new OperationCanceledException("Passwortabfrage abgebrochen");
+        }
 
         if (istMasterpasswortKorrekt(eingegeben))
+        {
           return;
+        }
 
         Application.getMessagingFactory()
             .sendMessage(new StatusBarMessage(
@@ -56,8 +54,6 @@ public final class MasterpasswortPruefung
     {
       KeyStore keystore = KeyStore.getInstance("JKS");
 
-      // Fehler beim Öffnen der Datei werden nicht als falsches Passwort
-      // verschluckt, sondern an den Aufrufer weitergegeben.
       try (InputStream in = Files.newInputStream(
           Application.getSSLFactory().getKeyStoreFile().toPath()))
       {
@@ -67,15 +63,14 @@ public final class MasterpasswortPruefung
         }
         catch (IOException e)
         {
-          // Ein falsches Passwort oder ein beschädigter Keystore kann beim
-          // Laden als IOException gemeldet werden. In beiden Fällen wird
-          // nichts ausgeführt; der Nutzer kann erneut versuchen oder abbrechen.
           return false;
         }
       }
 
       if (!keystore.containsAlias("jameica"))
+      {
         return false;
+      }
 
       try
       {
