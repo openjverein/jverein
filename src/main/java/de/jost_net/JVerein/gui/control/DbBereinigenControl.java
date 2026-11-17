@@ -32,6 +32,7 @@ import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.util.MasterpasswortPruefung;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
@@ -160,6 +161,8 @@ public class DbBereinigenControl extends AbstractControl
       {
         try
         {
+          MasterpasswortPruefung.abfragen();
+
           monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
           monitor.setPercentComplete(0);
           double progress = 1.0d;
@@ -269,7 +272,9 @@ public class DbBereinigenControl extends AbstractControl
         }
         catch (Exception re)
         {
-          monitor.log(re.getMessage());
+          monitor.setStatus(ProgressMonitor.STATUS_ERROR);
+          monitor.setStatusText(re.getMessage());
+          monitor.setPercentComplete(100);
         }
       }
 
