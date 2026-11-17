@@ -215,7 +215,7 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
 
   private AbstractInput zahler;
 
-  private AbstractInput abweichenderZahlerInput;
+  private Input abweichenderZahlerInput;
 
   private DateInput austritt = null;
 

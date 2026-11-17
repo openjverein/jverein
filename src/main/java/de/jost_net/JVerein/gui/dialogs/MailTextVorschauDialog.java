@@ -41,7 +41,6 @@ import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
-import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
@@ -65,7 +64,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
 
   private boolean mitMitglied;
 
-  private AbstractInput mitglied;
+  private Input mitglied;
 
   private TextInput betreff;
 

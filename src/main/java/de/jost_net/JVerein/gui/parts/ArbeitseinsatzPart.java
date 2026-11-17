@@ -30,7 +30,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -47,7 +46,7 @@ public class ArbeitseinsatzPart implements Part
 
   private TextInput bemerkung = null;
 
-  private AbstractInput mitglied;
+  private Input mitglied;
 
   private boolean mitMitglied;
 
