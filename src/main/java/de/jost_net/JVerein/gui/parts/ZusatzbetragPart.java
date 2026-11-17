@@ -71,7 +71,7 @@ public class ZusatzbetragPart implements Part
 
   private SelectInput buchungsklasse;
 
-  private AbstractInput mitglied;
+  private Input mitglied;
 
   private boolean mitMitglied;
 
