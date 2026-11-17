@@ -47,7 +47,6 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -72,9 +71,9 @@ public class SollbuchungDetailControl extends VorZurueckControl
 
   private BigDecimalInput betrag;
 
-  private AbstractInput mitglied;
+  private Input mitglied;
 
-  private AbstractInput zahler;
+  private Input zahler;
 
   private ButtonRtoL neuButton;
 

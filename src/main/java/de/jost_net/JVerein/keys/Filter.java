@@ -24,6 +24,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Steuer;
@@ -140,6 +141,8 @@ public enum Filter
       FilterArt.TEXT),
   MITGLIED("filter_mitglied", "Mitglied", "Meier", FilterArt.TEXT),
   MITGLIED_NAME("filter_mitglied_name", "Mitglied", "Meier", FilterArt.TEXT),
+  MITGLIED_SELECT("filter_mitglied_select", "Mitglied", "Meier",
+      FilterArt.MITGLIED, Mitglied.class),
   MITGLIEDART("filter_mitgliedsart", "Mitgliedsart", FilterControl.ALLE,
       FilterArt.SELECT, MitgliedsArt.values()),
   MITGLIEDSCHAFT_STATUS("filter_mitgliedschaft", "Mitgliedschaft",
@@ -219,6 +222,7 @@ public enum Filter
     INTEGER,
     BIGDECIMAL,
     KONTO,
+    MITGLIED,
     BUCHUNGSART,
     BETRAG
   }

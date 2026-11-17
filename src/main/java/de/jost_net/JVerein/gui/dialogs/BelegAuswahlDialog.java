@@ -64,12 +64,14 @@ public class BelegAuswahlDialog extends AbstractDialog<Beleg[]>
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addInput(control.getFilterInput(Filter.BELEG_ART));
     middle.addInput(control.getFilterInput(Filter.BELEG_GRUPPE));
+    middle.addInput(control.getFilterInput(Filter.KONTO));
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     Input von = control.getFilterInput(Filter.DATUM_VON);
     right.addInput(von);
     Input bis = control.getFilterInput(Filter.DATUM_BIS);
     right.addInput(bis);
+    right.addInput(control.getFilterInput(Filter.MITGLIED_SELECT));
 
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(von, bis);
