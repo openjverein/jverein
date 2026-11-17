@@ -33,6 +33,8 @@ import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Beleggruppe;
+import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -117,7 +119,7 @@ public class BelegControl extends FilterControl
         document.setBemerkung(file.getName());
         document.setDatum(new Date());
         document.setBelegArt(belegArt);
-
+        document.erzeugeBelegnummer();
         document.setFile(file);
         document.store();
 
@@ -141,6 +143,9 @@ public class BelegControl extends FilterControl
   public DBIterator<Beleg> getList()
       throws RemoteException, ApplicationException
   {
+    boolean nichtzugeordnet = getFilterValue(Filter.NICHT_ZUGEORDNET) != null
+        ? (Boolean) getFilterValue(Filter.NICHT_ZUGEORDNET)
+        : false;
     DBIterator<Beleg> docs = Einstellungen.getDBService()
         .createList(Beleg.class);
     for (Entry<Filter, Object> entry : getFilter().entrySet())
@@ -178,6 +183,23 @@ public class BelegControl extends FilterControl
           break;
         case BELEG_GRUPPE:
           docs.addFilter("beleggruppe = ?", ((Beleggruppe) value).getID());
+          break;
+        case KONTO:
+          if (!nichtzugeordnet)
+          {
+            docs.join("belegkonto");
+            docs.addFilter("beleg.id = belegkonto.beleg");
+            docs.addFilter("belegkonto.referenz = ?", ((Konto) value).getID());
+          }
+          break;
+        case MITGLIED_SELECT:
+          if (!nichtzugeordnet)
+          {
+            docs.join("belegmitglied");
+            docs.addFilter("beleg.id = belegmitglied.beleg");
+            docs.addFilter("belegmitglied.referenz = ?",
+                ((Mitglied) value).getID());
+          }
           break;
         default:
           throw new ApplicationException(

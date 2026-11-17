@@ -78,4 +78,6 @@ public interface Beleg extends JVereinDBObject
 
   List<AbstractBelegReferenz> getReferenzes() throws RemoteException;
 
+  public void erzeugeBelegnummer()
+      throws NumberFormatException, RemoteException, ApplicationException;
 }

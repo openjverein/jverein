@@ -46,7 +46,6 @@ import de.jost_net.JVerein.util.SpbAdressaufbereitung;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -62,7 +61,7 @@ public class SpendenbescheinigungDetailControl extends VorZurueckControl
 
   private SelectInput spendenart;
 
-  private AbstractInput mitglied;
+  private Input mitglied;
 
   private TextInput zeile1;
 

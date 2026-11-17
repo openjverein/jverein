@@ -102,7 +102,7 @@
     <dependency>
       <groupId>com.itextpdf.tool</groupId>
       <artifactId>xmlworker</artifactId>
-      <version>5.5.13.6</version>
+      <version>5.5.13.7</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

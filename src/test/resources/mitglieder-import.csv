@@ -1,5 +1,6 @@
-externemitgliedsnummer;name;vorname;beitragsgruppe;zahlerid;externezahlerid
-2;Mustermann;Anna;Angehoeriger;;1
-1;Mustermann;Max;Vollzahler;;
-3;Meier;Hans;Vollzahler;;
-4;Meier;Eva;Angehoeriger;2;
+id;name;vorname;beitragsgruppe;voll_zahlerid;abweichende_zahlerid
+;Mustermann;Anna;Angehoeriger;-1;
+-1;Mustermann;Max;Vollzahler;;
+-2;Meier;Hans;Vollzahler;;
+;Meier;Eva;Angehoeriger;-2;
+;Wichtig;Willi;Vollzahler;;

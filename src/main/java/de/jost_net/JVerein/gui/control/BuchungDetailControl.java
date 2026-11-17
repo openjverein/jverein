@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.gui.dialogs.BuchungReportExportDialog;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BigDecimalInput;
@@ -35,6 +36,8 @@ import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
+import de.jost_net.JVerein.gui.parts.BuchungPart;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Kontenfilter;
@@ -65,6 +68,7 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -127,6 +131,10 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
 
   private CheckboxInput geprueft;
 
+  private BuchungPart part;
+
+  private ButtonRtoL buchungsbelegButton;
+
   private boolean editable = false;
 
   private SollbuchungAuswahlDialog sollbuchungDialog = null;
@@ -163,6 +171,16 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
     }
     buchung = (Buchung) getCurrentObject();
     return buchung;
+  }
+
+  public BuchungPart getBuchungPart()
+  {
+    if (part != null)
+    {
+      return part;
+    }
+    part = new BuchungPart(this);
+    return part;
   }
 
   @Override
@@ -916,4 +934,35 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
     return iban;
   }
 
+  public ButtonRtoL getBuchungsbelegButton() throws RemoteException
+  {
+    if (buchungsbelegButton != null)
+    {
+      return buchungsbelegButton;
+    }
+    buchungsbelegButton = new ButtonRtoL("Neuer Buchungsreport", context -> {
+      try
+      {
+        BuchungReportExportDialog d = new BuchungReportExportDialog(
+            BuchungReportExportDialog.POSITION_CENTER,
+            new Buchung[] { getBuchung() }, null);
+        d.open();
+        if (getBuchungPart().getBelegPart() != null)
+        {
+          getBuchungPart().getBelegPart().refreshDocsList();
+        }
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler", e);
+        GUI.getStatusBar()
+            .setErrorText("Fehler beim Generieren des Buchungreports");
+      }
+    }, null, false, "document-new.png");
+    return buchungsbelegButton;
+  }
 }

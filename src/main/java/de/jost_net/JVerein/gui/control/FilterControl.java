@@ -29,6 +29,7 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.LehrgangInput;
+import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
@@ -37,6 +38,7 @@ import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.Filter.FilterArt;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.keys.KeyEnum;
@@ -546,6 +548,33 @@ public abstract class FilterControl extends AbstractListeControl
             false, true, kontenfilter);
         input.addListener(new FilterListener());
         input.setName(filter.getAnzeigeText());
+        break;
+      case MITGLIED:
+        Mitglied mg = null;
+        if (settingValue != null && !settingValue.isBlank())
+        {
+          try
+          {
+            mg = (Mitglied) Einstellungen.getDBService()
+                .createObject(Mitglied.class, settingValue);
+          }
+          catch (ObjectNotFoundException e)
+          {
+            //
+          }
+        }
+        input = new MitgliedInput().getMitgliedInput(input, mg,
+            (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
+        input.addListener(new FilterListener());
+        input.setName(filter.getAnzeigeText());
+        if (input instanceof SelectInput)
+        {
+          ((SelectInput) input).setPleaseChoose(ALLE);
+          if (mg == null)
+          {
+            ((SelectInput) input).setPreselected(null);
+          }
+        }
         break;
       case BUCHUNGSART:
         input = (SelectInput) new BuchungsartInput().getBuchungsartInput(null,

@@ -41,6 +41,8 @@ import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.BelegKonto;
+import de.jost_net.JVerein.rmi.BelegMitglied;
 import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -55,7 +57,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   // Hier müssen alle Implementierungen von AbstractBelegReferenz
   // aufgelistet werden
   private List<Class<? extends AbstractBelegReferenz>> belegReferenzList = Arrays
-      .asList(BelegBuchungImpl.class);
+      .asList(BelegBuchungImpl.class, BelegMitglied.class, BelegKonto.class);
 
   protected static String HASH_ALGORITHM = "SHA-512";
 
@@ -349,10 +351,16 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
               e);
         }
       }
-      super.store();
       hashUpdateAllowed = false;
-      return;
     }
+    super.store();
+  }
+
+  @Override
+  public void erzeugeBelegnummer()
+      throws NumberFormatException, RemoteException, ApplicationException
+  {
+    String nummer = "";
     try
     {
       if (getBelegArt() == null)
@@ -366,7 +374,6 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       Map<String, Object> map = new AllgemeineMap().getMap(null);
       map = new BelegMap().getMap(this, map);
 
-      String nummer = "";
       switch (getBelegArt())
       {
         case BUCHUNG:
@@ -403,7 +410,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         throw new ApplicationException(
             "Beleg mit dieser Nummer existiert bereits. Belegnummer in Einstellungen korrigieren!");
       }
-      super.store();
+
       // Belegnummer hochzählen
       Property prop = null;
       switch (getBelegArt())
@@ -427,7 +434,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
 
       transactionCommit();
     }
-    catch (Exception e)
+    catch (ApplicationException e)
     {
       transactionRollback();
       throw e;
