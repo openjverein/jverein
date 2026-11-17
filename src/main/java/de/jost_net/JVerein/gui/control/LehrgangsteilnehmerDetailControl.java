@@ -33,7 +33,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -59,7 +58,7 @@ public class LehrgangsteilnehmerDetailControl extends VorZurueckControl
 
   private Lehrgangsteilnehmer teilnehmer = null;
 
-  private AbstractInput mitglied;
+  private Input mitglied;
 
   private TextInput bezeichnung;
 
