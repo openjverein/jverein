@@ -57,8 +57,25 @@ public class BelegMitgliedImpl extends AbstractBelegReferenzImpl
   }
 
   @Override
-  public void checkChangesAllowed() throws ApplicationException
+  public void checkUpdateAllowed() throws ApplicationException
   {
     updateCheck();
+  }
+
+  @Override
+  public void checkDeleteAllowed() throws ApplicationException
+  {
+    deleteCheck();
+  }
+
+  @Override
+  protected void deleteCheck() throws ApplicationException
+  {
+    if (!forcedDelete)
+    {
+      throw new ApplicationException(
+          "Der Mitglied Beleg kann nicht entfernt werden.");
+    }
+    super.deleteCheck();
   }
 }

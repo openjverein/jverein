@@ -80,4 +80,7 @@ public interface Beleg extends JVereinDBObject
 
   public void erzeugeBelegnummer()
       throws NumberFormatException, RemoteException, ApplicationException;
+
+  public void delete(boolean vonDbBereinigen)
+      throws RemoteException, ApplicationException;
 }

@@ -17,12 +17,20 @@ public interface AbstractBelegReferenz extends JVereinDBObject, Changeable
   public void setReferenz(DBObject referenz) throws RemoteException;
 
   /**
-   * Prüft, ob Änderungen am Beleg aus sicht der Referenz erlaubt sind, wenn
+   * Prüft, ob Änderungen am Beleg aus Sicht der Referenz erlaubt sind, wenn
    * nicht wird eine Exception geworfen
    * 
    * @throws RemoteException
    * @throws ApplicationException
    */
-  public void checkChangesAllowed()
-      throws RemoteException, ApplicationException;
+  public void checkUpdateAllowed() throws RemoteException, ApplicationException;
+
+  /**
+   * Prüft, ob Löschen des Beleg aus Sicht der Referenz erlaubt ist, wenn nicht
+   * wird eine Exception geworfen
+   * 
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
+  public void checkDeleteAllowed() throws RemoteException, ApplicationException;
 }

@@ -715,12 +715,8 @@ public class DbBereinigenControl extends AbstractControl
         {
 
           beleg = it.next();
-          // Nur löschen, wenn es keine Referenzen daruaf gibt
-          if (beleg.getReferenzes().isEmpty())
-          {
-            beleg.delete();
-            count++;
-          }
+          beleg.delete(true);
+          count++;
         }
         catch (OperationCanceledException oce)
         {

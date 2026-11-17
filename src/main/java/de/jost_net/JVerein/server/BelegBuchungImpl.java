@@ -116,8 +116,14 @@ public class BelegBuchungImpl extends AbstractBelegReferenzImpl
   }
 
   @Override
-  public void checkChangesAllowed() throws ApplicationException
+  public void checkUpdateAllowed() throws ApplicationException
   {
     updateCheck();
+  }
+
+  @Override
+  public void checkDeleteAllowed() throws ApplicationException
+  {
+    deleteCheck();
   }
 }
