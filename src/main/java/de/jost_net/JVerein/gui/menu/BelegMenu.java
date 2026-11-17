@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.BelegEntfernenAction;
-import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.DokumentShowAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -47,7 +46,6 @@ public class BelegMenu extends ContextMenu
       addItem(new CheckedContextMenuItem("Beleg aus Buchung Entfernen",
           new BelegEntfernenAction(belegContext), "user-trash-full.png"));
     }
-    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
-        "user-trash-full.png"));
+    addItem(new DeleteMenueItem());
   }
 }

@@ -98,7 +98,6 @@ public class MailAnhangImpl extends AbstractJVereinDBObject
   @Override
   protected void updateCheck() throws ApplicationException
   {
-    insertCheck();
     try
     {
       // Wenn die Mail an den Empfänger versendet wurde, darf er nicht mehr

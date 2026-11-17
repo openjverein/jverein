@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -11,8 +11,6 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
@@ -43,6 +41,9 @@ import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.BelegKonto;
+import de.jost_net.JVerein.rmi.BelegMitglied;
+import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.messaging.QueryMessage;
@@ -56,7 +57,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   // Hier müssen alle Implementierungen von AbstractBelegReferenz
   // aufgelistet werden
   private List<Class<? extends AbstractBelegReferenz>> belegReferenzList = Arrays
-      .asList(BelegBuchungImpl.class);
+      .asList(BelegBuchungImpl.class, BelegMitglied.class, BelegKonto.class);
 
   protected static String HASH_ALGORITHM = "SHA-512";
 
@@ -219,6 +220,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         return "buchungen";
       case MITGLIED:
         return "mitglieder";
+      case KONTO:
+        return "konten";
       case SONSTIGES:
         throw new RemoteException(
             "Sonstige Belege mit Messaging nicht möglich");
@@ -237,6 +240,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         return Einstellungen.getBelegAllgemeinVerzeichnis() + File.separator;
       case MITGLIED:
         return Einstellungen.getBelegMitgliedVerzeichnis() + File.separator;
+      case KONTO:
+        return Einstellungen.getBelegKontoVerzeichnis() + File.separator;
     }
     return null;
   }
@@ -255,6 +260,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       case MITGLIED:
         return VorlageUtil.getName(VorlageTyp.BELEG_MITGLIED_PFAD, this,
             filename);
+      case KONTO:
+        return VorlageUtil.getName(VorlageTyp.BELEG_KONTO_PFAD, this, filename);
     }
     return null;
   }
@@ -268,24 +275,36 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("belegnummer".equals(fieldName))
+    switch (fieldName)
     {
-      String nr = (String) super.getAttribute("belegnummer");
-      if (nr != null && !nr.isBlank())
-      {
-        return nr;
-      }
+      case "beleggruppe":
+        if (getBelegGruppe() != null)
+        {
+          return getBelegGruppe().getBezeichnung();
+        }
+        else
+        {
+          return "";
+        }
+      case "belegnummer":
+        String nr = (String) super.getAttribute("belegnummer");
+        if (nr != null && !nr.isBlank())
+        {
+          return nr;
+        }
 
-      // Alte Dokumente haben zT. keine Belegnummer (Wenn es mehrere Dokumente
-      // in einer Buchung gab), dann als Fallback die Referenz verwenden
-      Long ref = (Long) getAttribute("referenz");
-      return ref == null ? null : ref.toString() + "-" + getID();
+        // Alte Dokumente haben zT. keine Belegnummer (Wenn es mehrere Dokumente
+        // in einer Buchung gab), dann als Fallback die Referenz verwenden
+        Long ref = (Long) getAttribute("referenz");
+        return ref == null ? null : ref.toString() + "-" + getID();
+      case "vollpfad":
+        if (getPfad() != null)
+        {
+          return getRootDir() + getPfad();
+        }
+      default:
+        return super.getAttribute(fieldName);
     }
-    else if ("vollpfad".equals(fieldName) && getPfad() != null)
-    {
-      return getRootDir() + getPfad();
-    }
-    return super.getAttribute(fieldName);
   }
 
   @Override
@@ -332,10 +351,16 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
               e);
         }
       }
-      super.store();
       hashUpdateAllowed = false;
-      return;
     }
+    super.store();
+  }
+
+  @Override
+  public void erzeugeBelegnummer()
+      throws NumberFormatException, RemoteException, ApplicationException
+  {
+    String nummer = "";
     try
     {
       if (getBelegArt() == null)
@@ -349,7 +374,6 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       Map<String, Object> map = new AllgemeineMap().getMap(null);
       map = new BelegMap().getMap(this, map);
 
-      String nummer = "";
       switch (getBelegArt())
       {
         case BUCHUNG:
@@ -363,6 +387,10 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         case MITGLIED:
           nummer = (String) Einstellungen
               .getEinstellung(Property.BELEGNUMMER_MITGLIED);
+          break;
+        case KONTO:
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_KONTO);
           break;
       }
       nummer = VelocityTool.eval(map, nummer);
@@ -382,7 +410,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         throw new ApplicationException(
             "Beleg mit dieser Nummer existiert bereits. Belegnummer in Einstellungen korrigieren!");
       }
-      super.store();
+
       // Belegnummer hochzählen
       Property prop = null;
       switch (getBelegArt())
@@ -396,6 +424,9 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         case MITGLIED:
           prop = Property.BELEG_ZAEHLER_MITGLIED;
           break;
+        case KONTO:
+          prop = Property.BELEG_ZAEHLER_KONTO;
+          break;
       }
       Einstellungen.setEinstellung(prop,
           Integer.parseInt(map.get(BelegVar.BELEG_ZAEHLER.getName()).toString())
@@ -403,7 +434,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
 
       transactionCommit();
     }
-    catch (Exception e)
+    catch (ApplicationException e)
     {
       transactionRollback();
       throw e;
@@ -675,13 +706,13 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   @Override
   public String getObjektName()
   {
-    return "Dokument";
+    return "Beleg";
   }
 
   @Override
   public String getObjektNameMehrzahl()
   {
-    return "Dokumente";
+    return "Belege";
   }
 
   @Override
@@ -694,5 +725,27 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   public void setPfad(String pfad) throws RemoteException
   {
     setAttribute("pfad", pfad);
+  }
+
+  @Override
+  public Beleggruppe getBelegGruppe() throws RemoteException
+  {
+    return (Beleggruppe) super.getAttribute("beleggruppe");
+  }
+
+  @Override
+  public void setBelegGruppe(Beleggruppe beleggruppe) throws RemoteException
+  {
+    setAttribute("beleggruppe", beleggruppe);
+  }
+
+  @Override
+  protected Class<?> getForeignObject(String field)
+  {
+    if ("beleggruppe".equals(field))
+    {
+      return Beleggruppe.class;
+    }
+    return null;
   }
 }

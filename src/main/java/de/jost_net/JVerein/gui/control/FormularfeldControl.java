@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
@@ -244,6 +245,11 @@ public class FormularfeldControl extends AbstractControl implements Savable
         break;
       case BUCHUNGSREPORT:
         map = BuchungMap.getDummyMap(map);
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+        {
+          map.put("beleg_nummer", "B-123");
+        }
         break;
     }
     return map;

@@ -162,7 +162,7 @@ public class BuchungMenu extends ContextMenu
           new BelegZuordnenAction(null, control), "view-refresh.png"));
     }
     addItem(new CheckedContextMenuItem("Buchungsreport",
-        new BuchungReportAction(), "document-print.png"));
+        new BuchungReportAction(control), "document-new.png"));
 
     Plugin syntax = Application.getPluginLoader()
         .getPlugin("de.willuhn.jameica.fibu.Fibu");
