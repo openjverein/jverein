@@ -38,14 +38,19 @@ import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
+import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.system.Application;
@@ -69,6 +74,8 @@ public class BuchungReportExportDialogControl
   private LabelInput statusLabel;
 
   private CheckboxInput alsBuDokumentInput;
+
+  private SelectInput beleggruppe;
 
   private Button uebernehmenButton;
 
@@ -134,6 +141,35 @@ public class BuchungReportExportDialogControl
     return dateInput;
   }
 
+  public SelectInput getBelegGruppe() throws RemoteException
+  {
+    if (beleggruppe != null)
+    {
+      return beleggruppe;
+    }
+    Beleggruppe bg = null;
+    String id = settings.getString("beleggruppe", "");
+    if (id != null && !id.isEmpty())
+    {
+      try
+      {
+        bg = (Beleggruppe) Einstellungen.getDBService()
+            .createObject(Beleggruppe.class, id);
+      }
+      catch (ObjectNotFoundException e)
+      {
+        // Dann nichts setzen
+      }
+    }
+    DBIterator<Beleggruppe> it = Einstellungen.getDBService()
+        .createList(Beleggruppe.class);
+    beleggruppe = new SelectInput(it != null ? PseudoIterator.asList(it) : null,
+        bg);
+    beleggruppe.setName("Beleggruppe");
+    beleggruppe.setPleaseChoose(" ");
+    return beleggruppe;
+  }
+
   public LabelInput getStatus()
   {
     if (statusLabel != null)
@@ -192,7 +228,8 @@ public class BuchungReportExportDialogControl
       try
       {
         storeBuchungsDokument((Formular) getFormular().getValue(),
-            buchungen.get(0), (Date) getDatum().getValue());
+            buchungen.get(0), (Date) getDatum().getValue(),
+            (Beleggruppe) getBelegGruppe().getValue());
         GUI.getStatusBar().setSuccessText("Buchungsdokument generiert.");
         if (control != null)
         {
@@ -235,7 +272,8 @@ public class BuchungReportExportDialogControl
             {
               id = bu.getID();
               storeBuchungsDokument((Formular) getFormular().getValue(), bu,
-                  (Date) getDatum().getValue());
+                  (Date) getDatum().getValue(),
+                  (Beleggruppe) getBelegGruppe().getValue());
               count++;
             }
             catch (ApplicationException ex)
@@ -296,7 +334,7 @@ public class BuchungReportExportDialogControl
   }
 
   private void storeBuchungsDokument(Formular formular, Buchung buchung,
-      Date datum) throws ApplicationException
+      Date datum, Beleggruppe beleggruppe) throws ApplicationException
   {
     if (buchung != null)
     {
@@ -331,6 +369,7 @@ public class BuchungReportExportDialogControl
         doc.setBemerkung(file.getName());
         doc.setDatum(datum);
         doc.setBelegArt(BelegArt.BUCHUNG);
+        doc.setBelegGruppe(beleggruppe);
         doc.setFile(file);
         doc.store();
 
@@ -367,6 +406,11 @@ public class BuchungReportExportDialogControl
         {
           settings.setAttribute("buchungsdokumentspeichern",
               (Boolean) alsBuDokumentInput.getValue());
+        }
+        if (getBelegGruppe() != null)
+        {
+          Beleggruppe bg = (Beleggruppe) getBelegGruppe().getValue();
+          settings.setAttribute("beleggruppe", bg == null ? "" : bg.getID());
         }
       }
       catch (RemoteException e)
