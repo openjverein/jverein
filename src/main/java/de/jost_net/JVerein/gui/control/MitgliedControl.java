@@ -19,7 +19,10 @@ package de.jost_net.JVerein.gui.control;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
@@ -48,6 +51,7 @@ import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.AbstractJVereinDBObject;
@@ -80,6 +84,8 @@ public class MitgliedControl extends FilterControl
 
   // Zeitstempel merken, wann der Letzte refresh ausgeführt wurde.
   private long lastrefresh = 0;
+
+  private Map<String, Map<String, Object>> lesefeldWerte = new HashMap<>();
 
   public MitgliedControl(AbstractView view)
   {
@@ -286,6 +292,20 @@ public class MitgliedControl extends FilterControl
             new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
             true);
       }
+
+      if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
+      {
+        DBIterator<Lesefeld> lesefelder = Einstellungen.getDBService()
+            .createList(Lesefeld.class);
+        while (lesefelder.hasNext())
+        {
+          Lesefeld lesefeld = lesefelder.next();
+          String bezeichnung = lesefeld.getBezeichnung();
+          add(bezeichnung, "lesefelder_" + bezeichnung, false,
+              v -> v == null ? "" : ((String) v).split("\n")[0],
+              Column.ALIGN_AUTO, true);
+        }
+      }
     }
     catch (RemoteException re)
     {
@@ -400,6 +420,7 @@ public class MitgliedControl extends FilterControl
       return;
     }
     lastrefresh = System.currentTimeMillis();
+    lesefeldWerte.clear();
     mitgliedList.removeAll();
     ArrayList<Mitglied> mitglieder = new MitgliedQuery(this)
         .get(mitgliedAuswahl, null);
