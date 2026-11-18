@@ -19,10 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
@@ -84,8 +81,6 @@ public class MitgliedControl extends FilterControl
 
   // Zeitstempel merken, wann der Letzte refresh ausgeführt wurde.
   private long lastrefresh = 0;
-
-  private Map<String, Map<String, Object>> lesefeldWerte = new HashMap<>();
 
   public MitgliedControl(AbstractView view)
   {
@@ -420,7 +415,6 @@ public class MitgliedControl extends FilterControl
       return;
     }
     lastrefresh = System.currentTimeMillis();
-    lesefeldWerte.clear();
     mitgliedList.removeAll();
     ArrayList<Mitglied> mitglieder = new MitgliedQuery(this)
         .get(mitgliedAuswahl, null);
