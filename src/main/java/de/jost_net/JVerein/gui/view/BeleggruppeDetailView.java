@@ -30,7 +30,7 @@ public class BeleggruppeDetailView extends AbstractDetailView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchungsklasse");
+    GUI.getView().setTitle("Beleggruppe");
 
     control = new BeleggruppeDetailControl(this);
 
