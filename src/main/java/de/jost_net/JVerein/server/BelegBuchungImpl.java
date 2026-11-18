@@ -115,15 +115,4 @@ public class BelegBuchungImpl extends AbstractBelegReferenzImpl
     return "id";
   }
 
-  @Override
-  public void checkUpdateAllowed() throws ApplicationException
-  {
-    updateCheck();
-  }
-
-  @Override
-  public void checkDeleteAllowed() throws ApplicationException
-  {
-    deleteCheck();
-  }
 }

@@ -136,7 +136,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   {
     try
     {
-      // Alle vorhandenn erferenzen des Objects prüfen, ob sie geändert/gelöscht
+      // Alle vorhandenn Referenzen des Objects prüfen, ob sie geändert/gelöscht
       // werden dürfen
       for (AbstractBelegReferenz ref : getReferenzes())
       {
@@ -166,14 +166,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       DBTransaction.starten();
       for (AbstractBelegReferenz ref : getReferenzes())
       {
-        if (vonDbBereinigen)
-        {
-          ref.delete();
-        }
-        else
-        {
-          ref.deleteForced();
-        }
+        ref.delete(vonDbBereinigen);
       }
 
       super.delete();

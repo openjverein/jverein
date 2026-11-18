@@ -3,11 +3,9 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.util.JahresabschlussUtil;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.BelegKonto;
-import de.jost_net.JVerein.rmi.Jahresabschluss;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.util.ApplicationException;
 
 public class BelegKontoImpl extends AbstractBelegReferenzImpl
@@ -60,18 +58,6 @@ public class BelegKontoImpl extends AbstractBelegReferenzImpl
   }
 
   @Override
-  public void checkUpdateAllowed() throws ApplicationException
-  {
-    updateCheck();
-  }
-
-  @Override
-  public void checkDeleteAllowed() throws ApplicationException
-  {
-    deleteCheck();
-  }
-
-  @Override
   protected void deleteCheck() throws ApplicationException
   {
     try
@@ -109,15 +95,6 @@ public class BelegKontoImpl extends AbstractBelegReferenzImpl
 
   private boolean istAbgeschlossen() throws RemoteException
   {
-    DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
-        .createList(Jahresabschluss.class);
-    it.addFilter("von <= ?", new Object[] { getBeleg().getDatum() });
-    it.addFilter("bis >= ?", new Object[] { getBeleg().getDatum() });
-    it.setLimit(1);
-    if (it.hasNext())
-    {
-      return true;
-    }
-    return false;
+    return JahresabschlussUtil.istAbgeschlossen(getBeleg().getDatum());
   }
 }

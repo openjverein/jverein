@@ -33,4 +33,19 @@ public interface AbstractBelegReferenz extends JVereinDBObject, Changeable
    * @throws ApplicationException
    */
   public void checkDeleteAllowed() throws RemoteException, ApplicationException;
+
+  /**
+   * Löschen des Objekts unter berücksichtigung ob es aus DBBereinigen
+   * aufgerufen wurde. Als Default Implementierung wird nicht unterschieden.
+   * 
+   * @param vonDbBereinigen
+   *          Sagt ob von DBBereinigen aufgerufen wurde
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
+  default void delete(boolean vonDbBereinigen)
+      throws RemoteException, ApplicationException
+  {
+    delete();
+  }
 }
