@@ -57,8 +57,14 @@ public class BelegMitgliedImpl extends AbstractBelegReferenzImpl
   }
 
   @Override
-  public void checkChangesAllowed() throws ApplicationException
+  public void delete(boolean vonDbBereinigen)
+      throws ApplicationException, RemoteException
   {
-    updateCheck();
+    if (vonDbBereinigen)
+    {
+      throw new ApplicationException(
+          "Der Mitglied Beleg kann über Datenbank-Bereinigung nicht gelöscht werden.");
+    }
+    delete();
   }
 }

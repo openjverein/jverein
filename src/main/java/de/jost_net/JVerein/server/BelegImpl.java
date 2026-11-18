@@ -96,7 +96,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       if (!hashUpdateAllowed)
       {
         for (AbstractBelegReferenz ref : getReferenzes())
-          ref.checkChangesAllowed();
+          ref.checkUpdateAllowed();
       }
       if (getBemerkung() == null || getBemerkung().isBlank())
       {
@@ -136,11 +136,11 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   {
     try
     {
-      // Alle vorhandenn erferenzen des Objects prüfen, ob sie geändert/gelöscht
+      // Alle vorhandenn Referenzen des Objects prüfen, ob sie geändert/gelöscht
       // werden dürfen
       for (AbstractBelegReferenz ref : getReferenzes())
       {
-        ref.checkChangesAllowed();
+        ref.checkDeleteAllowed();
       }
     }
     catch (RemoteException e)
@@ -152,6 +152,13 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   @Override
   public void delete() throws RemoteException, ApplicationException
   {
+    delete(false);
+  }
+
+  @Override
+  public void delete(boolean vonDbBereinigen)
+      throws RemoteException, ApplicationException
+  {
     try
     {
       // Alle vorhandenn erferenzen des Objects impliziet löschen, damit dort im
@@ -159,7 +166,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       DBTransaction.starten();
       for (AbstractBelegReferenz ref : getReferenzes())
       {
-        ref.delete();
+        ref.delete(vonDbBereinigen);
       }
 
       super.delete();
