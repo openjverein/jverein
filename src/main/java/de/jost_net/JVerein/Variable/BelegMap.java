@@ -50,24 +50,32 @@ public class BelegMap extends AbstractMap
       switch (var)
       {
         case BELEG_ZAEHLER:
-          switch (beleg.getBelegArt())
+          if (beleg.getBelegzaehler() != null)
           {
-            case BUCHUNG:
-              value = Einstellungen
-                  .getEinstellung(Property.BELEG_ZAEHLER_BUCHUNG).toString();
-              break;
-            case SONSTIGES:
-              value = Einstellungen
-                  .getEinstellung(Property.BELEG_ZAEHLER_SONSTIGES).toString();
-              break;
-            case MITGLIED:
-              value = Einstellungen
-                  .getEinstellung(Property.BELEG_ZAEHLER_MITGLIED).toString();
-              break;
-            case KONTO:
-              value = Einstellungen.getEinstellung(Property.BELEG_ZAEHLER_KONTO)
-                  .toString();
-              break;
+            value = beleg.getBelegzaehler();
+          }
+          else
+          {
+            switch (beleg.getBelegArt())
+            {
+              case BUCHUNG:
+                value = Einstellungen
+                    .getEinstellung(Property.BELEG_ZAEHLER_BUCHUNG).toString();
+                break;
+              case SONSTIGES:
+                value = Einstellungen
+                    .getEinstellung(Property.BELEG_ZAEHLER_SONSTIGES)
+                    .toString();
+                break;
+              case MITGLIED:
+                value = Einstellungen
+                    .getEinstellung(Property.BELEG_ZAEHLER_MITGLIED).toString();
+                break;
+              case KONTO:
+                value = Einstellungen
+                    .getEinstellung(Property.BELEG_ZAEHLER_KONTO).toString();
+                break;
+            }
           }
           break;
         case BELEG_NUMMER:

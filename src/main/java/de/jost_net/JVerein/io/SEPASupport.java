@@ -49,6 +49,7 @@ public class SEPASupport
   {
     if (re != null && buchung != null)
     {
+      File file = null;
       try
       {
         Map<String, Object> map = new AllgemeineMap().getMap(null);
@@ -58,7 +59,7 @@ public class SEPASupport
         // PDF erstellen
         String dateiname = VorlageUtil
             .getName(VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re);
-        File file = File.createTempFile(dateiname, ".pdf");
+        file = File.createTempFile(dateiname, ".pdf");
         FormularAufbereitung aufbereitung = new FormularAufbereitung(file, true,
             false);
         Formular formular = re.getFormular();
@@ -75,7 +76,6 @@ public class SEPASupport
         doc.setFile(file);
         doc.erzeugeBelegnummer();
         doc.store();
-        file.delete();
 
         buchung.addBeleg(doc);
       }
@@ -83,6 +83,13 @@ public class SEPASupport
       {
         Logger.error("Fehler beim Speichern der Rechnung als Buchungsdokument",
             e);
+      }
+      finally
+      {
+        if (file != null)
+        {
+          file.delete();
+        }
       }
     }
   }

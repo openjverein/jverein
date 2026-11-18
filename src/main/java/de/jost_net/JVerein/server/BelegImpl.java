@@ -65,6 +65,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
 
   private boolean hashUpdateAllowed = false;
 
+  private String belegzaehler = null;
+
   private static final long serialVersionUID = 1L;
 
   public BelegImpl() throws RemoteException
@@ -307,6 +309,16 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
     }
   }
 
+  public String getBelegzaehler() throws RemoteException
+  {
+    return belegzaehler;
+  }
+
+  public void setBelegzaehler(String belegzaehler) throws RemoteException
+  {
+    this.belegzaehler = belegzaehler;
+  }
+
   @Override
   public void setBelegnummer(String belegnummer) throws RemoteException
   {
@@ -400,7 +412,6 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         throw new ApplicationException(
             "Belegnummer zu lang, maximal 50 Zeichen erlaubt!");
       }
-      setBelegnummer(nummer);
 
       // Prüfen, ob es schon einen Beleg mit dieser Nummer gibt
       DBIterator<?> it = getList();
@@ -428,9 +439,10 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
           prop = Property.BELEG_ZAEHLER_KONTO;
           break;
       }
-      Einstellungen.setEinstellung(prop,
-          Integer.parseInt(map.get(BelegVar.BELEG_ZAEHLER.getName()).toString())
-              + 1);
+      String zaehler = map.get(BelegVar.BELEG_ZAEHLER.getName()).toString();
+      setBelegnummer(nummer);
+      setBelegzaehler(zaehler);
+      Einstellungen.setEinstellung(prop, Integer.parseInt(zaehler) + 1);
 
       transactionCommit();
     }
