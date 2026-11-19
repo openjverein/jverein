@@ -207,8 +207,7 @@ public class ZusatzbetragControl extends FilterControl
               "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
     }
-    zusatzbetraege
-        .setOrder("ORDER BY ausfuehrung DESC, faelligkeit DESC, name");
+    zusatzbetraege.setOrder("ORDER BY ausfuehrung DESC, faelligkeit DESC");
     return zusatzbetraege;
   }
 
