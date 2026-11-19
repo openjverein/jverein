@@ -27,6 +27,10 @@ import de.willuhn.util.ApplicationException;
 
 public interface Beleg extends JVereinDBObject
 {
+  public String getBelegzaehler() throws RemoteException;
+
+  public void setBelegzaehler(String belegzaehler) throws RemoteException;
+
   public String getBelegnummer() throws RemoteException;
 
   public void setBelegnummer(String belegnummer) throws RemoteException;

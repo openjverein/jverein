@@ -20,8 +20,6 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Beleg;
 
 public class BelegMap extends AbstractMap
@@ -50,25 +48,7 @@ public class BelegMap extends AbstractMap
       switch (var)
       {
         case BELEG_ZAEHLER:
-          switch (beleg.getBelegArt())
-          {
-            case BUCHUNG:
-              value = Einstellungen
-                  .getEinstellung(Property.BELEG_ZAEHLER_BUCHUNG).toString();
-              break;
-            case SONSTIGES:
-              value = Einstellungen
-                  .getEinstellung(Property.BELEG_ZAEHLER_SONSTIGES).toString();
-              break;
-            case MITGLIED:
-              value = Einstellungen
-                  .getEinstellung(Property.BELEG_ZAEHLER_MITGLIED).toString();
-              break;
-            case KONTO:
-              value = Einstellungen.getEinstellung(Property.BELEG_ZAEHLER_KONTO)
-                  .toString();
-              break;
-          }
+          value = beleg.getBelegzaehler();
           break;
         case BELEG_NUMMER:
           value = beleg.getBelegnummer();

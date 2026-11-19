@@ -182,10 +182,6 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     try
     {
       Beleg beleg = prepareStore();
-      if (beleg.isNewObject())
-      {
-        beleg.erzeugeBelegnummer();
-      }
       beleg.store();
       if (belegObject != null)
       {
