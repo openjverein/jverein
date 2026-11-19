@@ -48,6 +48,7 @@ import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.AbstractJVereinDBObject;
@@ -285,6 +286,20 @@ public class MitgliedControl extends FilterControl
         add("Sterbedatum", "sterbetag", false,
             new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
             true);
+      }
+
+      if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
+      {
+        DBIterator<Lesefeld> lesefelder = Einstellungen.getDBService()
+            .createList(Lesefeld.class);
+        while (lesefelder.hasNext())
+        {
+          Lesefeld lesefeld = lesefelder.next();
+          String bezeichnung = lesefeld.getBezeichnung();
+          add(bezeichnung, "lesefelder_" + bezeichnung, false,
+              v -> v == null ? "" : ((String) v).split("\n")[0],
+              Column.ALIGN_AUTO, true);
+        }
       }
     }
     catch (RemoteException re)

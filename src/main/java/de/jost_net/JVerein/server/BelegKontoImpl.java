@@ -3,6 +3,7 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.util.JahresabschlussUtil;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.BelegKonto;
 import de.willuhn.util.ApplicationException;
@@ -57,8 +58,43 @@ public class BelegKontoImpl extends AbstractBelegReferenzImpl
   }
 
   @Override
-  public void checkChangesAllowed() throws ApplicationException
+  protected void deleteCheck() throws ApplicationException
   {
-    updateCheck();
+    try
+    {
+      if (istAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Der Konto Beleg kann nicht entfernt werden, sein Datum liegt in einem abgeschlossenen Geschäftsjahr.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim deleteCheck");
+    }
+    super.deleteCheck();
+  }
+
+  @Override
+  protected void updateCheck() throws ApplicationException
+  {
+    try
+    {
+      if (istAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Der Konto Beleg kann nicht geändert werden, sein Datum liegt in einem abgeschlossenen Geschäftsjahr.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim updateCheck");
+    }
+    super.updateCheck();
+  }
+
+  private boolean istAbgeschlossen() throws RemoteException
+  {
+    return JahresabschlussUtil.istAbgeschlossen(getBeleg().getDatum());
   }
 }
