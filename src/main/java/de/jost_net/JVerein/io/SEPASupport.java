@@ -74,7 +74,6 @@ public class SEPASupport
         doc.setDatum(new Date());
         doc.setBelegArt(BelegArt.BUCHUNG);
         doc.setFile(file);
-        doc.erzeugeBelegnummer();
         doc.store();
 
         buchung.addBeleg(doc);

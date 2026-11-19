@@ -364,6 +364,10 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       }
       hashUpdateAllowed = false;
     }
+    else if (getBelegnummer() == null)
+    {
+      erzeugeBelegnummer();
+    }
     super.store();
   }
 

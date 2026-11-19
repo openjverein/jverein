@@ -166,7 +166,6 @@ public class BelegPart implements Part
 
         document.setFile(file);
         document.setBelegArt(getCurrentObject().getBelegArt());
-        document.erzeugeBelegnummer();
         document.store();
         getCurrentObject().addBeleg(document);
 
