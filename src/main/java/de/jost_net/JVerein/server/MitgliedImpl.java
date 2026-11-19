@@ -24,12 +24,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.mail.internet.AddressException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
@@ -51,6 +53,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.BelegMitglied;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
@@ -58,6 +61,7 @@ import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.EmailValidator;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
@@ -1447,6 +1451,26 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
       }
       // Führendes Komme entfernen
       return value.substring(1).trim();
+    }
+    else if (fieldName.startsWith("lesefelder_"))
+    {
+      String bezeichnung = fieldName.substring("lesefelder_".length());
+
+      DBIterator<Lesefeld> lesefelder = Einstellungen.getDBService()
+          .createList(Lesefeld.class);
+      lesefelder.addFilter("bezeichnung = ?", bezeichnung);
+
+      if (!lesefelder.hasNext())
+      {
+        return "";
+      }
+
+      LesefeldAuswerter auswerter = new LesefeldAuswerter();
+      auswerter.setLesefelderDefinitions(List.of(lesefelder.next()));
+      auswerter.setMap(new MitgliedMap().getMap(this, null, true));
+
+      Map<String, Object> werte = auswerter.getLesefelderMap();
+      return werte.get(Einstellungen.LESEFELD_PRE + bezeichnung);
     }
     else if ("alter".equals(fieldName))
     {
