@@ -35,7 +35,6 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.BelegMap;
-import de.jost_net.JVerein.Variable.BelegVar;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -65,7 +64,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
 
   private boolean hashUpdateAllowed = false;
 
-  private String belegzaehler = null;
+  private String belegzaehler = "";
 
   private static final long serialVersionUID = 1L;
 
@@ -372,6 +371,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   public void erzeugeBelegnummer()
       throws NumberFormatException, RemoteException, ApplicationException
   {
+    Property prop = null;
+    String zaehler = null;
     String nummer = "";
     try
     {
@@ -379,6 +380,34 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       {
         throw new ApplicationException("Beleg-Art ist nicht gesetzt");
       }
+      switch (getBelegArt())
+      {
+        case BUCHUNG:
+          prop = Property.BELEG_ZAEHLER_BUCHUNG;
+          zaehler = Einstellungen.getEinstellung(prop).toString();
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_BUCHUNG);
+          break;
+        case SONSTIGES:
+          prop = Property.BELEG_ZAEHLER_SONSTIGES;
+          zaehler = Einstellungen.getEinstellung(prop).toString();
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_SONSTIGES);
+          break;
+        case MITGLIED:
+          prop = Property.BELEG_ZAEHLER_MITGLIED;
+          zaehler = Einstellungen.getEinstellung(prop).toString();
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_MITGLIED);
+          break;
+        case KONTO:
+          prop = Property.BELEG_ZAEHLER_KONTO;
+          zaehler = Einstellungen.getEinstellung(prop).toString();
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_KONTO);
+          break;
+      }
+      setBelegzaehler(zaehler);
 
       transactionBegin();
 
@@ -386,25 +415,6 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       Map<String, Object> map = new AllgemeineMap().getMap(null);
       map = new BelegMap().getMap(this, map);
 
-      switch (getBelegArt())
-      {
-        case BUCHUNG:
-          nummer = (String) Einstellungen
-              .getEinstellung(Property.BELEGNUMMER_BUCHUNG);
-          break;
-        case SONSTIGES:
-          nummer = (String) Einstellungen
-              .getEinstellung(Property.BELEGNUMMER_SONSTIGES);
-          break;
-        case MITGLIED:
-          nummer = (String) Einstellungen
-              .getEinstellung(Property.BELEGNUMMER_MITGLIED);
-          break;
-        case KONTO:
-          nummer = (String) Einstellungen
-              .getEinstellung(Property.BELEGNUMMER_KONTO);
-          break;
-      }
       nummer = VelocityTool.eval(map, nummer);
 
       if (nummer.length() > 50)
@@ -421,27 +431,9 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         throw new ApplicationException(
             "Beleg mit dieser Nummer existiert bereits. Belegnummer in Einstellungen korrigieren!");
       }
+      setBelegnummer(nummer);
 
       // Belegnummer hochzählen
-      Property prop = null;
-      switch (getBelegArt())
-      {
-        case BUCHUNG:
-          prop = Property.BELEG_ZAEHLER_BUCHUNG;
-          break;
-        case SONSTIGES:
-          prop = Property.BELEG_ZAEHLER_SONSTIGES;
-          break;
-        case MITGLIED:
-          prop = Property.BELEG_ZAEHLER_MITGLIED;
-          break;
-        case KONTO:
-          prop = Property.BELEG_ZAEHLER_KONTO;
-          break;
-      }
-      String zaehler = map.get(BelegVar.BELEG_ZAEHLER.getName()).toString();
-      setBelegnummer(nummer);
-      setBelegzaehler(zaehler);
       Einstellungen.setEinstellung(prop, Integer.parseInt(zaehler) + 1);
 
       transactionCommit();

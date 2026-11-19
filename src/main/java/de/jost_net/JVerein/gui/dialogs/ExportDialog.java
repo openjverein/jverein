@@ -286,10 +286,19 @@ public class ExportDialog extends AbstractDialog<Object>
             exporter.doExport(objects, format, file, params, monitor);
             monitor.setPercentComplete(100);
             monitor.setStatus(ProgressMonitor.STATUS_DONE);
+            String ausgabePfad = null;
+            if (file.isDirectory())
+            {
+              ausgabePfad = file.getPath();
+            }
+            else
+            {
+              ausgabePfad = file.getParent();
+            }
             GUI.getStatusBar().setSuccessText(
-                String.format("Daten exportiert nach %s", file.getParent()));
+                String.format("Daten exportiert nach %s", ausgabePfad));
             monitor.setStatusText(
-                String.format("Daten exportiert nach %s", file.getParent()));
+                String.format("Daten exportiert nach %s", ausgabePfad));
 
             if (open)
             {
