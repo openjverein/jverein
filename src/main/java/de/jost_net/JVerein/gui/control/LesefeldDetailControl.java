@@ -197,9 +197,9 @@ public class LesefeldDetailControl extends VorZurueckControl implements Savable
     {
       return scriptCode;
     }
-    scriptCode = new TextAreaInput(getLesefeld().getScript(), 1000);
+    scriptCode = new TextAreaInput(getLesefeld().getScript(), 100000);
     scriptCode.setMandatory(true);
-    scriptCode.setHeight(200);
+    scriptCode.setHeight(400);
     return scriptCode;
   }
 
