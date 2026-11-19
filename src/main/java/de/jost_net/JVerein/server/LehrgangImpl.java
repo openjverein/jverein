@@ -16,17 +16,21 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
-import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
+import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.rmi.Lehrgang;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangImpl extends AbstractJVereinDBObject
-    implements Lehrgang, IMitglied
+public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
 {
 
   private static final long serialVersionUID = 380278347818535726L;
@@ -45,13 +49,41 @@ public class LehrgangImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    try
+    {
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGANGSIDANZEIGEN))
+      {
+        return "bezeichnungid";
+      }
+    }
+    catch (RemoteException e)
+    {
+      //
+    }
+    return "bezeichnung";
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      DBIterator<Lehrgangsteilnehmer> it = Einstellungen.getDBService()
+          .createList(Lehrgangsteilnehmer.class);
+      it.addFilter("lehrgang = ?", getID());
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Es existieren Lehrgangsteilnehmer für den Lehrgang.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Lehrgang kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
@@ -59,13 +91,13 @@ public class LehrgangImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getMitglied() == null)
-      {
-        throw new ApplicationException("Bitte Mitglied eingeben!");
-      }
       if (getLehrgangsart() == null)
       {
         throw new ApplicationException("Bitte Lehrgangsart auswählen!");
+      }
+      if (getBezeichnung() == null || getBezeichnung().isBlank())
+      {
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
       if (getVon() == null)
       {
@@ -89,28 +121,12 @@ public class LehrgangImpl extends AbstractJVereinDBObject
   @Override
   protected Class<?> getForeignObject(String arg0)
   {
-    if ("mitglied".equals(arg0))
-    {
-      return Mitglied.class;
-    }
     if ("lehrgangsart".equals(arg0))
     {
       return Lehrgangsart.class;
     }
 
     return null;
-  }
-
-  @Override
-  public Mitglied getMitglied() throws RemoteException
-  {
-    return (Mitglied) getAttribute("mitglied");
-  }
-
-  @Override
-  public void setMitglied(Integer mitglied) throws RemoteException
-  {
-    setAttribute("mitglied", mitglied);
   }
 
   @Override
@@ -162,15 +178,15 @@ public class LehrgangImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public String getErgebnis() throws RemoteException
+  public BigDecimal getBetrag() throws RemoteException
   {
-    return (String) getAttribute("ergebnis");
+    return (BigDecimal) getAttribute("betrag");
   }
 
   @Override
-  public void setErgebnis(String ergebnis) throws RemoteException
+  public void setBetrag(BigDecimal d) throws RemoteException
   {
-    setAttribute("ergebnis", ergebnis);
+    setAttribute("betrag", d);
   }
 
   @Override
@@ -185,6 +201,16 @@ public class LehrgangImpl extends AbstractJVereinDBObject
       default:
         return null;
     }
+  }
+
+  @Override
+  public Object getAttribute(String fieldName) throws RemoteException
+  {
+    if (fieldName.equals("bezeichnungid"))
+    {
+      return getBezeichnung() + " (" + getID() + ")";
+    }
+    return super.getAttribute(fieldName);
   }
 
   @Override
@@ -211,4 +237,19 @@ public class LehrgangImpl extends AbstractJVereinDBObject
     setAttribute("bezeichnung", bezeichnung);
   }
 
+  @Override
+  public Mitglied[] getMitglieder() throws RemoteException
+  {
+    DBIterator<Lehrgangsteilnehmer> teilnehmer = Einstellungen.getDBService()
+        .createList(Lehrgangsteilnehmer.class);
+    teilnehmer.addFilter("lehrgang = ?", getID());
+    Mitglied[] mitglieder = new Mitglied[teilnehmer.size()];
+    int i = 0;
+    while (teilnehmer.hasNext())
+    {
+      mitglieder[i] = ((Lehrgangsteilnehmer) teilnehmer.next()).getMitglied();
+      i++;
+    }
+    return mitglieder;
+  }
 }

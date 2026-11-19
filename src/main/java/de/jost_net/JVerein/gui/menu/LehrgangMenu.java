@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.ForderungAction;
-import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -41,11 +40,6 @@ public class LehrgangMenu extends ContextMenu
         new EditAction(LehrgangDetailView.class, part), "text-x-generic.png"));
     addItem(new DeleteMenueItem());
     addItem(ContextMenuItem.SEPARATOR);
-    if (part != null)
-    {
-      addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-          new MitgliedDetailAction(), "user-friends.png"));
-    }
     addItem(new CheckedContextMenuItem("Forderung erstellen",
         new ForderungAction(), "lastschrift.png"));
   }

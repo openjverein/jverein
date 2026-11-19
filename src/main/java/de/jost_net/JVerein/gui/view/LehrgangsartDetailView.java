@@ -37,10 +37,7 @@ public class LehrgangsartDetailView extends AbstractDetailView
     control = new LehrgangsartDetailControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Lehrgangsart");
-    group.addLabelPair("Bezeichnung", control.getBezeichnung(true));
-    group.addLabelPair("Von/am", control.getVon());
-    group.addLabelPair("Bis", control.getBis());
-    group.addLabelPair("Veranstalter", control.getVeranstalter());
+    group.addLabelPair("Bezeichnung", control.getBezeichnung());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.LEHRGANGARTEN));

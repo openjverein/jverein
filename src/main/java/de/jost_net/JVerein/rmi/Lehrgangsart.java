@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 
 public interface Lehrgangsart extends JVereinDBObject
 {
@@ -25,15 +24,4 @@ public interface Lehrgangsart extends JVereinDBObject
 
   public void setBezeichnung(String bezeichnung) throws RemoteException;
 
-  public Date getVon() throws RemoteException;
-
-  public void setVon(Date von) throws RemoteException;
-
-  public Date getBis() throws RemoteException;
-
-  public void setBis(Date bis) throws RemoteException;
-
-  public String getVeranstalter() throws RemoteException;
-
-  public void setVeranstalter(String veranstalter) throws RemoteException;
 }

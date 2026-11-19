@@ -54,7 +54,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Formular;
-import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -685,8 +685,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
   private void generiereLehrgaenge(Reporter rpt, Mitglied m)
       throws RemoteException, DocumentException
   {
-    DBIterator<Lehrgang> it = Einstellungen.getDBService()
-        .createList(Lehrgang.class);
+    DBIterator<Lehrgangsteilnehmer> it = Einstellungen.getDBService()
+        .createList(Lehrgangsteilnehmer.class);
     it.addFilter("mitglied = ?", new Object[] { m.getID() });
     it.setOrder("order by von");
     if (it.size() > 0)
@@ -705,7 +705,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       rpt.createHeader();
       while (it.hasNext())
       {
-        Lehrgang l = it.next();
+        Lehrgangsteilnehmer l = it.next();
         rpt.addColumn(l.getLehrgangsart().getBezeichnung(), Element.ALIGN_LEFT,
             params.getFontNormal());
         rpt.addColumn(l.getVon(), Element.ALIGN_LEFT, params.getFontNormal());
