@@ -66,7 +66,7 @@ public class RechnungMap extends AbstractMap
     HashMap<BigDecimal, BigDecimal> steuerMap = new HashMap<>();
     HashMap<BigDecimal, BigDecimal> steuerBetragMap = new HashMap<>();
 
-    JVBigDecimalFormat format = new JVBigDecimalFormat("###,##0.##");
+    JVBigDecimalFormat format = Einstellungen.BIGDECIMALINTFORMAT;
 
     BigDecimal summe = BigDecimal.ZERO;
     for (SollbuchungPosition sp : re.getSollbuchungPositionList())
