@@ -56,6 +56,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -1044,6 +1045,22 @@ public class AbrechnungSEPA extends SEPASupport
       }
       sollb.setBetrag(summe);
 
+      if (spArray.size() == 1)
+      {
+        zweck = spArray.get(0).getZweck();
+      }
+      else
+      {
+        zweck = "";
+        for (SollbuchungPosition sp : spArray)
+        {
+          zweck += ", " + sp.getZweck() + " " + sp.getBetrag();
+        }
+        zweck = zweck.substring(2);
+      }
+      sollb.setZweck1(zweck);
+      sollb.updateForced();
+
       if (param.rechnung)
       {
         Formular form = param.rechnungsformular;
@@ -1074,29 +1091,10 @@ public class AbrechnungSEPA extends SEPASupport
           zweck = VelocityTool.eval(map, zweck, true);
           sollb.setZweck1(zweck);
         }
-      }
-      if (zweck == null)
-      {
-        if (spArray.size() == 1)
-        {
-          zweck = spArray.get(0).getZweck();
-        }
-        else
-        {
-          zweck = "";
-          for (SollbuchungPosition sp : spArray)
-          {
-            zweck += ", " + sp.getZweck() + " " + sp.getBetrag();
-          }
-          zweck = zweck.substring(2);
-        }
-        sollb.setZweck1(zweck);
-      }
-      sollb.updateForced();
-      if (re != null)
-      {
+        sollb.updateForced();
         re.setRechnungstext(zweck);
         re.store();
+        re.erzeugeBeleg(BelegTyp.RECHNUNG, null);
       }
     }
 

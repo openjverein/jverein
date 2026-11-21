@@ -25,7 +25,7 @@ import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.rmi.DBIterator;
 
-public interface Konto extends JVereinDBObject
+public interface Konto extends AbstractBelegDBObject
 {
 
   public static final String TABLE_NAME = "konto";

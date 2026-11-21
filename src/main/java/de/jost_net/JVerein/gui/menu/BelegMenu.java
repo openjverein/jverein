@@ -43,7 +43,7 @@ public class BelegMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     if (belegContext != null)
     {
-      addItem(new CheckedContextMenuItem("Beleg aus Buchung Entfernen",
+      addItem(new CheckedContextMenuItem("Beleg Entfernen",
           new BelegEntfernenAction(belegContext), "user-trash-full.png"));
     }
     addItem(new DeleteMenueItem());

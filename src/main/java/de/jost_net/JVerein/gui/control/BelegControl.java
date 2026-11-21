@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.dialogs.DropdownDialog;
@@ -29,6 +30,7 @@ import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.BelegDetailView;
 import de.jost_net.JVerein.keys.BelegArt;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Beleg;
@@ -75,7 +77,16 @@ public class BelegControl extends FilterControl
     docsList.addColumn("Belegart", "belegart",
         i -> BelegArt.getByKey((Integer) i).toString(), false,
         Column.ALIGN_LEFT);
+    if (zeigeBelegTyp())
+    {
+      docsList.addColumn(new Column("belegtyp", "Belegtyp",
+          i -> BelegTyp.getByKey((Integer) i).toString(), false,
+          Column.ALIGN_LEFT), false);
+    }
     docsList.addColumn("Beleggruppe", "beleggruppe");
+    docsList.addColumn(new Column("konten", "Konten"), false);
+    docsList.addColumn(new Column("mitglieder", "Mitglieder"), false);
+    docsList.addColumn(new Column("buchungen", "Buchungen"), false);
     docsList.setContextMenu(new BelegMenu(docsList));
     docsList.setMulti(true);
     // Nur in der View, nicht im Dialog
@@ -180,6 +191,9 @@ public class BelegControl extends FilterControl
         case BELEG_ART:
           docs.addFilter("belegart = ?", ((BelegArt) value).getKey());
           break;
+        case BELEG_TYP:
+          docs.addFilter("belegtyp = ?", ((BelegTyp) value).getKey());
+          break;
         case BELEG_GRUPPE:
           docs.addFilter("beleggruppe = ?", ((Beleggruppe) value).getID());
           break;
@@ -243,5 +257,12 @@ public class BelegControl extends FilterControl
   protected String getTableDateiname()
   {
     return VorlageUtil.getName(VorlageTyp.BELEGE_DATEINAME);
+  }
+
+  public boolean zeigeBelegTyp() throws RemoteException
+  {
+    return (Boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN)
+        || (Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN);
   }
 }

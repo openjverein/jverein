@@ -55,6 +55,8 @@ public enum Filter
       FilterArt.SELECT, Beitragsgruppe.class),
   BELEG_ART("beleg_art", "Belegart", BelegArt.BUCHUNG.toString(),
       FilterArt.SELECT, BelegArt.values()),
+  BELEG_TYP("beleg_typ", "Belegtyp", BelegTyp.RECHNUNG.toString(),
+      FilterArt.SELECT, BelegTyp.values()),
   BELEG_GRUPPE("beleg_gruppe", "Beleggruppe", "Sport", FilterArt.SELECT,
       Beleggruppe.class),
   BELEGNUMMER("filter_belegnummer", "Belegnummer", "0123", FilterArt.TEXT),

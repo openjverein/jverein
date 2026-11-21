@@ -27,6 +27,7 @@ import de.jost_net.JVerein.Queries.RechnungQuery;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -88,11 +89,20 @@ public class RechnungMailControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-          new Rechnungsausgabe(RechnungDetailControl.TYP.MAHNUNG,
-              (Formular) RechnungMailControl.this.getFormular(null).getValue())
-                  .aufbereiten(getRechnungen(currentObject),
-                      (Ausgabeart) getAusgabeart().getValue(),
-                      getBetreffString(), getTxtString(), true, false, false);
+          ArrayList<Rechnung> rechnungen = getRechnungen(currentObject);
+          Formular formular = (Formular) RechnungMailControl.this
+              .getFormular(null).getValue();
+
+          // Das ist noch der alte Code, er wird noch überarbeitet
+          new Rechnungsausgabe(RechnungDetailControl.TYP.MAHNUNG, formular)
+              .aufbereiten(rechnungen, (Ausgabeart) getAusgabeart().getValue(),
+                  getBetreffString(), getTxtString(), true, false, false);
+
+          // Belege erzeugen, hier nach Rechnungsausgabe wegen versendet Check
+          for (Rechnung rechnung : rechnungen)
+          {
+            rechnung.erzeugeBeleg(BelegTyp.MAHNUNG, formular);
+          }
         }
         catch (ApplicationException ae)
         {

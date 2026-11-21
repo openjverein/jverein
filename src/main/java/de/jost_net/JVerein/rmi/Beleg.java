@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.jost_net.JVerein.keys.BelegArt;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.willuhn.util.ApplicationException;
 
 public interface Beleg extends JVereinDBObject
@@ -38,6 +39,10 @@ public interface Beleg extends JVereinDBObject
   public BelegArt getBelegArt() throws RemoteException;
 
   public void setBelegArt(BelegArt belegart) throws RemoteException;
+
+  public BelegTyp getBelegTyp() throws RemoteException;
+
+  public void setBelegTyp(BelegTyp belegtyp) throws RemoteException;
 
   public Beleggruppe getBelegGruppe() throws RemoteException;
 
@@ -85,6 +90,6 @@ public interface Beleg extends JVereinDBObject
   public void erzeugeBelegnummer()
       throws NumberFormatException, RemoteException, ApplicationException;
 
-  public void delete(boolean vonDbBereinigen)
+  public void delete(boolean vonDbBereinigen, boolean forced)
       throws RemoteException, ApplicationException;
 }

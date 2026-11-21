@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -29,10 +30,19 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.RechnungVar;
+import de.jost_net.JVerein.Variable.ZahlerMap;
+import de.jost_net.JVerein.io.FormularAufbereitung;
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.io.VelocityTool;
+import de.jost_net.JVerein.keys.BelegArt;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.Staat;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
+import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.BelegRechnung;
+import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -40,11 +50,12 @@ import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.StringTool;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class RechnungImpl extends AbstractJVereinDBObject
+public class RechnungImpl extends AbstractBelegDBObjectImpl
     implements Rechnung, IAdresse, UnreadCounter, IBetrag, IVersand, IMitglied
 {
 
@@ -294,23 +305,22 @@ public class RechnungImpl extends AbstractJVereinDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("ist".equals(fieldName))
+    switch (fieldName)
     {
-      return getIstSumme();
+      case "ist":
+        return getIstSumme();
+      case "differenz":
+        if (getIstSumme() != null)
+        {
+          return getBetrag().subtract(getIstSumme());
+        }
+        else
+        {
+          return getBetrag();
+        }
+      default:
+        return super.getAttribute(fieldName);
     }
-    if ("differenz".equals(fieldName))
-    {
-      if (getIstSumme() != null)
-      {
-        return getBetrag().subtract(getIstSumme());
-      }
-      else
-      {
-        return getBetrag();
-      }
-
-    }
-    return super.getAttribute(fieldName);
   }
 
   @Override
@@ -729,5 +739,128 @@ public class RechnungImpl extends AbstractJVereinDBObject
     {
       super.store();
     }
+  }
+
+  @Override
+  public void delete() throws RemoteException, ApplicationException
+  {
+    DBIterator<Beleg> it = getBelegList();
+    while (it.hasNext())
+    {
+      it.next().deleteForced();
+    }
+    super.delete();
+  }
+
+  public void erzeugeBeleg(BelegTyp typ, Formular formular)
+      throws RemoteException, ApplicationException
+  {
+    File file = null;
+    try
+    {
+      transactionBegin();
+
+      Map<String, Object> map = new AllgemeineMap().getMap(null);
+      map = new RechnungMap().getMap(this, map);
+      if (getMitglied() != null)
+      {
+        map = new MitgliedMap().getMap(getMitglied(), map);
+      }
+      if (getZahler() != null)
+      {
+        map = new ZahlerMap().getMap(getZahler(), map);
+      }
+
+      // PDF Beleg erzeugen
+      Beleg doc = Einstellungen.getDBService().createObject(Beleg.class, null);
+      doc.setDatum(getDatum());
+      doc.setBelegArt(getBelegArt());
+      doc.setBelegTyp(typ);
+      Beleggruppe gruppe = null;
+      Integer gruppeid = (Integer) Einstellungen
+          .getEinstellung(Property.BELEGGRUPPE_RECHNUNG);
+      if (gruppeid != null)
+      {
+        gruppe = Einstellungen.getDBService().createObject(Beleggruppe.class,
+            gruppeid.toString());
+      }
+      doc.setBelegGruppe(gruppe);
+
+      String dateiname = null;
+      switch (typ)
+      {
+        case RECHNUNG:
+          dateiname = VorlageUtil
+              .getName(VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, this);
+          formular = getFormular();
+          break;
+        case MAHNUNG:
+          dateiname = VorlageUtil.getName(VorlageTyp.MAHNUNG_MITGLIED_DATEINAME,
+              this);
+          break;
+        default:
+          throw new ApplicationException(
+              "Belegtyp für Rechnungen nicht erlaubt.");
+      }
+      if (formular == null)
+      {
+        throw new ApplicationException("Kein Formular angegeben.");
+      }
+
+      File tempDir = new File(System.getProperty("java.io.tmpdir"));
+      file = new File(tempDir, dateiname + ".pdf");
+      FormularAufbereitung aufbereitung = new FormularAufbereitung(file, true,
+          false);
+      aufbereitung.writeForm(formular, map);
+      formular.store();
+      formular.setZaehlerToFormlink(getFormular().getZaehler());
+      aufbereitung.closeFormular();
+      aufbereitung.addZUGFeRD(this, false);
+
+      doc.setBemerkung(dateiname);
+      doc.setFile(file);
+      doc.store();
+
+      // Beleg zur Rechnung hinzufügen
+      addBeleg(doc);
+      // Wenn ein Mitglied gesetzt ist dann auch diesem zuweisen
+      if (getMitglied() != null)
+      {
+        getMitglied().addBeleg(doc);
+      }
+
+      transactionCommit();
+    }
+    catch (Exception e)
+    {
+      transactionRollback();
+      throw new ApplicationException(e.getMessage());
+    }
+    finally
+    {
+      if (file != null)
+      {
+        file.delete();
+      }
+    }
+  }
+
+  @Override
+  public BelegArt getBelegArt() throws RemoteException
+  {
+    return BelegArt.getByKey(
+        (Integer) Einstellungen.getEinstellung(Property.BELEGART_RECHNUNG));
+  }
+
+  @Override
+  protected Class<? extends AbstractBelegReferenz> getBelegReferenzClass()
+  {
+    return BelegRechnung.class;
+  }
+
+  @Override
+  protected String getBelegReferenzTableName() throws RemoteException
+  {
+    return "belegrechnung";
   }
 }

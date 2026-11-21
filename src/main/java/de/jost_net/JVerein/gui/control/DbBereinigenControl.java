@@ -715,7 +715,7 @@ public class DbBereinigenControl extends AbstractControl
         {
 
           beleg = it.next();
-          beleg.delete(true);
+          beleg.delete(true, false);
           count++;
         }
         catch (OperationCanceledException oce)

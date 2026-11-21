@@ -20,8 +20,11 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.sql.Clob;
 import java.sql.SQLException;
+
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
@@ -97,30 +100,51 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("id-int".equals(fieldName))
+    switch (fieldName)
     {
-      try
+      case "id-int":
+        try
+        {
+          return Integer.valueOf(getID());
+        }
+        catch (Exception e)
+        {
+          Logger.error("unable to parse id: " + getID());
+          return getID();
+        }
+      case "document":
       {
-        return Integer.valueOf(getID());
+        DBIterator<Beleg> list = getBelegList();
+        return list.size() > 0 ? list.size() : null;
       }
-      catch (Exception e)
+      case "belegnummern":
       {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
+        DBIterator<Beleg> list = getBelegList();
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        while (list.hasNext())
+        {
+          if (!first)
+          {
+            sb.append(", ");
+          }
+          first = false;
+          sb.append(list.next().getBelegnummer());
+        }
+        return sb.toString();
       }
-    }
-    else if (GESPERRT.equals(fieldName) || ABGESCHLOSSEN.equals(fieldName))
-    {
-      try
-      {
-        deleteCheck();
-        return "";
-      }
-      catch (ApplicationException ex)
-      {
-        // Icon für abgeschlossen
-        return "\uD83D\uDD12";
-      }
+      case GESPERRT:
+      case ABGESCHLOSSEN:
+        try
+        {
+          deleteCheck();
+          return "";
+        }
+        catch (ApplicationException ex)
+        {
+          // Icon für abgeschlossen
+          return "\uD83D\uDD12";
+        }
     }
     Object o = super.getAttribute(fieldName);
 
@@ -186,4 +210,12 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     this.forcedUpdate = true;
     super.store();
   }
+
+  // Default Methode damit Klassen die Spalten document und belegnummern
+  // über getAttribute anzeigen können
+  public DBIterator<Beleg> getBelegList() throws RemoteException
+  {
+    return null;
+  }
+
 }

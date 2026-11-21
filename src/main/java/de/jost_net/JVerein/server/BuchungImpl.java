@@ -31,7 +31,6 @@ import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.BelegBuchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -794,29 +793,6 @@ public class BuchungImpl extends AbstractBelegDBObjectImpl
     if (fieldName.equals("abrechnungslauf"))
     {
       return getAbrechnungslauf();
-    }
-
-    if ("document".equals(fieldName))
-    {
-      DBIterator<Beleg> list = getBelegList();
-      return list.size() > 0 ? list.size() : null;
-    }
-    if ("belegnummern".equals(fieldName))
-    {
-      DBIterator<Beleg> list = getBelegList();
-
-      StringBuilder sb = new StringBuilder();
-      boolean first = true;
-      while (list.hasNext())
-      {
-        if (!first)
-        {
-          sb.append(", ");
-        }
-        first = false;
-        sb.append(list.next().getBelegnummer());
-      }
-      return sb.toString();
     }
 
     return super.getAttribute(fieldName);

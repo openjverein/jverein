@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -23,17 +24,27 @@ import java.util.Date;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.io.SpendenbescheinigungBeleg;
+import de.jost_net.JVerein.keys.BelegArt;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
+import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.BelegSpendenbescheinigung;
+import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
+public class SpendenbescheinigungImpl extends AbstractBelegDBObjectImpl
     implements Spendenbescheinigung, IBetrag, IVersand, IMitglied
 {
 
@@ -328,18 +339,104 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void store() throws RemoteException, ApplicationException
+  public void store() throws ApplicationException, RemoteException
   {
-    super.store();
-    Long id = Long.valueOf(getID());
-    if (buchungen != null)
+    if (isNewObject())
     {
-      for (Buchung b : buchungen)
+      // Speichern, damit es schon eine ID gibt
+      super.store();
+
+      // PDF erzeugen
+      erzeugeBeleg();
+
+      // Buchungsreferenzen setzten
+      Long id = Long.valueOf(getID());
+      if (buchungen != null)
       {
-        b.setSpendenbescheinigungId(id);
-        b.updateForced();
+        for (Buchung b : buchungen)
+        {
+          b.setSpendenbescheinigungId(id);
+          b.updateForced();
+        }
+      }
+      super.store();
+    }
+    else
+    {
+      super.store();
+    }
+  }
+
+  public void erzeugeBeleg() throws RemoteException, ApplicationException
+  {
+    File file = null;
+    try
+    {
+      transactionBegin();
+
+      // PDF Beleg erzeugen
+      Beleg doc = Einstellungen.getDBService().createObject(Beleg.class, null);
+      doc.setDatum(getBescheinigungsdatum());
+      doc.setBelegArt(getBelegArt());
+      doc.setBelegTyp(BelegTyp.SPENDENBESCHEINIGUNG);
+      Beleggruppe gruppe = null;
+      Integer gruppeid = (Integer) Einstellungen
+          .getEinstellung(Property.BELEGGRUPPE_SPENDENBESCHEINIGUNG);
+      if (gruppeid != null)
+      {
+        gruppe = Einstellungen.getDBService().createObject(Beleggruppe.class,
+            gruppeid.toString());
+      }
+      doc.setBelegGruppe(gruppe);
+
+      String dateiname = VorlageUtil
+          .getName(VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, this);
+      File tempDir = new File(System.getProperty("java.io.tmpdir"));
+      file = new File(tempDir, dateiname + ".pdf");
+      new SpendenbescheinigungBeleg().aufbereiten(file, this);
+
+      doc.setBemerkung(dateiname);
+      doc.setFile(file);
+      doc.store();
+
+      // Beleg zur Spendenbescheinigung hinzufügen
+      addBeleg(doc);
+      // Wenn ein Mitglied gesetzt ist dann auch diesem zuweisen
+      if (getMitglied() != null)
+      {
+        getMitglied().addBeleg(doc);
+      }
+
+      transactionCommit();
+    }
+    catch (ApplicationException ae)
+    {
+      transactionRollback();
+      throw ae;
+    }
+    catch (Exception e)
+    {
+      transactionRollback();
+      throw new ApplicationException(e.getMessage());
+    }
+    finally
+    {
+      if (file != null)
+      {
+        file.delete();
       }
     }
+  }
+
+  @Override
+  public void delete() throws RemoteException, ApplicationException
+  {
+    DBIterator<Beleg> it = getBelegList();
+    while (it.hasNext())
+    {
+      it.next().deleteForced();
+    }
+    super.delete();
   }
 
   @Override
@@ -578,4 +675,24 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   {
     return "Spendenbescheinigungen";
   }
+
+  @Override
+  public BelegArt getBelegArt() throws RemoteException
+  {
+    return BelegArt.getByKey((Integer) Einstellungen
+        .getEinstellung(Property.BELEGART_SPENDENBESCHEINIGUNG));
+  }
+
+  @Override
+  protected Class<? extends AbstractBelegReferenz> getBelegReferenzClass()
+  {
+    return BelegSpendenbescheinigung.class;
+  }
+
+  @Override
+  protected String getBelegReferenzTableName() throws RemoteException
+  {
+    return "belegspendenbescheinigung";
+  }
+
 }
