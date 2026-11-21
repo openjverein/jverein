@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.util.JahresabschlussUtil;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.BelegRechnung;
 import de.willuhn.util.ApplicationException;
@@ -60,8 +61,19 @@ public class BelegRechnungImpl extends AbstractBelegReferenzImpl
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    throw new ApplicationException(
-        "Zugeordnete Rechnungen können nicht entfernt werden.");
+    String text = "Zugeordnete Rechnungen können nicht entfernt werden.";
+    try
+    {
+      if (getBeleg().getBelegTyp() == BelegTyp.MAHNUNG)
+      {
+        text = "Zugeordnete Mahnungen können nicht entfernt werden.";
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim deleteCheck");
+    }
+    throw new ApplicationException(text);
   }
 
   @Override
