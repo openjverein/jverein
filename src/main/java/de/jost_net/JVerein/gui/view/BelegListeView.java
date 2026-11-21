@@ -50,6 +50,10 @@ public class BelegListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getFilterInput(Filter.BELEGNUMMER));
     left.addInput(control.getFilterInput(Filter.BEMERKUNG));
+    if (control.zeigeBelegTyp())
+    {
+      left.addInput(control.getFilterInput(Filter.BELEG_TYP));
+    }
     left.addLabelPair("Nicht zugeordnet",
         control.getFilterInput(Filter.NICHT_ZUGEORDNET));
 

@@ -19,11 +19,13 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.control.RechnungDetailControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class RechnungDetailView extends AbstractDetailView
@@ -38,9 +40,9 @@ public class RechnungDetailView extends AbstractDetailView
 
     control = new RechnungDetailControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Rechnung");
+    ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+    ColumnLayout cl = new ColumnLayout(scrolled.getComposite(), 3);
     SimpleContainer left = new SimpleContainer(cl.getComposite());
 
     left.addInput(control.getNummer());
@@ -75,8 +77,12 @@ public class RechnungDetailView extends AbstractDetailView
     right.addInput(control.getRechnungstext());
     right.addInput(control.getErstattungsbetrag());
 
-    LabelGroup cont = new LabelGroup(getParent(), "Rechnungspositionen", true);
+    LabelGroup cont = new LabelGroup(scrolled.getComposite(),
+        "Rechnungspositionen", true);
     cont.addPart(control.getTablePart());
+
+    // Mit Rechnungen ist auch Dokumentenspeicherung aktiv
+    control.getBelegPart().paint(scrolled.getComposite());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.RECHNUNG));
@@ -85,11 +91,15 @@ public class RechnungDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     buttons.addButton(control.getRechnungDruckUndMailButton());
     buttons.addButton(control.getMahnungDruckUndMailButton());
-    buttons.addButton(control.getAnzeigenButton());
+    ButtonRtoL belegButton = control.getBelegButton();
+    if (belegButton != null)
+    {
+      buttons.addButton(control.getBelegButton());
+    }
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
+    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
   }
 
   @Override

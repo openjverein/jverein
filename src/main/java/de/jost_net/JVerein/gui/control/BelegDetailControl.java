@@ -212,7 +212,7 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
     {
       return bemerkung;
     }
-    bemerkung = new TextInput(getBeleg().getBemerkung(), 50);
+    bemerkung = new TextInput(getBeleg().getBemerkung(), 250);
     bemerkung.setName("Bemerkung");
     bemerkung.setMandatory(true);
     return bemerkung;
@@ -320,6 +320,10 @@ public class BelegDetailControl extends VorZurueckControl implements Savable
         getBeleg().getBelegGruppe());
     beleggruppe.setName("Beleggruppe");
     beleggruppe.setPleaseChoose(" ");
+    if (!getBeleg().isNewObject())
+    {
+      beleggruppe.disable();
+    }
     return beleggruppe;
   }
 

@@ -33,6 +33,7 @@ import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Einstellung;
@@ -319,6 +320,10 @@ public class Einstellungen
     FORMULARGELDSPENDE("formulargeldspende", String.class, ""),
     FORMULARSAMMELSPENDE("formularsammelspende", String.class, ""),
     FORMULARSACHSPENDE("formularsachspende", String.class, ""),
+    BELEGART_SPENDENBESCHEINIGUNG("belegartspendenbescheinigung", Integer.class,
+        ((Integer) BelegArt.SONSTIGES.getKey()).toString()),
+    BELEGGRUPPE_SPENDENBESCHEINIGUNG("beleggruppespendenbescheinigung",
+        Integer.class, ""),
 
     // Buchführung
     BEGINNGESCHAEFTSJAHR("beginngeschaeftsjahr", String.class, "01.01."),
@@ -354,6 +359,9 @@ public class Einstellungen
         + RechnungVar.ZAHLUNGSGRUND.getName() + "#{else}Mitgliedsbeitrag#end"),
     QRCODEINTRO("qrcodeintro", String.class,
         "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen."),
+    BELEGART_RECHNUNG("belegartrechnung", Integer.class,
+        ((Integer) BelegArt.SONSTIGES.getKey()).toString()),
+    BELEGGRUPPE_RECHNUNG("beleggrupperechnung", Integer.class, ""),
 
     // Mail
     SMTPSERVER("smtp_server", String.class, ""),

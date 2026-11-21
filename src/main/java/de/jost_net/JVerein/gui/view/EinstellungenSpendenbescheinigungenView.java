@@ -57,6 +57,9 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
         control.getFormularSammelbestaetigung());
     cont.addLabelPair("Formular für Sachspenden",
         control.getFormularSachspende());
+    cont.addLabelPair("Belegart", control.getBelegArtSpendenbescheinigung());
+    cont.addLabelPair("Beleggruppe",
+        control.getBelegGruppeSpendenbescheinigung());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(

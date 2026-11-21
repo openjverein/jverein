@@ -21,7 +21,9 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
-public interface Spendenbescheinigung extends JVereinDBObject
+import de.willuhn.util.ApplicationException;
+
+public interface Spendenbescheinigung extends AbstractBelegDBObject
 {
   public int getSpendenart() throws RemoteException;
 
@@ -150,4 +152,6 @@ public interface Spendenbescheinigung extends JVereinDBObject
   public Date getVersanddatum() throws RemoteException;
 
   public void setVersanddatum(Date datum) throws RemoteException;
+
+  public void erzeugeBeleg() throws RemoteException, ApplicationException;
 }

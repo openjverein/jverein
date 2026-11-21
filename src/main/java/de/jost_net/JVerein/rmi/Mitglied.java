@@ -29,7 +29,7 @@ import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.util.ApplicationException;
 
 public interface Mitglied
-    extends JVereinDBObject, ILastschrift, IGutschriftProvider
+    extends AbstractBelegDBObject, ILastschrift, IGutschriftProvider
 {
   public enum namenformat
   {

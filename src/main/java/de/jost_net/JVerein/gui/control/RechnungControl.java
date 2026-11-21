@@ -62,6 +62,8 @@ public class RechnungControl extends FilterControl
     rechnungList = new BetragSummaryTablePart(rechnungen, null);
     rechnungList.addColumn(getIdColumn(), false);
     rechnungList.addColumn(getGesperrtColumn(), false);
+    rechnungList.addColumn("D", "document");
+    rechnungList.addColumn(new Column("belegnummern", "Belegnummern"), false);
     rechnungList.addColumn("Nummer", "nummer");
     rechnungList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

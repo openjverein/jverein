@@ -24,6 +24,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.dialogs.RechnungDialog;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -169,6 +170,7 @@ public class GesamtrechnungNeuAction implements Action
       }
       rechnung.setBetrag(summe);
       rechnung.store();
+      rechnung.erzeugeBeleg(BelegTyp.RECHNUNG, null);
 
       DBTransaction.commit();
       GUI.getCurrentView().reload();

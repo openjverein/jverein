@@ -28,7 +28,6 @@ import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
-import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.BelegKonto;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -685,27 +684,6 @@ public class KontoImpl extends AbstractBelegDBObjectImpl implements Konto
     {
       case "buchungsart":
         return getBuchungsart();
-      case "document":
-      {
-        DBIterator<Beleg> list = getBelegList();
-        return list.size() > 0 ? list.size() : null;
-      }
-      case "belegnummern":
-      {
-        DBIterator<Beleg> list = getBelegList();
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        while (list.hasNext())
-        {
-          if (!first)
-          {
-            sb.append(", ");
-          }
-          first = false;
-          sb.append(list.next().getBelegnummer());
-        }
-        return sb.toString();
-      }
       case "buchungsklasse":
         return getBuchungsklasse();
       case "anlagenart":

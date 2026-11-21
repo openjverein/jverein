@@ -22,6 +22,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.dialogs.RechnungDialog;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -145,6 +146,7 @@ public class RechnungNeuAction implements Action
 
         sollb.setRechnung(rechnung);
         sollb.updateForced();
+        rechnung.erzeugeBeleg(BelegTyp.RECHNUNG, null);
         erstellt++;
       }
       if (erstellt == 0)

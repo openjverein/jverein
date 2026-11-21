@@ -41,6 +41,7 @@ import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.UeberweisungAusgabe;
@@ -410,6 +411,7 @@ public class Gutschrift extends SEPASupport
 
       rechnung.setRechnungstext(zweck);
       rechnung.store();
+      rechnung.erzeugeBeleg(BelegTyp.RECHNUNG, null);
     }
 
     // Buchung erzeugen
