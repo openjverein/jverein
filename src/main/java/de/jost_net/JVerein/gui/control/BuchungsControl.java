@@ -19,7 +19,10 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.swt.widgets.Event;
@@ -55,6 +58,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.parts.AbstractTablePart.AbstractTableItem;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
@@ -66,6 +70,160 @@ public class BuchungsControl extends FilterControl
   private BuchungListTablePart buchungsList;
 
   private BuchungQuery query;
+
+  /** Precomputed ordering keys for the currently displayed bookings. */
+  private Map<Buchung, BuchungSortKey> bookingSortKeys =
+      new IdentityHashMap<>();
+
+  private void updateBookingSortKeys(List<Buchung> bookings)
+      throws RemoteException
+  {
+    Map<Buchung, BuchungSortKey> keys = new IdentityHashMap<>();
+    Map<SplitGroupKey, Long> groupAnchors = new HashMap<>();
+
+    for (Buchung booking : bookings)
+    {
+      long id = Long.parseLong(booking.getID());
+      Date date = booking.getDatum();
+      Long splitId = booking.getSplitId();
+      Integer splitType = booking.getSplitTyp();
+      BuchungSortKey key = new BuchungSortKey(date, id, splitId, splitType);
+      keys.put(booking, key);
+      if (splitId != null)
+      {
+        SplitGroupKey group = new SplitGroupKey(date, splitId);
+        Long currentAnchor = groupAnchors.get(group);
+        if (currentAnchor == null || id < currentAnchor)
+        {
+          groupAnchors.put(group, id);
+        }
+      }
+    }
+
+    for (BuchungSortKey key : keys.values())
+    {
+      key.anchor = key.splitId == null
+          ? key.id
+          : groupAnchors.get(new SplitGroupKey(key.date, key.splitId));
+    }
+    bookingSortKeys = keys;
+  }
+
+  private void sortBookings(List<Buchung> bookings)
+  {
+    bookings.sort(this::compareBookings);
+  }
+
+  private int compareBookings(Buchung first, Buchung second)
+  {
+    BuchungSortKey a = bookingSortKeys.get(first);
+    BuchungSortKey b = bookingSortKeys.get(second);
+    if (a == null || b == null)
+    {
+      return 0;
+    }
+    int result = compareDates(a.date, b.date);
+    if (result != 0)
+    {
+      return result;
+    }
+    result = Long.compare(a.anchor, b.anchor);
+    if (result != 0)
+    {
+      return result;
+    }
+    if (a.splitId != null && a.splitId.equals(b.splitId))
+    {
+      result = compareSplitTypes(a.splitType, b.splitType);
+      if (result != 0)
+      {
+        return result;
+      }
+    }
+    return Long.compare(a.id, b.id);
+  }
+
+  private int compareDates(Date first, Date second)
+  {
+    if (first == second)
+    {
+      return 0;
+    }
+    if (first == null)
+    {
+      return -1;
+    }
+    if (second == null)
+    {
+      return 1;
+    }
+    return first.compareTo(second);
+  }
+
+  private int compareSplitTypes(Integer first, Integer second)
+  {
+    if (first == second)
+    {
+      return 0;
+    }
+    if (first == null)
+    {
+      return 1;
+    }
+    if (second == null)
+    {
+      return -1;
+    }
+    return Integer.compare(first, second);
+  }
+
+  private static class SplitGroupKey
+  {
+    private final Date date;
+    private final Long splitId;
+
+    private SplitGroupKey(Date date, Long splitId)
+    {
+      this.date = date;
+      this.splitId = splitId;
+    }
+
+    @Override
+    public boolean equals(Object value)
+    {
+      if (!(value instanceof SplitGroupKey))
+      {
+        return false;
+      }
+      SplitGroupKey other = (SplitGroupKey) value;
+      return java.util.Objects.equals(date, other.date)
+          && java.util.Objects.equals(splitId, other.splitId);
+    }
+
+    @Override
+    public int hashCode()
+    {
+      return java.util.Objects.hash(date, splitId);
+    }
+  }
+
+  private static class BuchungSortKey
+  {
+    private final Date date;
+    private final long id;
+    private final Long splitId;
+    private final Integer splitType;
+    private long anchor;
+
+    private BuchungSortKey(Date date, long id, Long splitId,
+        Integer splitType)
+    {
+      this.date = date;
+      this.id = id;
+      this.splitId = splitId;
+      this.splitType = splitType;
+    }
+  }
 
   private Vector<Listener> changeKontoListener = new Vector<>();
 
@@ -97,6 +255,8 @@ public class BuchungsControl extends FilterControl
     query = new BuchungQuery(getFilter(), geldkonto);
 
     List<Buchung> buchungen = query.get();
+    updateBookingSortKeys(buchungen);
+    sortBookings(buchungen);
 
     buchungsList = new BuchungListTablePart(buchungen,
         new BuchungAction(false, null));
@@ -127,8 +287,21 @@ public class BuchungsControl extends FilterControl
     });
     buchungsList.addColumn(new Column("splitid", "H-ID"), false);
     buchungsList.addColumn("Konto", "konto");
-    buchungsList.addColumn("Datum", "datum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    buchungsList.addColumn(new Column("datum", "Datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()))
+    {
+      @Override
+      public int compare(AbstractTableItem item1, AbstractTableItem item2)
+      {
+        int result = super.compare(item1, item2);
+        if (result != 0)
+        {
+          return result;
+        }
+        return compareBookings((Buchung) item1.data,
+            (Buchung) item2.data);
+      }
+    });
 
     if (geldkonto)
     {
@@ -254,6 +427,8 @@ public class BuchungsControl extends FilterControl
       query = new BuchungQuery(getFilter(), geldkonto);
 
       List<Buchung> buchungen = query.get();
+      updateBookingSortKeys(buchungen);
+      sortBookings(buchungen);
 
       buchungsList.updateSaldo((Konto) getFilterValue(Filter.KONTO));
       buchungsList.removeAll();
