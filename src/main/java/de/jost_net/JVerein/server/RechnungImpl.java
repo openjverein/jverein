@@ -51,6 +51,7 @@ import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -827,6 +828,13 @@ public class RechnungImpl extends AbstractBelegDBObjectImpl
       if (getMitglied() != null)
       {
         getMitglied().addBeleg(doc);
+      }
+      // Wenn ein anderer Zahler als das Mitglied gesetzt ist dann auch diesem
+      // zuweisen
+      if (getZahler() != null && (getMitglied() == null
+          || !BeanUtil.equals(getZahler(), getMitglied())))
+      {
+        getZahler().addBeleg(doc);
       }
 
       transactionCommit();
