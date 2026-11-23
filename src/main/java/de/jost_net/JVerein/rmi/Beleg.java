@@ -19,6 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -75,6 +76,10 @@ public interface Beleg extends JVereinDBObject
   String getPfad() throws RemoteException;
 
   void setPfad(String pfad) throws RemoteException;
+
+  public Timestamp getVersand() throws RemoteException;
+
+  public void setVersand(Timestamp versand) throws RemoteException;
 
   /**
    * Prüft die Checksum der Datei

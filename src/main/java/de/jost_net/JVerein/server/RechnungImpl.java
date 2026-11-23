@@ -19,6 +19,7 @@ package de.jost_net.JVerein.server;
 import java.io.File;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +33,6 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.ZahlerMap;
 import de.jost_net.JVerein.io.FormularAufbereitung;
-import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.BelegTyp;
@@ -57,7 +57,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class RechnungImpl extends AbstractBelegDBObjectImpl
-    implements Rechnung, IAdresse, UnreadCounter, IBetrag, IVersand, IMitglied
+    implements Rechnung, UnreadCounter
 {
 
   private static final long serialVersionUID = -286067581211521888L;
@@ -753,10 +753,11 @@ public class RechnungImpl extends AbstractBelegDBObjectImpl
     super.delete();
   }
 
-  public void erzeugeBeleg(BelegTyp typ, Formular formular)
+  public Beleg erzeugeBeleg(BelegTyp typ, Formular formular)
       throws RemoteException, ApplicationException
   {
     File file = null;
+    Beleg doc = null;
     try
     {
       transactionBegin();
@@ -773,8 +774,8 @@ public class RechnungImpl extends AbstractBelegDBObjectImpl
       }
 
       // PDF Beleg erzeugen
-      Beleg doc = Einstellungen.getDBService().createObject(Beleg.class, null);
-      doc.setDatum(getDatum());
+      doc = Einstellungen.getDBService().createObject(Beleg.class, null);
+      doc.setDatum(typ == BelegTyp.RECHNUNG ? getDatum() : new Date());
       doc.setBelegArt(getBelegArt());
       doc.setBelegTyp(typ);
       Beleggruppe gruppe = null;
@@ -851,6 +852,7 @@ public class RechnungImpl extends AbstractBelegDBObjectImpl
         file.delete();
       }
     }
+    return doc;
   }
 
   @Override
@@ -870,5 +872,27 @@ public class RechnungImpl extends AbstractBelegDBObjectImpl
   protected String getBelegReferenzTableName() throws RemoteException
   {
     return "belegrechnung";
+  }
+
+  @Override
+  public void setBelegVersand(BelegTyp typ)
+      throws RemoteException, ApplicationException
+  {
+    DBIterator<Beleg> it = getBelegList();
+    if (typ == BelegTyp.RECHNUNG)
+    {
+      it.setOrder("ORDER BY id");
+    }
+    else
+    {
+      it.setOrder("ORDER BY id DESC");
+    }
+    it.setLimit(1);
+    Beleg beleg = it.hasNext() ? it.next() : null;
+    if (beleg != null && typ == beleg.getBelegTyp())
+    {
+      beleg.setVersand(new Timestamp(new Date().getTime()));
+      beleg.updateForced();
+    }
   }
 }

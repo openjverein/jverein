@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.server.IVersand;
 import de.willuhn.datasource.rmi.DBObject;
@@ -47,6 +48,10 @@ public abstract class AbstractAusgabe
 {
 
   private Settings settings;
+
+  protected boolean checked = false;
+
+  protected BelegTyp belegtyp = null;
 
   public AbstractAusgabe()
   {
@@ -79,7 +84,7 @@ public abstract class AbstractAusgabe
     {
       art = Ausgabeart.PDF;
     }
-    if (!checkVersendet(list, art))
+    if (!checked && !checkVersendet(list, art))
     {
       return;
     }
@@ -123,7 +128,9 @@ public abstract class AbstractAusgabe
             IVersand versand = (IVersand) object;
             versand.setVersanddatum(new Date());
             versand.updateForced();
+            versand.setBelegVersand(belegtyp);
           }
+
         }
 
         closeDocument(formularaufbereitung,
@@ -143,6 +150,7 @@ public abstract class AbstractAusgabe
             IVersand versand = (IVersand) object;
             versand.setVersanddatum(new Date());
             versand.updateForced();
+            versand.setBelegVersand(belegtyp);
           }
         }
         GUI.getStatusBar()
@@ -192,9 +200,10 @@ public abstract class AbstractAusgabe
    *         werden
    * @throws RemoteException
    */
-  protected boolean checkVersendet(ArrayList<? extends DBObject> list,
+  public boolean checkVersendet(ArrayList<? extends DBObject> list,
       Ausgabeart art) throws RemoteException
   {
+    checked = true;
     for (DBObject o : list)
     {
       if (!(o instanceof IVersand))

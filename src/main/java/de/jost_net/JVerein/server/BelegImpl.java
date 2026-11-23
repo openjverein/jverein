@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -102,7 +103,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       {
         throw new ApplicationException("Pfad darf nicht verändert werden!");
       }
-      if (!hashUpdateAllowed)
+      if (!hashUpdateAllowed && !forcedUpdate)
       {
         for (AbstractBelegReferenz ref : getReferenzes())
           ref.checkUpdateAllowed();
@@ -581,6 +582,18 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   public void setUUID(String uuid) throws RemoteException
   {
     setAttribute("uuid", uuid);
+  }
+
+  @Override
+  public Timestamp getVersand() throws RemoteException
+  {
+    return (Timestamp) getAttribute("versand");
+  }
+
+  @Override
+  public void setVersand(Timestamp versand) throws RemoteException
+  {
+    setAttribute("versand", versand);
   }
 
   private File getFileInternal() throws IOException, ApplicationException

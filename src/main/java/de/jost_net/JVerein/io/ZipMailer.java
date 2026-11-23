@@ -38,6 +38,7 @@ import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
@@ -97,6 +98,8 @@ public class ZipMailer
     BackgroundTask t = new BackgroundTask()
     {
       private boolean cancel = false;
+
+      BelegTyp belegtyp = null;
 
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
@@ -176,6 +179,7 @@ public class ZipMailer
                   // das Mitglied selbst für die Map verwenden
                   mitgliedMap = re.getMitglied();
                   versand = (IVersand) re;
+                  belegtyp = BelegTyp.RECHNUNG;
                   break;
                 case "mahnung":
                   re = (Rechnung) Einstellungen.getDBService()
@@ -184,12 +188,14 @@ public class ZipMailer
                   // Bei Rechnungen ist der Zahler angegeben, wir wollen aber
                   // das Mitglied selbst für die Map verwenden
                   mitgliedMap = re.getMitglied();
+                  belegtyp = BelegTyp.MAHNUNG;
                   break;
                 case "spendenbescheinigung":
                   spb = (Spendenbescheinigung) Einstellungen.getDBService()
                       .createObject(Spendenbescheinigung.class, artId);
                   map = new SpendenbescheinigungMap().getMap(spb, map);
                   versand = (IVersand) spb;
+                  belegtyp = BelegTyp.SPENDENBESCHEINIGUNG;
                   break;
                 case "lastschrift":
                   ls = (Lastschrift) Einstellungen.getDBService()
@@ -330,6 +336,7 @@ public class ZipMailer
                 {
                   versand.setVersanddatum(new Date());
                   versand.updateForced();
+                  versand.setBelegVersand(belegtyp);
                 }
               }
               catch (MessagingException me)

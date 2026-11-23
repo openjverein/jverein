@@ -19,6 +19,7 @@ package de.jost_net.JVerein.server;
 import java.io.File;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -693,6 +694,21 @@ public class SpendenbescheinigungImpl extends AbstractBelegDBObjectImpl
   protected String getBelegReferenzTableName() throws RemoteException
   {
     return "belegspendenbescheinigung";
+  }
+
+  @Override
+  public void setBelegVersand(BelegTyp typ)
+      throws RemoteException, ApplicationException
+  {
+    DBIterator<Beleg> it = getBelegList();
+    it.setOrder("ORDER BY id");
+    it.setLimit(1);
+    Beleg beleg = it.hasNext() ? it.next() : null;
+    if (beleg != null && typ == beleg.getBelegTyp())
+    {
+      beleg.setVersand(new Timestamp(new Date().getTime()));
+      beleg.updateForced();
+    }
   }
 
 }

@@ -60,8 +60,18 @@ public class BelegSpendenbescheinigungImpl extends AbstractBelegReferenzImpl
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    throw new ApplicationException(
-        "Zugeordnete Spendenbescheinigungen können nicht entfernt werden.");
+    try
+    {
+      if (getBeleg().getVersand() != null)
+      {
+        throw new ApplicationException(
+            "Bereits versendete Belege können nicht gelöscht werden.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim deleteCheck");
+    }
   }
 
   @Override

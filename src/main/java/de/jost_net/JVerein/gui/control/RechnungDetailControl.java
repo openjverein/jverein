@@ -35,7 +35,6 @@ import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -113,12 +112,6 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
   private BelegPart belegPart;
 
   private ButtonRtoL belegButton;
-
-  public enum TYP
-  {
-    RECHNUNG,
-    MAHNUNG
-  }
 
   public RechnungDetailControl(AbstractView view)
   {
@@ -581,9 +574,7 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
       throws RemoteException, ApplicationException
   {
     Rechnung re = getRechnung();
-    re.setFormular((Formular) getRechnungFormular().getValue());
     re.setKommentar((String) getKommentar().getValue());
-    re.setVersanddatum((Date) getVersanddatum().getValue());
     return re;
   }
 

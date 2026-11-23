@@ -424,27 +424,29 @@ public class SpendenbescheinigungDetailControl extends VorZurueckControl
   public JVereinDBObject prepareStore() throws RemoteException
   {
     Spendenbescheinigung spb = getSpendenbescheinigung();
-    Spendenart spa = (Spendenart) getSpendenart().getValue();
-    spb.setMitglied((Mitglied) getMitglied().getValue());
-    spb.setSpendenart(spa.getKey());
-    spb.setZeile1((String) getZeile1(false).getValue());
-    spb.setZeile2((String) getZeile2().getValue());
-    spb.setZeile3((String) getZeile3().getValue());
-    spb.setZeile4((String) getZeile4().getValue());
-    spb.setZeile5((String) getZeile5().getValue());
-    spb.setZeile6((String) getZeile6().getValue());
-    spb.setZeile7((String) getZeile7().getValue());
-    spb.setSpendedatum((Date) getSpendedatum().getValue());
-    spb.setBescheinigungsdatum((Date) getBescheinigungsdatum().getValue());
-    spb.setBetrag((BigDecimal) getBetrag().getValue());
-    spb.setBezeichnungSachzuwendung(
-        (String) getBezeichnungSachzuwendung().getValue());
-    spb.setFormular((Formular) getFormular().getValue());
-    HerkunftSpende hsp = (HerkunftSpende) getHerkunftSpende().getValue();
-    spb.setHerkunftSpende(hsp.getKey());
-    spb.setUnterlagenWertermittlung(
-        (Boolean) getUnterlagenWertermittlung().getValue());
-    spb.setVersanddatum((Date) getVersanddatum().getValue());
+    if (spb.isNewObject())
+    {
+      Spendenart spa = (Spendenart) getSpendenart().getValue();
+      spb.setMitglied((Mitglied) getMitglied().getValue());
+      spb.setSpendenart(spa.getKey());
+      spb.setZeile1((String) getZeile1(false).getValue());
+      spb.setZeile2((String) getZeile2().getValue());
+      spb.setZeile3((String) getZeile3().getValue());
+      spb.setZeile4((String) getZeile4().getValue());
+      spb.setZeile5((String) getZeile5().getValue());
+      spb.setZeile6((String) getZeile6().getValue());
+      spb.setZeile7((String) getZeile7().getValue());
+      spb.setSpendedatum((Date) getSpendedatum().getValue());
+      spb.setBescheinigungsdatum((Date) getBescheinigungsdatum().getValue());
+      spb.setBetrag((BigDecimal) getBetrag().getValue());
+      spb.setBezeichnungSachzuwendung(
+          (String) getBezeichnungSachzuwendung().getValue());
+      spb.setFormular((Formular) getFormular().getValue());
+      HerkunftSpende hsp = (HerkunftSpende) getHerkunftSpende().getValue();
+      spb.setHerkunftSpende(hsp.getKey());
+      spb.setUnterlagenWertermittlung(
+          (Boolean) getUnterlagenWertermittlung().getValue());
+    }
     return spb;
   }
 

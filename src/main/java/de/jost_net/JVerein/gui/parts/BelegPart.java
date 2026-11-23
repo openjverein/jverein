@@ -31,7 +31,6 @@ import de.jost_net.JVerein.Messaging.BelegRemoveMessage;
 import de.jost_net.JVerein.gui.action.BelegNewAction;
 import de.jost_net.JVerein.gui.action.BelegZuordnenAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.menu.BelegAnzeigeMenu;
 import de.jost_net.JVerein.gui.menu.BelegMenu;
 import de.jost_net.JVerein.gui.util.DragnDropUtil;
 import de.jost_net.JVerein.gui.view.BelegDetailView;
@@ -41,6 +40,7 @@ import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.server.AbstractJVereinDBObject;
+import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
@@ -132,14 +132,17 @@ public class BelegPart implements Part
     docsList.addColumn("Belegnummer", "belegnummer");
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    if (zeigeBelegTyp())
+    {
+      docsList.addColumn("Versand", "versand",
+          new DateFormatter(new JVDateFormatDATETIME()));
+    }
     docsList.addColumn("Bemerkung", "bemerkung");
     docsList.addColumn(new Column("vollpfad", "Pfad"), false);
     docsList.addColumn("Belegart", "belegart",
         i -> BelegArt.getByKey((Integer) i).toString(), false,
         Column.ALIGN_LEFT);
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN)
-        || (Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+    if (zeigeBelegTyp())
     {
       docsList.addColumn(new Column("belegtyp", "Belegtyp",
           i -> BelegTyp.getByKey((Integer) i).toString(), false,
@@ -152,7 +155,7 @@ public class BelegPart implements Part
     }
     else
     {
-      docsList.setContextMenu(new BelegAnzeigeMenu());
+      docsList.setContextMenu(new BelegMenu(null, null));
     }
     docsList.setMulti(true);
     docsList.setAction(new EditAction(BelegDetailView.class));
@@ -228,6 +231,13 @@ public class BelegPart implements Part
       DBTransaction.rollback();
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
+  }
+
+  public boolean zeigeBelegTyp() throws RemoteException
+  {
+    return (Boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN)
+        || (Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN);
   }
 
   /**

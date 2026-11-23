@@ -24,11 +24,14 @@ import java.util.List;
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.server.IBetrag;
 import de.jost_net.JVerein.server.IGutschriftProvider;
+import de.jost_net.JVerein.server.IMitglied;
+import de.jost_net.JVerein.server.IVersand;
 import de.willuhn.util.ApplicationException;
 
-public interface Rechnung
-    extends AbstractBelegDBObject, IAdresse, IGutschriftProvider
+public interface Rechnung extends AbstractBelegDBObject, IAdresse,
+    IGutschriftProvider, IBetrag, IVersand, IMitglied
 {
   public void setFormular(Formular formular) throws RemoteException;
 
@@ -160,6 +163,6 @@ public interface Rechnung
 
   public void setNummer(String nummer) throws RemoteException;
 
-  public void erzeugeBeleg(BelegTyp typ, Formular formular)
+  public Beleg erzeugeBeleg(BelegTyp typ, Formular formular)
       throws RemoteException, ApplicationException;
 }

@@ -42,6 +42,7 @@ import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
@@ -77,6 +78,7 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
   {
     this.adressblatt = adressblatt;
     this.text = text;
+    belegtyp = BelegTyp.SPENDENBESCHEINIGUNG;
   }
 
   @Override

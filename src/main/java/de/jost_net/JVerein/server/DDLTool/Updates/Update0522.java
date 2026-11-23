@@ -40,6 +40,9 @@ public class Update0522 extends AbstractDDLUpdate
     execute(addColumn("beleg",
         new Column("belegtyp", COLTYPE.INTEGER, 10, null, false, false)));
 
+    execute(addColumn("beleg",
+        new Column("versand", COLTYPE.TIMESTAMP, 1, null, false, false)));
+
     Table table = new Table("belegrechnung");
 
     Column id = new Column("id", COLTYPE.BIGINT, 4, null, false, true);

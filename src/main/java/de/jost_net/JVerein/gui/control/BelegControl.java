@@ -37,6 +37,7 @@ import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -72,6 +73,11 @@ public class BelegControl extends FilterControl
     docsList.addColumn("Belegnummer", "belegnummer");
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    if (zeigeBelegTyp())
+    {
+      docsList.addColumn("Versand", "versand",
+          new DateFormatter(new JVDateFormatDATETIME()));
+    }
     docsList.addColumn("Bemerkung", "bemerkung");
     docsList.addColumn("Pfad", "vollpfad");
     docsList.addColumn("Belegart", "belegart",
