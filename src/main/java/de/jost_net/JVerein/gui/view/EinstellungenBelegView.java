@@ -55,6 +55,13 @@ public class EinstellungenBelegView extends AbstractView
     groupBuchung.addInput(control.getBelegBuchungNummer());
     groupBuchung.addInput(control.getBelegBuchungZaehler());
 
+    LabelGroup groupKonto = new LabelGroup(cont.getComposite(),
+        "Konten-Belege");
+    groupKonto.addLabelPair("Verzeichnis für Konten-Belege *",
+        control.getKontenDokumentVerzeichnis());
+    groupKonto.addInput(control.getBelegKontoNummer());
+    groupKonto.addInput(control.getBelegKontoZaehler());
+
     LabelGroup groupAllgemein = new LabelGroup(cont.getComposite(),
         "Allgemeine Belege");
     groupAllgemein.addLabelPair("Verzeichnis für Allgemeine Belege *",

@@ -1,3 +1,17 @@
+/**********************************************************************
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
 import org.eclipse.swt.SWT;
@@ -53,6 +67,7 @@ public class BelegDetailView extends AbstractDetailView
       group.addInput(control.getBelegnummer());
     }
     group.addInput(control.getBelegArt());
+    group.addInput(control.getBelegGruppe());
     group.addInput(control.getDatum());
     group.addInput(control.getBemerkung());
     if (((Changeable) getCurrentObject()).isNewObject())
@@ -71,6 +86,9 @@ public class BelegDetailView extends AbstractDetailView
 
       TabGroup tabMitglieder = new TabGroup(folder, "Mitglieder", true, 1);
       control.getMitgliederList().paint(tabMitglieder.getComposite());
+
+      TabGroup tabKonten = new TabGroup(folder, "Konten", true, 1);
+      control.getKontenList().paint(tabKonten.getComposite());
 
       // Aktiver zuletzt ausgewählter Tab.
       folder.setSelection(tabindex.getInt());

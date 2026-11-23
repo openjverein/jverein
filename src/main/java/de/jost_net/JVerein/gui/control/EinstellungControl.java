@@ -61,6 +61,8 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.MailAnhang;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.SteuerUtil;
 import de.jost_net.OBanToo.SEPA.Land.SEPALaender;
 import de.jost_net.OBanToo.SEPA.Land.SEPALand;
@@ -69,6 +71,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Navigation;
 import de.willuhn.jameica.gui.NavigationItem;
+import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.extension.ExtensionRegistry;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -83,6 +86,7 @@ import de.willuhn.jameica.gui.input.ScaleInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
@@ -406,6 +410,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput dokumentenspeicherung_messaging;
 
+  private DirectoryInput kontenDokumentVerzeichnis;
+
   private DirectoryInput mitgliedsDokumentVerzeichnis;
 
   private DirectoryInput buchungsDokumentVerzeichnis;
@@ -427,6 +433,10 @@ public class EinstellungControl extends AbstractControl
   private IntegerInput belegZaehlerMitglied;
 
   private TextInput belegnummerMitglied;
+
+  private IntegerInput belegZaehlerKonto;
+
+  private TextInput belegnummerKonto;
 
   public EinstellungControl(AbstractView view)
   {
@@ -1148,6 +1158,80 @@ public class EinstellungControl extends AbstractControl
     sepamandatidsourcemodel = new SelectInput(SepaMandatIdSource.getArray(),
         new SepaMandatIdSource((Integer) Einstellungen
             .getEinstellung(Property.SEPAMANDATIDSOURCE)));
+    sepamandatidsourcemodel.addListener(e -> {
+      try
+      {
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+            && sepamandatidsourcemodel != null
+            && sepamandatidsourcemodel.getValue() != null
+            && ((SepaMandatIdSource) sepamandatidsourcemodel.getValue())
+                .getKey() == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER)
+        {
+          String validChars = HBCIProperties.HBCI_SEPA_MANDATE_VALIDCHARS;
+          boolean invalid = false;
+          boolean externnull = false;
+          ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+              "mitglied");
+          it.addColumn("externemitgliedsnummer as nummer");
+          it.addFilter("adresstyp = 1");
+          while (it.hasNext())
+          {
+            String nummer = (String) it.next().getAttribute("nummer");
+            if (nummer == null || nummer.isBlank())
+            {
+              externnull = true;
+              break;
+            }
+            for (int i = 0; i < nummer.length(); i++)
+            {
+              char c = nummer.charAt(i);
+              if (validChars.indexOf(c) == -1)
+              {
+                invalid = true;
+                break;
+              }
+            }
+          }
+          if (invalid || externnull)
+          {
+            String text;
+            if (invalid)
+            {
+              text = "Es gibt Mitglieder bei denen die externe Mitgliedsnummer"
+                  + " für eine MandatId ungülige Zeichen enthält."
+                  + "\nDiese müssen korrigiert werden!"
+                  + "\nGültige Zeichen sind: " + validChars;
+            }
+            else
+            {
+              text = "Nicht alle Mitglieder haben eine externe Mitgliedsnummer."
+                  + "\nDiese müssen konfiguriert werden!";
+            }
+            SimpleDialog dialog = new SimpleDialog(
+                SimpleDialog.POSITION_CENTER);
+            dialog.setText(text);
+            dialog.setTitle("Ungültige Externe Mitgliedsnummern");
+            try
+            {
+              dialog.open();
+            }
+            catch (OperationCanceledException oce)
+            {
+              throw oce;
+            }
+            catch (Exception ex)
+            {
+              Logger.error("Fehler beimöffnen des Dialogs: " + ex.getMessage());
+            }
+          }
+        }
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler", e1);
+      }
+    });
     return sepamandatidsourcemodel;
   }
 
@@ -1162,6 +1246,17 @@ public class EinstellungControl extends AbstractControl
         (Integer) Einstellungen.getEinstellung(Property.ALTERSMODEL)));
 
     return altersmodel;
+  }
+
+  public DirectoryInput getKontenDokumentVerzeichnis() throws RemoteException
+  {
+    if (kontenDokumentVerzeichnis != null)
+    {
+      return kontenDokumentVerzeichnis;
+    }
+    kontenDokumentVerzeichnis = new DirectoryInput(
+        Einstellungen.getBelegKontoVerzeichnis());
+    return kontenDokumentVerzeichnis;
   }
 
   public DirectoryInput getMitgliedsDokumentVerzeichnis() throws RemoteException
@@ -2233,6 +2328,30 @@ public class EinstellungControl extends AbstractControl
     return belegZaehlerSonstiges;
   }
 
+  public TextInput getBelegKontoNummer() throws RemoteException
+  {
+    if (belegnummerKonto != null)
+    {
+      return belegnummerKonto;
+    }
+    belegnummerKonto = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.BELEGNUMMER_KONTO), 500);
+    belegnummerKonto.setName("Belegnummer Konten-Belege");
+    return belegnummerKonto;
+  }
+
+  public IntegerInput getBelegKontoZaehler() throws RemoteException
+  {
+    if (belegZaehlerKonto != null)
+    {
+      return belegZaehlerKonto;
+    }
+    belegZaehlerKonto = new IntegerInput(
+        (Integer) Einstellungen.getEinstellung(Property.BELEG_ZAEHLER_KONTO));
+    belegZaehlerKonto.setName("Zähler Konten-Belege");
+    return belegZaehlerKonto;
+  }
+
   public TextInput getBelegMitgliedNummer() throws RemoteException
   {
     if (belegnummerMitglied != null)
@@ -2705,13 +2824,27 @@ public class EinstellungControl extends AbstractControl
   {
     try
     {
+      if (!Einstellungen.getBelegKontoVerzeichnis()
+          .equals(kontenDokumentVerzeichnis.getValue()))
+      {
+        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+        dialog.setTitle("Verzeichnis geändert");
+        dialog.setText("Das Verzeichnis für Konten-Belege wurde geändert.\n"
+            + "Bitte Verschieben sie ggf. vorhandene Belege manuell von '"
+            + Einstellungen.getBelegKontoVerzeichnis() + "' nach '"
+            + kontenDokumentVerzeichnis.getValue() + "'\n" + "Fortfahren?");
+        if (!(Boolean) dialog.open())
+        {
+          throw new OperationCanceledException();
+        }
+      }
       if (!Einstellungen.getBelegMitgliedVerzeichnis()
           .equals(mitgliedsDokumentVerzeichnis.getValue()))
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
         dialog.setTitle("Verzeichnis geändert");
         dialog.setText("Das Verzeichnis für Mitglieds-Belege wurde geändert.\n"
-            + "Bitte Verschieben sie ggf. vorhandene Be	lege manuell von '"
+            + "Bitte Verschieben sie ggf. vorhandene Belege manuell von '"
             + Einstellungen.getBelegMitgliedVerzeichnis() + "' nach '"
             + mitgliedsDokumentVerzeichnis.getValue() + "'\n" + "Fortfahren?");
         if (!(Boolean) dialog.open())
@@ -2748,6 +2881,9 @@ public class EinstellungControl extends AbstractControl
         }
       }
 
+      Einstellungen.setBelegKontoVerzeichnis(
+          (String) kontenDokumentVerzeichnis.getValue());
+
       Einstellungen.setBelegMitgliedVerzeichnis(
           (String) mitgliedsDokumentVerzeichnis.getValue());
 
@@ -2773,6 +2909,11 @@ public class EinstellungControl extends AbstractControl
           (String) belegnummerMitglied.getValue());
       Einstellungen.setEinstellung(Property.BELEG_ZAEHLER_MITGLIED,
           (Integer) belegZaehlerMitglied.getValue());
+
+      Einstellungen.setEinstellung(Property.BELEGNUMMER_KONTO,
+          (String) belegnummerKonto.getValue());
+      Einstellungen.setEinstellung(Property.BELEG_ZAEHLER_KONTO,
+          (Integer) belegZaehlerKonto.getValue());
 
       DBTransaction.commit();
 

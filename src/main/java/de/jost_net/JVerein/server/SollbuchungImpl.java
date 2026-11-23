@@ -449,7 +449,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   @Override
   public String getMenueID()
   {
-    return "Mitglieder.Sollbuchungen";
+    return "OpenJVerein.Mitglieder.Sollbuchungen";
   }
 
   // Für Gutschrift Support

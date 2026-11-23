@@ -29,7 +29,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -37,7 +36,8 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class WiedervorlageDetailControl extends VorZurueckControl implements Savable
+public class WiedervorlageDetailControl extends VorZurueckControl
+    implements Savable
 {
 
   private DateInput datum = null;
@@ -46,7 +46,7 @@ public class WiedervorlageDetailControl extends VorZurueckControl implements Sav
 
   private DateInput erledigung = null;
 
-  private AbstractInput mitglied;
+  private Input mitglied;
 
   private Wiedervorlage wvl = null;
 

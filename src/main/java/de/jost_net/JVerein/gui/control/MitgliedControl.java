@@ -30,6 +30,7 @@ import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
+import de.jost_net.JVerein.gui.formatter.PersonenartFormatter;
 import de.jost_net.JVerein.gui.formatter.StaatFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsrhythmusFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsterminFormatter;
@@ -47,6 +48,7 @@ import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.AbstractJVereinDBObject;
@@ -174,7 +176,7 @@ public class MitgliedControl extends FilterControl
         return (Boolean) o ? "\u2705" : "\u2757";
       }
     }, Column.ALIGN_LEFT, true);
-    add("Mitgliedsnummer", "idint", false, true);
+    add("Mitgliedsnummer", "id-int", false, true);
     try
     {
       if ((Boolean) Einstellungen
@@ -207,12 +209,15 @@ public class MitgliedControl extends FilterControl
           .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
       {
         add("D", "document", false, true);
+        add("Belegnummern", "belegnummern", false, true);
       }
     }
     catch (RemoteException e)
     {
       //
     }
+    add("Personenart", "personenart", false, new PersonenartFormatter(),
+        Column.ALIGN_LEFT, true);
     add("Anrede", "anrede", false, true);
     add("Titel", "titel", false, true);
     add("Name", "name", true, true);
@@ -232,6 +237,10 @@ public class MitgliedControl extends FilterControl
     catch (RemoteException ignore)
     {
     }
+    add("Vermerk 1", "vermerk1", false, v -> v.toString().split("\n")[0],
+        Column.ALIGN_LEFT, true);
+    add("Vermerk 2", "vermerk2", false, v -> v.toString().split("\n")[0],
+        Column.ALIGN_LEFT, true);
     add("Zahlungsweg", "zahlungsweg", false, new ZahlungswegFormatter(),
         Column.ALIGN_LEFT, true);
     add("Zahlungsrhytmus", "zahlungsrhytmus", false,
@@ -277,6 +286,20 @@ public class MitgliedControl extends FilterControl
         add("Sterbedatum", "sterbetag", false,
             new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
             true);
+      }
+
+      if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
+      {
+        DBIterator<Lesefeld> lesefelder = Einstellungen.getDBService()
+            .createList(Lesefeld.class);
+        while (lesefelder.hasNext())
+        {
+          Lesefeld lesefeld = lesefelder.next();
+          String bezeichnung = lesefeld.getBezeichnung();
+          add(bezeichnung, "lesefelder_" + bezeichnung, false,
+              v -> v == null ? "" : ((String) v).split("\n")[0],
+              Column.ALIGN_AUTO, true);
+        }
       }
     }
     catch (RemoteException re)
@@ -330,7 +353,8 @@ public class MitgliedControl extends FilterControl
       Logger.error("Fehler", e);
     }
 
-    mitgliedList.setContextMenu(new MitgliedMenu(detailaction, mitgliedList));
+    mitgliedList
+        .setContextMenu(new MitgliedMenu(this, detailaction, mitgliedList));
     mitgliedList.setMulti(true);
     mitgliedList.setRememberState(true);
     if (detailaction instanceof MitgliedDetailAction)

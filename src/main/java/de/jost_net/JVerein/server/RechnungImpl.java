@@ -590,7 +590,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   @Override
   public String getMenueID()
   {
-    return "Mitglieder.Rechnungen";
+    return "OpenJVerein.Mitglieder.Rechnungen";
   }
 
   // Für Gutschrift Support

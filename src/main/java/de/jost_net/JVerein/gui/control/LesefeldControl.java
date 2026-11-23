@@ -38,14 +38,13 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.logging.Logger;
 
 public class LesefeldControl extends FilterControl
 {
 
-  private AbstractInput suchMitglied;
+  private Input suchMitglied;
 
   private JVereinTablePart lesefeldList;
 

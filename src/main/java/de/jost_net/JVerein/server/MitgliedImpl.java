@@ -24,12 +24,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.mail.internet.AddressException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
@@ -46,10 +48,12 @@ import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.BelegMitglied;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
@@ -57,12 +61,14 @@ import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.EmailValidator;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.parts.TreePart;
+import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -340,23 +346,60 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
           }
         }
       }
+
+      if (getAbweichenderZahler() != null
+          && getAbweichenderZahler().getID().equals(getID()))
+      {
+        throw new ApplicationException(
+            "Mitglied und Abweichender Zahler können nicht identisch sein!");
+      }
+
       // Ist das Mitglied Teil eines Familienverbandes?
       if (getBeitragsgruppe() != null
           && getBeitragsgruppe()
               .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
           && getVollZahlerID() != null)
       {
-        // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten
-        // sein!
+        Mitglied z = null;
+
+        // ja, einige Checks
         DBIterator<Mitglied> zahler = Einstellungen.getDBService()
             .createList(Mitglied.class);
+        zahler.addFilter("id = " + getVollZahlerID());
+        if (zahler.hasNext())
+        {
+          z = zahler.next();
+          if (!z.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+          {
+            throw new ApplicationException(
+                "Der ausgewählte Vollzahler darf kein Nicht-Mitglied sein!");
+          }
+          if (z.getBeitragsgruppe() != null && z.getBeitragsgruppe()
+              .getBeitragsArt() != ArtBeitragsart.NORMAL)
+          {
+            throw new ApplicationException(
+                "Die Art der Beitragsgruppe des ausgewählten Vollzahler muß Normal sein!");
+          }
+        }
+        else
+        {
+          throw new ApplicationException(
+              "Der ausgewählte Vollzahler existiert nicht!");
+        }
+
+        // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten
+        // sein!
+        zahler = Einstellungen.getDBService().createList(Mitglied.class);
         zahler.addFilter("id = " + getVollZahlerID());
         if (getAustritt() != null)
           zahler.addFilter("(austritt is not null and austritt < ?)",
               getAustritt());
-        Mitglied z = null;
+        z = null;
         if (zahler.hasNext())
+        {
           z = zahler.next();
+        }
+
         if (z != null && ((Mitglied) z).getAustritt() != null)
         {
           throw new ApplicationException(
@@ -430,6 +473,28 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
         || getExterneMitgliedsnummer().isEmpty())
     {
       throw new ApplicationException("Externe Mitgliedsnummer fehlt");
+    }
+
+    if ((Integer) Einstellungen.getEinstellung(
+        Property.SEPAMANDATIDSOURCE) == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER)
+    {
+      String validChars = HBCIProperties.HBCI_SEPA_MANDATE_VALIDCHARS;
+      boolean invalid = false;
+      String nummer = getExterneMitgliedsnummer();
+      for (int i = 0; i < nummer.length(); i++)
+      {
+        char c = nummer.charAt(i);
+        if (validChars.indexOf(c) == -1)
+        {
+          invalid = true;
+          break;
+        }
+      }
+      if (invalid)
+      {
+        throw new ApplicationException(
+            "Die Externe Mitgliedsnummer enthält Zeichen die für eine Mandats-ID nicht gültig sind.");
+      }
     }
 
     DBIterator<Mitglied> mitglieder = Einstellungen.getDBService()
@@ -1284,10 +1349,6 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if (fieldName.equals("idint"))
-    {
-      return Integer.valueOf(getID());
-    }
     if (fieldName.equals("idnamevorname"))
     {
       return Adressaufbereitung.getIdNameVorname(this);
@@ -1391,6 +1452,26 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
       // Führendes Komme entfernen
       return value.substring(1).trim();
     }
+    else if (fieldName.startsWith("lesefelder_"))
+    {
+      String bezeichnung = fieldName.substring("lesefelder_".length());
+
+      DBIterator<Lesefeld> lesefelder = Einstellungen.getDBService()
+          .createList(Lesefeld.class);
+      lesefelder.addFilter("bezeichnung = ?", bezeichnung);
+
+      if (!lesefelder.hasNext())
+      {
+        return "";
+      }
+
+      LesefeldAuswerter auswerter = new LesefeldAuswerter();
+      auswerter.setLesefelderDefinitions(List.of(lesefelder.next()));
+      auswerter.setMap(new MitgliedMap().getMap(this, null, true));
+
+      Map<String, Object> werte = auswerter.getLesefelderMap();
+      return werte.get(Einstellungen.LESEFELD_PRE + bezeichnung);
+    }
     else if ("alter".equals(fieldName))
     {
       return getAlter();
@@ -1414,13 +1495,25 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
     }
     else if ("document".equals(fieldName))
     {
-      DBIterator<BelegMitglied> list = Einstellungen.getDBService()
-          .createList(BelegMitglied.class);
-      list.addFilter("referenz = ?", Long.valueOf(getID()));
-      if (list.size() > 0)
-        return list.size();
-      else
-        return "";
+      DBIterator<Beleg> list = getBelegList();
+      return list.size() > 0 ? list.size() : null;
+    }
+    else if ("belegnummern".equals(fieldName))
+    {
+      DBIterator<Beleg> list = getBelegList();
+
+      StringBuilder sb = new StringBuilder();
+      boolean first = true;
+      while (list.hasNext())
+      {
+        if (!first)
+        {
+          sb.append(", ");
+        }
+        first = false;
+        sb.append(list.next().getBelegnummer());
+      }
+      return sb.toString();
     }
     else if ("kontostand".equals(fieldName))
     {

@@ -91,6 +91,7 @@ public class FormularAnzeigeAction implements Action
           break;
         case BUCHUNGSREPORT:
           map = BuchungMap.getDummyMap(map);
+          map.put("beleg_nummer", "B-123");
           break;
       }
       FormularAufbereitung fab = new FormularAufbereitung(file, false, false);

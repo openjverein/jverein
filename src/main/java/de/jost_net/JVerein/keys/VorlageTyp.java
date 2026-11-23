@@ -395,6 +395,9 @@ public enum VorlageTyp
       "Projekte-$aktuellesdatum-$aktuellezeit", Vorlageart.DATEINAME.getKey()),
   STEUERN_DATEINAME("steuern-dateiname", "Steuern Dateiname",
       "Steuern-$aktuellesdatum-$aktuellezeit", Vorlageart.DATEINAME.getKey()),
+  BELEGGRUPPEN_DATEINAME("beleggruppen-dateiname", "Beleggruppen Dateiname",
+      "Beleggruppen-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
 
   // Titel Mitglieder
   MITGLIEDER_TITEL("mitglieder-titel", "Mitglieder Titel", "Mitglieder",
@@ -783,6 +786,10 @@ public enum VorlageTyp
       "Buchungsklassen", Vorlageart.TITEL.getKey()),
   BUCHUNGSKLASSEN_SUBTITEL("buchungsklassen-subtitel",
       "Buchungsklassen Subtitel", "", Vorlageart.TITEL.getKey()),
+  BELEGGRUPPEN_TITEL("beleggruppen-titel", "Beleggruppen Titel", "Beleggruppen",
+      Vorlageart.TITEL.getKey()),
+  BELEGGRUPPEN_SUBTITEL("beleggruppen-subtitel", "Beleggruppen Subtitel", "",
+      Vorlageart.TITEL.getKey()),
   PROJEKTE_TITEL("projekte-titel", "Projekte Titel", "Projekte",
       Vorlageart.TITEL.getKey()),
   PROJEKTE_SUBTITEL("projekte-subtitel", "Projekte Subtitel", "",
@@ -796,6 +803,8 @@ public enum VorlageTyp
   BELEG_ALLGEMEIN_PFAD("dateiname-allgemein-beleg", "Allgemeiner Beleg Pfad",
       "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
   BELEG_MITGLIED_PFAD("mitglied-beleg-pfad", "Mitglied Beleg Pfad",
+      "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
+  BELEG_KONTO_PFAD("konto-beleg-pfad", "Konto Beleg Pfad",
       "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
 
   BELEGE_TITEL("belege-titel", "Belege Titel", "Belege",
@@ -813,6 +822,9 @@ public enum VorlageTyp
       "Beleg Buchungen Dateiname",
       "Beleg-Buchungen-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
+  BELEG_EXPORT_DATEINAME("beleg-export-dateiname", "Beleg Export Dateiname",
+      "$beleg_nummer$file_name.substring($file_name.lastIndexOf('.'))",
+      Vorlageart.PFAD.getKey()),
 
   BELEG_MITGLIEDER_TITEL("beleg-mitglieder-titel", "Beleg Mitglieder Titel",
       "Beleg-Mitglieder-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
@@ -822,6 +834,14 @@ public enum VorlageTyp
   BELEG_MITGLIEDER_DATEINAME("beleg-mitglieder-dateiname",
       "Beleg Mitglieder Dateiname",
       "Beleg-Mitglieder-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
+  BELEG_KONTEN_TITEL("beleg-konten-titel", "Beleg Konten Titel",
+      "Beleg-Konten-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.TITEL.getKey()),
+  BELEG_KONTEN_SUBTITEL("beleg-konten-subtitel", "Beleg Konten Subtitel", "",
+      Vorlageart.TITEL.getKey()),
+  BELEG_KONTEN_DATEINAME("beleg-konten-dateiname", "Beleg Konten Dateiname",
+      "Beleg-Konten-$beleg_nummer-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey());
 
   private final String text;
