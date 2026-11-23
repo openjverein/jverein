@@ -45,19 +45,21 @@ public class ZusatzbetragListeView extends AbstractView
     final ZusatzbetragControl control = new ZusatzbetragControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getFilterInput(Filter.AUSFUEHRUNG));
     left.addInput(control.getFilterInput(Filter.MITGLIED_SELECT));
-    left.addInput(control.getFilterInput(Filter.BUCHUNGSART));
+
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addInput(control.getFilterInput(Filter.BUCHUNGSART));
+    middle.addInput(control.getFilterInput(Filter.ENTHALTENER_TEXT));
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     Input von = control.getFilterInput(Filter.AUSFUEHRUNG_VON);
     right.addInput(von);
     Input bis = control.getFilterInput(Filter.AUSFUEHRUNG_BIS);
     right.addInput(bis);
-    right.addInput(control.getFilterInput(Filter.ENTHALTENER_TEXT));
 
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(von, bis);
