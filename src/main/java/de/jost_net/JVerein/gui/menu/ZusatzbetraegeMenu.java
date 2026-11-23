@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.ZusatzbetraegeBetragSetzenAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeNaechsteFaelligkeitAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeResetAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeVorherigeFaelligkeitAction;
@@ -28,6 +29,7 @@ import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
@@ -51,6 +53,8 @@ public class ZusatzbetraegeMenu extends ContextMenu
         new ZusatzbetraegeVorherigeFaelligkeitAction(), "office-calendar.png"));
     addItem(new ZusatzbetragWiederholtItem("Nächstes Fälligkeitsdatum",
         new ZusatzbetraegeNaechsteFaelligkeitAction(), "office-calendar.png"));
+    addItem(new CheckedContextMenuItem("Betrag ändern",
+        new ZusatzbetraegeBetragSetzenAction(), "euro.png"));
     addItem(new ZusatzbetragEinmaligItem("Erneut ausführen",
         new ZusatzbetraegeResetAction(), "view-refresh.png"));
     addItem(new DeleteMenueItem());
