@@ -50,14 +50,14 @@ public class ZusatzbetragListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getFilterInput(Filter.AUSFUEHRUNG));
     left.addInput(control.getFilterInput(Filter.MITGLIED_SELECT));
-    left.addInput(control.getFilterInput(Filter.ENTHALTENER_TEXT));
+    left.addInput(control.getFilterInput(Filter.BUCHUNGSART));
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     Input von = control.getFilterInput(Filter.AUSFUEHRUNG_VON);
     right.addInput(von);
     Input bis = control.getFilterInput(Filter.AUSFUEHRUNG_BIS);
     right.addInput(bis);
-    right.addInput(control.getFilterInput(Filter.BUCHUNGSART));
+    right.addInput(control.getFilterInput(Filter.ENTHALTENER_TEXT));
 
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(von, bis);
