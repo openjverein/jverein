@@ -103,12 +103,13 @@ class MitgliederImportH2Test extends AbstractH2Test
 
   private int anzahlMitglieder() throws Exception
   {
-    return db.createList(Mitglied.class).size();
+    return Einstellungen.getDBService().createList(Mitglied.class).size();
   }
 
   private Mitglied mitgliedMitVorname(String vorname) throws Exception
   {
-    DBIterator<Mitglied> it = db.createList(Mitglied.class);
+    DBIterator<Mitglied> it = Einstellungen.getDBService()
+        .createList(Mitglied.class);
     it.addFilter("vorname = ?", vorname);
 
     if (!it.hasNext())
@@ -123,7 +124,8 @@ class MitgliederImportH2Test extends AbstractH2Test
 
   private Beitragsgruppe gruppe(String bezeichnung) throws Exception
   {
-    DBIterator<Beitragsgruppe> it = db.createList(Beitragsgruppe.class);
+    DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
+        .createList(Beitragsgruppe.class);
     it.addFilter("bezeichnung = ?", bezeichnung);
 
     if (!it.hasNext())
@@ -139,7 +141,7 @@ class MitgliederImportH2Test extends AbstractH2Test
 
   private void beitragsgruppe(String name, ArtBeitragsart art) throws Exception
   {
-    Beitragsgruppe gruppe = (Beitragsgruppe) db
+    Beitragsgruppe gruppe = (Beitragsgruppe) Einstellungen.getDBService()
         .createObject(Beitragsgruppe.class, null);
     gruppe.setBezeichnung(name);
     gruppe.setBeitragsArt(art.getKey());
@@ -151,7 +153,8 @@ class MitgliederImportH2Test extends AbstractH2Test
   private void vorhandenesMitglied(String name, String vorname,
       Beitragsgruppe beitragsgruppe) throws Exception
   {
-    Mitglied mitglied = (Mitglied) db.createObject(Mitglied.class, null);
+    Mitglied mitglied = (Mitglied) Einstellungen.getDBService()
+        .createObject(Mitglied.class, null);
     mitglied.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
     mitglied.setPersonenart("N");
     mitglied.setName(name);
