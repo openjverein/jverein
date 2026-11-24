@@ -9,8 +9,6 @@ public class TestDBSupportH2Impl extends DBSupportH2Impl
   @Override
   public String getJdbcUrl()
   {
-    return "jdbc:h2:mem:jverein_test_"
-        + java.util.UUID.randomUUID().toString().replace("-", "")
-        + ";DB_CLOSE_DELAY=-1";
+    return "jdbc:h2:mem:jverein_test;DB_CLOSE_DELAY=-1";
   }
 }
