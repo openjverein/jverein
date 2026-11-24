@@ -22,12 +22,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.io.MitgliederImport.ZeilenDurchlauf;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -36,22 +34,12 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
-import de.jost_net.JVerein.server.TestJVereinDBService;
+import de.jost_net.JVerein.server.AbstractH2Test;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.messaging.MessagingFactory;
-import de.willuhn.jameica.messaging.MessagingQueue;
-import de.willuhn.jameica.plugin.Manifest;
-import de.willuhn.jameica.plugin.Plugin;
-import de.willuhn.jameica.plugin.PluginLoader;
-import de.willuhn.jameica.services.ClassService;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.ApplicationCallback;
-import de.willuhn.jameica.system.Settings;
-import de.willuhn.util.MultipleClassLoader;
 import de.willuhn.util.ProgressMonitor;
 
-class MitgliederImportH2Test
+class MitgliederImportH2Test extends AbstractH2Test
 {
 
   private static final String DB_HEADER = "name;vorname;beitragsgruppe;voll_zahlerid;abweichende_zahlerid";
@@ -60,14 +48,6 @@ class MitgliederImportH2Test
       + "abweichende_zahlerid;eintritt;zahlungsweg;geburtsdatum";
 
   private static final String MITGLIEDERWERTE = ";1.1.2020;2;1.1.1990";
-
-  private TestJVereinDBService db;
-
-  private MockedStatic<Einstellungen> einstellungen;
-
-  private MockedConstruction<Settings> settings;
-
-  private MockedStatic<Application> application;
 
   private MockedConstruction<YesNoDialog> dialoge;
 
@@ -78,65 +58,11 @@ class MitgliederImportH2Test
   @BeforeEach
   void setUp() throws Exception
   {
-    System.setProperty(TestJVereinDBService.class.getName() + ".uppercase",
-        "true");
-
-    settings = Mockito.mockConstruction(Settings.class);
     monitor = mock(ProgressMonitor.class);
 
     dialoge = Mockito.mockConstruction(YesNoDialog.class,
         (dialog, context) -> when(dialog.open())
             .thenAnswer(invocation -> dialogAntwort));
-
-    File pluginXml = new File("plugin.xml").getAbsoluteFile();
-    if (!pluginXml.isFile())
-    {
-      throw new IllegalStateException(
-          "plugin.xml nicht gefunden: " + pluginXml);
-    }
-
-    File jameicaLib = new File("../jameica/lib").getAbsoluteFile();
-    if (!jameicaLib.isDirectory())
-    {
-      throw new IllegalStateException(
-          "Jameica-lib nicht gefunden: " + jameicaLib);
-    }
-
-    Manifest manifest = new Manifest(pluginXml);
-
-    application = Mockito.mockStatic(Application.class);
-
-    PluginLoader pluginLoader = mock(PluginLoader.class);
-    Plugin plugin = mock(Plugin.class);
-    when(pluginLoader.getPlugin(JVereinPlugin.class)).thenReturn(plugin);
-    when(plugin.getManifest()).thenReturn(manifest);
-    application.when(Application::getPluginLoader).thenReturn(pluginLoader);
-
-    MessagingFactory messagingFactory = mock(MessagingFactory.class);
-    MessagingQueue messagingQueue = mock(MessagingQueue.class);
-    when(messagingFactory.getMessagingQueue(anyString()))
-        .thenReturn(messagingQueue);
-    application.when(Application::getMessagingFactory)
-        .thenReturn(messagingFactory);
-
-    ApplicationCallback callback = mock(ApplicationCallback.class);
-    when(callback.getStartupMonitor()).thenReturn(monitor);
-    application.when(Application::getCallback).thenReturn(callback);
-
-    MultipleClassLoader jameicaLoader = new MultipleClassLoader();
-    jameicaLoader.addJars(jameicaLib);
-    jameicaLoader.addClassloader(getClass().getClassLoader());
-    application.when(Application::getClassLoader).thenReturn(jameicaLoader);
-
-    new ClassService().prepareClasses(manifest);
-
-    db = new TestJVereinDBService();
-    db.start();
-    db.checkConsistency();
-
-    einstellungen = Mockito.mockStatic(Einstellungen.class,
-        Mockito.CALLS_REAL_METHODS);
-    einstellungen.when(Einstellungen::getDBService).thenReturn(db);
 
     Einstellungen.setEinstellung(Property.EXTERNEMITGLIEDSNUMMER, false);
     Einstellungen.setEinstellung(Property.EINTRITTSDATUMPFLICHT, false);
@@ -160,20 +86,8 @@ class MitgliederImportH2Test
   @AfterEach
   void tearDown() throws Exception
   {
-    if (einstellungen != null)
-      einstellungen.close();
-
-    if (db != null)
-      db.stop(true);
-
     if (dialoge != null)
       dialoge.close();
-
-    if (application != null)
-      application.close();
-
-    if (settings != null)
-      settings.close();
   }
 
   private void importieren(File file) throws Exception
@@ -459,7 +373,7 @@ class MitgliederImportH2Test
     importFehler(
         csv(ALLE_SPALTEN,
             mitgliedszeile("", "Mustermann", "Anna", "Angehoeriger", "-1", "")),
-        "Vollzahler für Id -1 nicht gefunden.");
+        "Zeile 1: Vollzahler für Id -1 nicht gefunden.");
   }
 
   @Test
@@ -469,7 +383,7 @@ class MitgliederImportH2Test
         csv(ALLE_SPALTEN,
             mitgliedszeile("", "Mustermann", "Anna", "Gibtesnicht", "-1", ""),
             mitgliedszeile("-1", "Mustermann", "Berta", "Vollzahler", "", "")),
-        "Beitragsgruppe nicht gefunden: Gibtesnicht");
+        "Zeile 1: Beitragsgruppe nicht gefunden: Gibtesnicht");
   }
 
   @Test
@@ -478,7 +392,7 @@ class MitgliederImportH2Test
     vorhandenesMitglied("Meier", "Hans", gruppe("Vollzahler"));
 
     importFehler(csv(DB_HEADER, "Mustermann;Anna;Vollzahler;1;"),
-        "Vollzahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: 1");
+        "Zeile 1: Vollzahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: 1");
   }
 
   @Test

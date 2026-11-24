@@ -12,4 +12,10 @@ public class TestJVereinDBService extends JVereinDBServiceImpl
   {
     super(TestDBSupportH2Impl.class.getName());
   }
+
+  @Override
+  protected boolean getAutoCommit() throws RemoteException
+  {
+    return false;
+  }
 }
