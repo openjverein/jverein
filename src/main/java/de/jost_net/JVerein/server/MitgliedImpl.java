@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,13 +31,11 @@ import jakarta.mail.internet.AddressException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.Datentyp;
-import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
@@ -67,7 +64,6 @@ import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -82,6 +78,10 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
   private static String FEHLER_ALTER = ": Das Mandat-Datum ist älter als 36 Monate und es sind in JVerein keine Lastschriften für die letzten 3 Jahre vorhanden.";
 
   private transient Map<String, String> variable;
+
+  private Date kontostandVon;
+
+  private Date kontostandBis;
 
   private static final long serialVersionUID = 1L;
 
@@ -518,92 +518,83 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
   @Override
   public void checkEigenschaften() throws RemoteException, ApplicationException
   {
-    TreePart eigenschaftenTree = new TreePart(new EigenschaftenNode(this),
-        null);
-    checkEigenschaften(eigenschaftenTree);
+    checkEigenschaften(new EigenschaftenNode(this));
   }
 
-  // Prüft die Eigenschaften aus dem TreePart
   @Override
-  public void checkEigenschaften(TreePart eigenschaftenTree)
+  public void checkEigenschaften(EigenschaftenNode root)
       throws RemoteException, ApplicationException
   {
-    if (eigenschaftenTree != null)
+    // Mitgliedstyp wird erst in handleStore() gesetzt!!
+    String typ = getMitgliedstyp().getID();
+    boolean checkMitglied = typ.equals(Mitgliedstyp.MITGLIED)
+        && getPersonenart().equalsIgnoreCase("n");
+    boolean checkNichtMitglied = !typ.equals(Mitgliedstyp.MITGLIED)
+        && getPersonenart().equalsIgnoreCase("n") && (Boolean) Einstellungen
+            .getEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
+    boolean checkJMitglied = typ.equals(Mitgliedstyp.MITGLIED)
+        && getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
+            .getEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN);
+    boolean checkJNichtMitglied = !typ.equals(Mitgliedstyp.MITGLIED)
+        && getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
+            .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
+    if (checkMitglied || checkNichtMitglied || checkJMitglied
+        || checkJNichtMitglied)
     {
-      // liefert nur denRoot
-      ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems();
-      EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
-      // Mitgliedstyp wird erst in handleStore() gesetzt!!
-      String typ = getMitgliedstyp().getID();
-      boolean checkMitglied = typ.equals(Mitgliedstyp.MITGLIED)
-          && getPersonenart().equalsIgnoreCase("n");
-      boolean checkNichtMitglied = !typ.equals(Mitgliedstyp.MITGLIED)
-          && getPersonenart().equalsIgnoreCase("n") && (Boolean) Einstellungen
-              .getEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
-      boolean checkJMitglied = typ.equals(Mitgliedstyp.MITGLIED)
-          && getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
-              .getEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN);
-      boolean checkJNichtMitglied = !typ.equals(Mitgliedstyp.MITGLIED)
-          && getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
-              .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
-      if (checkMitglied || checkNichtMitglied || checkJMitglied
-          || checkJNichtMitglied)
-      {
-        HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
-        DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
-            .createList(EigenschaftGruppe.class);
-        it.addFilter("pflicht = ?", new Object[] { Boolean.TRUE });
-        while (it.hasNext())
-        {
-          EigenschaftGruppe eg = it.next();
-          pflichtgruppen.put(eg.getID(), Boolean.valueOf(false));
-        }
-
-        for (EigenschaftenNode checkedNode : root.getCheckedNodes())
-        {
-          Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
-          pflichtgruppen.put(ei.getEigenschaftGruppeId() + "",
-              Boolean.valueOf(true));
-        }
-        for (String key : pflichtgruppen.keySet())
-        {
-          if (!pflichtgruppen.get(key))
-          {
-            EigenschaftGruppe eg = (EigenschaftGruppe) Einstellungen
-                .getDBService().createObject(EigenschaftGruppe.class, key);
-            throw new ApplicationException(String.format(
-                "In der Eigenschaftengruppe \"%s\" fehlt ein Eintrag!",
-                eg.getBezeichnung()));
-          }
-        }
-      }
-      // Max eine Eigenschaft pro Gruppe
-      HashMap<String, Boolean> max1gruppen = new HashMap<>();
+      HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
       DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
           .createList(EigenschaftGruppe.class);
-      it.addFilter("max1 = ?", new Object[] { Boolean.TRUE });
+      it.addFilter("pflicht = ?", new Object[] { Boolean.TRUE });
       while (it.hasNext())
       {
         EigenschaftGruppe eg = it.next();
-        max1gruppen.put(eg.getID(), Boolean.valueOf(false));
+        pflichtgruppen.put(eg.getID(), Boolean.valueOf(false));
       }
+
       for (EigenschaftenNode checkedNode : root.getCheckedNodes())
       {
         Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
-        Boolean m1 = max1gruppen.get(ei.getEigenschaftGruppe().getID());
-        if (m1 != null)
+        pflichtgruppen.put(ei.getEigenschaftGruppeId() + "",
+            Boolean.valueOf(true));
+      }
+      for (String key : pflichtgruppen.keySet())
+      {
+        if (!pflichtgruppen.get(key))
         {
-          if (m1)
-          {
-            throw new ApplicationException(String.format(
-                "In der Eigenschaftengruppe '%s' mehr als ein Eintrag markiert!",
-                ei.getEigenschaftGruppe().getBezeichnung()));
-          }
-          else
-          {
-            max1gruppen.put(ei.getEigenschaftGruppe().getID(),
-                Boolean.valueOf(true));
-          }
+          EigenschaftGruppe eg = (EigenschaftGruppe) Einstellungen
+              .getDBService().createObject(EigenschaftGruppe.class, key);
+          throw new ApplicationException(String.format(
+              "In der Eigenschaftengruppe \"%s\" fehlt ein Eintrag!",
+              eg.getBezeichnung()));
+        }
+      }
+    }
+    // Max eine Eigenschaft pro Gruppe
+    HashMap<String, Boolean> max1gruppen = new HashMap<>();
+    DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
+        .createList(EigenschaftGruppe.class);
+    it.addFilter("max1 = ?", new Object[] { Boolean.TRUE });
+    while (it.hasNext())
+    {
+      EigenschaftGruppe eg = it.next();
+      max1gruppen.put(eg.getID(), Boolean.valueOf(false));
+    }
+    for (EigenschaftenNode checkedNode : root.getCheckedNodes())
+    {
+      Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
+      Boolean m1 = max1gruppen.get(ei.getEigenschaftGruppe().getID());
+      if (m1 != null)
+      {
+        if (m1)
+        {
+          throw new ApplicationException(String.format(
+              "In der Eigenschaftengruppe '%s' mehr als ein Eintrag markiert!",
+              ei.getEigenschaftGruppe().getBezeichnung()));
+        }
+        else
+        {
+          max1gruppen.put(ei.getEigenschaftGruppe().getID(),
+              Boolean.valueOf(true));
         }
       }
     }
@@ -1531,20 +1522,13 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
         it.addFilter(Sollbuchung.T_MITGLIED + " = " + this.getID());
         it.addGroupBy(Sollbuchung.T_MITGLIED);
 
-        Map<Filter, Object> filter = MitgliedControl.control.getFilter();
-        if (filter.get(Filter.DIFFERENZ) != null
-            && filter.get(Filter.DIFFERENZ) != null)
+        if (kontostandVon != null)
         {
-          if (filter.get(Filter.DATUM_VON) != null)
-          {
-            it.addFilter(Sollbuchung.T_DATUM + " >= ?",
-                filter.get(Filter.DATUM_VON));
-          }
-          if (filter.get(Filter.DATUM_BIS) != null)
-          {
-            it.addFilter(Sollbuchung.T_DATUM + " <= ?",
-                filter.get(Filter.DATUM_BIS));
-          }
+          it.addFilter(Sollbuchung.T_DATUM + " >= ?", kontostandVon);
+        }
+        if (kontostandBis != null)
+        {
+          it.addFilter(Sollbuchung.T_DATUM + " <= ?", kontostandBis);
         }
 
         if (it.hasNext())
@@ -1746,6 +1730,18 @@ public class MitgliedImpl extends AbstractBelegDBObjectImpl implements Mitglied
   protected String getBelegReferenzTableName() throws RemoteException
   {
     return "belegmitglied";
+  }
+
+  @Override
+  public void setKontostandVon(Date date) throws RemoteException
+  {
+    kontostandVon = date;
+  }
+
+  @Override
+  public void setKontostandBis(Date date) throws RemoteException
+  {
+    kontostandBis = date;
   }
 
 }
