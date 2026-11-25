@@ -621,7 +621,7 @@ public class ZahlerMap extends AbstractMap
       while (iteig.hasNext())
       {
         Eigenschaft eig = iteig.next();
-        map.put("mitglied_eigenschaft_" + eig.getName(), "X");
+        map.put("zahler_eigenschaft_" + eig.getName(), "X");
       }
 
       // Liste der Eigenschaften einer Eigenschaftengruppe
@@ -631,7 +631,7 @@ public class ZahlerMap extends AbstractMap
       {
         EigenschaftGruppe eg = eigenschaftGruppeIt.next();
 
-        map.put("mitglied_eigenschaften_" + eg.getName(),
+        map.put("zahler_eigenschaften_" + eg.getName(),
             "Eigenschaft1, Eigenschaft2");
       }
 
