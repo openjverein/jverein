@@ -32,6 +32,6 @@ public interface IVersand extends JVereinDBObject
   default void setBelegVersand(BelegTyp typ)
       throws RemoteException, ApplicationException
   {
-    // Machen die die Kalssen selbst wenn nötig
+    // Machen die abgeleiteten Klassen selbst wenn nötig
   }
 }
