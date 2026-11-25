@@ -49,6 +49,8 @@ import de.willuhn.util.ApplicationException;
 
 public class ZahlerMap extends AbstractMap
 {
+  private static final String ZAHLER_ZUSATZFELD_PRE = "zahler_zusatzfeld_";
+
   public Map<String, Object> getMap(Mitglied m, Map<String, Object> inma)
       throws RemoteException
   {
@@ -314,7 +316,7 @@ public class ZahlerMap extends AbstractMap
         z = Einstellungen.getDBService().createObject(Zusatzfelder.class, null);
       }
 
-      String name = Einstellungen.ZUSATZFELD_PRE + fd.getName();
+      String name = ZAHLER_ZUSATZFELD_PRE + fd.getName();
       switch (fd.getDatentyp())
       {
         case Datentyp.DATUM:
@@ -592,7 +594,7 @@ public class ZahlerMap extends AbstractMap
       while (itfd.hasNext())
       {
         Felddefinition fd = itfd.next();
-        String name = Einstellungen.ZUSATZFELD_PRE + fd.getName();
+        String name = ZAHLER_ZUSATZFELD_PRE + fd.getName();
         switch (fd.getDatentyp())
         {
           case Datentyp.DATUM:
