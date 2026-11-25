@@ -5,16 +5,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.rmi.RemoteException;
 
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.parallel.ResourceAccessMode;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
@@ -41,165 +40,133 @@ import de.willuhn.util.Settings;
  * Updatescripts erstellt. Vor jedem Test wird sie auf den Ausgangszustand
  * zurückgesetzt.
  */
-@ExtendWith(AbstractH2Test.H2DatabaseExtension.class)
-@ResourceLock(value = "OpenJVerein-H2-Database", mode = ResourceAccessMode.READ_WRITE)
+@Execution(ExecutionMode.SAME_THREAD)
+@ResourceLock("JVerein-H2-DB")
 public abstract class AbstractH2Test
 {
-  public static class H2DatabaseExtension
-      implements BeforeAllCallback, BeforeEachCallback
+  private static MockedStatic<Application> application;
+
+  private static MockedStatic<Einstellungen> einstellungen;
+
+  private static MockedConstruction<Settings> settings;
+
+  private static Path sqlFile;
+
+  private static TestJVereinDBService db;
+
+  @BeforeAll
+  static synchronized void init() throws Exception
   {
-    private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace
-        .create(H2DatabaseExtension.class);
+    System.setProperty(TestJVereinDBService.class.getName() + ".uppercase",
+        "true");
 
-    private static final String KEY = "database";
+    settings = Mockito.mockConstruction(Settings.class);
 
-    private DatabaseResource getResource(ExtensionContext context)
+    File pluginXml = new File("plugin.xml").getAbsoluteFile();
+
+    if (!pluginXml.isFile())
+      throw new IllegalStateException(
+          "plugin.xml nicht gefunden: " + pluginXml);
+
+    Manifest manifest = new Manifest(pluginXml);
+
+    application = Mockito.mockStatic(Application.class);
+
+    PluginLoader pluginLoader = mock(PluginLoader.class);
+    Plugin plugin = mock(Plugin.class);
+    when(pluginLoader.getPlugin(JVereinPlugin.class)).thenReturn(plugin);
+    when(plugin.getManifest()).thenReturn(manifest);
+    application.when(Application::getPluginLoader).thenReturn(pluginLoader);
+
+    MessagingFactory messagingFactory = mock(MessagingFactory.class);
+    MessagingQueue messagingQueue = mock(MessagingQueue.class);
+    when(messagingFactory.getMessagingQueue(anyString()))
+        .thenReturn(messagingQueue);
+    application.when(Application::getMessagingFactory)
+        .thenReturn(messagingFactory);
+
+    ApplicationCallback callback = mock(ApplicationCallback.class);
+    ProgressMonitor monitor = mock(ProgressMonitor.class);
+    when(callback.getStartupMonitor()).thenReturn(monitor);
+    application.when(Application::getCallback).thenReturn(callback);
+
+    MultipleClassLoader loader = new MultipleClassLoader();
+    loader.addClassloader(AbstractH2Test.class.getClassLoader());
+    application.when(Application::getClassLoader).thenReturn(loader);
+
+    Config config = mock(Config.class);
+    application.when(Application::getConfig).thenReturn(config);
+
+    new ClassService().prepareClasses(manifest);
+
+    if (db == null)
     {
-      return context.getRoot().getStore(NAMESPACE).get(KEY,
-          DatabaseResource.class);
+      db = new TestJVereinDBService();
+      db.start();
+      db.checkConsistency();
+
+      Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+        try
+        {
+          db.stop(true);
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler beim Stoppen der H2-Test-DB", e);
+        }
+      }, "H2-Testdatenbank-Shutdown"));
     }
+    einstellungen = Mockito.mockStatic(Einstellungen.class,
+        Mockito.CALLS_REAL_METHODS);
 
-    @Override
-    public void beforeAll(ExtensionContext context)
-    {
-      context.getRoot().getStore(NAMESPACE).computeIfAbsent(KEY,
-          key -> new DatabaseResource());
-    }
+    einstellungen.when(Einstellungen::getDBService).thenReturn(db);
 
-    @Override
-    public void beforeEach(ExtensionContext context) throws Exception
+    if (sqlFile == null)
     {
-      getResource(context).reset();
+      sqlFile = Files.createTempFile("h2-test-db", ".sql");
+      sqlFile.toFile().deleteOnExit();
+      Einstellungen.getDBService()
+          .execute("SCRIPT TO '"
+              + sqlFile.toAbsolutePath().toString().replace("'", "''") + "'",
+              null, rs -> null);
     }
   }
 
-  private static class DatabaseResource implements AutoCloseable
+  @BeforeEach
+  void cleanDatabase() throws RemoteException
   {
-    private MockedStatic<Application> application;
+    db.executeUpdate("DROP ALL OBJECTS", null);
+    db.executeUpdate(
+        "RUNSCRIPT FROM '"
+            + sqlFile.toAbsolutePath().toString().replace("'", "''") + "'",
+        null);
+  }
 
-    private MockedStatic<Einstellungen> einstellungen;
-
-    private MockedConstruction<Settings> settings;
-
-    private TestJVereinDBService db;
-
-    private Path sqlFile;
-
-    DatabaseResource()
-    {
-      try
-      {
-        System.setProperty(TestJVereinDBService.class.getName() + ".uppercase",
-            "true");
-
-        settings = Mockito.mockConstruction(Settings.class);
-
-        File pluginXml = new File("plugin.xml").getAbsoluteFile();
-
-        if (!pluginXml.isFile())
-          throw new IllegalStateException(
-              "plugin.xml nicht gefunden: " + pluginXml);
-
-        Manifest manifest = new Manifest(pluginXml);
-
-        application = Mockito.mockStatic(Application.class);
-
-        PluginLoader pluginLoader = mock(PluginLoader.class);
-        Plugin plugin = mock(Plugin.class);
-        when(pluginLoader.getPlugin(JVereinPlugin.class)).thenReturn(plugin);
-        when(plugin.getManifest()).thenReturn(manifest);
-        application.when(Application::getPluginLoader).thenReturn(pluginLoader);
-
-        MessagingFactory messagingFactory = mock(MessagingFactory.class);
-        MessagingQueue messagingQueue = mock(MessagingQueue.class);
-        when(messagingFactory.getMessagingQueue(anyString()))
-            .thenReturn(messagingQueue);
-        application.when(Application::getMessagingFactory)
-            .thenReturn(messagingFactory);
-
-        ApplicationCallback callback = mock(ApplicationCallback.class);
-        ProgressMonitor monitor = mock(ProgressMonitor.class);
-        when(callback.getStartupMonitor()).thenReturn(monitor);
-        application.when(Application::getCallback).thenReturn(callback);
-
-        MultipleClassLoader loader = new MultipleClassLoader();
-        loader.addClassloader(AbstractH2Test.class.getClassLoader());
-        application.when(Application::getClassLoader).thenReturn(loader);
-
-        Config config = mock(Config.class);
-        application.when(Application::getConfig).thenReturn(config);
-
-        new ClassService().prepareClasses(manifest);
-
-        db = new TestJVereinDBService();
-        db.start();
-        db.checkConsistency();
-
-        einstellungen = Mockito.mockStatic(Einstellungen.class,
-            Mockito.CALLS_REAL_METHODS);
-
-        einstellungen.when(Einstellungen::getDBService).thenReturn(db);
-
-        sqlFile = Files.createTempFile("h2-test-db", ".sql");
-        sqlFile.toFile().deleteOnExit();
-        Einstellungen.getDBService().execute(
-            "SCRIPT TO '" + sqlFile.toAbsolutePath() + "'", null, rs -> null);
-      }
-      catch (Exception e)
-      {
-        closeResources();
-        throw new RuntimeException(
-            "H2-Testdatenbank konnte nicht initialisiert werden", e);
-      }
-    }
-
-    void reset() throws RemoteException
-    {
-      db.executeUpdate("DROP ALL OBJECTS", null);
-      db.executeUpdate("RUNSCRIPT FROM '" + sqlFile.toAbsolutePath() + "'",
-          null);
-    }
-
-    @Override
-    public void close() throws IOException
-    {
-      try
-      {
-        closeResources();
-      }
-      finally
-      {
-        Files.deleteIfExists(sqlFile);
-      }
-    }
-
-    private void closeResources()
+  @AfterAll
+  static void cleanUp()
+  {
+    try
     {
       if (einstellungen != null)
       {
         einstellungen.close();
       }
-
-      if (db != null)
+    }
+    finally
+    {
+      try
       {
-        try
+        if (application != null)
         {
-          db.stop(true);
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler beim Stoppen der DB");
+          application.close();
         }
       }
-
-      if (application != null)
+      finally
       {
-        application.close();
-      }
-
-      if (settings != null)
-      {
-        settings.close();
+        if (settings != null)
+        {
+          settings.close();
+        }
       }
     }
   }
