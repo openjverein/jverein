@@ -366,6 +366,9 @@ public class VorlageUtil
         case MAILVORLAGEN_DATEINAME:
         case MAILVORLAGEN_TITEL:
         case MAILVORLAGEN_SUBTITEL:
+        case BELEGGRUPPEN_DATEINAME:
+        case BELEGGRUPPEN_TITEL:
+        case BELEGGRUPPEN_SUBTITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
@@ -376,6 +379,8 @@ public class VorlageUtil
         case BELEG_BUCHUNGEN_PFAD:
         case BELEG_ALLGEMEIN_PFAD:
         case BELEG_MITGLIED_PFAD:
+        case BELEG_KONTO_PFAD:
+        case BELEG_EXPORT_DATEINAME:
           map.put("file_name", name);
         case BELEG_BUCHUNGEN_DATEINAME:
         case BELEG_BUCHUNGEN_SUBTITEL:
@@ -383,6 +388,9 @@ public class VorlageUtil
         case BELEG_MITGLIEDER_DATEINAME:
         case BELEG_MITGLIEDER_SUBTITEL:
         case BELEG_MITGLIEDER_TITEL:
+        case BELEG_KONTEN_DATEINAME:
+        case BELEG_KONTEN_SUBTITEL:
+        case BELEG_KONTEN_TITEL:
           map = new BelegMap().getMap((Beleg) obj, map);
           break;
       }
@@ -883,6 +891,9 @@ public class VorlageUtil
         case MAILVORLAGEN_DATEINAME:
         case MAILVORLAGEN_TITEL:
         case MAILVORLAGEN_SUBTITEL:
+        case BELEGGRUPPEN_DATEINAME:
+        case BELEGGRUPPEN_TITEL:
+        case BELEGGRUPPEN_SUBTITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
@@ -893,6 +904,8 @@ public class VorlageUtil
         case BELEG_BUCHUNGEN_PFAD:
         case BELEG_ALLGEMEIN_PFAD:
         case BELEG_MITGLIED_PFAD:
+        case BELEG_KONTO_PFAD:
+        case BELEG_EXPORT_DATEINAME:
           map.put("file_name", "Filename.pdf");
         case BELEG_BUCHUNGEN_DATEINAME:
         case BELEG_BUCHUNGEN_SUBTITEL:
@@ -900,6 +913,9 @@ public class VorlageUtil
         case BELEG_MITGLIEDER_DATEINAME:
         case BELEG_MITGLIEDER_SUBTITEL:
         case BELEG_MITGLIEDER_TITEL:
+        case BELEG_KONTEN_DATEINAME:
+        case BELEG_KONTEN_SUBTITEL:
+        case BELEG_KONTEN_TITEL:
           map = new BelegMap().getMap(null, map);
           break;
       }

@@ -619,22 +619,34 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     GridLayout layout = new GridLayout(1, false);
     containerZahlung.getComposite().setLayout(layout);
 
-    LabelGroup zahlungsweg = new LabelGroup(containerZahlung.getComposite(),
-        "Zahlungsweg");
-    zahlungsweg.getComposite().setLayout(new GridLayout(1, false));
-
-    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)
-        && (Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
     {
-      ButtonArea buttons1 = new ButtonArea();
-      buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());
-      buttons1.paint(zahlungsweg.getComposite());
+      LabelGroup abweichenderZahler = new LabelGroup(
+          containerZahlung.getComposite(), "Abweichender Zahler");
+      abweichenderZahler.getComposite().setLayout(new GridLayout(1, false));
+
+      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
+      {
+        ButtonArea buttons1 = new ButtonArea();
+        buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());
+        buttons1.paint(abweichenderZahler.getComposite());
+      }
+
+      SimpleVerticalContainer cols1 = new SimpleVerticalContainer(
+          abweichenderZahler.getComposite(), false, spaltenanzahl);
+      cols1.addInput(control.getAbweichenderZahler());
+      cols1.arrangeVertically();
     }
+    LabelGroup zahlungsdaten = control
+        .getZahlungsdatenLabelGroup(containerZahlung.getComposite());
+    zahlungsdaten.getComposite().setLayout(new GridLayout(1, false));
+    ButtonArea buttons2 = new ButtonArea();
+    buttons2.addButton(control.getZahlungsdatenLoeschenButton());
+    buttons2.paint(zahlungsdaten.getComposite());
 
-    SimpleVerticalContainer cols1 = new SimpleVerticalContainer(
-        zahlungsweg.getComposite(), false, spaltenanzahl);
-
-    cols1.addInput(control.getZahlungsweg());
+    SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
+        zahlungsdaten.getComposite(), false, spaltenanzahl);
+    cols2.addInput(control.getZahlungsweg());
     if (isMitgliedDetail())
     {
       switch (Beitragsmodel.getByKey(
@@ -643,36 +655,20 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         case GLEICHERTERMINFUERALLE:
           break;
         case MONATLICH12631:
-          cols1.addInput(control.getZahlungsrhythmus());
+          cols2.addInput(control.getZahlungsrhythmus());
           break;
         case FLEXIBEL:
-          cols1.addInput(control.getZahlungstermin());
+          cols2.addInput(control.getZahlungstermin());
           break;
       }
     }
-
-    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
-    {
-      cols1.addInput(control.getAbweichenderZahler());
-    }
-    cols1.arrangeVertically();
-
-    LabelGroup bankverbindung = control
-        .getBankverbindungLabelGroup(containerZahlung.getComposite());
-    bankverbindung.getComposite().setLayout(new GridLayout(1, false));
-    ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton(control.getKontoDatenLoeschenButton());
-    buttons2.paint(bankverbindung.getComposite());
-
-    SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
-        bankverbindung.getComposite(), false, spaltenanzahl);
-    cols2.addInput(control.getMandatID());
-    cols2.addInput(control.getMandatDatum());
-    cols2.addInput(control.getMandatVersion());
-    cols2.addInput(control.getLetzteLastschrift());
     cols2.addInput(control.getIban());
     cols2.addInput(control.getBic());
     cols2.addInput(control.getKontoinhaber());
+    cols2.addInput(control.getMandatID());
+    cols2.addInput(control.getMandatVersion());
+    cols2.addInput(control.getMandatDatum());
+    cols2.addInput(control.getLetzteLastschrift());
     cols2.arrangeVertically();
 
     if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)

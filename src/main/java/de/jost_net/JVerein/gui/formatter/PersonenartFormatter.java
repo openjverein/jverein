@@ -14,19 +14,26 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
+package de.jost_net.JVerein.gui.formatter;
 
-package de.jost_net.JVerein.Messaging;
+import de.willuhn.jameica.gui.formatter.Formatter;
 
-import de.willuhn.datasource.GenericObject;
-import de.willuhn.jameica.hbci.messaging.ObjectMessage;
-
-/**
- * Wird versendet, wenn eine Buchung einer Splitbuchung gelöscht werden soll.
- */
-public class SplitbuchungMessage extends ObjectMessage
+public class PersonenartFormatter implements Formatter
 {
-  public SplitbuchungMessage(GenericObject object)
+  @Override
+  public String format(Object o)
   {
-    super(object);
+    if (o == null || !(o instanceof String))
+    {
+      return "";
+    }
+    if (((String) o).equalsIgnoreCase("j"))
+    {
+      return "Juristische Person";
+    }
+    else
+    {
+      return "Natürliche Person";
+    }
   }
 }

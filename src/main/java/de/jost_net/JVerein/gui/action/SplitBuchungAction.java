@@ -19,11 +19,10 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.view.SplitbuchungDetailView;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
-import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.server.SplitBuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -35,8 +34,7 @@ public class SplitBuchungAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null
-        || (!(context instanceof Buchung) && !(context instanceof Buchung[])))
+    if (!(context instanceof Buchung) && !(context instanceof Buchung[]))
     {
       throw new ApplicationException("Keine Buchung(en) ausgewählt");
     }
@@ -52,15 +50,7 @@ public class SplitBuchungAction implements Action
       {
         bl = (Buchung[]) context;
       }
-      if (bl == null)
-      {
-        return;
-      }
-      if (bl.length == 0)
-      {
-        return;
-      }
-      if (bl[0].isNewObject())
+      if (bl == null || bl.length == 0 || bl[0].isNewObject())
       {
         return;
       }
@@ -86,13 +76,13 @@ public class SplitBuchungAction implements Action
               "Allen Buchungen muss zunächst eine Buchungsart zugeordnet werden.");
         }
       }
-      bl[0].setSplitTyp(SplitbuchungTyp.HAUPT);
-      SplitbuchungsContainer.init(bl);
+
+      GUI.startView(SplitbuchungDetailView.class.getName(),
+          new SplitBuchung(bl));
     }
     catch (RemoteException e)
     {
       throw new ApplicationException(e.getMessage());
     }
-    GUI.startView(SplitbuchungDetailView.class.getName(), bl[0]);
   }
 }

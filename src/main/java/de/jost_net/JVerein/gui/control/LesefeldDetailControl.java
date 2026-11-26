@@ -34,7 +34,6 @@ import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -48,7 +47,7 @@ public class LesefeldDetailControl extends VorZurueckControl implements Savable
 
   private Lesefeld lesefeld = null;
 
-  private AbstractInput mitglied;
+  private Input mitglied;
 
   private TextInput scriptName;
 
@@ -197,9 +196,9 @@ public class LesefeldDetailControl extends VorZurueckControl implements Savable
     {
       return scriptCode;
     }
-    scriptCode = new TextAreaInput(getLesefeld().getScript(), 1000);
+    scriptCode = new TextAreaInput(getLesefeld().getScript(), 100000);
     scriptCode.setMandatory(true);
-    scriptCode.setHeight(200);
+    scriptCode.setHeight(400);
     return scriptCode;
   }
 

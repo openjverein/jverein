@@ -20,12 +20,17 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.keys.BelegArt;
 import de.willuhn.util.ApplicationException;
 
 public interface Beleg extends JVereinDBObject
 {
+  public String getBelegzaehler() throws RemoteException;
+
+  public void setBelegzaehler(String belegzaehler) throws RemoteException;
+
   public String getBelegnummer() throws RemoteException;
 
   public void setBelegnummer(String belegnummer) throws RemoteException;
@@ -33,6 +38,10 @@ public interface Beleg extends JVereinDBObject
   public BelegArt getBelegArt() throws RemoteException;
 
   public void setBelegArt(BelegArt belegart) throws RemoteException;
+
+  public Beleggruppe getBelegGruppe() throws RemoteException;
+
+  public void setBelegGruppe(Beleggruppe beleggruppe) throws RemoteException;
 
   String getRootDir() throws RemoteException;
 
@@ -62,4 +71,20 @@ public interface Beleg extends JVereinDBObject
 
   void setPfad(String pfad) throws RemoteException;
 
+  /**
+   * Prüft die Checksum der Datei
+   * 
+   * @throws IOException
+   * @throws ApplicationException
+   * @return true wenn korrekt, false wenn Falsch, null wenn nicht vorhanden
+   */
+  Boolean checkChecksum() throws IOException, ApplicationException;
+
+  List<AbstractBelegReferenz> getReferenzes() throws RemoteException;
+
+  public void erzeugeBelegnummer()
+      throws NumberFormatException, RemoteException, ApplicationException;
+
+  public void delete(boolean vonDbBereinigen)
+      throws RemoteException, ApplicationException;
 }

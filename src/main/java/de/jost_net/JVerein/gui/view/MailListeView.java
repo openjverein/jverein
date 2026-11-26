@@ -21,9 +21,11 @@ import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -47,18 +49,37 @@ public class MailListeView extends AbstractView
     left.addInput(control.getFilterInput(Filter.BETREFF));
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addInput(control.getFilterInput(Filter.DATUM_BEARBEITUNG_VON));
-    middle.addInput(control.getFilterInput(Filter.DATUM_BEARBEITUNG_BIS));
+    Input bearbeitung_von = control
+        .getFilterInput(Filter.DATUM_BEARBEITUNG_VON);
+    middle.addInput(bearbeitung_von);
+    Input bearbeitung_bis = control
+        .getFilterInput(Filter.DATUM_BEARBEITUNG_BIS);
+    middle.addInput(bearbeitung_bis);
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getFilterInput(Filter.DATUM_VERSAND_VON));
-    right.addInput(control.getFilterInput(Filter.DATUM_VERSAND_BIS));
+    Input versand_von = control.getFilterInput(Filter.DATUM_VERSAND_VON);
+    right.addInput(versand_von);
+    Input versand_bis = control.getFilterInput(Filter.DATUM_VERSAND_BIS);
+    right.addInput(versand_bis);
 
     ButtonArea fbuttons = new ButtonArea();
+    ToolTipButton zurueck1 = control.getZurueckButton(bearbeitung_von,
+        bearbeitung_bis);
+    fbuttons.addButton(zurueck1);
+    ToolTipButton vor1 = control.getVorButton(bearbeitung_von, bearbeitung_bis);
+    fbuttons.addButton(vor1);
+    ToolTipButton zurueck2 = control.getZurueckButton(versand_von, versand_bis);
+    fbuttons.addButton(zurueck2);
+    ToolTipButton vor2 = control.getVorButton(versand_von, versand_bis);
+    fbuttons.addButton(vor2);
     fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
+    zurueck1.setToolTipText("Bearbeitung Datumsbereich zurück");
+    vor1.setToolTipText("Bearbeitung Datumsbereich vowärts");
+    zurueck2.setToolTipText("Versand Datumsbereich zurück");
+    vor2.setToolTipText("Versand Datumsbereich vowärts");
 
     control.getTablePart().paint(this.getParent());
 

@@ -293,7 +293,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public Formular getFormular() throws RemoteException
   {
-    return (Formular) getAttribute("formular");
+    return (Formular) super.getAttribute("formular");
   }
 
   @Override
@@ -552,6 +552,18 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
         return HerkunftSpende.KEINEANGABEN;
       default:
         return null;
+    }
+  }
+
+  @Override
+  public Object getAttribute(String s) throws RemoteException
+  {
+    switch (s)
+    {
+      case "formular":
+        return getFormular();
+      default:
+        return super.getAttribute(s);
     }
   }
 

@@ -75,6 +75,13 @@ public class DbBereinigenView extends AbstractView
     bright.addLabelPair("Zugeordnete Sollbuchungen löschen",
         control.getSollbuchungenLoeschen());
 
+    LabelGroup groupBelege = new LabelGroup(cl.getComposite(), "Belege");
+    ColumnLayout belCl = new ColumnLayout(groupBelege.getComposite(), 2);
+    SimpleContainer belLeft = new SimpleContainer(belCl.getComposite());
+    belLeft.addLabelPair("Löschen", control.getBelegeLoeschen());
+    SimpleContainer belRight = new SimpleContainer(belCl.getComposite());
+    belRight.addLabelPair("Datum älter als", control.getDatumAuswahlBelege());
+
     LabelGroup grouplastschriften = new LabelGroup(cl.getComposite(),
         "Lastschriften");
     ColumnLayout lcl = new ColumnLayout(grouplastschriften.getComposite(), 2);

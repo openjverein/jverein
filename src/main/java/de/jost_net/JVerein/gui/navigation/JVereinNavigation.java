@@ -19,8 +19,6 @@ package de.jost_net.JVerein.gui.navigation;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AboutAction;
-import de.jost_net.JVerein.gui.action.BackupCreateAction;
-import de.jost_net.JVerein.gui.action.BackupRestoreAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
@@ -34,6 +32,7 @@ import de.jost_net.JVerein.gui.view.AnlagenverzeichnisView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzListeView;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeListeView;
 import de.jost_net.JVerein.gui.view.BelegListeView;
+import de.jost_net.JVerein.gui.view.BeleggruppeListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungsartListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
@@ -407,6 +406,13 @@ public class JVereinNavigation implements Extension
       einstellungenbuchfuehrung.addChild(new JVereinNavigationItem(
           einstellungenbuchfuehrung, "Buchungsarten",
           new StartViewAction(BuchungsartListeView.class), "ellipsis-v.png"));
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+      {
+        einstellungenbuchfuehrung.addChild(new JVereinNavigationItem(
+            einstellungenbuchfuehrung, "Beleggruppen",
+            new StartViewAction(BeleggruppeListeView.class), "ellipsis-v.png"));
+      }
       einstellungenbuchfuehrung.addChild(new JVereinNavigationItem(
           einstellungenbuchfuehrung, "Kontenrahmen-Export",
           new KontenrahmenExportAction(), "document-save.png"));
@@ -439,12 +445,6 @@ public class JVereinNavigation implements Extension
           einstellungenerweitert, "Datenbank-Bereinigung",
           new StartViewAction(DbBereinigenView.class),
           "placeholder-loading.png"));
-      einstellungenerweitert.addChild(new JVereinNavigationItem(
-          einstellungenerweitert, "Diagnose-Backup-Export",
-          new BackupCreateAction(), "document-save.png"));
-      einstellungenerweitert.addChild(new JVereinNavigationItem(
-          einstellungenerweitert, "Diagnose-Backup-Import",
-          new BackupRestoreAction(), "file-import.png"));
       administration.addChild(einstellungenerweitert);
       jverein.addChild(administration);
 

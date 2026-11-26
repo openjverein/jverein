@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.util.ApplicationException;
 
 public abstract class AbstractBelegReferenzImpl extends AbstractJVereinDBObject
     implements AbstractBelegReferenz
@@ -39,5 +40,15 @@ public abstract class AbstractBelegReferenzImpl extends AbstractJVereinDBObject
   public void setReferenz(DBObject referenz) throws RemoteException
   {
     setAttribute("referenz", referenz);
+  }
+
+  public void checkUpdateAllowed() throws RemoteException, ApplicationException
+  {
+    updateCheck();
+  }
+
+  public void checkDeleteAllowed() throws RemoteException, ApplicationException
+  {
+    deleteCheck();
   }
 }

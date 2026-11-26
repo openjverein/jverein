@@ -32,6 +32,7 @@ import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.jameica.gui.GUI;
@@ -126,6 +127,8 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     });
     left.addLabelPair("Verwendungszweck", zweckInput);
     left.addLabelPair("Zahlungsweg", sollbControl.getZahlungsweg());
+    left.addLabelPair("Mitglied zahlt selbst",
+        sollbControl.getMitgliedzahltSelbst());
 
     // Sollbuchungsposition, Datum und Zweck wird von Sollbuchung genommen
     SimpleContainer right = new SimpleContainer(cols.getComposite());
@@ -247,7 +250,16 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
         sollbPosControl.getZweck()
             .setValue(sollbControl.getZweck1().getValue());
       }
-      sollbControl.getZahler().setValue(sollbControl.getMitglied().getValue());
+      Mitglied m = (Mitglied) sollbControl.getMitglied().getValue();
+      if (!(Boolean) sollbControl.getMitgliedzahltSelbst().getValue()
+          && m != null && m.getAbweichenderZahler() != null)
+      {
+        sollbControl.getZahler().setValue(m.getAbweichenderZahler());
+      }
+      else
+      {
+        sollbControl.getZahler().setValue(m);
+      }
       sollbControl.handleStore();
       sollbuchungPosition.setSollbuchung(sollbuchung.getID());
       sollbPosControl.handleStore();

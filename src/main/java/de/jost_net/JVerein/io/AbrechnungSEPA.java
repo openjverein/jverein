@@ -51,6 +51,7 @@ import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.Variable.ZusatzbetragMap;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
@@ -77,6 +78,7 @@ import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
+import de.jost_net.JVerein.util.SplitbuchungUtil;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.jost_net.OBanToo.SEPA.BIC;
@@ -650,6 +652,7 @@ public class AbrechnungSEPA extends SEPASupport
         Map<String, Object> map = new AllgemeineMap().getMap(null);
         map = new MitgliedMap().getMap(m, map, ohneLesefelder);
         map = new AbrechnungsParameterMap().getMap(param, map);
+        map = new ZusatzbetragMap().getMap(z, map);
 
         vzweck = VelocityTool.eval(map, vzweck, true);
 
@@ -710,12 +713,12 @@ public class AbrechnungSEPA extends SEPASupport
               Adressaufbereitung.getNameVorname(m) + ": " + e.getMessage());
         }
 
+        Date faelligkeit = z.getFaelligkeit();
         if (z.getIntervall().intValue() != IntervallZusatzzahlung.KEIN
             && (z.getEndedatum() == null
                 || z.getFaelligkeit().getTime() <= z.getEndedatum().getTime()))
         {
-          z.setFaelligkeit(
-              Datum.addInterval(z.getFaelligkeit(), z.getIntervall()));
+          z.setFaelligkeit(Datum.addInterval(faelligkeit, z.getIntervall()));
         }
         try
         {
@@ -728,7 +731,7 @@ public class AbrechnungSEPA extends SEPASupport
             za.setZusatzbetrag(z);
             za.setLetzteAusfuehrung(z.getAusfuehrung());
             za.store();
-            z.setAusfuehrung(param.stichtag);
+            z.setAusfuehrung(faelligkeit);
             z.store();
           }
         }
@@ -1128,7 +1131,7 @@ public class AbrechnungSEPA extends SEPASupport
       if (sollb != null)
       {
         // Buchungen automatisch splitten
-        SplitbuchungsContainer.autoSplit(buchung, sollb, true);
+        SplitbuchungUtil.autoSplit(buchung, sollb, true);
       }
     }
     return zweck;

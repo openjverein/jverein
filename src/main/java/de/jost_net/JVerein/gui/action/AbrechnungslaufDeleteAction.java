@@ -26,6 +26,7 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
@@ -231,6 +232,13 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
         }
         z.setAusfuehrung(za.getLetzteAusfuehrung());
         z.store();
+      }
+      it = Einstellungen.getDBService().createList(Lastschrift.class);
+      it.addFilter("abrechnungslauf = ?", object.getID());
+      while (it.hasNext())
+      {
+        Lastschrift la = (Lastschrift) it.next();
+        la.delete();
       }
       object.delete();
       DBTransaction.commit();

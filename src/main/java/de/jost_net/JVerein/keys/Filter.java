@@ -19,10 +19,12 @@ package de.jost_net.JVerein.keys;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Steuer;
@@ -51,6 +53,10 @@ public enum Filter
       FilterArt.DATE),
   BEITRAGSGRUPPE("filter_beitragsgruppe", "Beitragsgruppe", FilterControl.ALLE,
       FilterArt.SELECT, Beitragsgruppe.class),
+  BELEG_ART("beleg_art", "Belegart", BelegArt.BUCHUNG.toString(),
+      FilterArt.SELECT, BelegArt.values()),
+  BELEG_GRUPPE("beleg_gruppe", "Beleggruppe", "Sport", FilterArt.SELECT,
+      Beleggruppe.class),
   BELEGNUMMER("filter_belegnummer", "Belegnummer", "0123", FilterArt.TEXT),
   BEMERKUNG("filter_bemerkung", "Bemerkung", "Bemerkung", FilterArt.TEXT),
   BETRAG("filter_betrag", "Betrag", "50", FilterArt.BETRAG),
@@ -135,6 +141,8 @@ public enum Filter
       FilterArt.TEXT),
   MITGLIED("filter_mitglied", "Mitglied", "Meier", FilterArt.TEXT),
   MITGLIED_NAME("filter_mitglied_name", "Mitglied", "Meier", FilterArt.TEXT),
+  MITGLIED_SELECT("filter_mitglied_select", "Mitglied", "Meier",
+      FilterArt.MITGLIED, Mitglied.class),
   MITGLIEDART("filter_mitgliedsart", "Mitgliedsart", FilterControl.ALLE,
       FilterArt.SELECT, MitgliedsArt.values()),
   MITGLIEDSCHAFT_STATUS("filter_mitgliedschaft", "Mitgliedschaft",
@@ -188,9 +196,7 @@ public enum Filter
   // Für Auswertung
   JUBELJAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,
       Jubeljahr.getList()),
-  AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste", FilterArt.TEXT),
-  BELEG_ART("beleg_art", "Beleg Art", BelegArt.BUCHUNG.toString(),
-      FilterArt.SELECT, BelegArt.values());
+  AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste", FilterArt.TEXT);
 
   private String setting;
 
@@ -216,6 +222,7 @@ public enum Filter
     INTEGER,
     BIGDECIMAL,
     KONTO,
+    MITGLIED,
     BUCHUNGSART,
     BETRAG
   }

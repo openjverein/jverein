@@ -49,7 +49,7 @@ public class Update0510 extends AbstractDDLUpdate
         + "', COALESCE(max(id),0)+1 FROM rechnung");
 
     execute(
-        "ALTER TABLE rechnung ADD UNIQUE INDEX `idx_rechnungsnummer` (`nummer`)");
+        " CREATE UNIQUE INDEX IF NOT EXISTS idx_rechnungsnummer ON rechnung (nummer);");
 
     // Fehler aus Update0509 nochmal korrigieren, falls jemand die
     // NigthlyVersion verwendet hat und es somit noch nicht in der Korrekten

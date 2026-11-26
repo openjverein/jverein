@@ -23,21 +23,20 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.input.AbstractInput;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 
 public class MitgliedInput
 {
 
-  public AbstractInput getMitgliedInput(AbstractInput mitgliedInput,
-      Mitglied mitglied, int auswahl) throws RemoteException
+  public Input getMitgliedInput(Input mitgliedInput, Mitglied mitglied,
+      int auswahl) throws RemoteException
   {
     return getMitgliedInput(mitgliedInput, mitglied, auswahl, null);
   }
 
-  public AbstractInput getMitgliedInput(AbstractInput mitgliedInput,
-      Mitglied mitglied, int auswahl, Integer mitgliedstyp)
-      throws RemoteException
+  public Input getMitgliedInput(Input mitgliedInput, Mitglied mitglied,
+      int auswahl, Integer mitgliedstyp) throws RemoteException
   {
     switch (auswahl)
     {

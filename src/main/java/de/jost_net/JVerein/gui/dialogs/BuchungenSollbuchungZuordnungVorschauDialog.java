@@ -31,12 +31,12 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.SplitbuchungUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -176,7 +176,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog
         Buchung b = (Buchung) o.getAttribute("buchung");
         Sollbuchung s = (Sollbuchung) o.getAttribute("sollbuchung");
 
-        SplitbuchungsContainer.autoSplit(b, s, true);
+        SplitbuchungUtil.autoSplit(b, s, true);
       }
 
       GUI.getCurrentView().reload();

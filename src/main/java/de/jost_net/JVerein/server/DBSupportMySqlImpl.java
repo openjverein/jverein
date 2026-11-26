@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -124,7 +123,7 @@ public class DBSupportMySqlImpl extends AbstractDBSupportImpl
     {
       try
       {
-        new JVereinUpdateProvider(conn,
+        new JVereinUpdateProvider(this, conn,
             Application.getCallback().getStartupMonitor());
       }
       catch (Exception e2)
@@ -133,24 +132,6 @@ public class DBSupportMySqlImpl extends AbstractDBSupportImpl
         throw new ApplicationException(e2.getMessage(), e2);
       }
     }
-  }
-
-  /**
-   * 
-   */
-  @Override
-  public void execute(Connection conn, File sqlScript) throws RemoteException
-  {
-    if (sqlScript == null)
-      return; // Ignore
-
-    sqlScript = new File(sqlScript.getParent(), sqlScript.getName());
-    if (!sqlScript.exists())
-    {
-      Logger.debug("file " + sqlScript + " does not exist, skipping");
-      return;
-    }
-    super.execute(conn, sqlScript);
   }
 
   /**

@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -11,8 +11,6 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
@@ -24,6 +22,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,15 +35,16 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.BelegMap;
-import de.jost_net.JVerein.Variable.BelegVar;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beleg;
+import de.jost_net.JVerein.rmi.BelegKonto;
+import de.jost_net.JVerein.rmi.BelegMitglied;
+import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
@@ -56,11 +56,15 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   // Hier müssen alle Implementierungen von AbstractBelegReferenz
   // aufgelistet werden
   private List<Class<? extends AbstractBelegReferenz>> belegReferenzList = Arrays
-      .asList(BelegBuchungImpl.class);
+      .asList(BelegBuchungImpl.class, BelegMitglied.class, BelegKonto.class);
 
   protected static String HASH_ALGORITHM = "SHA-512";
 
   private File file;
+
+  private boolean hashUpdateAllowed = false;
+
+  private String belegzaehler = "";
 
   private static final long serialVersionUID = 1L;
 
@@ -82,7 +86,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       {
         throw new ApplicationException("UUID darf nicht verändert werden!");
       }
-      if (hasChanged("hash"))
+      if (hasChanged("hash") && !hashUpdateAllowed)
       {
         throw new ApplicationException("Hash darf nicht verändert werden!");
       }
@@ -90,15 +94,10 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       {
         throw new ApplicationException("Pfad darf nicht verändert werden!");
       }
-      for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
+      if (!hashUpdateAllowed)
       {
-        DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
-            .createList(c);
-        it.addFilter("beleg = ?", getID());
-        while (it.hasNext())
-        {
-          it.next().checkChangesAllowed();
-        }
+        for (AbstractBelegReferenz ref : getReferenzes())
+          ref.checkUpdateAllowed();
       }
       if (getBemerkung() == null || getBemerkung().isBlank())
       {
@@ -138,41 +137,37 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   {
     try
     {
-      // Alle vorhandenn erferenzen des Objects prüfen, ob sie geändert/gelöscht
+      // Alle vorhandenn Referenzen des Objects prüfen, ob sie geändert/gelöscht
       // werden dürfen
-      for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
+      for (AbstractBelegReferenz ref : getReferenzes())
       {
-        DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
-            .createList(c);
-        it.addFilter("beleg = ?", getID());
-        while (it.hasNext())
-        {
-          it.next().checkChangesAllowed();
-        }
+        ref.checkDeleteAllowed();
       }
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException("Fehler beim insertCheck");
+      throw new ApplicationException("Fehler beim deleteCheck");
     }
   }
 
   @Override
   public void delete() throws RemoteException, ApplicationException
   {
+    delete(false);
+  }
+
+  @Override
+  public void delete(boolean vonDbBereinigen)
+      throws RemoteException, ApplicationException
+  {
     try
     {
       // Alle vorhandenn erferenzen des Objects impliziet löschen, damit dort im
       // deleteCheck geprüft werden kann
       DBTransaction.starten();
-      for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
+      for (AbstractBelegReferenz ref : getReferenzes())
       {
-        DBIterator<DBObject> it = Einstellungen.getDBService().createList(c);
-        it.addFilter("beleg = ?", getID());
-        while (it.hasNext())
-        {
-          it.next().delete();
-        }
+        ref.delete(vonDbBereinigen);
       }
 
       super.delete();
@@ -201,6 +196,23 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   }
 
   @Override
+  public List<AbstractBelegReferenz> getReferenzes() throws RemoteException
+  {
+    List<AbstractBelegReferenz> list = new ArrayList<>();
+    for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
+    {
+      DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
+          .createList(c);
+      it.addFilter("beleg = ?", getID());
+      while (it.hasNext())
+      {
+        list.add(it.next());
+      }
+    }
+    return list;
+  }
+
+  @Override
   protected String getTableName()
   {
     return "beleg";
@@ -216,6 +228,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         return "buchungen";
       case MITGLIED:
         return "mitglieder";
+      case KONTO:
+        return "konten";
       case SONSTIGES:
         throw new RemoteException(
             "Sonstige Belege mit Messaging nicht möglich");
@@ -234,6 +248,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         return Einstellungen.getBelegAllgemeinVerzeichnis() + File.separator;
       case MITGLIED:
         return Einstellungen.getBelegMitgliedVerzeichnis() + File.separator;
+      case KONTO:
+        return Einstellungen.getBelegKontoVerzeichnis() + File.separator;
     }
     return null;
   }
@@ -252,6 +268,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       case MITGLIED:
         return VorlageUtil.getName(VorlageTyp.BELEG_MITGLIED_PFAD, this,
             filename);
+      case KONTO:
+        return VorlageUtil.getName(VorlageTyp.BELEG_KONTO_PFAD, this, filename);
     }
     return null;
   }
@@ -265,24 +283,46 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("belegnummer".equals(fieldName))
+    switch (fieldName)
     {
-      String nr = (String) super.getAttribute("belegnummer");
-      if (nr != null && !nr.isBlank())
-      {
-        return nr;
-      }
+      case "beleggruppe":
+        if (getBelegGruppe() != null)
+        {
+          return getBelegGruppe().getBezeichnung();
+        }
+        else
+        {
+          return "";
+        }
+      case "belegnummer":
+        String nr = (String) super.getAttribute("belegnummer");
+        if (nr != null && !nr.isBlank())
+        {
+          return nr;
+        }
 
-      // Alte Dokumente haben zT. keine Belegnummer (Wenn es mehrere Dokumente
-      // in einer Buchung gab), dann als Fallback die Referenz verwenden
-      Long ref = (Long) getAttribute("referenz");
-      return ref == null ? null : ref.toString() + "-" + getID();
+        // Alte Dokumente haben zT. keine Belegnummer (Wenn es mehrere Dokumente
+        // in einer Buchung gab), dann als Fallback die Referenz verwenden
+        Long ref = (Long) getAttribute("referenz");
+        return ref == null ? null : ref.toString() + "-" + getID();
+      case "vollpfad":
+        if (getPfad() != null)
+        {
+          return getRootDir() + getPfad();
+        }
+      default:
+        return super.getAttribute(fieldName);
     }
-    else if ("vollpfad".equals(fieldName) && getPfad() != null)
-    {
-      return getRootDir() + getPfad();
-    }
-    return super.getAttribute(fieldName);
+  }
+
+  public String getBelegzaehler() throws RemoteException
+  {
+    return belegzaehler;
+  }
+
+  public void setBelegzaehler(String belegzaehler) throws RemoteException
+  {
+    this.belegzaehler = belegzaehler;
   }
 
   @Override
@@ -313,15 +353,72 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   {
     if (!isNewObject())
     {
-      super.store();
-      return;
+      // wenn nicht vorhanden, erstellen wir den Hash, nur wenn sonst nichts
+      // geändert wurde
+      if (getHash() == null && !hasChanged())
+      {
+        try
+        {
+          setHash(createHash(getFile()));
+          hashUpdateAllowed = true;
+        }
+        catch (ApplicationException | IOException e)
+        {
+          Logger.error(
+              "Fehler beim erstellen des Hashes für einen bestehenden Beleg",
+              e);
+        }
+      }
+      hashUpdateAllowed = false;
     }
+    else if (getBelegnummer() == null)
+    {
+      erzeugeBelegnummer();
+    }
+    super.store();
+  }
+
+  @Override
+  public void erzeugeBelegnummer()
+      throws NumberFormatException, RemoteException, ApplicationException
+  {
+    Property prop = null;
+    String zaehler = null;
+    String nummer = "";
     try
     {
       if (getBelegArt() == null)
       {
         throw new ApplicationException("Beleg-Art ist nicht gesetzt");
       }
+      switch (getBelegArt())
+      {
+        case BUCHUNG:
+          prop = Property.BELEG_ZAEHLER_BUCHUNG;
+          zaehler = Einstellungen.getEinstellung(prop).toString();
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_BUCHUNG);
+          break;
+        case SONSTIGES:
+          prop = Property.BELEG_ZAEHLER_SONSTIGES;
+          zaehler = Einstellungen.getEinstellung(prop).toString();
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_SONSTIGES);
+          break;
+        case MITGLIED:
+          prop = Property.BELEG_ZAEHLER_MITGLIED;
+          zaehler = Einstellungen.getEinstellung(prop).toString();
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_MITGLIED);
+          break;
+        case KONTO:
+          prop = Property.BELEG_ZAEHLER_KONTO;
+          zaehler = Einstellungen.getEinstellung(prop).toString();
+          nummer = (String) Einstellungen
+              .getEinstellung(Property.BELEGNUMMER_KONTO);
+          break;
+      }
+      setBelegzaehler(zaehler);
 
       transactionBegin();
 
@@ -329,22 +426,6 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       Map<String, Object> map = new AllgemeineMap().getMap(null);
       map = new BelegMap().getMap(this, map);
 
-      String nummer = "";
-      switch (getBelegArt())
-      {
-        case BUCHUNG:
-          nummer = (String) Einstellungen
-              .getEinstellung(Property.BELEGNUMMER_BUCHUNG);
-          break;
-        case SONSTIGES:
-          nummer = (String) Einstellungen
-              .getEinstellung(Property.BELEGNUMMER_SONSTIGES);
-          break;
-        case MITGLIED:
-          nummer = (String) Einstellungen
-              .getEinstellung(Property.BELEGNUMMER_MITGLIED);
-          break;
-      }
       nummer = VelocityTool.eval(map, nummer);
 
       if (nummer.length() > 50)
@@ -352,7 +433,6 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         throw new ApplicationException(
             "Belegnummer zu lang, maximal 50 Zeichen erlaubt!");
       }
-      setBelegnummer(nummer);
 
       // Prüfen, ob es schon einen Beleg mit dieser Nummer gibt
       DBIterator<?> it = getList();
@@ -362,28 +442,14 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         throw new ApplicationException(
             "Beleg mit dieser Nummer existiert bereits. Belegnummer in Einstellungen korrigieren!");
       }
-      super.store();
+      setBelegnummer(nummer);
+
       // Belegnummer hochzählen
-      Property prop = null;
-      switch (getBelegArt())
-      {
-        case BUCHUNG:
-          prop = Property.BELEG_ZAEHLER_BUCHUNG;
-          break;
-        case SONSTIGES:
-          prop = Property.BELEG_ZAEHLER_SONSTIGES;
-          break;
-        case MITGLIED:
-          prop = Property.BELEG_ZAEHLER_MITGLIED;
-          break;
-      }
-      Einstellungen.setEinstellung(prop,
-          Integer.parseInt(map.get(BelegVar.BELEG_ZAEHLER.getName()).toString())
-              + 1);
+      Einstellungen.setEinstellung(prop, Integer.parseInt(zaehler) + 1);
 
       transactionCommit();
     }
-    catch (Exception e)
+    catch (ApplicationException e)
     {
       transactionRollback();
       throw e;
@@ -435,8 +501,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
     setAttribute("uuid", uuid);
   }
 
-  @Override
-  public File getFile() throws IOException, ApplicationException
+  private File getFileInternal() throws IOException, ApplicationException
   {
     if (isNewObject())
     {
@@ -479,25 +544,31 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         throw new ApplicationException("Datei existiert nicht");
       }
     }
-    if (getHash() != null && getHash().length > 0 && file != null)
+    return file;
+  }
+
+  @Override
+  public File getFile() throws IOException, ApplicationException
+  {
+    File file = getFileInternal();
+    if (getHash() != null && getHash().length > 0 && file != null
+        && !Arrays.equals(getHash(), createHash(file)))
     {
-      try (FileInputStream fis = new FileInputStream(file))
-      {
-        MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM);
-        md.update(fis.readAllBytes());
-        if (!Arrays.equals(getHash(), md.digest()))
-        {
-          throw new ApplicationException(
-              "Datei wurde seit dem Speichern verändert, Hash stimmt nicht überein!");
-        }
-      }
-      catch (NoSuchAlgorithmException e)
-      {
-        throw new ApplicationException(
-            "Fehler beim erstellen des Datei-Hashes");
-      }
+      throw new ApplicationException(
+          "Datei wurde seit dem Speichern verändert, Hash stimmt nicht überein!");
     }
     return file;
+  }
+
+  @Override
+  public Boolean checkChecksum() throws IOException, ApplicationException
+  {
+    File file = getFileInternal();
+    if (getHash() != null && getHash().length > 0 && file != null)
+    {
+      return Arrays.equals(getHash(), createHash(file));
+    }
+    return null;
   }
 
   @Override
@@ -584,17 +655,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
           Application.getMessagingFactory()
               .getMessagingQueue("jameica.messaging.putmeta").sendMessage(qm);
         }
-        try (FileInputStream stream = new FileInputStream(file))
-        {
-          MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM);
-          md.update(stream.readAllBytes());
-          setHash(md.digest());
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-          throw new ApplicationException(
-              "Fehler beim erstellen des Datei-Hashes");
-        }
+        setHash(createHash(file));
       }
       catch (FileNotFoundException e)
       {
@@ -630,6 +691,21 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
     }
   }
 
+  private byte[] createHash(File file)
+      throws ApplicationException, FileNotFoundException, IOException
+  {
+    try (FileInputStream stream = new FileInputStream(file))
+    {
+      MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM);
+      md.update(stream.readAllBytes());
+      return md.digest();
+    }
+    catch (NoSuchAlgorithmException e)
+    {
+      throw new ApplicationException("Fehler beim erstellen des Datei-Hashes");
+    }
+  }
+
   @Override
   public void setHash(byte[] hash) throws RemoteException
   {
@@ -645,13 +721,13 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   @Override
   public String getObjektName()
   {
-    return "Dokument";
+    return "Beleg";
   }
 
   @Override
   public String getObjektNameMehrzahl()
   {
-    return "Dokumente";
+    return "Belege";
   }
 
   @Override
@@ -664,5 +740,27 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   public void setPfad(String pfad) throws RemoteException
   {
     setAttribute("pfad", pfad);
+  }
+
+  @Override
+  public Beleggruppe getBelegGruppe() throws RemoteException
+  {
+    return (Beleggruppe) super.getAttribute("beleggruppe");
+  }
+
+  @Override
+  public void setBelegGruppe(Beleggruppe beleggruppe) throws RemoteException
+  {
+    setAttribute("beleggruppe", beleggruppe);
+  }
+
+  @Override
+  protected Class<?> getForeignObject(String field)
+  {
+    if ("beleggruppe".equals(field))
+    {
+      return Beleggruppe.class;
+    }
+    return null;
   }
 }

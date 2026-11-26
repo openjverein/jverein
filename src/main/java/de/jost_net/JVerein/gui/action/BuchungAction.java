@@ -23,9 +23,9 @@ import java.util.List;
 import de.jost_net.JVerein.gui.control.VorZurueckControl;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.SplitbuchungDetailView;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.server.BuchungImpl;
+import de.jost_net.JVerein.server.SplitBuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -86,8 +86,8 @@ public class BuchungAction implements Action
       }
       else if (!b.isToDelete())
       {
-        SplitbuchungsContainer.init(b);
-        GUI.startView(SplitbuchungDetailView.class.getName(), b);
+        GUI.startView(SplitbuchungDetailView.class.getName(),
+            new SplitBuchung(b));
       }
     }
     catch (RemoteException e)

@@ -47,7 +47,7 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.AbstractInput;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -72,9 +72,9 @@ public class SollbuchungDetailControl extends VorZurueckControl
 
   private BigDecimalInput betrag;
 
-  private AbstractInput mitglied;
+  private Input mitglied;
 
-  private AbstractInput zahler;
+  private Input zahler;
 
   private ButtonRtoL neuButton;
 
@@ -85,6 +85,8 @@ public class SollbuchungDetailControl extends VorZurueckControl
   private BuchungListPart istbuchungList;
 
   private boolean editable = false;
+
+  private CheckboxInput mitgliedZahltSelbst;
 
   private SollbuchungMessageConsumer sollbuchungConsumer = null;
 
@@ -526,4 +528,15 @@ public class SollbuchungDetailControl extends VorZurueckControl
         .unRegisterMessageConsumer(mitgliedskontoConsumer);
   }
 
+  public CheckboxInput getMitgliedzahltSelbst() throws RemoteException
+  {
+    if (mitgliedZahltSelbst != null)
+    {
+      return mitgliedZahltSelbst;
+    }
+    mitgliedZahltSelbst = new CheckboxInput(false);
+    mitgliedZahltSelbst
+        .setName(" *Falls ein abweichender Zahler konfiguriert ist.");
+    return mitgliedZahltSelbst;
+  }
 }

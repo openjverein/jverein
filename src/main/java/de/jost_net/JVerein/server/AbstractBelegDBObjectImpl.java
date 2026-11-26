@@ -34,7 +34,6 @@ public abstract class AbstractBelegDBObjectImpl extends AbstractJVereinDBObject
     {
       throw new ApplicationException("Beleg bitte erst speichern");
     }
-    updateCheck();
     DBIterator<Beleg> it = getBelegList();
     it.addFilter("beleg = ?", beleg.getID());
     if (it.hasNext())
@@ -74,7 +73,6 @@ public abstract class AbstractBelegDBObjectImpl extends AbstractJVereinDBObject
       throw new ApplicationException(
           "Beleg existiert nicht oder wurde noch nicht gespeichert");
     }
-    updateCheck();
     DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
         .createList(getBelegReferenzClass());
     it.addFilter(getBelegReferenzTableName() + ".beleg = ?", beleg.getID());
