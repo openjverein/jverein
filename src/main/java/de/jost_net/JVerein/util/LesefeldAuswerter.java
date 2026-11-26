@@ -149,6 +149,11 @@ public class LesefeldAuswerter
     lesefelder = list;
   }
 
+  public Map<String, Object> getLesefelderMap() throws RemoteException
+  {
+    return getLesefelderMap(Einstellungen.LESEFELD_PRE);
+  }
+
   /**
    * Evaluiert alle Lesefelder-Definitionen, die mit
    * readLesefelderDefinitionsFromDatabase() oder setLesefelderDefinitions()
@@ -159,7 +164,8 @@ public class LesefeldAuswerter
    * @return Liste von Mitglieder-Lesefelder-Variablen
    * @throws RemoteException
    */
-  public Map<String, Object> getLesefelderMap() throws RemoteException
+  public Map<String, Object> getLesefelderMap(String prefix)
+      throws RemoteException
   {
     Map<String, Object> map = new HashMap<>();
     for (Lesefeld lesefeld : lesefelder)
@@ -170,7 +176,7 @@ public class LesefeldAuswerter
       {
         continue;
       }
-      map.put(Einstellungen.LESEFELD_PRE + lesefeld.getBezeichnung(),
+      map.put(prefix + lesefeld.getBezeichnung(),
           lesefeld.getEvaluatedContent());
     }
     Logger.debug(

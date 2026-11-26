@@ -458,7 +458,18 @@ public class MitgliedQuery
       mitgliederIds = getFilteredIds(mitgliederIds, suchIds, suchauswahl,
           mitgliedEigenschaften, param.getVerknuepfung());
     }
-    return getMitglieder(mitgliederIds);
+    ArrayList<Mitglied> mitglieder = getMitglieder(mitgliederIds);
+
+    if (filter.get(Filter.DIFFERENZ) != null)
+    {
+      // Datum für Kontostand-Berechnung in Mitglied speichern
+      for (Mitglied mitglied : mitglieder)
+      {
+        mitglied.setKontostandVon((Date) filter.get(Filter.DATUM_VON));
+        mitglied.setKontostandBis((Date) filter.get(Filter.DATUM_BIS));
+      }
+    }
+    return mitglieder;
   }
 
   private ArrayList<Mitglied> getMitglieder(ArrayList<Long> ids)
@@ -499,6 +510,7 @@ public class MitgliedQuery
     ArrayList<Mitglied> mitglieder = list != null
         ? (ArrayList<Mitglied>) PseudoIterator.asList(list)
         : null;
+
     return mitglieder;
   }
 
