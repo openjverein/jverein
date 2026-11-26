@@ -29,7 +29,7 @@ import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.willuhn.util.ApplicationException;
 
 public interface Mitglied
-    extends JVereinDBObject, ILastschrift, IGutschriftProvider
+    extends AbstractBelegDBObject, ILastschrift, IGutschriftProvider
 {
   public enum namenformat
   {

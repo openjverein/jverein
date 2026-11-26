@@ -33,15 +33,19 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.BelegMenu;
 import de.jost_net.JVerein.gui.util.DragnDropUtil;
 import de.jost_net.JVerein.gui.view.BelegDetailView;
+import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.server.AbstractJVereinDBObject;
+import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
@@ -57,6 +61,19 @@ public class BelegPart implements Part
 
   private BelegMessageConsumer consumer = new BelegMessageConsumer();
 
+  private boolean mitButtons = true;
+
+  public BelegPart()
+  {
+    super();
+  }
+
+  public BelegPart(boolean mitButtons)
+  {
+    super();
+    this.mitButtons = mitButtons;
+  }
+
   @Override
   public void paint(Composite parent) throws RemoteException
   {
@@ -64,14 +81,17 @@ public class BelegPart implements Part
 
     grDokument.getComposite().setLayout(new GridLayout(1, false));
 
-    ButtonArea butts = new ButtonArea();
-    butts.addButton("Beleg zuordnen", new BelegZuordnenAction(this, null),
-        getCurrentObject(), false, "document-new.png");
-    butts.addButton("Neu", new BelegNewAction(), getCurrentObject(), false,
-        "document-new.png");
-    butts.paint(grDokument.getComposite());
-    grDokument.addPart(getTablePart());
+    if (mitButtons)
+    {
+      ButtonArea butts = new ButtonArea();
+      butts.addButton("Beleg zuordnen", new BelegZuordnenAction(this, null),
+          getCurrentObject(), false, "document-new.png");
+      butts.addButton("Neu", new BelegNewAction(), getCurrentObject(), false,
+          "document-new.png");
+      butts.paint(grDokument.getComposite());
+    }
 
+    grDokument.addPart(getTablePart());
     grDokument.getComposite().addDisposeListener(e -> {
       Application.getMessagingFactory().unRegisterMessageConsumer(consumer);
     });
@@ -104,14 +124,33 @@ public class BelegPart implements Part
     }
     docsList = new AutoUpdateTablePart(getCurrentObject().getBelegList(), null);
     docsList.setTableName("Belege");
+    docsList.addColumn(new Column("id-int", "Nr"), false);
+    docsList.addColumn(new Column(AbstractJVereinDBObject.ABGESCHLOSSEN,
+        AbstractJVereinDBObject.ABGESCHLOSSEN), false);
     docsList.addColumn("Belegnummer", "belegnummer");
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    if (!mitButtons)
+    {
+      docsList.addColumn("Versand", "versand",
+          new DateFormatter(new JVDateFormatDATETIME()));
+    }
     docsList.addColumn("Bemerkung", "bemerkung");
-    docsList.addColumn("Pfad", "vollpfad");
-    docsList.setContextMenu(new BelegMenu(docsList, getCurrentObject()));
+    docsList.addColumn(new Column("vollpfad", "Pfad"), false);
+    docsList.addColumn("Belegart", "belegart",
+        i -> BelegArt.getByKey((Integer) i).toString(), false,
+        Column.ALIGN_LEFT);
+    docsList.addColumn("Beleggruppe", "beleggruppe");
+    if (mitButtons)
+    {
+      docsList.setContextMenu(new BelegMenu(null, getCurrentObject()));
+    }
+    else
+    {
+      docsList.setContextMenu(new BelegMenu(null, null));
+    }
     docsList.setMulti(true);
-    docsList.setAction(new EditAction(BelegDetailView.class, docsList));
+    docsList.setAction(new EditAction(BelegDetailView.class));
 
     return docsList;
   }

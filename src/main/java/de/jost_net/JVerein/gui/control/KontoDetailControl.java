@@ -35,6 +35,8 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
+import de.jost_net.JVerein.gui.parts.BelegPart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.keys.AfaMode;
@@ -114,6 +116,8 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
   private SelectInput afamode;
 
   private SelectInput anlagenzweck;
+
+  private BelegPart belegPart;
 
   Button autobutton;
 
@@ -1212,4 +1216,20 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
     }
   }
 
+  public BelegPart getBelegPart() throws RemoteException
+  {
+    if (belegPart != null)
+    {
+      return belegPart;
+    }
+    belegPart = new BelegPart();
+    return belegPart;
+  }
+
+  @Override
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
+  {
+    return getBelegPart().getTablePart();
+  }
 }

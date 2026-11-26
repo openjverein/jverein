@@ -38,6 +38,7 @@ import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Kontenfilter;
@@ -964,5 +965,12 @@ public class BuchungDetailControl extends VorZurueckControl implements Savable
       }
     }, null, false, "document-new.png");
     return buchungsbelegButton;
+  }
+
+  @Override
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
+  {
+    return getBuchungPart().getBelegPart().getTablePart();
   }
 }

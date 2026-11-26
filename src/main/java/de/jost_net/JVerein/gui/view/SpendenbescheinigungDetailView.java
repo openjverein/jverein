@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungDetailControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
@@ -38,7 +39,7 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
 
     control = new SpendenbescheinigungDetailControl(this);
 
-    ScrolledContainer scrolled = new ScrolledContainer(getParent());
+    ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
     ColumnLayout cols1 = new ColumnLayout(scrolled.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cols1.getComposite());
@@ -84,16 +85,24 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
         "Buchungen");
     grBuchungen.addPart(control.getTablePart());
 
+    // Mit Spendenbescheinigungen ist auch Dokumentenspeicherung aktiv
+    control.getBelegPart().paint(scrolled.getComposite());
+
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton(new HelpButton(DokumentationUtil.SPENDENBESCHEINIGUNG));
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
     buttons.addButton(control.getDruckUndMailButton());
+    ButtonRtoL belegButton = control.getBelegButton();
+    if (belegButton != null)
+    {
+      buttons.addButton(control.getBelegButton());
+    }
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
+    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
 
   }
 

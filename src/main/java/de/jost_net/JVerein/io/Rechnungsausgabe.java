@@ -27,9 +27,8 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.ZahlerMap;
-import de.jost_net.JVerein.gui.control.RechnungDetailControl;
-import de.jost_net.JVerein.gui.control.RechnungDetailControl.TYP;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -45,25 +44,24 @@ import de.willuhn.util.ApplicationException;
 
 public class Rechnungsausgabe extends AbstractAusgabe
 {
-  RechnungDetailControl.TYP typ;
 
   private Formular formular;
 
-  public Rechnungsausgabe(RechnungDetailControl.TYP typ, Formular formular)
+  public Rechnungsausgabe(BelegTyp typ, Formular formular)
   {
-    this.typ = typ;
+    belegtyp = typ;
     this.formular = formular;
   }
 
   @Override
-  protected boolean checkVersendet(ArrayList<? extends DBObject> list,
+  public boolean checkVersendet(ArrayList<? extends DBObject> list,
       Ausgabeart art) throws RemoteException
   {
     // Mahnungen dürfen nur versendet werden, wenn die Rechnung schon verschickt
     // wurde
-    if (typ == TYP.MAHNUNG)
+    if (belegtyp == BelegTyp.MAHNUNG)
     {
-
+      checked = true;
       for (DBObject o : list)
       {
         IVersand v = (IVersand) o;
@@ -103,7 +101,7 @@ public class Rechnungsausgabe extends AbstractAusgabe
   {
     Mitglied m = ((Rechnung) object).getZahler();
     String filename = "";
-    if (typ == TYP.RECHNUNG)
+    if (belegtyp == BelegTyp.RECHNUNG)
     {
       filename = m.getID() + "#rechnung#" + object.getID() + "#";
     }
@@ -120,7 +118,7 @@ public class Rechnungsausgabe extends AbstractAusgabe
     {
       filename += m.getName() + m.getVorname();
     }
-    return filename + "#" + typ.name();
+    return filename + "#" + belegtyp.name();
   }
 
   @Override
@@ -140,7 +138,7 @@ public class Rechnungsausgabe extends AbstractAusgabe
     if (object != null)
     {
       Rechnung rechnung = (Rechnung) object;
-      if (typ == TYP.RECHNUNG)
+      if (belegtyp == BelegTyp.RECHNUNG)
       {
         return VorlageUtil.getName(VorlageTyp.RECHNUNG_MITGLIED_DATEINAME,
             rechnung);
@@ -153,7 +151,7 @@ public class Rechnungsausgabe extends AbstractAusgabe
     }
     else
     {
-      if (typ == TYP.RECHNUNG)
+      if (belegtyp == BelegTyp.RECHNUNG)
       {
         return VorlageUtil.getName(VorlageTyp.RECHNUNG_DATEINAME);
       }
@@ -171,14 +169,14 @@ public class Rechnungsausgabe extends AbstractAusgabe
     super.closeDocument(aufbereitung, object);
     if (object != null)
     {
-      aufbereitung.addZUGFeRD((Rechnung) object, typ == TYP.MAHNUNG);
+      aufbereitung.addZUGFeRD((Rechnung) object, belegtyp == BelegTyp.MAHNUNG);
     }
   }
 
   @Override
   protected Formular getFormular(DBObject object) throws RemoteException
   {
-    if (typ == TYP.MAHNUNG)
+    if (belegtyp == BelegTyp.MAHNUNG)
     {
       return formular;
     }

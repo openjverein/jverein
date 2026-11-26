@@ -91,6 +91,7 @@ public abstract class AbstractBelegDBObjectImpl extends AbstractJVereinDBObject
    * @return
    * @throws RemoteException
    */
+  @Override
   public DBIterator<Beleg> getBelegList() throws RemoteException
   {
     DBIterator<Beleg> it = Einstellungen.getDBService().createList(Beleg.class);

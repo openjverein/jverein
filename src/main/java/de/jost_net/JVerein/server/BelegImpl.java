@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -36,13 +37,20 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.BelegMap;
 import de.jost_net.JVerein.io.VelocityTool;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.BelegArt;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.BelegKonto;
 import de.jost_net.JVerein.rmi.BelegMitglied;
+import de.jost_net.JVerein.rmi.BelegRechnung;
+import de.jost_net.JVerein.rmi.BelegSpendenbescheinigung;
 import de.jost_net.JVerein.rmi.Beleggruppe;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.messaging.QueryMessage;
@@ -56,7 +64,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   // Hier müssen alle Implementierungen von AbstractBelegReferenz
   // aufgelistet werden
   private List<Class<? extends AbstractBelegReferenz>> belegReferenzList = Arrays
-      .asList(BelegBuchungImpl.class, BelegMitglied.class, BelegKonto.class);
+      .asList(BelegBuchungImpl.class, BelegMitglied.class, BelegKonto.class,
+          BelegRechnung.class, BelegSpendenbescheinigung.class);
 
   protected static String HASH_ALGORITHM = "SHA-512";
 
@@ -94,7 +103,7 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
       {
         throw new ApplicationException("Pfad darf nicht verändert werden!");
       }
-      if (!hashUpdateAllowed)
+      if (!hashUpdateAllowed && !forcedUpdate)
       {
         for (AbstractBelegReferenz ref : getReferenzes())
           ref.checkUpdateAllowed();
@@ -137,11 +146,14 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   {
     try
     {
-      // Alle vorhandenn Referenzen des Objects prüfen, ob sie geändert/gelöscht
-      // werden dürfen
-      for (AbstractBelegReferenz ref : getReferenzes())
+      if (!forcedDelete)
       {
-        ref.checkDeleteAllowed();
+        // Alle vorhandenn Referenzen des Objects prüfen, ob sie
+        // geändert/gelöscht werden dürfen
+        for (AbstractBelegReferenz ref : getReferenzes())
+        {
+          ref.checkDeleteAllowed();
+        }
       }
     }
     catch (RemoteException e)
@@ -151,26 +163,39 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   }
 
   @Override
-  public void delete() throws RemoteException, ApplicationException
+  public void deleteForced() throws RemoteException, ApplicationException
   {
-    delete(false);
+    // Löscht den Beleg auch wenn es Referenzen gibt
+    delete(false, true);
   }
 
   @Override
-  public void delete(boolean vonDbBereinigen)
+  public void delete() throws RemoteException, ApplicationException
+  {
+    delete(false, false);
+  }
+
+  @Override
+  public void delete(boolean vonDbBereinigen, boolean forced)
       throws RemoteException, ApplicationException
   {
     try
     {
-      // Alle vorhandenn erferenzen des Objects impliziet löschen, damit dort im
-      // deleteCheck geprüft werden kann
       DBTransaction.starten();
-      for (AbstractBelegReferenz ref : getReferenzes())
+      if (forced)
       {
-        ref.delete(vonDbBereinigen);
+        super.deleteForced();
       }
-
-      super.delete();
+      else
+      {
+        // Alle vorhandenn erferenzen des Objects impliziet löschen, damit dort
+        // im deleteCheck geprüft werden kann
+        for (AbstractBelegReferenz ref : getReferenzes())
+        {
+          ref.delete(vonDbBereinigen);
+        }
+        super.delete();
+      }
       DBTransaction.commit();
 
       if (getUUID() != null)
@@ -310,6 +335,47 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
         {
           return getRootDir() + getPfad();
         }
+        else
+        {
+          return "";
+        }
+      case "konten":
+        DBIterator<Konto> itk = Einstellungen.getDBService()
+            .createList(Konto.class);
+        itk.join("belegkonto");
+        itk.addFilter("belegkonto.referenz = konto.id");
+        itk.addFilter("belegkonto.beleg = ?", getID());
+        List<String> klist = new ArrayList<>();
+        while (itk.hasNext())
+        {
+          klist.add(itk.next().getBezeichnung());
+        }
+        return String.join(",", klist);
+      case "mitglieder":
+        DBIterator<Mitglied> itm = Einstellungen.getDBService()
+            .createList(Mitglied.class);
+        itm.join("belegmitglied");
+        itm.addFilter("belegmitglied.referenz = mitglied.id");
+        itm.addFilter("belegmitglied.beleg = ?", getID());
+        List<String> mlist = new ArrayList<>();
+        while (itm.hasNext())
+        {
+          mlist.add(Adressaufbereitung.getNameVorname(itm.next()));
+        }
+        return String.join(",", mlist);
+      case "buchungen":
+        DBIterator<Buchung> itb = Einstellungen.getDBService()
+            .createList(Buchung.class);
+        itb.join("belegbuchung");
+        itb.addFilter("belegbuchung.referenz = buchung.id");
+        itb.addFilter("belegbuchung.beleg = ?", getID());
+        List<String> blist = new ArrayList<>();
+        while (itb.hasNext())
+        {
+          Buchung bu = itb.next();
+          blist.add("B" + bu.getID() + "-" + bu.getDatum());
+        }
+        return String.join(",", blist);
       default:
         return super.getAttribute(fieldName);
     }
@@ -346,6 +412,23 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   public void setBelegArt(BelegArt belegart) throws RemoteException
   {
     setAttribute("belegart", belegart.getKey());
+  }
+
+  @Override
+  public BelegTyp getBelegTyp() throws RemoteException
+  {
+    Integer typ = (Integer) getAttribute("belegtyp");
+    if (typ == null)
+    {
+      return null;
+    }
+    return BelegTyp.getByKey(typ);
+  }
+
+  @Override
+  public void setBelegTyp(BelegTyp belegtyp) throws RemoteException
+  {
+    setAttribute("belegtyp", belegtyp.getKey());
   }
 
   @Override
@@ -484,8 +567,8 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   public void setBemerkung(String bemerkung) throws RemoteException
   {
     setAttribute("bemerkung",
-        bemerkung != null && bemerkung.length() > 50
-            ? bemerkung.substring(0, 50)
+        bemerkung != null && bemerkung.length() > 250
+            ? bemerkung.substring(0, 250)
             : bemerkung);
   }
 
@@ -499,6 +582,18 @@ public class BelegImpl extends AbstractJVereinDBObject implements Beleg
   public void setUUID(String uuid) throws RemoteException
   {
     setAttribute("uuid", uuid);
+  }
+
+  @Override
+  public Timestamp getVersand() throws RemoteException
+  {
+    return (Timestamp) getAttribute("versand");
+  }
+
+  @Override
+  public void setVersand(Timestamp versand) throws RemoteException
+  {
+    setAttribute("versand", versand);
   }
 
   private File getFileInternal() throws IOException, ApplicationException

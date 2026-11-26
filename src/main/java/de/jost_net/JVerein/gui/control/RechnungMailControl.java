@@ -27,11 +27,14 @@ import de.jost_net.JVerein.Queries.RechnungQuery;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.BelegTyp;
+import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.util.Datum;
 import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -58,10 +61,17 @@ public class RechnungMailControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-          new Rechnungsausgabe(RechnungDetailControl.TYP.RECHNUNG, null)
-              .aufbereiten(getRechnungen(currentObject),
-                  (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
-                  getTxtString(), true, false, (Boolean) versand.getValue());
+          ArrayList<Rechnung> rechnungen = getRechnungen(currentObject);
+          Rechnungsausgabe ausgabe = new Rechnungsausgabe(BelegTyp.RECHNUNG,
+              null);
+          if (!ausgabe.checkVersendet(rechnungen,
+              (Ausgabeart) getAusgabeart().getValue()))
+          {
+            return;
+          }
+          ausgabe.aufbereiten(rechnungen,
+              (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
+              getTxtString(), true, false, (Boolean) versand.getValue());
         }
         catch (ApplicationException ae)
         {
@@ -88,11 +98,37 @@ public class RechnungMailControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-          new Rechnungsausgabe(RechnungDetailControl.TYP.MAHNUNG,
-              (Formular) RechnungMailControl.this.getFormular(null).getValue())
-                  .aufbereiten(getRechnungen(currentObject),
-                      (Ausgabeart) getAusgabeart().getValue(),
-                      getBetreffString(), getTxtString(), true, false, false);
+          ArrayList<Rechnung> rechnungen = getRechnungen(currentObject);
+          Formular formular = (Formular) RechnungMailControl.this
+              .getFormular(null).getValue();
+
+          Rechnungsausgabe ausgabe = new Rechnungsausgabe(BelegTyp.MAHNUNG,
+              formular);
+          if (!ausgabe.checkVersendet(rechnungen,
+              (Ausgabeart) getAusgabeart().getValue()))
+          {
+            return;
+          }
+
+          // Eine neue Mahnung wird nur erzeugt wenn es noch keine gibt oder
+          // wenn die letzte schon versendet wurde
+          for (Rechnung rechnung : rechnungen)
+          {
+            DBIterator<Beleg> it = rechnung.getBelegList();
+            it.setOrder("ORDER BY id DESC");
+            it.setLimit(1);
+            Beleg b = it.hasNext() ? it.next() : null;
+            if (b == null || b.getBelegTyp() != BelegTyp.MAHNUNG
+                || b.getVersand() != null)
+            {
+              rechnung.erzeugeBeleg(BelegTyp.MAHNUNG, formular);
+            }
+          }
+
+          // Das ist noch der alte Code, er wird noch überarbeitet
+          ausgabe.aufbereiten(rechnungen,
+              (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
+              getTxtString(), true, false, (Boolean) versand.getValue());
         }
         catch (ApplicationException ae)
         {

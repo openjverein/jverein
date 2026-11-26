@@ -19,11 +19,19 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.willuhn.util.ApplicationException;
 
 public interface IVersand extends JVereinDBObject
 {
   public void setVersanddatum(Date datum) throws RemoteException;
 
   public Date getVersanddatum() throws RemoteException;
+
+  default void setBelegVersand(BelegTyp typ)
+      throws RemoteException, ApplicationException
+  {
+    // Machen die abgeleiteten Klassen selbst wenn nötig
+  }
 }

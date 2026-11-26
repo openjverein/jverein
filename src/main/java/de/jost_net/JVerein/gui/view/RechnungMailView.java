@@ -25,10 +25,9 @@ import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
-import de.jost_net.JVerein.gui.control.RechnungDetailControl;
-import de.jost_net.JVerein.gui.control.RechnungDetailControl.TYP;
 import de.jost_net.JVerein.gui.control.RechnungMailControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -47,7 +46,7 @@ public class RechnungMailView extends AbstractView
     GUI.getView().setTitle("Rechnungen");
 
     final RechnungMailControl control = new RechnungMailControl(this);
-    control.init(RechnungDetailControl.TYP.RECHNUNG.name() + ".mail.");
+    control.init(BelegTyp.RECHNUNG.name() + ".mail.");
 
     if (this.getCurrentObject() == null)
     {
@@ -109,7 +108,7 @@ public class RechnungMailView extends AbstractView
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
     buttons.addButton(control.getDruckMailMitgliederButton(
-        this.getCurrentObject(), TYP.RECHNUNG.toString()));
+        this.getCurrentObject(), BelegTyp.RECHNUNG.toString()));
     buttons.addButton(control.getStartRechnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

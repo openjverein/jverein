@@ -16,19 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.Map;
-
-import com.itextpdf.text.DocumentException;
-
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.RechnungMap;
-import de.jost_net.JVerein.Variable.ZahlerMap;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.BigDecimalInput;
@@ -36,14 +27,14 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
+import de.jost_net.JVerein.gui.parts.BelegPart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
-import de.jost_net.JVerein.io.FormularAufbereitung;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -52,6 +43,8 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.PanelButton;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -116,11 +109,9 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
 
   private BigDecimalInput erstattungsbetrag;
 
-  public enum TYP
-  {
-    RECHNUNG,
-    MAHNUNG
-  }
+  private BelegPart belegPart;
+
+  private ButtonRtoL belegButton;
 
   public RechnungDetailControl(AbstractView view)
   {
@@ -179,6 +170,7 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
     rechnungFormular = new FormularInput(FormularArt.RECHNUNG,
         getRechnung().getFormular().getID());
     rechnungFormular.setName("Formular");
+    rechnungFormular.setEnabled(false);
     return rechnungFormular;
   }
 
@@ -513,6 +505,54 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
     return erstattungsbetrag;
   }
 
+  public BelegPart getBelegPart() throws RemoteException
+  {
+    if (belegPart != null)
+    {
+      return belegPart;
+    }
+    belegPart = new BelegPart(false);
+    return belegPart;
+  }
+
+  public ButtonRtoL getBelegButton()
+  {
+    try
+    {
+      if (getRechnung().getBelegList().size() > 0)
+      {
+        return null;
+      }
+      else if (belegButton != null)
+      {
+        return belegButton;
+      }
+      else
+      {
+        belegButton = new ButtonRtoL("Neuer Beleg", c -> {
+          try
+          {
+            getRechnung().erzeugeBeleg(BelegTyp.RECHNUNG, null);
+            getBelegPart().refreshDocsList();
+            belegButton.setEnabled(false);
+          }
+          catch (RemoteException e)
+          {
+            Logger.error(e.getMessage());
+            throw new ApplicationException(
+                "Fehler beim ezeugen des Belegs der Rechnung");
+          }
+        }, belegButton, false, "dialog-warning.png");
+        return belegButton;
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error(e.getMessage());
+      return null;
+    }
+  }
+
   public ButtonRtoL getRechnungDruckUndMailButton()
   {
     return new ButtonRtoL("Druck und Mail",
@@ -534,9 +574,7 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
       throws RemoteException, ApplicationException
   {
     Rechnung re = getRechnung();
-    re.setFormular((Formular) getRechnungFormular().getValue());
     re.setKommentar((String) getKommentar().getValue());
-    re.setVersanddatum((Date) getVersanddatum().getValue());
     return re;
   }
 
@@ -546,6 +584,10 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
     try
     {
       prepareStore().store();
+      if (belegPart != null)
+      {
+        belegPart.refreshDocsList();
+      }
     }
     catch (RemoteException e)
     {
@@ -555,31 +597,23 @@ public class RechnungDetailControl extends VorZurueckControl implements Savable
     }
   }
 
-  public ButtonRtoL getAnzeigenButton()
+  public PanelButton getDetailSpaltenPanelButton()
   {
-    return new ButtonRtoL("Anzeigen", c -> {
+    return new PanelButton("document-properties.png", context -> {
       try
       {
-        Rechnung re = getRechnung();
-        Map<String, Object> map = new RechnungMap().getMap(re, null);
-        map = new MitgliedMap().getMap(re.getMitglied(), map);
-        map = new ZahlerMap().getMap(re.getZahler(), map);
-        map = new AllgemeineMap().getMap(map);
-
-        FormularAufbereitung aufbereitung = new FormularAufbereitung(
-            File.createTempFile("formular", ".pdf"), true, false);
-        aufbereitung.writeForm((Formular) getRechnungFormular().getValue(),
-            map);
-        aufbereitung.closeFormular();
-        aufbereitung.showFormular();
+        new TabelleSpaltenAuswahlDialog(getTablePart(),
+            getBelegPart().getTablePart()).open();
       }
-      catch (IOException | DocumentException e)
+      catch (OperationCanceledException | ApplicationException e)
       {
-        String fehler = "Fehler beim aufbereiten des Formulars";
-        GUI.getStatusBar().setErrorText(fehler);
-        Logger.error(fehler, e);
+        throw e;
       }
-    }, null, false, "eye.png");
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
   }
-
 }

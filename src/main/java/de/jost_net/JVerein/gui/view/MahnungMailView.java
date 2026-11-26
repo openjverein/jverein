@@ -25,10 +25,9 @@ import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
-import de.jost_net.JVerein.gui.control.RechnungDetailControl;
-import de.jost_net.JVerein.gui.control.RechnungDetailControl.TYP;
 import de.jost_net.JVerein.gui.control.RechnungMailControl;
 import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.willuhn.jameica.gui.AbstractView;
@@ -48,7 +47,7 @@ public class MahnungMailView extends AbstractView
     GUI.getView().setTitle("Mahnungen");
 
     final RechnungMailControl control = new RechnungMailControl(this);
-    control.init(RechnungDetailControl.TYP.MAHNUNG.name() + ".");
+    control.init(BelegTyp.MAHNUNG.name() + ".");
 
     if (this.getCurrentObject() == null)
     {
@@ -88,6 +87,7 @@ public class MahnungMailView extends AbstractView
 
     cont.addLabelPair("Formular", control.getFormular(FormularArt.MAHNUNG));
     cont.addInput(control.getAusgabeart());
+    cont.addLabelPair("Versanddatum setzen", control.getVersand());
 
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
@@ -110,7 +110,7 @@ public class MahnungMailView extends AbstractView
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
     buttons.addButton(control.getDruckMailMitgliederButton(
-        this.getCurrentObject(), TYP.MAHNUNG.toString()));
+        this.getCurrentObject(), BelegTyp.MAHNUNG.toString()));
     buttons.addButton(control.getStartMahnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

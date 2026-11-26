@@ -51,6 +51,7 @@ import de.jost_net.JVerein.keys.AfaOrt;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.BelegArt;
 import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -58,6 +59,7 @@ import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Beleggruppe;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.MailAnhang;
@@ -66,6 +68,8 @@ import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.SteuerUtil;
 import de.jost_net.OBanToo.SEPA.Land.SEPALaender;
 import de.jost_net.OBanToo.SEPA.Land.SEPALand;
+import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -437,6 +441,14 @@ public class EinstellungControl extends AbstractControl
   private IntegerInput belegZaehlerKonto;
 
   private TextInput belegnummerKonto;
+
+  private SelectInput belegArtSpendenbescheinigung;
+
+  private SelectInput belegGruppeSpendenbescheinigung;
+
+  private SelectInput belegArtRechnung;
+
+  private SelectInput belegGruppeRechnung;
 
   public EinstellungControl(AbstractView view)
   {
@@ -894,6 +906,27 @@ public class EinstellungControl extends AbstractControl
     }
     dokumentenspeicherung = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG));
+    dokumentenspeicherung.addListener(e -> {
+      try
+      {
+        if (!(Boolean) dokumentenspeicherung.getValue()
+            && ((Boolean) getRechnungen().getValue()
+                || (Boolean) getSpendenbescheinigungen().getValue()))
+        {
+          getDokumentenspeicherung().setValue(Boolean.TRUE);
+          SimpleDialog dialog = new SimpleDialog(SimpleDialog.POSITION_CENTER);
+          dialog.setText(
+              "Es ist entweder Rechnungen oder Spendenbescheinigungen ausgewählt."
+                  + "\nDiese erfordern Dokumentenspeicherung. Sie kann darum nicht abgewählt werden.");
+          dialog.setTitle("Dokumentenspeicherung");
+          dialog.open();
+        }
+      }
+      catch (Exception e1)
+      {
+        Logger.error("Fehler beim Dokument-Listener", e1);
+      }
+    });
     return dokumentenspeicherung;
   }
 
@@ -2462,6 +2495,19 @@ public class EinstellungControl extends AbstractControl
     }
     spendenbescheinigungen = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN));
+    spendenbescheinigungen.addListener(e -> {
+      try
+      {
+        if ((Boolean) spendenbescheinigungen.getValue())
+        {
+          getDokumentenspeicherung().setValue(Boolean.TRUE);
+        }
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler beim Spendenbescheinigungen-Listener", e1);
+      }
+    });
     return spendenbescheinigungen;
   }
 
@@ -2473,6 +2519,19 @@ public class EinstellungControl extends AbstractControl
     }
     rechnungen = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN));
+    rechnungen.addListener(e -> {
+      try
+      {
+        if ((Boolean) rechnungen.getValue())
+        {
+          getDokumentenspeicherung().setValue(Boolean.TRUE);
+        }
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler beim Rechnung-Listener", e1);
+      }
+    });
     return rechnungen;
   }
 
@@ -2534,6 +2593,75 @@ public class EinstellungControl extends AbstractControl
         (String) Einstellungen.getEinstellung(Property.FORMULAR_VORDERGRUND));
     formularVordergrund.setPleaseChoose("Kein Vordergrund");
     return formularVordergrund;
+  }
+
+  public SelectInput getBelegArtSpendenbescheinigung() throws RemoteException
+  {
+    if (belegArtSpendenbescheinigung != null)
+    {
+      return belegArtSpendenbescheinigung;
+    }
+    Integer art = (Integer) Einstellungen
+        .getEinstellung(Property.BELEGART_SPENDENBESCHEINIGUNG);
+    belegArtSpendenbescheinigung = new SelectInput(BelegArt.values(),
+        art == null ? BelegArt.SONSTIGES : BelegArt.getByKey(art));
+    return belegArtSpendenbescheinigung;
+  }
+
+  public SelectInput getBelegGruppeSpendenbescheinigung() throws RemoteException
+  {
+    if (belegGruppeSpendenbescheinigung != null)
+    {
+      return belegGruppeSpendenbescheinigung;
+    }
+    Beleggruppe gruppe = null;
+    Integer id = (Integer) Einstellungen
+        .getEinstellung(Property.BELEGGRUPPE_SPENDENBESCHEINIGUNG);
+    if (id != null)
+    {
+      gruppe = Einstellungen.getDBService().createObject(Beleggruppe.class,
+          id.toString());
+    }
+    DBIterator<Beleggruppe> it = Einstellungen.getDBService()
+        .createList(Beleggruppe.class);
+    belegGruppeSpendenbescheinigung = new SelectInput(PseudoIterator.asList(it),
+        gruppe);
+    belegGruppeSpendenbescheinigung.setPleaseChoose(" ");
+    return belegGruppeSpendenbescheinigung;
+  }
+
+  public SelectInput getBelegArtRechnung() throws RemoteException
+  {
+    if (belegArtRechnung != null)
+    {
+      return belegArtRechnung;
+    }
+    Integer art = (Integer) Einstellungen
+        .getEinstellung(Property.BELEGART_RECHNUNG);
+    belegArtRechnung = new SelectInput(BelegArt.values(),
+        art == null ? BelegArt.SONSTIGES : BelegArt.getByKey(art));
+    return belegArtRechnung;
+  }
+
+  public SelectInput getBelegGruppeRechnung() throws RemoteException
+  {
+    if (belegGruppeRechnung != null)
+    {
+      return belegGruppeRechnung;
+    }
+    Beleggruppe gruppe = null;
+    Integer id = (Integer) Einstellungen
+        .getEinstellung(Property.BELEGGRUPPE_RECHNUNG);
+    if (id != null)
+    {
+      gruppe = Einstellungen.getDBService().createObject(Beleggruppe.class,
+          id.toString());
+    }
+    DBIterator<Beleggruppe> it = Einstellungen.getDBService()
+        .createList(Beleggruppe.class);
+    belegGruppeRechnung = new SelectInput(PseudoIterator.asList(it), gruppe);
+    belegGruppeRechnung.setPleaseChoose(" ");
+    return belegGruppeRechnung;
   }
 
   public CheckboxInput getHeaderTransparent() throws RemoteException
@@ -2993,6 +3121,16 @@ public class EinstellungControl extends AbstractControl
       {
         Einstellungen.setEinstellung(Property.FORMULARSACHSPENDE, "");
       }
+      Einstellungen.setEinstellung(Property.BELEGART_SPENDENBESCHEINIGUNG,
+          ((BelegArt) belegArtSpendenbescheinigung.getValue()).getKey());
+      Integer id = null;
+      if (belegGruppeSpendenbescheinigung.getValue() != null)
+      {
+        id = Integer.valueOf(
+            ((Beleggruppe) belegGruppeSpendenbescheinigung.getValue()).getID());
+      }
+      Einstellungen.setEinstellung(Property.BELEGGRUPPE_SPENDENBESCHEINIGUNG,
+          id);
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
@@ -3101,7 +3239,15 @@ public class EinstellungControl extends AbstractControl
           (String) qrcodetext.getValue());
       Einstellungen.setEinstellung(Property.QRCODEINTRO,
           (String) qrcodeintro.getValue());
-
+      Einstellungen.setEinstellung(Property.BELEGART_RECHNUNG,
+          ((BelegArt) belegArtRechnung.getValue()).getKey());
+      Integer id = null;
+      if (belegGruppeRechnung.getValue() != null)
+      {
+        id = Integer
+            .valueOf(((Beleggruppe) belegGruppeRechnung.getValue()).getID());
+      }
+      Einstellungen.setEinstellung(Property.BELEGGRUPPE_RECHNUNG, id);
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");

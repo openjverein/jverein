@@ -26,10 +26,12 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.input.BigDecimalInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
+import de.jost_net.JVerein.gui.parts.BelegPart;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -52,6 +54,8 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.PanelButton;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -96,6 +100,10 @@ public class SpendenbescheinigungDetailControl extends VorZurueckControl
   private Spendenbescheinigung spendenbescheinigung;
 
   private DateInput versanddatum;
+
+  private BelegPart belegPart;
+
+  private ButtonRtoL belegButton;
 
   final static String ExportPDF = ".pdf";
 
@@ -317,6 +325,7 @@ public class SpendenbescheinigungDetailControl extends VorZurueckControl
       formular = new FormularInput(FormularArt.SPENDENBESCHEINIGUNG, def);
     }
     formular.setPleaseChoose("Standard");
+    formular.setEnabled(false);
     return formular;
   }
 
@@ -401,31 +410,43 @@ public class SpendenbescheinigungDetailControl extends VorZurueckControl
         new BuchungAction(false), new BuchungPartAnzeigenMenu());
   }
 
+  public BelegPart getBelegPart() throws RemoteException
+  {
+    if (belegPart != null)
+    {
+      return belegPart;
+    }
+    belegPart = new BelegPart(false);
+    return belegPart;
+  }
+
   @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
     Spendenbescheinigung spb = getSpendenbescheinigung();
-    Spendenart spa = (Spendenart) getSpendenart().getValue();
-    spb.setMitglied((Mitglied) getMitglied().getValue());
-    spb.setSpendenart(spa.getKey());
-    spb.setZeile1((String) getZeile1(false).getValue());
-    spb.setZeile2((String) getZeile2().getValue());
-    spb.setZeile3((String) getZeile3().getValue());
-    spb.setZeile4((String) getZeile4().getValue());
-    spb.setZeile5((String) getZeile5().getValue());
-    spb.setZeile6((String) getZeile6().getValue());
-    spb.setZeile7((String) getZeile7().getValue());
-    spb.setSpendedatum((Date) getSpendedatum().getValue());
-    spb.setBescheinigungsdatum((Date) getBescheinigungsdatum().getValue());
-    spb.setBetrag((BigDecimal) getBetrag().getValue());
-    spb.setBezeichnungSachzuwendung(
-        (String) getBezeichnungSachzuwendung().getValue());
-    spb.setFormular((Formular) getFormular().getValue());
-    HerkunftSpende hsp = (HerkunftSpende) getHerkunftSpende().getValue();
-    spb.setHerkunftSpende(hsp.getKey());
-    spb.setUnterlagenWertermittlung(
-        (Boolean) getUnterlagenWertermittlung().getValue());
-    spb.setVersanddatum((Date) getVersanddatum().getValue());
+    if (spb.isNewObject())
+    {
+      Spendenart spa = (Spendenart) getSpendenart().getValue();
+      spb.setMitglied((Mitglied) getMitglied().getValue());
+      spb.setSpendenart(spa.getKey());
+      spb.setZeile1((String) getZeile1(false).getValue());
+      spb.setZeile2((String) getZeile2().getValue());
+      spb.setZeile3((String) getZeile3().getValue());
+      spb.setZeile4((String) getZeile4().getValue());
+      spb.setZeile5((String) getZeile5().getValue());
+      spb.setZeile6((String) getZeile6().getValue());
+      spb.setZeile7((String) getZeile7().getValue());
+      spb.setSpendedatum((Date) getSpendedatum().getValue());
+      spb.setBescheinigungsdatum((Date) getBescheinigungsdatum().getValue());
+      spb.setBetrag((BigDecimal) getBetrag().getValue());
+      spb.setBezeichnungSachzuwendung(
+          (String) getBezeichnungSachzuwendung().getValue());
+      spb.setFormular((Formular) getFormular().getValue());
+      HerkunftSpende hsp = (HerkunftSpende) getHerkunftSpende().getValue();
+      spb.setHerkunftSpende(hsp.getKey());
+      spb.setUnterlagenWertermittlung(
+          (Boolean) getUnterlagenWertermittlung().getValue());
+    }
     return spb;
   }
 
@@ -440,12 +461,54 @@ public class SpendenbescheinigungDetailControl extends VorZurueckControl
     try
     {
       prepareStore().store();
+      if (belegPart != null)
+      {
+        belegPart.refreshDocsList();
+      }
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei Speichern der Spendenbescheinigung";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler, e);
+    }
+  }
+
+  public ButtonRtoL getBelegButton()
+  {
+    try
+    {
+      if (getSpendenbescheinigung().getBelegList().size() > 0)
+      {
+        return null;
+      }
+      else if (belegButton != null)
+      {
+        return belegButton;
+      }
+      else
+      {
+        belegButton = new ButtonRtoL("Neuer Beleg", c -> {
+          try
+          {
+            getSpendenbescheinigung().erzeugeBeleg();
+            getBelegPart().refreshDocsList();
+            belegButton.setEnabled(false);
+          }
+          catch (RemoteException e)
+          {
+            Logger.error(e.getMessage());
+            throw new ApplicationException(
+                "Fehler beim ezeugen des Belegs der Spendenbescheinigung");
+          }
+        }, belegButton, false, "dialog-warning.png");
+        return belegButton;
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error(e.getMessage());
+      return null;
     }
   }
 
@@ -506,4 +569,23 @@ public class SpendenbescheinigungDetailControl extends VorZurueckControl
     }
   }
 
+  public PanelButton getDetailSpaltenPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(getTablePart(),
+            getBelegPart().getTablePart()).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
+  }
 }

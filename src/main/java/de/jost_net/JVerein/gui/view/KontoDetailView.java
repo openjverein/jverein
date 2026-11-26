@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.parts.BelegPart;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
@@ -93,7 +92,7 @@ public class KontoDetailView extends AbstractDetailView
 
     if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
-      new BelegPart().paint(getParent());
+      control.getBelegPart().paint(getParent());
     }
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
@@ -104,6 +103,8 @@ public class KontoDetailView extends AbstractDetailView
     buttons.addButton(new SaveButton(control));
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
   @Override

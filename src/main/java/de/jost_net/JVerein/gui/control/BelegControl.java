@@ -76,6 +76,9 @@ public class BelegControl extends FilterControl
         i -> BelegArt.getByKey((Integer) i).toString(), false,
         Column.ALIGN_LEFT);
     docsList.addColumn("Beleggruppe", "beleggruppe");
+    docsList.addColumn(new Column("konten", "Konten"), false);
+    docsList.addColumn(new Column("mitglieder", "Mitglieder"), false);
+    docsList.addColumn(new Column("buchungen", "Buchungen"), false);
     docsList.setContextMenu(new BelegMenu(docsList));
     docsList.setMulti(true);
     // Nur in der View, nicht im Dialog

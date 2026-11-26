@@ -61,6 +61,8 @@ public class SpendenbescheinigungControl extends FilterControl
         new SpendenbescheinigungQuery(getFilter()).get(), null);
     spbList.addColumn("Nr", "id-int");
     spbList.addColumn(getGesperrtColumn(), false);
+    spbList.addColumn(new Column("document", "D"), false);
+    spbList.addColumn(new Column("belegnummern", "Belegnummern"), false);
     spbList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Spender", "mitglied");
