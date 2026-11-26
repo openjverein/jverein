@@ -2126,7 +2126,8 @@ public class MitgliedDetailControl extends VorZurueckControl implements Savable
 
       // Es wird hier geprüft weil die Daten nur im Tree sind und erst nach dem
       // store() in die DB geschrieben werden
-      m.checkEigenschaften(eigenschaftenTree);
+      m.checkEigenschaften(
+          (EigenschaftenNode) eigenschaftenTree.getItems().get(0));
       // MandatID hier setzen weil sie bei früheren Mitgliedern nicht
       // gespeichert war
       int sepaMandatIdSource = (Integer) Einstellungen

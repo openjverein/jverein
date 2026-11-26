@@ -53,7 +53,6 @@ import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -1090,11 +1089,9 @@ public class MitgliederImport implements Importer
         }
 
         // Eigenschaften prüfen
-        TreePart eigenschaftenTree = new TreePart(
-            new EigenschaftenNode(m, eigenschaftList), null);
         try
         {
-          m.checkEigenschaften(eigenschaftenTree);
+          m.checkEigenschaften(new EigenschaftenNode(m, eigenschaftList));
         }
         catch (RemoteException | ApplicationException ex)
         {
@@ -1328,9 +1325,9 @@ public class MitgliederImport implements Importer
         }
         catch (NumberFormatException ex)
         {
-          throw new ApplicationException("Zeile " + anz
-              + ": Abweichender Zahler Id " + abweichenderZahler
-              + " ist keine gültige Integer Zahl.");
+          throw new ApplicationException(
+              "Zeile " + anz + ": Abweichender Zahler Id " + abweichenderZahler
+                  + " ist keine gültige Integer Zahl.");
         }
         String id = durchlauf.getIdDerZeile(anz);
         DBIterator<Mitglied> it = Einstellungen.getDBService()
@@ -1350,7 +1347,8 @@ public class MitgliederImport implements Importer
         }
         catch (ApplicationException ae)
         {
-          throw new ApplicationException("Zeile " + anz + ": " + ae.getMessage());
+          throw new ApplicationException(
+              "Zeile " + anz + ": " + ae.getMessage());
         }
       }
 
@@ -1394,7 +1392,10 @@ public class MitgliederImport implements Importer
     /** Zeilen mit einem abweichenden Zahler in der Reihenfolge der Datei */
     private final List<Integer> abweichendeZeilen = new ArrayList<>();
 
-    /** Art der Beitragsgruppe nach Bezeichnung, jede Gruppe wird nur einmal gelesen */
+    /**
+     * Art der Beitragsgruppe nach Bezeichnung, jede Gruppe wird nur einmal
+     * gelesen
+     */
     private final Map<String, ArtBeitragsart> beitragsarten = new HashMap<>();
 
     /** Lokale (negative) Id der Datei -> echte Id */
@@ -1469,7 +1470,9 @@ public class MitgliederImport implements Importer
       return lokaleIds.get(lokaleId);
     }
 
-    /** Inhalt der Zelle der aktuellen Zeile, null wenn Spalte fehlt oder leer. */
+    /**
+     * Inhalt der Zelle der aktuellen Zeile, null wenn Spalte fehlt oder leer.
+     */
     private String zelle(String spalte) throws SQLException
     {
       if (!spalten.contains(spalte))
@@ -1511,7 +1514,8 @@ public class MitgliederImport implements Importer
 
     /**
      * Prüft, ob die Zeile eine voll_zahlerid haben darf: nicht bei
-     * Nicht-Mitgliedern und nur bei Beitragsgruppen der Art Familienangehöriger.
+     * Nicht-Mitgliedern und nur bei Beitragsgruppen der Art
+     * Familienangehöriger.
      */
     private void pruefeVollzahler(int zeile, String zahlerId)
         throws SQLException, ApplicationException, RemoteException
@@ -1525,8 +1529,8 @@ public class MitgliederImport implements Importer
       }
       // Ohne Spalte beitragsgruppe ändert die Zeile ein vorhandenes Mitglied
       String beitragsgruppe = zelle("beitragsgruppe");
-      if (beitragsgruppe != null
-          && beitragsart(zeile, beitragsgruppe) != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+      if (beitragsgruppe != null && beitragsart(zeile,
+          beitragsgruppe) != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
       {
         throw new ApplicationException("Zeile " + zeile
             + ": Vollzahler Id ist nur bei Beitragsgruppen der Art Familienangehöriger erlaubt: "
