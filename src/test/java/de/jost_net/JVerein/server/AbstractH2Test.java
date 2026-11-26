@@ -125,10 +125,12 @@ public abstract class AbstractH2Test
     {
       sqlFile = Files.createTempFile("h2-test-db", ".sql");
       sqlFile.toFile().deleteOnExit();
-      Einstellungen.getDBService()
-          .execute("SCRIPT TO '"
-              + sqlFile.toAbsolutePath().toString().replace("'", "''") + "'",
-              null, rs -> null);
+
+      db.executeUpdate("SET MODE LEGACY", null);
+
+      db.execute("SCRIPT TO '"
+          + sqlFile.toAbsolutePath().toString().replace("'", "''") + "'", null,
+          rs -> null);
     }
   }
 
