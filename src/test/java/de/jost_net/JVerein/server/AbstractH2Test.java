@@ -126,6 +126,8 @@ public abstract class AbstractH2Test
       sqlFile = Files.createTempFile("h2-test-db", ".sql");
       sqlFile.toFile().deleteOnExit();
 
+      // Legacy Mode ist nötig, damit die AutoIncrement Spalten richtig gesetzt
+      // werden.
       db.executeUpdate("SET MODE LEGACY", null);
 
       db.execute("SCRIPT TO '"
