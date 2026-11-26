@@ -25,7 +25,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.BelegRemoveMessage;
 import de.jost_net.JVerein.gui.action.BelegNewAction;
@@ -35,7 +34,6 @@ import de.jost_net.JVerein.gui.menu.BelegMenu;
 import de.jost_net.JVerein.gui.util.DragnDropUtil;
 import de.jost_net.JVerein.gui.view.BelegDetailView;
 import de.jost_net.JVerein.keys.BelegArt;
-import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.rmi.AbstractBelegDBObject;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -63,17 +61,17 @@ public class BelegPart implements Part
 
   private BelegMessageConsumer consumer = new BelegMessageConsumer();
 
-  private boolean mitMenu = true;
+  private boolean mitButtons = true;
 
   public BelegPart()
   {
     super();
   }
 
-  public BelegPart(boolean mitMenu)
+  public BelegPart(boolean mitButtons)
   {
     super();
-    this.mitMenu = mitMenu;
+    this.mitButtons = mitButtons;
   }
 
   @Override
@@ -83,7 +81,7 @@ public class BelegPart implements Part
 
     grDokument.getComposite().setLayout(new GridLayout(1, false));
 
-    if (mitMenu)
+    if (mitButtons)
     {
       ButtonArea butts = new ButtonArea();
       butts.addButton("Beleg zuordnen", new BelegZuordnenAction(this, null),
@@ -132,7 +130,7 @@ public class BelegPart implements Part
     docsList.addColumn("Belegnummer", "belegnummer");
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    if (zeigeBelegTyp())
+    if (!mitButtons)
     {
       docsList.addColumn("Versand", "versand",
           new DateFormatter(new JVDateFormatDATETIME()));
@@ -142,14 +140,8 @@ public class BelegPart implements Part
     docsList.addColumn("Belegart", "belegart",
         i -> BelegArt.getByKey((Integer) i).toString(), false,
         Column.ALIGN_LEFT);
-    if (zeigeBelegTyp())
-    {
-      docsList.addColumn(new Column("belegtyp", "Belegtyp",
-          i -> BelegTyp.getByKey((Integer) i).toString(), false,
-          Column.ALIGN_LEFT), false);
-    }
     docsList.addColumn("Beleggruppe", "beleggruppe");
-    if (mitMenu)
+    if (mitButtons)
     {
       docsList.setContextMenu(new BelegMenu(null, getCurrentObject()));
     }
@@ -231,13 +223,6 @@ public class BelegPart implements Part
       DBTransaction.rollback();
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
-  }
-
-  public boolean zeigeBelegTyp() throws RemoteException
-  {
-    return (Boolean) Einstellungen
-        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN)
-        || (Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN);
   }
 
   /**

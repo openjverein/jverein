@@ -24,7 +24,6 @@ import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.util.DragnDropUtil;
-import de.jost_net.JVerein.keys.BelegTyp;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Beleg;
 import de.willuhn.jameica.gui.AbstractView;
@@ -51,11 +50,6 @@ public class BelegListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getFilterInput(Filter.BELEGNUMMER));
     left.addInput(control.getFilterInput(Filter.BEMERKUNG));
-    if (control.zeigeBelegTyp())
-    {
-      left.addInput(
-          control.getFilterInput(Filter.BELEG_TYP, BelegTyp.getArray()));
-    }
     left.addLabelPair("Nicht zugeordnet",
         control.getFilterInput(Filter.NICHT_ZUGEORDNET));
 

@@ -1,11 +1,5 @@
 package de.jost_net.JVerein.keys;
 
-import java.util.ArrayList;
-
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
-import de.willuhn.logging.Logger;
-
 public enum BelegTyp implements KeyEnum
 {
 
@@ -33,29 +27,6 @@ public enum BelegTyp implements KeyEnum
       }
     }
     return null;
-  }
-
-  public static BelegTyp[] getArray()
-  {
-    ArrayList<BelegTyp> ret = new ArrayList<>();
-    try
-    {
-      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
-      {
-        ret.add(RECHNUNG);
-        ret.add(MAHNUNG);
-      }
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
-      {
-        ret.add(SPENDENBESCHEINIGUNG);
-      }
-    }
-    catch (Exception e1)
-    {
-      Logger.error("Fehler beim aufbauen der Belegtypen", e1);
-    }
-    return ret.toArray(new BelegTyp[0]);
   }
 
   @Override

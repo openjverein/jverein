@@ -120,6 +120,8 @@ public class BuchungDetailView extends AbstractDetailView
     }
 
     buttons.paint(getParent());
+
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
   @Override
