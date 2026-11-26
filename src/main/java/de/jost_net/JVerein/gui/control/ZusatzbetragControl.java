@@ -35,6 +35,8 @@ import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -71,7 +73,7 @@ public class ZusatzbetragControl extends FilterControl
 
     zusatzbetraegeList = new BetragSummaryTablePart(zusatzbetraege, null);
     zusatzbetraegeList.addColumn("Nr", "id-int");
-    zusatzbetraegeList.addColumn("Name", "mitglied");
+    zusatzbetraegeList.addColumn("Mitglied", "mitglied");
     zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
@@ -190,10 +192,8 @@ public class ZusatzbetragControl extends FilterControl
               break;
           }
           break;
-        case NAME:
-          zusatzbetraege.addFilter(
-              "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?))",
-              "%" + ((String) value).toLowerCase() + "%",
+        case ENTHALTENER_TEXT:
+          zusatzbetraege.addFilter("(lower(buchungstext) like ?)",
               "%" + ((String) value).toLowerCase() + "%");
           break;
         case AUSFUEHRUNG_VON:
@@ -201,6 +201,21 @@ public class ZusatzbetragControl extends FilterControl
           break;
         case AUSFUEHRUNG_BIS:
           zusatzbetraege.addFilter("ausfuehrung <= ?", value);
+          break;
+        case MITGLIED_SELECT:
+          zusatzbetraege.addFilter("mitglied.id = ?",
+              ((Mitglied) value).getID());
+          break;
+        case BUCHUNGSART:
+          Buchungsart buchungart = (Buchungsart) value;
+          if (buchungart.getNummer().isEmpty())
+          {
+            zusatzbetraege.addFilter("buchungsart is null ");
+          }
+          else
+          {
+            zusatzbetraege.addFilter("buchungsart = ? ", buchungart.getID());
+          }
           break;
         default:
           throw new ApplicationException(

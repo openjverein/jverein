@@ -24,8 +24,8 @@ import java.util.Map;
 import de.jost_net.JVerein.io.ILastschrift;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
+import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.jost_net.JVerein.server.IGutschriftProvider;
-import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.util.ApplicationException;
 
 public interface Mitglied
@@ -230,8 +230,12 @@ public interface Mitglied
 
   public void checkEigenschaften() throws RemoteException, ApplicationException;
 
-  public void checkEigenschaften(TreePart eigenschaftenTree)
+  public void checkEigenschaften(EigenschaftenNode root)
       throws RemoteException, ApplicationException;
 
   public void clearKtoi() throws RemoteException;
+
+  public void setKontostandVon(Date date) throws RemoteException;
+
+  public void setKontostandBis(Date date) throws RemoteException;
 }

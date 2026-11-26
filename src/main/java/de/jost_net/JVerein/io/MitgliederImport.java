@@ -43,6 +43,7 @@ import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
+import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.EmailValidator;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -1088,18 +1089,15 @@ public class MitgliederImport implements Importer
         }
 
         // Eigenschaften prüfen
-        // TODO
-        // TreePart eigenschaftenTree = new TreePart(
-        // new EigenschaftenNode(m, eigenschaftList), null);
-        // try
-        // {
-        // m.checkEigenschaften(eigenschaftenTree);
-        // }
-        // catch (RemoteException | ApplicationException ex)
-        // {
-        // throw new ApplicationException(
-        // "Zeile " + anz + ": " + ex.getMessage());
-        // }
+        try
+        {
+          m.checkEigenschaften(new EigenschaftenNode(m, eigenschaftList));
+        }
+        catch (RemoteException | ApplicationException ex)
+        {
+          throw new ApplicationException(
+              "Zeile " + anz + ": " + ex.getMessage());
+        }
 
         if (id == null)
         {
