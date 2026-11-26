@@ -720,7 +720,7 @@ class MitgliederImportIntegrationTest extends AbstractH2Test
   void negativeEigenschaftswerteWerdenNichtAngelegt() throws Exception
   {
     EigenschaftGruppe gruppe = createEigenschaftGruppe("interessen");
-    Eigenschaft falseWert = createEigenschaft("bewsletter", gruppe);
+    Eigenschaft falseWert = createEigenschaft("newsletter", gruppe);
     Eigenschaft neinWert = createEigenschaft("sport", gruppe);
     Eigenschaft nullWert = createEigenschaft("musik", gruppe);
 
