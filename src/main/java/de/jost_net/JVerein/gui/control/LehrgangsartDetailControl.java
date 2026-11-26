@@ -17,28 +17,18 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.util.Date;
-
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangsartDetailControl extends VorZurueckControl implements Savable
+public class LehrgangsartDetailControl extends VorZurueckControl
+    implements Savable
 {
 
   private TextInput bezeichnung;
-
-  private DateInput von;
-
-  private DateInput bis;
-
-  private TextInput veranstalter;
 
   private Lehrgangsart lehrgangsart;
 
@@ -57,74 +47,22 @@ public class LehrgangsartDetailControl extends VorZurueckControl implements Sava
     return lehrgangsart;
   }
 
-  public TextInput getBezeichnung(boolean withFocus) throws RemoteException
+  public TextInput getBezeichnung() throws RemoteException
   {
     if (bezeichnung != null)
     {
       return bezeichnung;
     }
     bezeichnung = new TextInput(getLehrgangsart().getBezeichnung(), 50);
-    if (withFocus)
-    {
-      bezeichnung.focus();
-    }
     bezeichnung.setMandatory(true);
     return bezeichnung;
-  }
-
-  public DateInput getVon() throws RemoteException
-  {
-    if (von != null)
-    {
-      return von;
-    }
-    Date d = getLehrgangsart().getVon();
-    if (d != null && d.equals(Einstellungen.NODATE))
-    {
-      d = null;
-    }
-    this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.von.setTitle("Von/am");
-    this.von.setText("Bitte Beginn oder Tag der Veranstaltung wählen");
-    von.setMandatory(true);
-    return von;
-  }
-
-  public DateInput getBis() throws RemoteException
-  {
-    if (bis != null)
-    {
-      return bis;
-    }
-    Date d = getLehrgangsart().getBis();
-    if (d != null && d.equals(Einstellungen.NODATE))
-    {
-      d = null;
-    }
-    this.bis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.bis.setTitle("Bis");
-    this.bis.setText("Bitte Ende der Veranstaltung wählen");
-    return bis;
-  }
-
-  public TextInput getVeranstalter() throws RemoteException
-  {
-    if (veranstalter != null)
-    {
-      return veranstalter;
-    }
-    veranstalter = new TextInput(getLehrgangsart().getVeranstalter(), 50);
-    return veranstalter;
   }
 
   @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
     Lehrgangsart l = getLehrgangsart();
-    l.setBezeichnung((String) getBezeichnung(false).getValue());
-    l.setVon((Date) getVon().getValue());
-    l.setBis((Date) getBis().getValue());
-    l.setVeranstalter((String) getVeranstalter().getValue());
+    l.setBezeichnung((String) getBezeichnung().getValue());
     return l;
   }
 

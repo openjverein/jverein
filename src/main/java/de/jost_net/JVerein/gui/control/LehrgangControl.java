@@ -51,20 +51,12 @@ public class LehrgangControl extends FilterControl
   {
     DBIterator<Lehrgang> lehrgaenge = Einstellungen.getDBService()
         .createList(Lehrgang.class);
-    lehrgaenge.join("mitglied");
-    lehrgaenge.addFilter("mitglied.id = lehrgang.mitglied");
 
     for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
       Object value = entry.getValue();
       switch (entry.getKey())
       {
-        case NAME:
-          String suchName = "%" + value.toString().toLowerCase() + "%";
-          lehrgaenge.addFilter(
-              "(lower(name) like ? " + "or lower(vorname) like ?)", suchName,
-              suchName);
-          break;
         case VERANSTALTER:
           lehrgaenge.addFilter("lower(veranstalter) like ? ",
               "%" + value.toString().toLowerCase() + "%");
@@ -78,10 +70,15 @@ public class LehrgangControl extends FilterControl
               ((Lehrgangsart) value).getID());
           break;
         case DATUM_VON:
-          lehrgaenge.addFilter("von >= ?", value);
+          // Auch Lehrgänge die nach Von Datum enden, also auch teilweise in das
+          // Von/Bis Fenster fallen
+          lehrgaenge.addFilter("(von >= ? OR bis >= ?)", value, value);
           break;
         case DATUM_BIS:
-          lehrgaenge.addFilter("bis <= ?", value);
+          // Auch Lehrgänge die nach Bis Datum enden, aber noch im Von/Bis
+          // Fenster
+          // beginnen
+          lehrgaenge.addFilter("von <= ?", value);
           break;
         default:
           throw new ApplicationException(
@@ -102,15 +99,15 @@ public class LehrgangControl extends FilterControl
     DBIterator<Lehrgang> lehrgaenge = getIterator();
     lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
     lehrgaengeList.addColumn("Nr", "id-int");
-    lehrgaengeList.addColumn("Name", "mitglied");
-    lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
+    lehrgaengeList.addColumn(getGesperrtColumn(), false);
     lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
+    lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
     lehrgaengeList.addColumn("Von/am", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgaengeList.addColumn("Bis", "bis",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgaengeList.addColumn("Veranstalter", "veranstalter");
-    lehrgaengeList.addColumn("Ergebnis", "ergebnis");
+    lehrgaengeList.addColumn("Betrag", "betrag");
     lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
     lehrgaengeList.setMulti(true);
     lehrgaengeList

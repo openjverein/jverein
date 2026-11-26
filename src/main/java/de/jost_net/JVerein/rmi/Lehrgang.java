@@ -16,14 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
 public interface Lehrgang extends JVereinDBObject
 {
-  public Mitglied getMitglied() throws RemoteException;
-
-  public void setMitglied(Integer mitglied) throws RemoteException;
 
   public Lehrgangsart getLehrgangsart() throws RemoteException;
 
@@ -41,11 +39,13 @@ public interface Lehrgang extends JVereinDBObject
 
   public void setVeranstalter(String veranstalter) throws RemoteException;
 
-  public String getErgebnis() throws RemoteException;
-
-  public void setErgebnis(String ergebnis) throws RemoteException;
-
   public String getBezeichnung() throws RemoteException;
 
   public void setBezeichnung(String bezeichnung) throws RemoteException;
+
+  public BigDecimal getBetrag() throws RemoteException;
+
+  public void setBetrag(BigDecimal betrag) throws RemoteException;
+
+  public Mitglied[] getMitglieder() throws RemoteException;
 }

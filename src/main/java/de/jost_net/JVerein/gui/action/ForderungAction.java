@@ -23,10 +23,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.gui.dialogs.ForderungDialog;
 import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.Lehrgangsteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -42,6 +44,10 @@ public class ForderungAction implements Action
 {
   private Mitglied[] mitglieder = null;
 
+  private String zweck;
+
+  private BigDecimal betrag;
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
@@ -56,9 +62,52 @@ public class ForderungAction implements Action
       {
         mitglieder = (Mitglied[]) context;
       }
+      else if (context instanceof Lehrgangsteilnehmer)
+      {
+        Lehrgangsteilnehmer tln = (Lehrgangsteilnehmer) context;
+        mitglieder = new Mitglied[] { tln.getMitglied() };
+        Lehrgang lg = tln.getLehrgang();
+        if (lg != null)
+        {
+          zweck = lg.getBezeichnung();
+          betrag = lg.getBetrag();
+        }
+      }
+      else if (context instanceof Lehrgangsteilnehmer[])
+      {
+        Lehrgangsteilnehmer[] tlner = (Lehrgangsteilnehmer[]) context;
+        ArrayList<Mitglied> list = new ArrayList<>();
+        for (Lehrgangsteilnehmer tln : tlner)
+        {
+          list.add(tln.getMitglied());
+        }
+        if (list.size() > 0)
+        {
+          mitglieder = new Mitglied[list.size()];
+          list.toArray(mitglieder);
+          Lehrgang lg = tlner[0].getLehrgang();
+          if (lg != null)
+          {
+            zweck = lg.getBezeichnung();
+            betrag = lg.getBetrag();
+          }
+        }
+        else
+        {
+          throw new ApplicationException(
+              "Keine Lehrgangsteilnehmer ausgewählt!");
+        }
+      }
       else if (context instanceof Lehrgang)
       {
-        mitglieder = new Mitglied[] { ((Lehrgang) context).getMitglied() };
+        Lehrgang lg = (Lehrgang) context;
+        mitglieder = lg.getMitglieder();
+        if (mitglieder == null || mitglieder.length == 0)
+        {
+          throw new ApplicationException("Der Lehrgang hat keine Teilnehmer!");
+        }
+        zweck = lg.getBezeichnung();
+        betrag = lg.getBetrag();
       }
       else if (context instanceof Lehrgang[])
       {
@@ -66,7 +115,10 @@ public class ForderungAction implements Action
         ArrayList<Mitglied> list = new ArrayList<>();
         for (Lehrgang lg : lge)
         {
-          list.add(lg.getMitglied());
+          for (Mitglied m : lg.getMitglieder())
+          {
+            list.add(m);
+          }
         }
         if (list.size() > 0)
         {
@@ -75,8 +127,11 @@ public class ForderungAction implements Action
         }
         else
         {
-          throw new ApplicationException("Keine Lehrgänge ausgewählt!");
+          throw new ApplicationException(
+              "Die Lehrgänge haben keine Teilnehmer!");
         }
+        zweck = lge[0].getBezeichnung();
+        betrag = lge[0].getBetrag();
       }
       else
       {
@@ -84,10 +139,10 @@ public class ForderungAction implements Action
       }
 
       ForderungDialog dialog = new ForderungDialog(
-          AbstractDialog.POSITION_CENTER, mitglieder);
+          AbstractDialog.POSITION_CENTER, mitglieder, zweck, betrag);
       dialog.open();
     }
-    catch (OperationCanceledException oce)
+    catch (OperationCanceledException | ApplicationException oce)
     {
       throw oce;
     }

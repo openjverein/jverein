@@ -39,7 +39,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Ein Dialog, ueber den man ein eines Nicht-Mitglieds erzeugen kann.
  */
-public class AbweichenderZahlerNeuDialog extends AbstractDialog<Boolean>
+public class NichtMitgliedNeuDialog extends AbstractDialog<Boolean>
 {
 
   private String status = null;
@@ -50,11 +50,11 @@ public class AbweichenderZahlerNeuDialog extends AbstractDialog<Boolean>
 
   private Mitglied mitglied;
 
-  public AbweichenderZahlerNeuDialog(int position, Mitglied m)
+  public NichtMitgliedNeuDialog(int position, Mitglied m)
   {
     super(position);
     mitglied = m;
-    setTitle("Abweichender Zahler");
+    setTitle("Neues Nicht-Mitglied");
     setSize(1000, SWT.DEFAULT);
   }
 
@@ -157,24 +157,32 @@ public class AbweichenderZahlerNeuDialog extends AbstractDialog<Boolean>
 
   private void zeichneZahlung(Composite parentComposite) throws RemoteException
   {
-    LabelGroup zahlungsweg = new LabelGroup(parentComposite,
-        "Zahlungsdaten des Nicht-Mitglieds");
+    LabelGroup zahlungsweg = new LabelGroup(parentComposite, "Zahlungsweg");
     zahlungsweg.getComposite().setLayout(new GridLayout(1, false));
 
-    ButtonArea buttons = new ButtonArea();
-    buttons.addButton(control.getZahlungsdatenLoeschenButton());
-    buttons.paint(zahlungsweg.getComposite());
+    SimpleVerticalContainer cols1 = new SimpleVerticalContainer(
+        zahlungsweg.getComposite(), false, 1);
 
-    SimpleVerticalContainer cols = new SimpleVerticalContainer(
-        zahlungsweg.getComposite(), false, 2);
-    cols.addInput(control.getZahlungsweg());
-    cols.addInput(control.getIban());
-    cols.addInput(control.getBic());
-    cols.addInput(control.getKontoinhaber());
-    cols.addInput(control.getMandatID());
-    cols.addInput(control.getMandatVersion());
-    cols.addInput(control.getMandatDatum());
-    cols.addInput(control.getLetzteLastschrift());
-    cols.arrangeVertically();
+    cols1.addInput(control.getZahlungsweg());
+    cols1.arrangeVertically();
+
+    LabelGroup bankverbindung = new LabelGroup(parentComposite,
+        "Bankverbindung");
+    bankverbindung.getComposite().setLayout(new GridLayout(1, false));
+    ButtonArea buttons2 = new ButtonArea();
+    buttons2.addButton(control.getZahlungsdatenLoeschenButton());
+    buttons2.paint(bankverbindung.getComposite());
+
+    SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
+        bankverbindung.getComposite(), false, 2);
+
+    cols2.addInput(control.getMandatID());
+    cols2.addInput(control.getMandatDatum());
+    cols2.addInput(control.getMandatVersion());
+    cols2.addInput(control.getLetzteLastschrift());
+    cols2.addInput(control.getIban());
+    cols2.addInput(control.getBic());
+    cols2.addInput(control.getKontoinhaber());
+    cols2.arrangeVertically();
   }
 }

@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Lehrgang;
@@ -56,7 +55,7 @@ public class LehrgangsartImpl extends AbstractJVereinDBObject
     {
       DBIterator<Lehrgang> it = Einstellungen.getDBService()
           .createList(Lehrgang.class);
-      it.addFilter("lehrgangsart = ?", new Object[] { getID() });
+      it.addFilter("lehrgangsart = ?", getID());
       it.setLimit(1);
       if (it.hasNext())
       {
@@ -84,11 +83,7 @@ public class LehrgangsartImpl extends AbstractJVereinDBObject
     {
       if (getBezeichnung() == null || getBezeichnung().length() == 0)
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
-      }
-      if (getVon() == null)
-      {
-        throw new ApplicationException("Bitte Datum eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
     }
     catch (RemoteException e)
@@ -115,42 +110,6 @@ public class LehrgangsartImpl extends AbstractJVereinDBObject
   public void setBezeichnung(String bezeichnung) throws RemoteException
   {
     setAttribute("bezeichnung", bezeichnung);
-  }
-
-  @Override
-  public Date getVon() throws RemoteException
-  {
-    return (Date) getAttribute("von");
-  }
-
-  @Override
-  public void setVon(Date von) throws RemoteException
-  {
-    setAttribute("von", von);
-  }
-
-  @Override
-  public Date getBis() throws RemoteException
-  {
-    return (Date) getAttribute("bis");
-  }
-
-  @Override
-  public void setBis(Date bis) throws RemoteException
-  {
-    setAttribute("bis", bis);
-  }
-
-  @Override
-  public String getVeranstalter() throws RemoteException
-  {
-    return (String) getAttribute("veranstalter");
-  }
-
-  @Override
-  public void setVeranstalter(String veranstalter) throws RemoteException
-  {
-    setAttribute("veranstalter", veranstalter);
   }
 
   @Override
