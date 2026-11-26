@@ -73,8 +73,6 @@ public class MitgliedControl extends FilterControl
 
   private JVereinTablePart mitgliedList;
 
-  public static MitgliedControl control = null;
-
   private boolean isMitglied = false;
 
   private MitgliedAuswahl mitgliedAuswahl = MitgliedAuswahl.MITGLIEDER;
@@ -85,7 +83,6 @@ public class MitgliedControl extends FilterControl
   public MitgliedControl(AbstractView view)
   {
     super(view);
-    control = this;
     if (view instanceof MitgliedListeView)
     {
       isMitglied = true;
