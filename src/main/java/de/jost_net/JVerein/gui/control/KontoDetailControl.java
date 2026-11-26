@@ -1222,7 +1222,7 @@ public class KontoDetailControl extends VorZurueckControl implements Savable
     {
       return belegPart;
     }
-    belegPart = new BelegPart(false);
+    belegPart = new BelegPart();
     return belegPart;
   }
 
