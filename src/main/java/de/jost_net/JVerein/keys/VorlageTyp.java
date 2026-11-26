@@ -804,6 +804,8 @@ public enum VorlageTyp
       "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
   BELEG_MITGLIED_PFAD("mitglied-beleg-pfad", "Mitglied Beleg Pfad",
       "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
+  IDEA_DATEINAME("idea-dateiname", "IDEA-Export Dateiname",
+      "IDEA export $filter_jahr", Vorlageart.DATEINAME.getKey()),
   BELEG_KONTO_PFAD("konto-beleg-pfad", "Konto Beleg Pfad",
       "$beleg_nummer-$file_name", Vorlageart.PFAD.getKey()),
 
