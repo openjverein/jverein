@@ -641,7 +641,7 @@ public class ZahlerMap extends AbstractMap
         LesefeldAuswerter l = new LesefeldAuswerter();
         l.setLesefelderDefinitionsFromDatabase();
         l.setMap(map);
-        map.putAll(l.getLesefelderMap());
+        map.putAll(l.getLesefelderMap("zahler_lesefelder_"));
       }
     }
     return map;
