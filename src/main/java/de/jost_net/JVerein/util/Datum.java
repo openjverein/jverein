@@ -50,6 +50,19 @@ public class Datum
     return diff;
   }
 
+  /**
+   * Prüft, ob ein Datum auf einem Termin der Intervallfolge liegt, die mit dem
+   * Startdatum beginnt. Gibt es den Tag des Startdatums im Monat des Datums
+   * nicht (29., 30. oder 31.), ist der letzte Tag dieses Monats der Termin.
+   *
+   * @param datum1
+   *          Startdatum
+   * @param datum2
+   *          zu prüfendes Datum
+   * @param intervall
+   *          Intervall in Monaten, 0 = kein Intervall
+   * @return true, wenn das Datum im Intervall liegt
+   */
   public static boolean isImInterval(Date datum1, Date datum2, int intervall)
   {
     if (intervall == 0)
@@ -60,35 +73,55 @@ public class Datum
     cal1.setTime(datum1);
     Calendar cal2 = Calendar.getInstance();
     cal2.setTime(datum2);
-    if (cal1.get(Calendar.DAY_OF_MONTH) != cal2.get(Calendar.DAY_OF_MONTH))
+    int tag = Math.min(cal1.get(Calendar.DAY_OF_MONTH),
+        cal2.getActualMaximum(Calendar.DAY_OF_MONTH));
+    if (cal2.get(Calendar.DAY_OF_MONTH) != tag)
     {
       return false;
     }
     return getDifferenzInMonaten(datum1, datum2) % intervall == 0;
   }
 
-  public static Date addInterval(Date letztefaelligkeit, int intervall)
+  /**
+   * Verschiebt eine Fälligkeit um ein Intervall. Gerechnet wird vom Startdatum
+   * aus (Startdatum + n × Intervall) und nicht von der letzten Fälligkeit,
+   * damit der Tag des Startdatums erhalten bleibt. Gibt es diesen Tag im
+   * Zielmonat nicht, wird auf den letzten Tag des Monats gekappt. Beispiel
+   * monatlich ab 31.01.: 28.02., 31.03., 30.04.
+   *
+   * @param letztefaelligkeit
+   *          Fälligkeit, die verschoben wird
+   * @param intervall
+   *          Intervall in Monaten, negativ für die vorherige Fälligkeit, 0 =
+   *          kein Intervall
+   * @param startdatum
+   *          Startdatum der Intervallfolge
+   * @return die verschobene Fälligkeit
+   */
+  public static Date addInterval(Date letztefaelligkeit, int intervall,
+      Date startdatum)
   {
+    if (intervall == 0)
+    {
+      return letztefaelligkeit;
+    }
     Calendar cal = Calendar.getInstance();
-    cal.setTime(letztefaelligkeit);
-    cal.add(Calendar.MONTH, intervall);
+    cal.setTime(startdatum);
+    // Calendar.add() kappt auf den letzten Tag des Zielmonats
+    cal.add(Calendar.MONTH,
+        getDifferenzInMonaten(startdatum, letztefaelligkeit) + intervall);
     return cal.getTime();
   }
 
   public static Date subtractInterval(Date letztefaelligkeit, int intervall,
       Date startdatum)
   {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(letztefaelligkeit);
-    cal.add(Calendar.MONTH, intervall * -1);
-    if (cal.getTime().getTime() < startdatum.getTime())
+    Date datum = addInterval(letztefaelligkeit, -intervall, startdatum);
+    if (datum.getTime() < startdatum.getTime())
     {
       return null;
     }
-    else
-    {
-      return cal.getTime();
-    }
+    return datum;
   }
 
   public static Date addTage(Date datum, int tage)
