@@ -145,6 +145,24 @@ und `../../jverein` auf das JVerein-Projekt.
 4. Starte Jameica erneut. Danach werden Hibiscus und JVerein als Plugins geladen.
 5. Wenn du Code geändert hast und über die IDE testest, führe vor dem nächsten Start einen Rebuild aus.
 
+# KI-unterstützte Beiträge
+
+Beiträge, die mit KI-Unterstützung entstanden sind, sind erlaubt, aber es gilt:
+
+- **Kennzeichnen:** Gib im Pull-Request an, dass KI eingesetzt wurde, mit welchem Werkzeug und Modell, und möglichst in
+  welchem Umfang (z.B. "Code vollständig generiert", "nur Tests", ...). Das gilt für Code ebenso wie für
+  Commit-Nachrichten, PR-Beschreibungen und Kommentare.
+- **Commits:** Zusätzlich kann der Commit einen Trailer tragen, z.B. `Assisted-by: <Werkzeug>:<Modell>` oder
+  `Co-authored-by: <Modell> <noreply@…>`. Da Pull-Requests beim Mergen zusammengefasst werden, ersetzt der Trailer die
+  Angabe im Pull-Request nicht.
+- **Verantwortung:** Wer den Beitrag einreicht, ist für ihn verantwortlich. Du musst den Code verstehen und im Review
+  erklären und anpassen können. Den Code kann sonst später niemand pflegen.
+- **Testen:** Führe `mvn test` aus und probiere die Änderung in der Anwendung aus.
+- **Einheitlichkeit:** Der Code muss zum Rest des Projekts passen. Halte dich an die unten beschriebene Code Struktur
+  und verwende vorhandene Bausteine (z.B. `JVereinTablePart` statt selbst gebauter Tabellen).
+
+Anweisungen für KI-Agenten stehen in der [AGENTS.md](AGENTS.md).
+
 # Code Struktur
 
 Der Code von JVerein ist in folgende Pakete gegliedert.
