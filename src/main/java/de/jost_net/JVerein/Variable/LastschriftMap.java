@@ -28,8 +28,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.util.Datum;
-import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
-import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
+import de.jost_net.JVerein.util.IbanUtil;
 
 public class LastschriftMap extends AbstractMap
 {
@@ -139,14 +138,10 @@ public class LastschriftMap extends AbstractMap
         case BANKNAME:
           if (ls.getBic() != null)
           {
-            Bank bank = Banken.getBankByBIC(ls.getBic());
-            if (bank != null)
+            String name = IbanUtil.getBankname(ls.getBic());
+            if (name != null)
             {
-              String name = bank.getBezeichnung();
-              if (name != null)
-              {
-                value = name.trim();
-              }
+              value = name.trim();
             }
           }
           break;
