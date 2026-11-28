@@ -46,9 +46,7 @@ public class ZusatzbetragMap extends AbstractMap
           value = Datum.formatDate(zusatzbetrag.getStartdatum());
           break;
         case LETZTE_FAELLIGKEIT:
-          value = Datum.formatDate(
-              Datum.addInterval(zusatzbetrag.getFaelligkeit(),
-                  -zusatzbetrag.getIntervall(), zusatzbetrag.getStartdatum()));
+          value = Datum.formatDate(zusatzbetrag.getAusfuehrung());
           break;
         case FAELLIGKEIT:
           value = Datum.formatDate(zusatzbetrag.getFaelligkeit());
