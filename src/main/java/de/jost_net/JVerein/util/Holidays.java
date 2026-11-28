@@ -67,6 +67,32 @@ public final class Holidays
   }
 
   /**
+   * An TARGET-Feiertagen ist das Zahlungssystem der Eurozone geschlossen,
+   * ebenso an Wochenenden. SEPA-Zahlungen werden an diesen Tagen nicht
+   * ausgeführt. Der Kalender gilt in dieser Form seit 2002.
+   *
+   * @param date der zu prüfende Tag.
+   * @return true, wenn date Neujahr, Karfreitag, Ostermontag, der 1. Mai, der
+   *         1. oder der 2. Weihnachtstag ist.
+   */
+  public static boolean isTargetHoliday(LocalDate date)
+  {
+    Month month = date.getMonth();
+    int day = date.getDayOfMonth();
+
+    if (month == Month.JANUARY && day == 1
+        || month == Month.MAY && day == 1
+        || month == Month.DECEMBER && (day == 25 || day == 26))
+    {
+      return true;
+    }
+
+    LocalDate easter = calculateEasterSunday(date.getYear());
+    return date.equals(easter.minusDays(2))  // Karfreitag
+        || date.equals(easter.plusDays(1));  // Ostermontag
+  }
+
+  /**
    * Berechnet den Ostersonntag per Gaußscher Osterformel. Die Formel
    * rechnet in zwei Schritten: Zuerst wird (über den Mondzyklus) der Tag
    * des auf den 21. März folgenden Vollmonds bestimmt, danach der nächste

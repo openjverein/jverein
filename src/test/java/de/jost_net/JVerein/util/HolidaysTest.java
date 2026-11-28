@@ -49,6 +49,35 @@ final class HolidaysTest
 
   @ParameterizedTest
   @CsvSource({
+      "2026-01-01", // Neujahr
+      "2026-04-03", // Karfreitag (Ostern 2026: 5. April)
+      "2026-04-06", // Ostermontag
+      "2026-05-01", // 1. Mai
+      "2026-12-25", // 1. Weihnachtstag
+      "2026-12-26"  // 2. Weihnachtstag
+  })
+  void isTargetHolidayRecognizesTargetHolidays(LocalDate date)
+  {
+    assertTrue(Holidays.isTargetHoliday(date));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "2026-01-02", // gewöhnlicher Tag
+      "2026-04-05", // Ostersonntag
+      "2026-05-14", // Christi Himmelfahrt
+      "2026-05-25", // Pfingstmontag
+      "2026-10-03", // Tag der Deutschen Einheit
+      "2026-12-24", // Heiligabend
+      "2026-12-31"  // Silvester
+  })
+  void isTargetHolidayReturnsFalseForOtherDays(LocalDate date)
+  {
+    assertFalse(Holidays.isTargetHoliday(date));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
       "2026, 2026-04-05",
       "2027, 2027-03-28",
       "2028, 2028-04-16",
