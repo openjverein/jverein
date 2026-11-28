@@ -718,7 +718,8 @@ public class AbrechnungSEPA extends SEPASupport
             && (z.getEndedatum() == null
                 || z.getFaelligkeit().getTime() <= z.getEndedatum().getTime()))
         {
-          z.setFaelligkeit(Datum.addInterval(faelligkeit, z.getIntervall()));
+          z.setFaelligkeit(Datum.addInterval(faelligkeit, z.getIntervall(),
+              z.getStartdatum()));
         }
         try
         {

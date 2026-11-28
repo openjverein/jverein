@@ -414,7 +414,8 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public void naechsteFaelligkeit() throws RemoteException
   {
-    Date vorh = Datum.addInterval(getFaelligkeit(), getIntervall());
+    Date vorh = Datum.addInterval(getFaelligkeit(), getIntervall(),
+        getStartdatum());
     if (vorh == null)
     {
       throw new RemoteException("Datum kann nicht weiter vorgesetzt werden");
