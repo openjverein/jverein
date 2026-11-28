@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -26,7 +27,9 @@ import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -50,12 +53,14 @@ import de.jost_net.JVerein.io.Bankarbeitstage;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.Bug;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
@@ -68,11 +73,16 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.internal.action.Program;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.util.Color;
+import de.willuhn.jameica.messaging.StatusBarMessage;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
 public abstract class AbstractAbrechnungControl
 {
@@ -612,7 +622,118 @@ public abstract class AbstractAbrechnungControl
 
   protected void startAbrechnung() throws ApplicationException, RemoteException
   {
-    new AbrechnungSEPA(getAbrechnungSEPAParam());
+    final AbrechnungSEPAParam param = getAbrechnungSEPAParam();
+    // Die Verzeichnisse sind unter der Klasse AbrechnungSEPA gespeichert
+    Settings dateiSettings = new Settings(AbrechnungSEPA.class);
+    dateiSettings.setStoreWhenRead(true);
+
+    if (param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
+    {
+      Shell shell = GUI.getDisplay().getActiveShell();
+      FileDialog fd = new FileDialog(shell == null ? GUI.getShell() : shell,
+          SWT.SAVE);
+      fd.setText("SEPA-Ausgabedatei wählen.");
+      String path = dateiSettings.getString("lastdir.sepa",
+          System.getProperty("user.home"));
+      if (path != null && path.length() > 0)
+      {
+        fd.setFilterPath(path);
+      }
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAUF_SEPA_DATEINAME, param)
+              + ".xml");
+      String file = fd.open();
+      if (file == null || file.length() == 0)
+      {
+        throw new ApplicationException("Keine Datei ausgewählt!");
+      }
+      param.sepafileRCUR = new File(file);
+      // Wir merken uns noch das Verzeichnis fürs nächste mal
+      dateiSettings.setAttribute("lastdir.sepa",
+          param.sepafileRCUR.getParent());
+    }
+
+    // PDF-Datei für Basislastschrift2PDF
+    if (param.sepaprint)
+    {
+      Shell shell = GUI.getDisplay().getActiveShell();
+      FileDialog fd = new FileDialog(shell == null ? GUI.getShell() : shell,
+          SWT.SAVE);
+      fd.setText("PDF-Ausgabedatei wählen");
+
+      String path = dateiSettings.getString("lastdir.pdf",
+          System.getProperty("user.home"));
+      if (path != null && path.length() > 0)
+      {
+        fd.setFilterPath(path);
+      }
+      fd.setFileName(VorlageUtil.getName(
+          VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME, param) + ".pdf");
+      String pdffileRCUR = fd.open();
+      if (pdffileRCUR == null)
+      {
+        return;
+      }
+      param.pdffileRCUR = pdffileRCUR;
+      // Wir merken uns noch das Verzeichnis fürs nächste mal
+      dateiSettings.setAttribute("lastdir.pdf",
+          new File(pdffileRCUR).getParent());
+    }
+
+    BackgroundTask t = new BackgroundTask()
+    {
+      private boolean interrupt = false;
+
+      @Override
+      public void run(ProgressMonitor monitor) throws ApplicationException
+      {
+        try
+        {
+          AbrechnungSEPA abrechnung = new AbrechnungSEPA();
+          abrechnung.abrechnen(param, monitor, this);
+
+          monitor.setPercentComplete(100);
+          monitor.setStatus(ProgressMonitor.STATUS_DONE);
+          GUI.getStatusBar()
+              .setSuccessText("Abrechnung durchgeführt" + param.getText());
+
+          final File pdf = abrechnung.getPdfDatei();
+          if (pdf != null)
+          {
+            GUI.getDisplay().asyncExec(() -> {
+              try
+              {
+                new Program().handleAction(pdf);
+              }
+              catch (ApplicationException ae)
+              {
+                Application.getMessagingFactory()
+                    .sendMessage(new StatusBarMessage(ae.getLocalizedMessage(),
+                        StatusBarMessage.TYPE_ERROR));
+              }
+            });
+          }
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
+          throw ae;
+        }
+      }
+
+      @Override
+      public void interrupt()
+      {
+        interrupt = true;
+      }
+
+      @Override
+      public boolean isInterrupted()
+      {
+        return interrupt;
+      }
+    };
+    Application.getController().start(t);
   }
 
   public Button getAbbrechenButton(AbstractDialog<Boolean> dialog)

@@ -35,9 +35,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.kapott.hbci.GV.SepaUtil;
 import org.kapott.hbci.GV.generators.ISEPAGenerator;
 import org.kapott.hbci.GV.generators.SEPAGeneratorFactory;
@@ -58,7 +55,6 @@ import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
@@ -80,7 +76,6 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.SplitbuchungUtil;
 import de.jost_net.JVerein.util.StringTool;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
@@ -91,18 +86,13 @@ import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
 import de.jost_net.OBanToo.StringLatin.Zeichen;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.internal.action.Program;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.io.SepaLastschriftMerger;
 import de.willuhn.jameica.hbci.rmi.SepaLastSequenceType;
 import de.willuhn.jameica.hbci.rmi.SepaLastType;
 import de.willuhn.jameica.hbci.rmi.SepaLastschrift;
 import de.willuhn.jameica.hbci.rmi.SepaSammelLastschrift;
-import de.willuhn.jameica.messaging.StatusBarMessage;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -111,121 +101,65 @@ public class AbrechnungSEPA extends SEPASupport
 {
   private int counter = 0;
 
-  private Settings settings = null;
-
   private BackgroundTask interrupt;
 
   private HashMap<String, ArrayList<JVereinZahler>> zahlermap = new HashMap<>();
 
-  public AbrechnungSEPA(AbrechnungSEPAParam param) throws ApplicationException
+  private File pdfDatei = null;
+
+  /**
+   * Führt die Abrechnung in einer Datenbank-Transaktion aus. Läuft bereits
+   * eine Transaktion, wird diese mitbenutzt und hier abgeschlossen oder
+   * zurückgenommen. Schlägt die Abrechnung fehl oder wird sie abgebrochen,
+   * werden die Änderungen in der JVerein-Datenbank zurückgenommen. Ein schon
+   * angelegter Hibiscus-Auftrag und schon geschriebene Dateien (SEPA, PDF)
+   * bleiben bestehen. Für jede Abrechnung ist eine neue Instanz zu verwenden.
+   *
+   * @param param
+   *          Parameter der Abrechnung
+   * @param monitor
+   *          erhält Fortschritt und Meldungen
+   * @param task
+   *          wird gefragt, ob die Abrechnung abgebrochen werden soll. Darf
+   *          null sein; dann lässt sich die Abrechnung nicht abbrechen.
+   * @throws ApplicationException
+   *           wenn die Abrechnung fehlschlägt oder abgebrochen wird
+   */
+  public void abrechnen(AbrechnungSEPAParam param, ProgressMonitor monitor,
+      BackgroundTask task) throws ApplicationException
   {
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
-
-    File sepafilercur = null;
-    if (param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
+    try
     {
-      Shell shell = GUI.getDisplay().getActiveShell();
-      FileDialog fd = new FileDialog(shell == null ? GUI.getShell() : shell,
-          SWT.SAVE);
-      fd.setText("SEPA-Ausgabedatei wählen.");
-      String path = settings.getString("lastdir.sepa",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAUF_SEPA_DATEINAME, param)
-              + ".xml");
-      String file = fd.open();
-      if (file == null || file.length() == 0)
-      {
-        throw new ApplicationException("Keine Datei ausgewählt!");
-      }
-      sepafilercur = new File(file);
-      param.sepafileRCUR = sepafilercur;
-      // Wir merken uns noch das Verzeichnis fürs nächste mal
-      settings.setAttribute("lastdir.sepa", sepafilercur.getParent());
+      DBTransaction.starten();
+      doAbrechnungSEPA(param, monitor, task);
+      DBTransaction.commit();
     }
-
-    // PDF-Datei für Basislastschrift2PDF
-    String pdffileRCUR = null;
-    if (param.sepaprint)
+    catch (ApplicationException ae)
     {
-      Shell shell = GUI.getDisplay().getActiveShell();
-      FileDialog fd = new FileDialog(shell == null ? GUI.getShell() : shell,
-          SWT.SAVE);
-      fd.setText("PDF-Ausgabedatei wählen");
-
-      String path = settings.getString("lastdir.pdf",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(VorlageUtil.getName(
-          VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME, param) + ".pdf");
-      pdffileRCUR = fd.open();
-      if (pdffileRCUR == null)
-      {
-        return;
-      }
-      param.pdffileRCUR = pdffileRCUR;
-      File file = new File(pdffileRCUR);
-      // Wir merken uns noch das Verzeichnis fürs nächste mal
-      settings.setAttribute("lastdir.pdf", file.getParent());
+      DBTransaction.rollback();
+      throw ae;
     }
-
+    catch (Exception e)
     {
-      BackgroundTask t = new BackgroundTask()
-      {
-        private boolean interrupt = false;
-
-        @Override
-        public void run(ProgressMonitor monitor) throws ApplicationException
-        {
-          try
-          {
-            DBTransaction.starten();
-            doAbrechnungSEPA(param, monitor, this);
-            DBTransaction.commit();
-
-            monitor.setPercentComplete(100);
-            monitor.setStatus(ProgressMonitor.STATUS_DONE);
-            GUI.getStatusBar()
-                .setSuccessText("Abrechnung durchgeführt" + param.getText());
-          }
-          catch (ApplicationException ae)
-          {
-            DBTransaction.rollback();
-            GUI.getStatusBar().setErrorText(ae.getMessage());
-            throw ae;
-          }
-          catch (Exception e)
-          {
-            DBTransaction.rollback();
-            Logger.error("Fehler beim Abrechnungslauf", e);
-            GUI.getStatusBar()
-                .setErrorText("Fehler beim Abrechnungslauf: " + e.getMessage());
-            throw new ApplicationException("Fehler beim Abrechnungslauf", e);
-          }
-        }
-
-        @Override
-        public void interrupt()
-        {
-          interrupt = true;
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-          return interrupt;
-        }
-      };
-      Application.getController().start(t);
+      DBTransaction.rollback();
+      Logger.error("Fehler beim Abrechnungslauf", e);
+      throw new ApplicationException(
+          "Fehler beim Abrechnungslauf: " + e.getMessage(), e);
     }
+  }
+
+  /**
+   * @return die PDF-Datei mit den Lastschriften, wenn die Abrechnung eine
+   *         erstellt hat, sonst null
+   */
+  public File getPdfDatei()
+  {
+    return pdfDatei;
+  }
+
+  private boolean isInterrupted()
+  {
+    return interrupt != null && interrupt.isInterrupted();
   }
 
   private void doAbrechnungSEPA(AbrechnungSEPAParam param,
@@ -256,7 +190,7 @@ public class AbrechnungSEPA extends SEPASupport
     {
       monitor.setPercentComplete(
           (int) (count++ / (double) zahlermap.size() * 100d));
-      if (interrupt.isInterrupted())
+      if (isInterrupted())
       {
         throw new ApplicationException("Abrechnung abgebrochen");
       }
@@ -460,7 +394,7 @@ public class AbrechnungSEPA extends SEPASupport
       int count = 0;
       while (list.hasNext())
       {
-        if (interrupt.isInterrupted())
+        if (isInterrupted())
         {
           throw new ApplicationException("Abrechnung abgebrochen");
         }
@@ -614,7 +548,7 @@ public class AbrechnungSEPA extends SEPASupport
     }
     for (Zusatzbetrag z : zusatzbetraege)
     {
-      if (interrupt.isInterrupted())
+      if (isInterrupted())
       {
         throw new ApplicationException("Abrechnung abgebrochen");
       }
@@ -759,17 +693,7 @@ public class AbrechnungSEPA extends SEPASupport
       final String pdf_fn) throws IOException, DocumentException, SEPAException
   {
     new Basislastschrift2Pdf(lastschrift, pdf_fn);
-    GUI.getDisplay().asyncExec(() -> {
-      try
-      {
-        new Program().handleAction(new File(pdf_fn));
-      }
-      catch (ApplicationException ae)
-      {
-        Application.getMessagingFactory().sendMessage(new StatusBarMessage(
-            ae.getLocalizedMessage(), StatusBarMessage.TYPE_ERROR));
-      }
-    });
+    pdfDatei = new File(pdf_fn);
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
