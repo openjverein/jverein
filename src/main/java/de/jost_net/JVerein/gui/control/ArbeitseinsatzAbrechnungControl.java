@@ -29,7 +29,6 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzAuswertungPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
-import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.ArbeitseinsatzAuswertung;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
@@ -356,7 +355,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     switch (typ)
     {
       case ABRECHNUNG:
-        new AbrechnungSEPA(getAbrechnungSEPAParam());
+        super.startAbrechnung();
         break;
       case ZUSATZBETRAEGE:
         starteZusatzberaegeGenerierung();
